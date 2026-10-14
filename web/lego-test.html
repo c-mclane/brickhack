@@ -1,0 +1,107 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>LegoHack scene</title>
+<style>
+html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px system-ui,sans-serif}
+#status{position:fixed;left:10px;bottom:10px;padding:4px 9px;border-radius:6px;background:#0008;color:#fff;transition:background .3s}
+#status.flash{background:#2a8f3a}
+#music{position:fixed;right:10px;bottom:10px;padding:5px 11px;border:0;border-radius:6px;background:#0008;color:#fff;font:inherit;cursor:pointer}
+#music:hover{background:#000a}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<div id="status">connecting...</div>
+<button id="music">&#9834; play music</button>
+<script type="module">
+// Live view of web/assets/lego/scene.built.json: polls it every second and
+// rebuilds the scene whenever it changes, keeping the camera where it is.
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const r = new THREE.WebGLRenderer({ antialias: true });
+r.setSize(innerWidth, innerHeight); r.setPixelRatio(devicePixelRatio);
+r.shadowMap.enabled = true;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fb8de);
+const cam = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 500);
+const ctl = new OrbitControls(cam, r.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.position.set(6, 14, 9); sun.castShadow = true;
+sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02; sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, far: 60 });
+scene.add(sun);
+
+const loader = new GLTFLoader();
+const models = new Map();   // url -> Promise<Object3D>
+function model(url) {
+  if (!models.has(url)) models.set(url, new Promise((res, rej) => loader.load(url, g => {
+    g.scene.traverse(o => { if (o.isMesh) { o.material.flatShading = true; o.castShadow = o.receiveShadow = true; } });
+    res(g.scene);
+  }, undefined, rej)));
+  return models.get(url);
+}
+
+const root = new THREE.Group(); scene.add(root);
+const status = document.getElementById('status');
+let version = null, camKey = null;
+
+async function apply(data) {
+  const objs = await Promise.all(data.objects.map(async o => {
+    const m = (await model(o.url)).clone();
+    // LDraw units -> studs, LDraw's -Y up -> +Y up (the .glb itself is already converted)
+    m.position.set(o.pos[0] / 20, -o.pos[1] / 20, -o.pos[2] / 20);
+    m.rotation.y = (o.rotY || 0) * Math.PI / 180;
+    return m;
+  }));
+  root.clear(); objs.forEach(m => root.add(m));
+  const ck = JSON.stringify(data.camera);
+  if (data.camera && ck !== camKey) {
+    cam.position.set(...data.camera.pos); ctl.target.set(...data.camera.target);
+  }
+  camKey = ck;
+}
+
+async function poll() {
+  try {
+    const data = await (await fetch('assets/lego/scene.built.json', { cache: 'no-store' })).json();
+    if (data.version !== version) {
+      const first = version === null;
+      version = data.version;
+      await apply(data);
+      status.textContent = `live · ${data.objects.length} objects · updated ${new Date().toLocaleTimeString()}`;
+      if (!first) { status.classList.add('flash'); setTimeout(() => status.classList.remove('flash'), 800); }
+    }
+  } catch (e) { status.textContent = 'waiting for scene... (' + e.message + ')'; }
+  setTimeout(poll, 1000);
+}
+poll();
+
+// Music: loops one tracker module through libopenmpt (vendor/chiptune3).
+// Starts only from its button (browsers need a click before any audio anyway).
+const TRACK = 'music/AGAiN/AGAiN - Cirond Winc kg.xm';
+const btn = document.getElementById('music');
+let player = null, playing = false;
+async function startMusic() {
+  if (player) return;
+  const { ChiptuneJsPlayer } = await import('./vendor/chiptune3/chiptune3.js');
+  player = new ChiptuneJsPlayer({ repeatCount: -1 });
+  player.onInitialized(() => {
+    player.setVol(0.6);
+    player.load(TRACK.split('/').map(encodeURIComponent).join('/'));
+    playing = true;
+  });
+  player.onMetadata(m => { btn.textContent = '\u266A ' + 'AGAiN \u2014 Cirond Winc kg' + ' \u2014 click to pause'; });
+  player.onError(e => { btn.textContent = '\u266A music error'; console.error(e); });
+}
+btn.addEventListener('pointerdown', e => {   // pointerdown, so the page's own first-press listener doesn't also fire
+  e.stopPropagation();
+  if (!player) return startMusic();
+  player.togglePause(); playing = !playing;
+  btn.textContent = btn.textContent.replace(/click to (pause|play)$/, playing ? 'click to pause' : 'click to play');
+});
+
+(function loop() { requestAnimationFrame(loop); ctl.update(); r.render(scene, cam); })();
+addEventListener('resize', () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); });
+</script></body></html>

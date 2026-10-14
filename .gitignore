@@ -1,0 +1,19 @@
+/vendor/
+/build/
+build.log
+node_modules/
+.claude/
+/music/
+/worlds/
+# custom art stays local (only the README, monster list and folder markers are tracked)
+/art/**
+!/art/**/
+!/art/README.md
+!/art/**/.gitkeep
+!/art/monsters/MONSTERS.txt
+# the Absurd tileset can't be redistributed: a local build stays local
+/web/assets/tilesets/absurd/
+/art/tilesets/
+/web/music
+/web/assets/lego/cache/
+/web/assets/lego/scene.built.json
