@@ -12,6 +12,8 @@ SPEC example:
    "left":  {"part": "3846p4c", "color": 15, "aim": [0, -1, 0], "face": [0.3, 0, -1]}}
 
 "torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
+"dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs.
+"extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...).
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
 "plume": {"part": "87694", "color": 4} plugs a feather into the helmet's top.
 
@@ -203,9 +205,17 @@ def build(spec, base_dir='.'):
         if plume:
             socket = next((v for k, v in PLUME_SOCKETS.items() if spec['hat'].startswith(k)), (0, -15, 0))
             out.append(line(plume.get('color', 4), np.add((0, -24, 0), socket), I, plume.get('part', '87694')))
-    out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
-    out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
-    out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legL', '3817')))
+    if spec.get('dress'):
+        # a long dress, the classic LEGO way: no hips or legs, the torso straight on
+        # a sloped brick's top studs, turned round so its slope is at the back
+        R180 = np.diag([-1.0, 1, -1])
+        out.append(line(spec['dress'].get('color', 16), (0, 32, 0), R180, spec['dress'].get('part', '3678b')))
+    else:
+        out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
+        out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
+        out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legL', '3817')))
+    for x in spec.get('extras', []):   # any other part, at a place in the figure's frame (e.g. a tiara in the hair)
+        out.append(line(x.get('color', 16), x['pos'], I, x['part']))
     for side, hand in sides.items():
         item = spec.get(side)
         if item:
@@ -213,7 +223,21 @@ def build(spec, base_dir='.'):
             if item.get('decal'):
                 out.append(decal_line(item, pos, mat, base_dir))
             out.append(line(item.get('color', 16), pos, mat, item['part']))
+    if spec.get('dress'):
+        # the dress brick (48 LDU) is 8 taller than hips and legs (40): lift everything so she still stands on the floor
+        out = [shift(l, -(48 - 40)) for l in out]
     return '\n'.join(out) + '\n'
+
+
+def shift(l, dy):
+    """An LDraw line moved dy in Y (part lines and !TEXMAP lines; others as they are)."""
+    t = l.split(' ')
+    if t[0] == '1':
+        t[3] = f'{float(t[3]) + dy:.4f}'
+    elif l.startswith('0 !TEXMAP NEXT PLANAR'):
+        for i in (6, 9, 12):   # the y of p1, p2, p3
+            t[i] = f'{float(t[i]) + dy:.4f}'
+    return ' '.join(t)
 
 
 if __name__ == '__main__':

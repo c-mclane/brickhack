@@ -5,7 +5,7 @@
   "description": "LegoHack: SLASH'EM in a low-poly LEGO world",
   "scripts": {
     "build": "sh tools/build-slashem.sh && npm run tiles && npm run lego",
-    "tiles": "python3 tools/tiles2png.py vendor/SlashEM web/assets/slashem/tiles.png web/assets/slashem/tiles.json && python3 tools/monster_list.py web/assets/slashem/tiles.json art/monsters/MONSTERS.txt",
+    "tiles": "python3 tools/tiles2png.py vendor/SlashEM web/assets/slashem/tiles.png web/assets/slashem/tiles.json && python3 tools/monster_list.py web/assets/slashem/tiles.json art/monsters/MONSTERS.txt && python3 tools/roles2json.py vendor/SlashEM web/assets/slashem/roles.json",
     "start": "node server/server.js",
     "monster": "python3 tools/new_monster.py",
     "peanut-sprites": "sh tools/get_peanut_sprites.sh",

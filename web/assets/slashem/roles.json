@@ -1,0 +1,446 @@
+{
+ "roles": {
+  "Archeologist": {
+   "races": [
+    "DWARF",
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN",
+    "VAMPIRE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral"
+   ]
+  },
+  "Barbarian": {
+   "races": [
+    "ELF",
+    "HUMAN",
+    "ORC",
+    "VAMPIRE",
+    "WERE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Caveman": {
+   "races": [
+    "DWARF",
+    "GNOME",
+    "HUMAN",
+    "VAMPIRE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral"
+   ]
+  },
+  "Flame Mage": {
+   "races": [
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN",
+    "ORC"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Healer": {
+   "races": [
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral"
+   ]
+  },
+  "Ice Mage": {
+   "races": [
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN",
+    "ORC",
+    "VAMPIRE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Knight": {
+   "races": [
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful"
+   ]
+  },
+  "Monk": {
+   "races": [
+    "HOBBIT",
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Necromancer": {
+   "races": [
+    "ELF",
+    "HUMAN",
+    "ORC",
+    "VAMPIRE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "chaotic"
+   ]
+  },
+  "Priest": {
+   "races": [
+    "ELF",
+    "HOBBIT",
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Rogue": {
+   "races": [
+    "HUMAN",
+    "ORC",
+    "VAMPIRE",
+    "WERE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "chaotic"
+   ]
+  },
+  "Ranger": {
+   "races": [
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN",
+    "ORC",
+    "WERE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Samurai": {
+   "races": [
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful"
+   ]
+  },
+  "Tourist": {
+   "races": [
+    "HOBBIT",
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral"
+   ]
+  },
+  "Undead Slayer": {
+   "races": [
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN",
+    "ORC",
+    "WERE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Valkyrie": {
+   "races": [
+    "DWARF",
+    "HUMAN"
+   ],
+   "genders": [
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral"
+   ]
+  },
+  "Wizard": {
+   "races": [
+    "ELF",
+    "GNOME",
+    "HOBBIT",
+    "HUMAN",
+    "ORC",
+    "VAMPIRE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "Yeoman": {
+   "races": [
+    "ELF",
+    "HOBBIT",
+    "HUMAN"
+   ],
+   "genders": [
+    "male"
+   ],
+   "aligns": [
+    "lawful"
+   ]
+  }
+ },
+ "races": {
+  "doppelganger": {
+   "races": [
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "drow": {
+   "races": [
+    "ELF"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "chaotic"
+   ]
+  },
+  "dwarf": {
+   "races": [
+    "DWARF",
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "elf": {
+   "races": [
+    "ELF",
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "gnome": {
+   "races": [
+    "GNOME"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "neutral"
+   ]
+  },
+  "hobbit": {
+   "races": [
+    "HOBBIT"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral"
+   ]
+  },
+  "human": {
+   "races": [
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "lycanthrope": {
+   "races": [
+    "WERE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "chaotic"
+   ]
+  },
+  "orc": {
+   "races": [
+    "ORC"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "chaotic"
+   ]
+  },
+  "vampire": {
+   "races": [
+    "VAMPIRE"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "chaotic"
+   ]
+  },
+  "quantum": {
+   "races": [
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  },
+  "angel": {
+   "races": [
+    "HUMAN"
+   ],
+   "genders": [
+    "male",
+    "female"
+   ],
+   "aligns": [
+    "lawful",
+    "neutral",
+    "chaotic"
+   ]
+  }
+ }
+}

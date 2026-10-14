@@ -1,0 +1,33 @@
+{
+ "name": "Dragon Queen",
+ "label": "Dragon Queen",
+ "role": "knight",
+ "gender": "female",
+ "torso": "973p4h",
+ "torsoColor": 1,
+ "armColor": 1,
+ "handColor": 14,
+ "head": "3626bp08",
+ "headColor": 14,
+ "hair": {
+  "part": "13750",
+  "color": 70
+ },
+ "extras": [
+  {
+   "part": "33322",
+   "color": 334,
+   "pos": [
+    0,
+    -29,
+    1
+   ]
+  }
+ ],
+ "hips": "3815",
+ "hipColor": 1,
+ "dress": {
+  "part": "3678b",
+  "color": 1
+ }
+}

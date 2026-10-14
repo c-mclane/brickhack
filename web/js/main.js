@@ -17,6 +17,7 @@ import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster } from './figpick.js';
 import { menuPlate } from './brandlogo.js';
+import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
 
 const $ = (s) => document.querySelector(s);
@@ -901,19 +902,64 @@ function buildScreens() {
   nameIn.value = localGet('nh3d.name') || '';
   let syncPicker = () => {}; // the minifig picker follows the role and gender
   const draws = [];
+  // Role, race, gender and alignment open a menu of their options; an option
+  // that can't go with the other choices (by the game's own rules) is greyed
+  // out, and a choice that clashes (an old saved one) shows red and blocks Create.
+  let rules = null;
+  const cap = (s) => s.replace(/^./, (c) => c.toUpperCase());
+  const pick = () => Object.fromEntries(['role', 'race', 'gender', 'align'].map((k) => [k, CYCLES[k][1][choice[k]]]));
+  const RULED = ['role', 'race', 'gender', 'align'];
+  const refresh = () => {
+    draws.forEach((d) => d());
+    const bad = RULED.some((k) => conflicts(rules, pick(), k, pick()[k]).length);
+    $('#create [data-act=go]').disabled = bad;
+    $('#create [data-act=go]').title = bad ? 'These choices don\'t go together (the red one)' : '';
+  };
+  const closeMenu = () => { const m = $('#choice-menu'); if (m) m.remove(); };
+  const openMenu = (b, k) => {
+    closeMenu();
+    const menu = document.createElement('div');
+    menu.id = 'choice-menu';
+    menu.className = 'choice-menu';
+    CYCLES[k][1].forEach((v, i) => {
+      const o = document.createElement('button');
+      o.className = 'mc-btn' + (i === choice[k] ? ' current' : '');
+      o.textContent = cap(v);
+      const clash = RULED.includes(k) ? conflicts(rules, pick(), k, v) : [];
+      if (clash.length) {
+        o.disabled = true;
+        o.title = `Not with ${clash.map((c) => cap(pick()[c])).join(' / ')}`;
+      }
+      o.onclick = (e) => { e.stopPropagation(); choice[k] = i; closeMenu(); refresh(); syncPicker(); };
+      menu.appendChild(o);
+    });
+    document.body.appendChild(menu);
+    // under the button, or above it if there's no room below
+    const r = b.getBoundingClientRect(), h = menu.offsetHeight;
+    menu.style.left = `${Math.max(8, r.left + r.width / 2 - menu.offsetWidth / 2)}px`;
+    menu.style.top = `${r.bottom + 4 + h < innerHeight ? r.bottom + 4 : Math.max(8, r.top - 4 - h)}px`;
+  };
+  document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#choice-menu, #create .cycle')) closeMenu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
   document.querySelectorAll('#create .cycle').forEach((b) => {
     const k = b.dataset.key;
     const draw = () => {
       choice[k] %= CYCLES[k][1].length;
-      b.textContent = `${CYCLES[k][0]}: ${CYCLES[k][1][choice[k]].replace(/^./, (c) => c.toUpperCase())}`;
+      b.textContent = `${CYCLES[k][0]}: ${cap(CYCLES[k][1][choice[k]])}`;
+      b.classList.toggle('conflict', RULED.includes(k) && conflicts(rules, pick(), k, pick()[k]).length > 0);
     };
-    b.onclick = (e) => { choice[k] = (choice[k] + (e.shiftKey ? CYCLES[k][1].length - 1 : 1)) % CYCLES[k][1].length; draw(); syncPicker(); };
+    b.onclick = (e) => {
+      if (!RULED.includes(k)) { choice[k] = (choice[k] + 1) % CYCLES[k][1].length; refresh(); return; }
+      if ($('#choice-menu')) return closeMenu();
+      openMenu(b, k);
+    };
     draws.push(draw);
   });
+  loadRules().then((r) => { rules = r; refresh(); });
   applyVariantLists = () => {
     CYCLES.role[1] = ROLES.slashem;
     CYCLES.race[1] = RACES.slashem;
-    draws.forEach((d) => d());
+    refresh();
     syncPicker();
     $('#create h2').textContent = game.createDream ? 'Ascend: Create New Character' : 'Descend: Create New Character';
   };
