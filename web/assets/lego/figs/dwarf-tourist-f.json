@@ -1,0 +1,21 @@
+{
+ "label": "Dwarven Tourist",
+ "role": "tourist",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p5i",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp7c",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 212
+ },
+ "hair": {
+  "part": "13750",
+  "color": 226
+ },
+ "name": "Dwarven Tourist (female)"
+}

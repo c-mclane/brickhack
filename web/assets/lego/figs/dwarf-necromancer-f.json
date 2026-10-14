@@ -1,0 +1,30 @@
+{
+ "label": "Dwarven Necromancer",
+ "role": "necromancer",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p0w",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bpc42",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 0
+ },
+ "hair": {
+  "part": "3759",
+  "color": 71
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 85,
+   "decal": {
+    "image": "../decals/skull.png"
+   }
+  }
+ ],
+ "name": "Dwarven Necromancer (female)"
+}

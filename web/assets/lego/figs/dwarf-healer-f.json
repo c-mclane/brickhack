@@ -1,0 +1,21 @@
+{
+ "label": "Dwarven Healer",
+ "role": "healer",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p25",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 15
+ },
+ "hair": {
+  "part": "13750",
+  "color": 70
+ },
+ "name": "Dwarven Healer (female)"
+}

@@ -1,0 +1,27 @@
+{
+ "label": "Dwarven Barbarian",
+ "role": "barbarian",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p4x",
+ "torsoColor": 288,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp20",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "hair": {
+  "part": "3759",
+  "color": 484
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 308
+  }
+ ],
+ "name": "Dwarven Barbarian (female)"
+}

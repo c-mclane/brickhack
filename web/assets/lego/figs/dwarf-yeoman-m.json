@@ -1,0 +1,25 @@
+{
+ "label": "Dwarven Yeoman",
+ "role": "yeoman",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973pc53",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 4
+ },
+ "hat": "90386",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "93223",
+   "color": 484
+  }
+ ],
+ "name": "Dwarven Yeoman (male)"
+}

@@ -1,0 +1,57 @@
+{
+ "label": "Elven Ranger",
+ "role": "ranger",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973",
+ "torsoColor": 378,
+ "armColor": 378,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 226
+ },
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 288
+  },
+  {
+   "part": "4498",
+   "color": 70,
+   "turn": 180
+  }
+ ],
+ "name": "Elven Ranger (male)",
+ "torsoDecal": {
+  "image": "../decals/elf-ranger.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   30,
+   32
+  ]
+ },
+ "left": {
+  "part": "4499",
+  "color": 70,
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "face": [
+   0,
+   0,
+   1
+  ]
+ }
+}

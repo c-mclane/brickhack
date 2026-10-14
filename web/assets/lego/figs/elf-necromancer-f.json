@@ -1,0 +1,27 @@
+{
+ "label": "Elven Necromancer",
+ "role": "necromancer",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p0w",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 78,
+ "head": "3626bpc42",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 71
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "neck": {
+  "part": "50231c01",
+  "color": 85,
+  "decal": {
+   "image": "../decals/skull.png"
+  }
+ },
+ "name": "Elven Necromancer (female)"
+}

@@ -1,0 +1,25 @@
+{
+ "label": "Dwarven Rogue",
+ "role": "rogue",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973pq3",
+ "torsoColor": 308,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bp49",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 0
+ },
+ "hat": "30133",
+ "hatColor": 320,
+ "neck": [
+  {
+   "part": "93223",
+   "color": 0
+  }
+ ],
+ "name": "Dwarven Rogue (male)"
+}

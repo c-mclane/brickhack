@@ -1,5 +1,5 @@
 {
- "label": "Wizard",
+ "label": "Witch",
  "role": "wizard",
  "gender": "female",
  "torso": "973p0w",
@@ -20,5 +20,5 @@
    "image": "../decals/moon-stars.png"
   }
  },
- "name": "Wizard (female)"
+ "name": "Witch"
 }

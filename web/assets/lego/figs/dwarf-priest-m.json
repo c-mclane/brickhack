@@ -1,0 +1,33 @@
+{
+ "label": "Dwarven Priest",
+ "role": "priest",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "2676",
+   "color": 15
+  },
+  {
+   "part": "50231c01",
+   "color": 15,
+   "decal": {
+    "image": "../decals/sun.png"
+   }
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/sun.png"
+ },
+ "name": "Dwarven Priest (male)"
+}

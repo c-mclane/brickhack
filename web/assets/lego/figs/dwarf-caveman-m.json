@@ -1,0 +1,27 @@
+{
+ "label": "Dwarven Caveman",
+ "role": "caveman",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973pdg1",
+ "torsoColor": 28,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "hair": {
+  "part": "25412",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "10052",
+   "color": 70
+  }
+ ],
+ "name": "Dwarven Caveman (male)"
+}

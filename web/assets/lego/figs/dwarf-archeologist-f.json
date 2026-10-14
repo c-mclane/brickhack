@@ -1,0 +1,21 @@
+{
+ "label": "Dwarven Archeologist",
+ "role": "archeologist",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973pq7",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 28
+ },
+ "hair": {
+  "part": "3759",
+  "color": 70
+ },
+ "name": "Dwarven Archeologist (female)"
+}

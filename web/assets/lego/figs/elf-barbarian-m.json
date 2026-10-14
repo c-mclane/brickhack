@@ -1,0 +1,24 @@
+{
+ "label": "Elven Barbarian",
+ "role": "barbarian",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973p3h",
+ "torsoColor": 78,
+ "armColor": 78,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 70
+ },
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "neck": {
+  "part": "50231c01",
+  "color": 308
+ },
+ "name": "Elven Barbarian (male)"
+}

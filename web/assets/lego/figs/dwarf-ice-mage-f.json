@@ -1,0 +1,48 @@
+{
+ "label": "Dwarven Ice Mage",
+ "role": "ice mage",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p0w",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 212
+ },
+ "hair": {
+  "part": "13750",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 212,
+   "decal": {
+    "image": "../decals/snowflake.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Dwarven Ice Mage (female)"
+}

@@ -2,12 +2,12 @@
  "camera": {
   "pos": [
    0,
-   10,
-   34
+   8,
+   30
   ],
   "target": [
    0,
-   1.8,
+   1.5,
    0
   ]
  },
@@ -22,161 +22,113 @@
    ]
   },
   {
-   "fig": "elf-archeologist-m",
+   "fig": "dwarf-barbarian-m",
    "pos": [
-    -270,
+    -240,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-archeologist-f",
+   "fig": "dwarf-barbarian-f",
    "pos": [
-    -270,
+    -240,
     -72,
     60
    ]
   },
   {
-   "fig": "elf-caveman-m",
+   "fig": "dwarf-healer-m",
    "pos": [
-    -210,
+    -160,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-cavewoman",
+   "fig": "dwarf-healer-f",
    "pos": [
-    -210,
+    -160,
     -72,
     60
    ]
   },
   {
-   "fig": "elf-flame-mage-m",
+   "fig": "dwarf-necromancer-m",
    "pos": [
-    -150,
+    -80,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-flame-mage-f",
+   "fig": "dwarf-necromancer-f",
    "pos": [
-    -150,
+    -80,
     -72,
     60
    ]
   },
   {
-   "fig": "elf-ice-mage-m",
+   "fig": "dwarf-ranger-m",
    "pos": [
-    -90,
+    0,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-ice-mage-f",
+   "fig": "dwarf-ranger-f",
    "pos": [
-    -90,
+    0,
     -72,
     60
    ]
   },
   {
-   "fig": "elf-knight-m",
+   "fig": "dwarf-rogue-m",
    "pos": [
-    -30,
+    80,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-knight-f",
+   "fig": "dwarf-rogue-f",
    "pos": [
-    -30,
+    80,
     -72,
     60
    ]
   },
   {
-   "fig": "elf-monk-m",
+   "fig": "dwarf-tourist-m",
    "pos": [
-    30,
+    160,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-monk-f",
+   "fig": "dwarf-tourist-f",
    "pos": [
-    30,
+    160,
     -72,
     60
    ]
   },
   {
-   "fig": "elf-priest-m",
+   "fig": "dwarf-wizard-m",
    "pos": [
-    90,
+    240,
     -72,
     -60
    ]
   },
   {
-   "fig": "elf-priestess",
+   "fig": "dwarf-witch",
    "pos": [
-    90,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "elf-samurai-m",
-   "pos": [
-    150,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "elf-samurai-f",
-   "pos": [
-    150,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "elf-undead-slayer-m",
-   "pos": [
-    210,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "elf-undead-slayer-f",
-   "pos": [
-    210,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "elf-yeoman-m",
-   "pos": [
-    270,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "elf-valkyrie",
-   "pos": [
-    270,
+    240,
     -72,
     60
    ]

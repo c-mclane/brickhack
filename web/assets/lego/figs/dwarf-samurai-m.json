@@ -1,0 +1,25 @@
+{
+ "label": "Dwarven Samurai",
+ "role": "samurai",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973pn0",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "head": "3626bp4c",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 0
+ },
+ "hat": "30175",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "93223",
+   "color": 0
+  }
+ ],
+ "name": "Dwarven Samurai (male)"
+}

@@ -1,0 +1,43 @@
+{
+ "label": "Dwarven Valkyrie",
+ "role": "valkyrie",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p4g",
+ "torsoColor": 15,
+ "armColor": 179,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 272
+ },
+ "hat": "53450c01",
+ "hatColor": 179,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 272
+  }
+ ],
+ "right": {
+  "part": "3847",
+  "color": 179
+ },
+ "left": {
+  "part": "3876",
+  "color": 179,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ },
+ "name": "Dwarven Valkyrie (female)"
+}

@@ -1,0 +1,51 @@
+{
+ "label": "Dwarven Knight",
+ "role": "knight",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 179,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 272
+ },
+ "hat": "53450c01",
+ "hatColor": 179,
+ "neck": [
+  {
+   "part": "60749",
+   "color": 70
+  },
+  {
+   "part": "2587",
+   "color": 179
+  },
+  {
+   "part": "50231c01",
+   "color": 320
+  }
+ ],
+ "right": {
+  "part": "3847",
+  "color": 179
+ },
+ "left": {
+  "part": "3876",
+  "color": 179,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ },
+ "name": "Dwarven Knight (male)"
+}

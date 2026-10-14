@@ -13,6 +13,7 @@ SPEC example:
 
 "torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
 "dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs.
+"shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
 "extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...).
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
 "plume": {"part": "87694", "color": 4} plugs a feather into the helmet's top.
@@ -59,6 +60,8 @@ HELD = {
     '18395': {'center': (0, -5, 0), 'up': (0, -1, 0)},                      # flame: by its bar, burning upward
     '30385': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # crystal: standing on top of the fist
     '49492': {'center': (0, -40, 0), 'up': (0, -1, 0)},                     # shepherd's crook / crozier: the hook up
+    '4499': {'center': (0, -1, 0), 'up': (0, -1, 0), 'face': (0, 0, 1)},     # bow with arrow: upright, 'face' is the arrow
+    '2570': {'center': (0, 2, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},     # crossbow: by its pistol grip, the bolt forward
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
@@ -210,6 +213,9 @@ def build(spec, base_dir='.'):
         # a sloped brick's top studs, turned round so its slope is at the back
         R180 = np.diag([-1.0, 1, -1])
         out.append(line(spec['dress'].get('color', 16), (0, 32, 0), R180, spec['dress'].get('part', '3678b')))
+    elif spec.get('shortLegs'):
+        # short legs (a dwarf, a child): hips and legs in one piece
+        out.append(line(spec['shortLegs'].get('color', 16), (0, 32, 0), I, spec['shortLegs'].get('part', '16709')))
     else:
         out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
         out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
@@ -226,6 +232,9 @@ def build(spec, base_dir='.'):
     if spec.get('dress'):
         # the dress brick (48 LDU) is 8 taller than hips and legs (40): lift everything so she still stands on the floor
         out = [shift(l, -(48 - 40)) for l in out]
+    elif spec.get('shortLegs'):
+        # short legs end 16 LDU higher than legs: lower everything so the feet are on the floor
+        out = [shift(l, 16) for l in out]
     return '\n'.join(out) + '\n'
 
 

@@ -1,0 +1,30 @@
+{
+ "label": "Dwarven Priestess",
+ "role": "priest",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973p0w",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 15
+ },
+ "hair": {
+  "part": "3759",
+  "color": 226
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15,
+   "decal": {
+    "image": "../decals/sun.png"
+   }
+  }
+ ],
+ "name": "Dwarven Priestess (female)"
+}

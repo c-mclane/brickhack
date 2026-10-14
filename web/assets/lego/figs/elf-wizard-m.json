@@ -1,0 +1,30 @@
+{
+ "label": "Elven Wizard",
+ "role": "wizard",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 71
+ },
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "neck": {
+  "part": "50231c01",
+  "color": 272,
+  "decal": {
+   "image": "../decals/moon-stars.png"
+  }
+ },
+ "torsoDecal": {
+  "image": "../decals/moon-stars.png"
+ },
+ "name": "Elven Wizard (male)"
+}

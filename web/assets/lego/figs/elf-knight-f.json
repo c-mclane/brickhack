@@ -1,5 +1,5 @@
 {
- "label": "Elven Knight",
+ "label": "Elven Dame",
  "role": "knight",
  "gender": "female",
  "race": "elf",
@@ -38,5 +38,5 @@
    0
   ]
  },
- "name": "Elven Knight (female)"
+ "name": "Elven Dame"
 }

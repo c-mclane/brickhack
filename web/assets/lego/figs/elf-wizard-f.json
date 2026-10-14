@@ -1,0 +1,27 @@
+{
+ "label": "Elven Witch",
+ "role": "wizard",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p0w",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 15
+ },
+ "hips": "3815",
+ "hipColor": 22,
+ "legColor": 22,
+ "neck": {
+  "part": "50231c01",
+  "color": 22,
+  "decal": {
+   "image": "../decals/moon-stars.png"
+  }
+ },
+ "name": "Elven Witch"
+}

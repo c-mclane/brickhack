@@ -1,0 +1,21 @@
+{
+ "label": "Dwarven Cavewoman",
+ "role": "caveman",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973pdg1",
+ "torsoColor": 70,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "hair": {
+  "part": "29634",
+  "color": 484
+ },
+ "name": "Dwarven Cavewoman (female)"
+}

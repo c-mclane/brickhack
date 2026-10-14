@@ -1,0 +1,21 @@
+{
+ "label": "Dwarven Samurai",
+ "role": "samurai",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973pc42",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 14,
+ "head": "3626bp08",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 320
+ },
+ "hair": {
+  "part": "13251",
+  "color": 0
+ },
+ "name": "Dwarven Samurai (female)"
+}

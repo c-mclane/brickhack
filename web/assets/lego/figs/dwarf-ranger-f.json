@@ -1,0 +1,58 @@
+{
+ "label": "Dwarven Ranger",
+ "role": "ranger",
+ "gender": "female",
+ "race": "dwarf",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "hair": {
+  "part": "3759",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 378
+  },
+  {
+   "part": "4498",
+   "color": 70,
+   "turn": 180
+  }
+ ],
+ "left": {
+  "part": "2570",
+  "color": 70,
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "face": [
+   0,
+   0,
+   -1
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/elf-ranger.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   30,
+   32
+  ]
+ },
+ "name": "Dwarven Ranger (female)"
+}

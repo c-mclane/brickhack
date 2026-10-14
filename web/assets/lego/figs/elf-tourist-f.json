@@ -1,0 +1,20 @@
+{
+ "label": "Elven Tourist",
+ "role": "tourist",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p5i",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 78,
+ "head": "3626bp7c",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 70
+ },
+ "hips": "3815",
+ "hipColor": 212,
+ "legColor": 212,
+ "name": "Elven Tourist (female)"
+}

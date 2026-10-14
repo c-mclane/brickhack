@@ -1,0 +1,25 @@
+{
+ "label": "Dwarven Tourist",
+ "role": "tourist",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973p5l",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "head": "3626bp7b",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 19
+ },
+ "hat": "13788",
+ "hatColor": 19,
+ "neck": [
+  {
+   "part": "93223",
+   "color": 484
+  }
+ ],
+ "name": "Dwarven Tourist (male)"
+}

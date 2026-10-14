@@ -1,0 +1,53 @@
+{
+ "label": "Dwarven Ice Mage",
+ "role": "ice mage",
+ "gender": "male",
+ "race": "dwarf",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 212,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 15
+ },
+ "hat": "6131p01",
+ "hatColor": 15,
+ "neck": [
+  {
+   "part": "6132",
+   "color": 15
+  },
+  {
+   "part": "50231c01",
+   "color": 212,
+   "decal": {
+    "image": "../decals/snowflake.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/snowflake.png"
+ },
+ "name": "Dwarven Ice Mage (male)"
+}

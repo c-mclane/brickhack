@@ -897,8 +897,9 @@ function buildScreens() {
   $('#worlds [data-act=back]').onclick = () => show('title');
   $('#create [data-act=back]').onclick = () => show(game.createDream ? 'title' : 'worlds');
 
-  // BrickHack starts you as a lawful human male Knight (role 7, race 1, gender 1, alignment 1)
-  const choice = { role: 7, race: 1, gender: 1, align: 1, legacy: 0, ...safeJSON(localGet('bh.create')) };
+  // BrickHack starts you as a human male Knight (role 7, race 1, gender 1); the
+  // alignment always starts random (the game picks one that fits)
+  const choice = { role: 7, race: 1, gender: 1, legacy: 0, ...safeJSON(localGet('bh.create')), align: 0 };
   const nameIn = $('#cname');
   nameIn.value = localGet('nh3d.name') || '';
   let syncPicker = () => {}; // the minifig picker follows the role and gender
@@ -957,6 +958,19 @@ function buildScreens() {
     draws.push(draw);
   });
   loadRules().then((r) => { rules = r; refresh(); });
+  // the dice: a random role, race and gender that go together (the alignment stays random)
+  $('#create [data-act=roll]').onclick = () => {
+    const any = (k) => CYCLES[k][1].map((v, i) => i).filter((i) => CYCLES[k][1][i] !== 'random');
+    const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
+    choice.align = 0;
+    for (const k of ['role', 'race', 'gender']) choice[k] = 0;
+    for (const k of ['role', 'race', 'gender']) {
+      const ok = any(k).filter((i) => !conflicts(rules, pick(), k, CYCLES[k][1][i]).length);
+      if (ok.length) choice[k] = pickOne(ok);
+    }
+    refresh();
+    syncPicker();
+  };
   applyVariantLists = () => {
     CYCLES.role[1] = ROLES.slashem;
     CYCLES.race[1] = RACES.slashem;
