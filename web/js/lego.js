@@ -48,6 +48,7 @@ in vec3 vNrm; in vec2 vUV; in vec3 vCol; in float vShade; in float vDist; in vec
 uniform vec4 uColor;      // material colour (sRGB)
 uniform sampler2D uTex; uniform float uHasTex;
 uniform float uEdges;     // 1: darken a thin line round each face (brick seams)
+uniform float uGlow;      // 1: a translucent part, lit from inside (flames, ice crystals)
 uniform vec3 uFog; uniform vec2 uFogRange;
 out vec4 o;
 void main() {
@@ -65,9 +66,15 @@ void main() {
     float e = d.x + d.y + d.z - min(d.x, min(d.y, d.z)) - max(d.x, max(d.y, d.z));
     col *= mix(0.62, 1.0, smoothstep(0.0, 0.018, e));
   }
+  float alpha = uColor.a;
+  if (uGlow > 0.5) {
+    // translucent LEGO glows: mostly its own colour, brightest where it faces you
+    col = base * (0.95 + 0.25 * key) + base * 0.35 * (1.0 - abs(n.y));
+    alpha = 0.78;
+  }
   col *= vShade;
   float f = clamp((vDist - uFogRange.x) / (uFogRange.y - uFogRange.x), 0.0, 1.0);
-  o = vec4(mix(col, uFog, f), uColor.a);
+  o = vec4(mix(col, uFog, f), alpha);
 }`;
 
 const lin2srgb = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
@@ -177,7 +184,7 @@ export class Lego {
     gl.linkProgram(p);
     if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
     this.u = {};
-    for (const n of ['uProj', 'uView', 'uModel', 'uColor', 'uTex', 'uHasTex', 'uEdges', 'uFog', 'uFogRange']) this.u[n] = gl.getUniformLocation(p, n);
+    for (const n of ['uProj', 'uView', 'uModel', 'uColor', 'uTex', 'uHasTex', 'uEdges', 'uGlow', 'uFog', 'uFogRange']) this.u[n] = gl.getUniformLocation(p, n);
     this.a = {};
     for (const n of ['aPos', 'aNrm', 'aUV', 'iPos', 'iSize', 'iCol']) this.a[n] = gl.getAttribLocation(p, n);
     this.models = new Map(); // url -> Promise<[{vao, count, color, tex}]>
@@ -286,18 +293,33 @@ export class Lego {
       gl.drawArraysInstanced(gl.TRIANGLES, 0, m.verts, m.count);
     }
     gl.uniform1f(u.uEdges, 0);
-    for (const f of figures) {
-      if (!f.prims) continue;
-      gl.uniformMatrix4fv(u.uModel, false, f.matrix);
-      for (const p of f.prims) {
-        gl.bindVertexArray(p.vao);
-        this.single(f.shade ?? 1);
-        gl.uniform4fv(u.uColor, p.color);
-        gl.uniform1f(u.uHasTex, p.tex ? 1 : 0);
-        if (p.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, p.tex); }
-        gl.drawArrays(gl.TRIANGLES, 0, p.count);
+    // solid parts first, then the translucent ones (glowing, blended, not hiding what's behind)
+    const pass = (glow) => {
+      gl.uniform1f(u.uGlow, glow ? 1 : 0);
+      for (const f of figures) {
+        if (!f.prims) continue;
+        gl.uniformMatrix4fv(u.uModel, false, f.matrix);
+        for (const p of f.prims) {
+          if ((p.color[3] < 1) !== glow) continue;
+          gl.bindVertexArray(p.vao);
+          this.single(f.shade ?? 1);
+          gl.uniform4fv(u.uColor, p.color);
+          gl.uniform1f(u.uHasTex, p.tex ? 1 : 0);
+          if (p.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, p.tex); }
+          gl.drawArrays(gl.TRIANGLES, 0, p.count);
+        }
       }
+    };
+    pass(false);
+    if (figures.some((f) => f.prims && f.prims.some((p) => p.color[3] < 1))) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      pass(true);
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
     }
+    gl.uniform1f(u.uGlow, 0);
     gl.bindVertexArray(null);
   }
 }

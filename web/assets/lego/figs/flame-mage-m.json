@@ -1,0 +1,51 @@
+{
+ "label": "Flame Mage",
+ "role": "flame mage",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 320,
+ "torsoDecal": {
+  "image": "../decals/flame.png"
+ },
+ "armColor": 320,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "6131",
+ "hatColor": 320,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 320,
+ "neck": [
+  {
+   "part": "6132",
+   "color": 484
+  },
+  {
+   "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/flame.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Flame Mage (male)"
+}

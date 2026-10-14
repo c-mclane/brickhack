@@ -1,0 +1,21 @@
+{
+ "label": "Yeoman",
+ "role": "yeoman",
+ "gender": "female",
+ "torso": "973pc53",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "head": "3626bp08",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 4,
+ "legColor": 4,
+ "hat": "90386",
+ "hatColor": 0,
+ "hair": {
+  "part": "36037",
+  "color": 0
+ },
+ "name": "Yeoman (female)"
+}

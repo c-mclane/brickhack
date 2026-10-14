@@ -40,7 +40,12 @@ const loader = new GLTFLoader();
 const models = new Map();   // url -> Promise<Object3D>
 function model(url) {
   if (!models.has(url)) models.set(url, new Promise((res, rej) => loader.load(url, g => {
-    g.scene.traverse(o => { if (o.isMesh) { o.material.flatShading = true; o.castShadow = o.receiveShadow = true; } });
+    g.scene.traverse(o => {
+      if (!o.isMesh) return;
+      o.material.flatShading = true; o.castShadow = o.receiveShadow = true;
+      // translucent LEGO (flames, ice) glows, as in the game
+      if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
+    });
     res(g.scene);
   }, undefined, rej)));
   return models.get(url);

@@ -11,10 +11,12 @@ SPEC example:
    "right": {"part": "3847", "color": 72, "aim": [0, -1, -0.6], "face": [1, 0, 0]},
    "left":  {"part": "3846p4c", "color": 15, "aim": [0, -1, 0], "face": [0.3, 0, -1]}}
 
+"torsoDecal": {"image": ...} prints a picture on the chest.
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
 "plume": {"part": "87694", "color": 4} plugs a feather into the helmet's top.
 
-"neck" can be one part or a list (e.g. a cape and an armour plate).
+"neck" can be one part or a list (e.g. a cape and an armour plate); a neck
+item's "turn" (degrees about the vertical) swings it round, e.g. a quiver onto the back.
 
 Held and neck items can carry "decal": {"image": "../decals/x.png"} (path
 relative to the recipe; optional "center", "size" in LDU and "side":
@@ -52,6 +54,8 @@ HELD = {
     '61975': {'center': (0, 8, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # coiled whip: by its handle, the coil flat to the front
     '30152a': {'center': (0, 2, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},  # magnifying glass: lens up, facing out
     '3959': {'center': (0, 0, 12), 'up': (0, 0, -1)},                       # torch: flame up
+    '18395': {'center': (0, -5, 0), 'up': (0, -1, 0)},                      # flame: by its bar, burning upward
+    '30385': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # crystal: standing on top of the fist
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
@@ -61,6 +65,7 @@ DECAL_SPOTS = {
     '3876': {'center': (0, 0, -14), 'size': (36, 36), 'side': 'front'},    # round shield (rodela)
     '2587': {'center': (0, 12, -22), 'size': (18, 18), 'side': 'front'},   # classic armour plate: the chest
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
+    '973': {'center': (0, 15, -10), 'size': (17, 17), 'side': 'front'},     # torso: the chest
 }
 
 
@@ -165,6 +170,8 @@ def build(spec, base_dir='.'):
     """base_dir: where relative decal image paths are resolved from."""
     I = np.eye(3)
     out = [f"0 {spec.get('name', 'Minifig')}"]
+    if spec.get('torsoDecal'):   # a picture on the chest
+        out.append(decal_line({'part': spec.get('torso', '973'), 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
     out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, spec.get('torso', '973')))
     sides = {}
     for side, arm, hand, part in (('right', ARM_R, HAND_R, spec.get('armR', '3818')),
@@ -180,9 +187,10 @@ def build(spec, base_dir='.'):
         out.append(line(spec.get('handColor', 14), h[0], h[1], '3820'))
     neck = spec.get('neck') or []   # capes, armour and other neck-bracket items sit between head and torso
     for item in neck if isinstance(neck, list) else [neck]:
+        R = rot_axis((0, 1, 0), np.radians(item.get('turn', 0)))   # e.g. a quiver turned round onto the back
         if item.get('decal'):
-            out.append(decal_line(item, np.zeros(3), I, base_dir))
-        out.append(line(item.get('color', 16), (0, 0, 0), I, item['part']))
+            out.append(decal_line(item, np.zeros(3), R, base_dir))
+        out.append(line(item.get('color', 16), (0, 0, 0), R, item['part']))
     out.append(line(spec.get('headColor', 14), (0, -24, 0), I, spec.get('head', '3626bp01')))
     if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
         out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, spec['hair']['part']))

@@ -1,0 +1,21 @@
+{
+ "label": "Tourist",
+ "role": "tourist",
+ "gender": "female",
+ "torso": "973p5i",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp7c",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 212,
+ "legColor": 212,
+ "hat": "13746p02",
+ "hatColor": 19,
+ "hair": {
+  "part": "12890",
+  "color": 70
+ },
+ "name": "Tourist (female)"
+}

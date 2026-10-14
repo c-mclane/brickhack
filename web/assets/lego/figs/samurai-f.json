@@ -1,0 +1,19 @@
+{
+ "label": "Samurai",
+ "role": "samurai",
+ "gender": "female",
+ "torso": "973pc42",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 14,
+ "head": "3626bp08",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 320,
+ "legColor": 320,
+ "hair": {
+  "part": "13251",
+  "color": 0
+ },
+ "name": "Samurai (female)"
+}

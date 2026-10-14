@@ -3,7 +3,7 @@
 // and gender (tools/build_roster.py) and the figure's name.  Your pick is
 // your hero.
 
-import { Lego, figureMatrix, perspective, lookAt } from './lego.js';
+import { Lego, figureMatrix, perspective, lookAt, loadGLB, FIG_FEET } from './lego.js';
 
 let rosterP = null;
 export function loadRoster() {
@@ -28,6 +28,7 @@ export function figureView(canvas, visible) {
   const lego = new Lego(gl);
   lego.fogRange = [100, 200];
   let prims = null, want = null, spin = 0, last = performance.now();
+  let fit = { lo: 0, hi: 2.9 }; // the figure's height range (feet to the top of a hat, flame...)
   const frame = (now) => {
     requestAnimationFrame(frame);
     const dt = Math.min(0.1, (now - last) / 1000);
@@ -45,8 +46,11 @@ export function figureView(canvas, visible) {
     spin += dt * 0.7;
     const a = spin % (Math.PI * 2), hold = 1.2;
     const yaw = Math.PI + (a < hold ? 0 : ((a - hold) / (Math.PI * 2 - hold)) * Math.PI * 2);
-    const proj = perspective((28 * Math.PI) / 180, w / h, 0.1, 50);
-    const view = lookAt([0, 1.9, 7.4], [0, 1.4, 0]);
+    // frame the whole figure, however tall (a flame held overhead...)
+    const fov = (28 * Math.PI) / 180, mid = (fit.lo + fit.hi) / 2;
+    const dist = Math.max(7.4, ((fit.hi - fit.lo) / 2 + 0.45) / Math.tan(fov / 2));
+    const proj = perspective(fov, w / h, 0.1, 50 + dist);
+    const view = lookAt([0, mid + dist * 0.07, dist], [0, mid, 0]);
     lego.draw(proj, view, [{ prims, matrix: figureMatrix(0, 0, 0, yaw, PREVIEW_SCALE), shade: 1.05 }]);
   };
   requestAnimationFrame(frame);
@@ -58,8 +62,12 @@ export function figureView(canvas, visible) {
       spin = 0; // each new figure starts facing you
       if (!url) return true;
       try {
-        const p = await lego.model(url);
-        if (want === url) prims = p;
+        const [p, raw] = await Promise.all([lego.model(url), loadGLB(url)]);
+        if (want !== url) return true;
+        let lo = Infinity, hi = -Infinity;
+        for (const q of raw) for (let i = 1; i < q.pos.length; i += 3) { lo = Math.min(lo, q.pos[i]); hi = Math.max(hi, q.pos[i]); }
+        fit = { lo: (lo + FIG_FEET) * PREVIEW_SCALE, hi: (hi + FIG_FEET) * PREVIEW_SCALE };
+        prims = p;
         return true;
       } catch { return false; }
     },

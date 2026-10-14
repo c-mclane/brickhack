@@ -1,0 +1,33 @@
+{
+ "label": "Wizard",
+ "role": "wizard",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "hat": "6131p01",
+ "hatColor": 272,
+ "neck": [
+  {
+   "part": "6132",
+   "color": 15
+  },
+  {
+   "part": "50231c01",
+   "color": 272,
+   "decal": {
+    "image": "../decals/moon-stars.png"
+   }
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/moon-stars.png"
+ },
+ "name": "Wizard (male)"
+}

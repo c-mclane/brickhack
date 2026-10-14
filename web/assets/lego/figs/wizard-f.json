@@ -1,0 +1,28 @@
+{
+ "label": "Wizard",
+ "role": "wizard",
+ "gender": "female",
+ "torso": "973p0w",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 22,
+ "legColor": 22,
+ "hat": "6131p01",
+ "hatColor": 22,
+ "hair": {
+  "part": "12890",
+  "color": 71
+ },
+ "neck": {
+  "part": "50231c01",
+  "color": 22,
+  "decal": {
+   "image": "../decals/moon-stars.png"
+  }
+ },
+ "name": "Wizard (female)"
+}

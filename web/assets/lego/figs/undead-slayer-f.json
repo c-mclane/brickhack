@@ -1,0 +1,19 @@
+{
+ "label": "Undead Slayer",
+ "role": "undead slayer",
+ "gender": "female",
+ "torso": "973phl",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bpc42",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "92083",
+  "color": 0
+ },
+ "name": "Undead Slayer (female)"
+}

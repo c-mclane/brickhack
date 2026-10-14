@@ -1,0 +1,19 @@
+{
+ "label": "Monk",
+ "role": "monk",
+ "gender": "female",
+ "torso": "973pd99",
+ "torsoColor": 484,
+ "armColor": 484,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 484,
+ "legColor": 484,
+ "hair": {
+  "part": "25613",
+  "color": 0
+ },
+ "name": "Monk (female)"
+}

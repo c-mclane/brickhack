@@ -1,0 +1,17 @@
+{
+ "label": "Tourist",
+ "role": "tourist",
+ "gender": "male",
+ "torso": "973p5l",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "head": "3626bp7b",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 19,
+ "legColor": 19,
+ "hat": "13788",
+ "hatColor": 19,
+ "name": "Tourist (male)"
+}
