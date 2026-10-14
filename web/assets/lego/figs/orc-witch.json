@@ -1,0 +1,40 @@
+{
+ "label": "Orcish Witch",
+ "role": "wizard",
+ "gender": "female",
+ "race": "orc",
+ "torso": "973",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 330,
+ "head": "3626bpc15",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "6131",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 0
+  },
+  {
+   "part": "15490",
+   "color": 0
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/claw-marks.png",
+  "center": [
+   0,
+   15,
+   -10
+  ],
+  "size": [
+   26,
+   28
+  ]
+ },
+ "name": "Orcish Witch (female)"
+}

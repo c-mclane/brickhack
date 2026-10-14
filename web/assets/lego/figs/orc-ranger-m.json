@@ -1,0 +1,49 @@
+{
+ "label": "Orcish Ranger",
+ "role": "ranger",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973p41",
+ "torsoColor": 330,
+ "armColor": 330,
+ "handColor": 330,
+ "head": "3626bp4j",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "hair": {
+  "part": "10066p03",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 308
+  },
+  {
+   "part": "15490",
+   "color": 308
+  },
+  {
+   "part": "4498",
+   "color": 308,
+   "turn": 180
+  }
+ ],
+ "left": {
+  "part": "2570",
+  "color": 0,
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "face": [
+   0,
+   0,
+   -1
+  ]
+ },
+ "name": "Orcish Ranger (male)"
+}

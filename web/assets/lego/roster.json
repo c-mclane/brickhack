@@ -166,5 +166,21 @@
  "hobbit-ranger-f",
  "hobbit-tourist-f",
  "hobbit-undead-slayer-f",
- "hobbit-witch"
+ "hobbit-witch",
+ "orc-barbarian-m",
+ "orc-barbarian-f",
+ "orc-flame-mage-m",
+ "orc-flame-mage-f",
+ "orc-ice-mage-m",
+ "orc-ice-mage-f",
+ "orc-necromancer-m",
+ "orc-necromancer-f",
+ "orc-rogue-m",
+ "orc-rogue-f",
+ "orc-ranger-m",
+ "orc-ranger-f",
+ "orc-undead-slayer-m",
+ "orc-undead-slayer-f",
+ "orc-wizard-m",
+ "orc-witch"
 ]

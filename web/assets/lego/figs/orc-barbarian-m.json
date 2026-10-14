@@ -1,0 +1,42 @@
+{
+ "label": "Orcish Barbarian",
+ "role": "barbarian",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973",
+ "torsoColor": 330,
+ "armColor": 330,
+ "handColor": 330,
+ "head": "3626bp4j",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "hair": {
+  "part": "10066p03",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 308
+  },
+  {
+   "part": "12618",
+   "color": 0
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/claw-marks.png",
+  "center": [
+   0,
+   15,
+   -10
+  ],
+  "size": [
+   26,
+   28
+  ]
+ },
+ "name": "Orcish Barbarian (male)"
+}

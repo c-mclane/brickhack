@@ -1,0 +1,24 @@
+{
+ "label": "Orcish Rogue",
+ "role": "rogue",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973p41",
+ "torsoColor": 308,
+ "armColor": 308,
+ "handColor": 330,
+ "head": "3626bpc15",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "30133",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "15490",
+   "color": 72
+  }
+ ],
+ "name": "Orcish Rogue (male)"
+}

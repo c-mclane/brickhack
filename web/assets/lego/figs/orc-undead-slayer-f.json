@@ -1,0 +1,26 @@
+{
+ "label": "Orcish Undead Slayer",
+ "role": "undead slayer",
+ "gender": "female",
+ "race": "orc",
+ "torso": "973phl",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 330,
+ "head": "3626bpc15",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "10066p03",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "88295",
+   "color": 0
+  }
+ ],
+ "name": "Orcish Undead Slayer (female)"
+}

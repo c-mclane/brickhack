@@ -1,0 +1,48 @@
+{
+ "label": "Orcish Ice Mage",
+ "role": "ice mage",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973p41",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 330,
+ "head": "3626bp4j",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "hair": {
+  "part": "10066p03",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 15
+  },
+  {
+   "part": "12618",
+   "color": 71
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Orcish Ice Mage (male)"
+}

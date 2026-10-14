@@ -1,0 +1,31 @@
+{
+ "label": "Orcish Wizard",
+ "role": "wizard",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 330,
+ "head": "3626bp4j",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "6131",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 85
+  },
+  {
+   "part": "88295",
+   "color": 320
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/moon-stars.png"
+ },
+ "name": "Orcish Wizard (male)"
+}

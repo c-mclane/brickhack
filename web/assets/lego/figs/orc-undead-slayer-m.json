@@ -1,0 +1,24 @@
+{
+ "label": "Orcish Undead Slayer",
+ "role": "undead slayer",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973phl",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 330,
+ "head": "3626bp4j",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "10051",
+ "hatColor": 72,
+ "neck": [
+  {
+   "part": "12618",
+   "color": 0
+  }
+ ],
+ "name": "Orcish Undead Slayer (male)"
+}

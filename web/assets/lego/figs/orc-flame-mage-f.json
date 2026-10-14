@@ -1,0 +1,48 @@
+{
+ "label": "Orcish Flame Mage",
+ "role": "flame mage",
+ "gender": "female",
+ "race": "orc",
+ "torso": "973p41",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 330,
+ "head": "3626bpc15",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "10066p03",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 0
+  },
+  {
+   "part": "88295",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Orcish Flame Mage (female)"
+}

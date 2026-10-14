@@ -1,0 +1,36 @@
+{
+ "label": "Orcish Rogue",
+ "role": "rogue",
+ "gender": "female",
+ "race": "orc",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 330,
+ "handColor": 330,
+ "head": "3626bp4j",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "30381",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "88295",
+   "color": 72
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/claw-marks.png",
+  "center": [
+   0,
+   15,
+   -10
+  ],
+  "size": [
+   26,
+   28
+  ]
+ },
+ "name": "Orcish Rogue (female)"
+}

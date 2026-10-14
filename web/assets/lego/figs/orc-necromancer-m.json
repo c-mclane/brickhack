@@ -1,0 +1,31 @@
+{
+ "label": "Orcish Necromancer",
+ "role": "necromancer",
+ "gender": "male",
+ "race": "orc",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 330,
+ "head": "3626bpc15",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "4505a",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 320
+  },
+  {
+   "part": "12618",
+   "color": 0
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/skull.png"
+ },
+ "name": "Orcish Necromancer (male)"
+}

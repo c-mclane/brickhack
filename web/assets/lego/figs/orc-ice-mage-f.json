@@ -1,0 +1,51 @@
+{
+ "label": "Orcish Ice Mage",
+ "role": "ice mage",
+ "gender": "female",
+ "race": "orc",
+ "torso": "973",
+ "torsoColor": 212,
+ "armColor": 212,
+ "handColor": 330,
+ "head": "3626bpc15",
+ "headColor": 330,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "hair": {
+  "part": "10066p03",
+  "color": 71
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 212
+  },
+  {
+   "part": "15490",
+   "color": 71
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/snowflake.png"
+ },
+ "name": "Orcish Ice Mage (female)"
+}
