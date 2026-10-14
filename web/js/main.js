@@ -15,7 +15,7 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
-import { setupFigurePicker, figureView, loadRoster } from './figpick.js';
+import { setupFigurePicker, figureView, loadRoster, figuresFor } from './figpick.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -634,7 +634,7 @@ function handle(m) {
       cam.snap = true;
       break;
     case 'stat':
-      if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name); }
+      if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name, m); }
       world.heroTile = game.skinLoaded && !m.poly ? skinTile() : null;
       setDream(m.dream > 0);
       if (world.dreamLevel !== m.dream) { world.dreamLevel = m.dream; clearDreamscape(); setSky(); } // Dreamland level 1, 2... (0: not there)
@@ -970,7 +970,7 @@ function buildScreens() {
     figNames.add(fig.label);
   });
   loadRoster().then((r) => r.forEach((f) => figNames.add(f.label)));
-  syncPicker = () => figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender]);
+  syncPicker = () => figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender], CYCLES.race[1][choice.race]);
   syncPicker();
   $('#create [data-act=go]').onclick = () => {
     localSet('bh.create', JSON.stringify(choice));
@@ -1115,10 +1115,19 @@ const skinTile = () => meta.count; // first free slot in the tile atlas
 // ---- the hero as a LEGO minifig (on LEGO levels), chosen at character creation
 const FIG_KEY = (name) => 'lh.fig.' + (name || '').toLowerCase();
 const hero3d = { id: null, prims: null };
-async function loadHeroFigure(name) {
+// who: the engine's status ({baserole, female, race}); a random role, race or
+// gender may have come out differently from the figure picked, so then take
+// the best fit for the character the game made (figuresFor)
+async function loadHeroFigure(name, who) {
   const roster = await loadRoster();
   if (!roster.length) return;
-  const fig = roster.find((f) => f.id === localGet(FIG_KEY(name))) || roster[0];
+  let fig = roster.find((f) => f.id === localGet(FIG_KEY(name)));
+  if (who && who.baserole) {
+    const fitting = figuresFor(roster, who.baserole.toLowerCase(), who.female ? 'female' : 'male', String(who.race || 'human').toLowerCase());
+    if (!fitting.includes(fig)) fig = fitting[0];
+  }
+  fig = fig || roster[0];
+  localSet(FIG_KEY(name), fig.id);
   hero3d.id = fig.id;
   hero3d.prims = null;
   try { hero3d.prims = await renderer.lego.model(fig.url); } catch (e) { console.warn('hero figure:', e); }

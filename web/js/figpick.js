@@ -74,6 +74,18 @@ export function figureView(canvas, visible) {
   };
 }
 
+// The figures for a role, gender and race ('random' for any), best fit first:
+// exact matches; else the same role and gender (a race with no figures of its
+// own shows the humans); else the role; else the knights.
+export function figuresFor(all, role, gender, race) {
+  let list = all.filter((f) => f.role === role);
+  if (!list.length) list = all.filter((f) => f.role === 'knight');
+  const fem = list.filter((f) => f.gender === 'female'), male = list.filter((f) => f.gender !== 'female');
+  list = gender === 'female' ? (fem.length ? fem : list) : male.length ? male : list;
+  const ofRace = list.filter((f) => f.race === (race === 'random' ? 'human' : race));
+  return ofRace.length ? ofRace : list.filter((f) => f.race === 'human').length ? list.filter((f) => f.race === 'human') : list;
+}
+
 // The character select's picker. root: the #figpick element; visible(): is
 // it on screen; onChange(fig): called whenever the shown figure changes
 export function setupFigurePicker(root, visible, onChange = () => {}) {
@@ -81,7 +93,7 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
   const view = figureView(root.querySelector('canvas'), visible);
   if (!view) { label.textContent = 'WebGL2 is not available'; return { current: () => null, filter() {} }; }
   let all = [], roster = [], idx = 0;
-  let want = { role: 'knight', gender: 'male' };
+  let want = { role: 'knight', gender: 'male', race: 'human' };
 
   const show = async () => {
     const f = roster[idx];
@@ -100,13 +112,8 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
     if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
   });
 
-  // the figures for a role and gender: a female Knight is a Dame; a role
-  // with no figures of its own shows the knights
   const choose = () => {
-    let list = all.filter((f) => f.role === want.role);
-    if (!list.length) list = all.filter((f) => f.role === 'knight');
-    const fem = list.filter((f) => f.gender === 'female'), male = list.filter((f) => f.gender !== 'female');
-    list = want.gender === 'female' ? (fem.length ? fem : list) : male.length ? male : list;
+    const list = figuresFor(all, want.role, want.gender, want.race);
     const keep = roster[idx];
     roster = list;
     idx = Math.max(0, roster.indexOf(keep), keep ? -1 : roster.findIndex((f) => f.id === lget(LAST)));
@@ -120,9 +127,9 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
 
   return {
     current: () => roster[idx] || null,
-    // role and gender as the creation screen shows them ('Knight', 'female', 'random'...)
-    filter(role, gender) {
-      want = { role: String(role).toLowerCase(), gender: String(gender).toLowerCase() };
+    // role, gender and race as the creation screen shows them ('Knight', 'female', 'elf', 'random'...)
+    filter(role, gender, race = 'random') {
+      want = { role: String(role).toLowerCase(), gender: String(gender).toLowerCase(), race: String(race).toLowerCase() };
       if (all.length) choose();
     },
   };

@@ -53,7 +53,8 @@ def main():
             print(f'  {name}: {ldraw2glb.to_glb(lib.parse(ldr_path), colors, 71, glb)} tris')
             open(keyfile, 'w').write(key)
         built.append({'id': name, 'label': spec.get('label', name), 'url': f'assets/lego/roster/{name}.glb?v={key}',
-                      'role': spec.get('role', 'knight'), 'gender': spec.get('gender', 'male')})
+                      'role': spec.get('role', 'knight'), 'gender': spec.get('gender', 'male'),
+                      'race': spec.get('race', 'human')})
     json.dump(built, open(os.path.join(LEGO, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
     os.makedirs(PARTS, exist_ok=True)
