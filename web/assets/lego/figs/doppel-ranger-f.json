@@ -1,0 +1,9 @@
+{
+ "base": "ranger-f",
+ "label": "Doppelganger Ranger",
+ "name": "Doppelganger Ranger (female)",
+ "role": "ranger",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

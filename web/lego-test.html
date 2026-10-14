@@ -16,6 +16,7 @@ html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px syst
 // rebuilds the scene whenever it changes, keeping the camera where it is.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { isMist, mistify } from './js/mist.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const r = new THREE.WebGLRenderer({ antialias: true });
@@ -43,6 +44,8 @@ function model(url) {
     g.scene.traverse(o => {
       if (!o.isMesh) return;
       o.material.flatShading = true; o.castShadow = o.receiveShadow = true;
+      // a doppelganger's other half is shimmering mist
+      if (isMist(o.material)) { mistify(o); return; }
       // translucent LEGO (flames, ice) glows, as in the game
       if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
     });

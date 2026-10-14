@@ -1,0 +1,32 @@
+{
+ "label": "Werewolf Undead Slayer",
+ "role": "undead slayer",
+ "gender": "male",
+ "race": "lycanthrope",
+ "head": "3626cpap",
+ "headColor": 308,
+ "hat": "11233p01",
+ "hatColor": 308,
+ "handColor": 308,
+ "hips": "3815",
+ "extras": [
+  {
+   "part": "18277",
+   "color": 308,
+   "pos": [
+    0,
+    34,
+    10
+   ]
+  }
+ ],
+ "torso": "973phl",
+ "torsoColor": 0,
+ "armColor": 0,
+ "hipColor": 0,
+ "legColor": 0,
+ "torsoRecolor": {
+  "14": "308"
+ },
+ "name": "Werewolf Undead Slayer (male)"
+}

@@ -1,0 +1,9 @@
+{
+ "base": "barbarian-m",
+ "label": "Doppelganger Barbarian",
+ "name": "Doppelganger Barbarian (male)",
+ "role": "barbarian",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

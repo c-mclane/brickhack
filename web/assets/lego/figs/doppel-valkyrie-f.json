@@ -1,0 +1,9 @@
+{
+ "base": "valkyrie",
+ "label": "Doppelganger Valkyrie",
+ "name": "Doppelganger Valkyrie (female)",
+ "role": "valkyrie",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

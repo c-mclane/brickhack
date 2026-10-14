@@ -1,0 +1,9 @@
+{
+ "base": "tourist-f",
+ "label": "Doppelganger Tourist",
+ "name": "Doppelganger Tourist (female)",
+ "role": "tourist",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

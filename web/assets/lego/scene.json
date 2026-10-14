@@ -22,7 +22,55 @@
    ]
   },
   {
-   "fig": "vampire-barbarian-m",
+   "fig": "doppel-archeologist-m",
+   "pos": [
+    -490,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-archeologist-f",
+   "pos": [
+    -490,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-barbarian-m",
+   "pos": [
+    -420,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-barbarian-f",
+   "pos": [
+    -420,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-caveman-m",
+   "pos": [
+    -350,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-caveman-f",
+   "pos": [
+    -350,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-flame-mage-m",
    "pos": [
     -280,
     -72,
@@ -30,7 +78,7 @@
    ]
   },
   {
-   "fig": "vampire-barbarian-f",
+   "fig": "doppel-flame-mage-f",
    "pos": [
     -280,
     -72,
@@ -38,7 +86,23 @@
    ]
   },
   {
-   "fig": "vampire-ice-mage-m",
+   "fig": "doppel-healer-m",
+   "pos": [
+    -210,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-healer-f",
+   "pos": [
+    -210,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-ice-mage-m",
    "pos": [
     -140,
     -72,
@@ -46,7 +110,7 @@
    ]
   },
   {
-   "fig": "vampire-ice-mage-f",
+   "fig": "doppel-ice-mage-f",
    "pos": [
     -140,
     -72,
@@ -54,7 +118,23 @@
    ]
   },
   {
-   "fig": "vampire-necromancer-m",
+   "fig": "doppel-monk-m",
+   "pos": [
+    -70,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-monk-f",
+   "pos": [
+    -70,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-necromancer-m",
    "pos": [
     0,
     -72,
@@ -62,7 +142,7 @@
    ]
   },
   {
-   "fig": "vampire-necromancer-f",
+   "fig": "doppel-necromancer-f",
    "pos": [
     0,
     -72,
@@ -70,7 +150,23 @@
    ]
   },
   {
-   "fig": "vampire-rogue-m",
+   "fig": "doppel-priest-m",
+   "pos": [
+    70,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-priest-f",
+   "pos": [
+    70,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-rogue-m",
    "pos": [
     140,
     -72,
@@ -78,7 +174,7 @@
    ]
   },
   {
-   "fig": "vampire-rogue-f",
+   "fig": "doppel-rogue-f",
    "pos": [
     140,
     -72,
@@ -86,7 +182,23 @@
    ]
   },
   {
-   "fig": "vampire-wizard-m",
+   "fig": "doppel-ranger-m",
+   "pos": [
+    210,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-ranger-f",
+   "pos": [
+    210,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-tourist-m",
    "pos": [
     280,
     -72,
@@ -94,11 +206,51 @@
    ]
   },
   {
-   "fig": "vampire-witch",
+   "fig": "doppel-tourist-f",
    "pos": [
     280,
     -72,
     60
+   ]
+  },
+  {
+   "fig": "doppel-undead-slayer-m",
+   "pos": [
+    350,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-undead-slayer-f",
+   "pos": [
+    350,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-valkyrie-f",
+   "pos": [
+    420,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "doppel-wizard-m",
+   "pos": [
+    420,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "doppel-wizard-f",
+   "pos": [
+    490,
+    -72,
+    -60
    ]
   }
  ]

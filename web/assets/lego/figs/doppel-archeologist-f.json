@@ -1,0 +1,9 @@
+{
+ "base": "archaeologist-f",
+ "label": "Doppelganger Archaeologist",
+ "name": "Doppelganger Archaeologist (female)",
+ "role": "archeologist",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

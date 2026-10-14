@@ -1,0 +1,9 @@
+{
+ "base": "monk-m",
+ "label": "Doppelganger Monk",
+ "name": "Doppelganger Monk (male)",
+ "role": "monk",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

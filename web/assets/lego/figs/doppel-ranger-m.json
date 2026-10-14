@@ -1,0 +1,9 @@
+{
+ "base": "ranger-m",
+ "label": "Doppelganger Ranger",
+ "name": "Doppelganger Ranger (male)",
+ "role": "ranger",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

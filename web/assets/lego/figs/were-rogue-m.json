@@ -1,0 +1,32 @@
+{
+ "label": "Werewolf Rogue",
+ "role": "rogue",
+ "gender": "male",
+ "race": "lycanthrope",
+ "head": "3626cpap",
+ "headColor": 0,
+ "hat": "11233p01",
+ "hatColor": 0,
+ "handColor": 0,
+ "hips": "3815",
+ "extras": [
+  {
+   "part": "18277",
+   "color": 0,
+   "pos": [
+    0,
+    34,
+    10
+   ]
+  }
+ ],
+ "torso": "973p3p",
+ "torsoColor": 308,
+ "armColor": 308,
+ "hipColor": 272,
+ "legColor": 272,
+ "torsoRecolor": {
+  "14": "0"
+ },
+ "name": "Werewolf Rogue (male)"
+}

@@ -1,0 +1,9 @@
+{
+ "base": "barbarian-f",
+ "label": "Doppelganger Barbarian",
+ "name": "Doppelganger Barbarian (female)",
+ "role": "barbarian",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

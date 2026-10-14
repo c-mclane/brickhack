@@ -1,0 +1,9 @@
+{
+ "base": "rogue-m",
+ "label": "Doppelganger Rogue",
+ "name": "Doppelganger Rogue (male)",
+ "role": "rogue",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

@@ -1,0 +1,9 @@
+{
+ "base": "wizard-m",
+ "label": "Doppelganger Wizard",
+ "name": "Doppelganger Wizard (male)",
+ "role": "wizard",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

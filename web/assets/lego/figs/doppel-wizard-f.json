@@ -1,0 +1,9 @@
+{
+ "base": "wizard-f",
+ "label": "Doppelganger Witch",
+ "name": "Doppelganger Witch (female)",
+ "role": "wizard",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

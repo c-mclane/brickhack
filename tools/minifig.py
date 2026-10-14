@@ -16,6 +16,8 @@ SPEC example:
 "shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
 "extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...).
 "headRecolor": {"0": "4"} swaps colours in the face's print (black eyes made red...);
+"base": "barbarian-m" starts from another recipe; "ghost": "right" or "left"
+turns that side of the figure (as you face it) to doppelganger mist.
 "torsoRecolor" likewise for the torso's print (printed skin made pale);
 a hair's "recolor" does the same for the hair (an elf-hair's printed ears in the skin colour).
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
@@ -222,8 +224,13 @@ def line(color, pos, mat, part):
 
 def build(spec, base_dir='.'):
     """base_dir: where relative decal image paths are resolved from."""
+    if spec.get('base'):   # another recipe (in base_dir), with this one's changes on top
+        base = json.load(open(os.path.join(base_dir, spec['base'] + '.json')))
+        spec = {**base, **{k: v for k, v in spec.items() if k != 'base'}}
     I = np.eye(3)
     out = [f"0 {spec.get('name', 'Minifig')}"]
+    if spec.get('ghost'):   # a doppelganger: one side of the figure is mist (ldraw2glb.ghosted)
+        out.append(f"0 !LEGOHACK GHOST {1 if spec['ghost'] == 'right' else -1}")
     if spec.get('torsoDecal'):   # a picture on the chest
         out.append(decal_line({'part': spec.get('torso', '973'), 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
     out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, recolored(spec.get('torso', '973'), spec.get('torsoRecolor'))))

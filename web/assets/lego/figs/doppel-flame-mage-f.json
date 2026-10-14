@@ -1,0 +1,9 @@
+{
+ "base": "flame-mage-f",
+ "label": "Doppelganger Flame Mage",
+ "name": "Doppelganger Flame Mage (female)",
+ "role": "flame mage",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

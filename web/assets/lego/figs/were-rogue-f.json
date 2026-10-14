@@ -1,0 +1,36 @@
+{
+ "label": "Werewolf Rogue",
+ "role": "rogue",
+ "gender": "female",
+ "race": "lycanthrope",
+ "head": "3626cpap",
+ "headColor": 71,
+ "hat": "11233p01",
+ "hatColor": 71,
+ "handColor": 71,
+ "hips": "3815",
+ "extras": [
+  {
+   "part": "18277",
+   "color": 71,
+   "pos": [
+    0,
+    34,
+    10
+   ]
+  }
+ ],
+ "torso": "973pc5",
+ "torsoColor": 0,
+ "armColor": 0,
+ "hipColor": 0,
+ "legColor": 0,
+ "neck": {
+  "part": "50231c01",
+  "color": 0
+ },
+ "torsoRecolor": {
+  "14": "71"
+ },
+ "name": "Werewolf Rogue (female)"
+}

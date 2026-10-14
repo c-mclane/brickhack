@@ -1,0 +1,9 @@
+{
+ "base": "rogue-f",
+ "label": "Doppelganger Rogue",
+ "name": "Doppelganger Rogue (female)",
+ "role": "rogue",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

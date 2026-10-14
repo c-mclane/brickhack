@@ -1,0 +1,37 @@
+{
+ "label": "Werewolf Ranger",
+ "role": "ranger",
+ "gender": "male",
+ "race": "lycanthrope",
+ "head": "3626cpap",
+ "headColor": 70,
+ "hat": "11233p01",
+ "hatColor": 70,
+ "handColor": 70,
+ "hips": "3815",
+ "extras": [
+  {
+   "part": "18277",
+   "color": 70,
+   "pos": [
+    0,
+    34,
+    10
+   ]
+  }
+ ],
+ "torso": "973p2r",
+ "torsoColor": 288,
+ "armColor": 288,
+ "hipColor": 70,
+ "legColor": 288,
+ "neck": {
+  "part": "4498",
+  "color": 70,
+  "turn": 180
+ },
+ "torsoRecolor": {
+  "14": "70"
+ },
+ "name": "Werewolf Ranger (male)"
+}

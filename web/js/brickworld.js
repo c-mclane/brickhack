@@ -8,6 +8,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { isMist, mistify } from './mist.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H } from './lego.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
@@ -65,6 +66,8 @@ export class BrickWorld {
           if (!o.isMesh) return;
           o.material.flatShading = true;
           o.castShadow = o.receiveShadow = true;
+          // a doppelganger's other half is shimmering mist
+          if (isMist(o.material)) { mistify(o); return; }
           // translucent LEGO (flames, ice) glows
           if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
         });

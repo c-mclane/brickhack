@@ -1,0 +1,9 @@
+{
+ "base": "necromancer-m",
+ "label": "Doppelganger Necromancer",
+ "name": "Doppelganger Necromancer (male)",
+ "role": "necromancer",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

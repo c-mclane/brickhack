@@ -29,7 +29,57 @@ def load_colors(root):
             rgb = [int(hexv[i:i + 2], 16) / 255 for i in (0, 2, 4)]
             alpha = int(t[t.index('ALPHA') + 1]) / 255 if 'ALPHA' in t else 1.0
             colors[code] = (rgb, alpha, t[2])
+    # ours: a doppelganger's other half, a misty liquid green (the renderers make it shimmer)
+    colors[MIST] = ([0.45, 1.0, 0.55], 0.5, 'Doppel_Mist')
     return colors
+
+
+MIST = 9001
+
+
+def ghosted(geom, ldr_text):
+    """A doppelganger: if the model says '0 !LEGOHACK GHOST <side>', everything
+    on that side of the middle (x > 0 for side 1, x < 0 for -1) turns to mist.
+    Triangles across the middle are cut in two; the shape stays the same."""
+    side = next((float(l.split()[3]) for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK GHOST')), None)
+    if side is None:
+        return geom
+    out = {}
+
+    def put(key, tri, uv):
+        t, u = out.setdefault(key, ([], []))
+        t.append(tri)
+        u.append(uv)
+
+    def clip(poly, uvs, sgn):
+        # the part of a polygon where sgn * x >= 0 (Sutherland-Hodgman against the plane x = 0)
+        P, U = [], []
+        n = len(poly)
+        for i in range(n):
+            a, b = poly[i], poly[(i + 1) % n]
+            da, db = sgn * a[0], sgn * b[0]
+            if da >= 0:
+                P.append(a); U.append(uvs[i])
+            if (da >= 0) != (db >= 0):
+                t = da / (da - db)
+                P.append(a + t * (b - a)); U.append(uvs[i] + t * (uvs[(i + 1) % n] - uvs[i]))
+        return P, U
+
+    for code, tex, arr, uv in geom:
+        uvs = uv if uv is not None else np.zeros((len(arr), 3, 2))
+        x = arr[:, :, 0] * side
+        for i in range(len(arr)):
+            if (x[i] >= 0).all():
+                put((MIST, None), arr[i], uvs[i])
+            elif (x[i] <= 0).all():
+                put((code, tex), arr[i], uvs[i])
+            else:
+                for key, sgn in (((MIST, None), side), ((code, tex), -side)):
+                    P, U = clip(list(arr[i]), list(uvs[i]), sgn)
+                    for k in range(1, len(P) - 1):   # fan into triangles
+                        put(key, np.array([P[0], P[k], P[k + 1]]), np.array([U[0], U[k], U[k + 1]]))
+    return [(c, t, np.array(tr).reshape(-1, 3, 3), np.array(u).reshape(-1, 3, 2) if t else None)
+            for (c, t), (tr, u) in out.items() if tr]
 
 
 class Library:

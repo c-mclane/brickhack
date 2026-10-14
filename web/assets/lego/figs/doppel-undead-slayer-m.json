@@ -1,0 +1,9 @@
+{
+ "base": "undead-slayer-m",
+ "label": "Doppelganger Undead Slayer",
+ "name": "Doppelganger Undead Slayer (male)",
+ "role": "undead slayer",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

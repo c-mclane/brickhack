@@ -1,0 +1,36 @@
+{
+ "label": "Werewolf Barbarian",
+ "role": "barbarian",
+ "gender": "female",
+ "race": "lycanthrope",
+ "head": "3626cpap",
+ "headColor": 70,
+ "hat": "11233p01",
+ "hatColor": 70,
+ "handColor": 70,
+ "hips": "3815",
+ "extras": [
+  {
+   "part": "18277",
+   "color": 70,
+   "pos": [
+    0,
+    34,
+    10
+   ]
+  }
+ ],
+ "torso": "973p4x",
+ "torsoColor": 308,
+ "armColor": 70,
+ "hipColor": 0,
+ "legColor": 0,
+ "neck": {
+  "part": "50231c01",
+  "color": 308
+ },
+ "torsoRecolor": {
+  "14": "70"
+ },
+ "name": "Werewolf Barbarian (female)"
+}

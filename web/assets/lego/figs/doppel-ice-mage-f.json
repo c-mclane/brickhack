@@ -1,0 +1,9 @@
+{
+ "base": "ice-mage-f",
+ "label": "Doppelganger Ice Mage",
+ "name": "Doppelganger Ice Mage (female)",
+ "role": "ice mage",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

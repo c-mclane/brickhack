@@ -1,0 +1,9 @@
+{
+ "base": "tourist-m",
+ "label": "Doppelganger Tourist",
+ "name": "Doppelganger Tourist (male)",
+ "role": "tourist",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

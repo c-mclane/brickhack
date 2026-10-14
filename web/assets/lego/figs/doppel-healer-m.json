@@ -1,0 +1,9 @@
+{
+ "base": "healer-m",
+ "label": "Doppelganger Healer",
+ "name": "Doppelganger Healer (male)",
+ "role": "healer",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

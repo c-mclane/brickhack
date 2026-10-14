@@ -7,6 +7,8 @@
 // door), a plate 0.1, and a minifig 1.3 blocks tall.
 // The .glb models are in studs (20 LDU = 1), so they are drawn at scale 0.25.
 
+import { MIST_GLSL, isMist } from './mist.js';
+
 export const LDU = 1 / 80;
 export const BRICK_H = 24 * LDU;
 export const PLATE_H = 8 * LDU;
@@ -32,8 +34,9 @@ in vec4 iPos;   // instance: offset xyz, shade
 in vec3 iSize;  // instance: size (scales the unit mesh)
 in vec3 iCol;   // instance: colour
 uniform mat4 uProj, uView, uModel;
-out vec3 vNrm; out vec2 vUV; out vec3 vCol; out float vShade; out float vDist; out vec3 vLocal; out vec3 vSize;
+out vec3 vNrm; out vec2 vUV; out vec3 vCol; out float vShade; out float vDist; out vec3 vLocal; out vec3 vSize; out vec3 vPos;
 void main() {
+  vPos = aPos;
   vec4 w = uModel * vec4(aPos * iSize + iPos.xyz, 1.0);
   vec4 p = uView * w;
   vDist = length(p.xyz);
@@ -45,13 +48,15 @@ void main() {
 
 const FS = `#version 300 es
 precision mediump float;
-in vec3 vNrm; in vec2 vUV; in vec3 vCol; in float vShade; in float vDist; in vec3 vLocal; in vec3 vSize;
+in vec3 vNrm; in vec2 vUV; in vec3 vCol; in float vShade; in float vDist; in vec3 vLocal; in vec3 vSize; in vec3 vPos;
 uniform vec4 uColor;      // material colour (sRGB)
 uniform sampler2D uTex; uniform float uHasTex;
 uniform float uEdges;     // 1: darken a thin line round each face (brick seams)
 uniform float uGlow;      // 1: a translucent part, lit from inside (flames, ice crystals)
+uniform float uMist, uTime; // 1: a doppelganger's misty half (mist.js)
 uniform vec3 uFog; uniform vec2 uFogRange;
 out vec4 o;
+${MIST_GLSL}
 void main() {
   vec3 n = normalize(gl_FrontFacing ? vNrm : -vNrm);
   vec3 base = uColor.rgb * vCol;
@@ -72,6 +77,11 @@ void main() {
     // translucent LEGO glows: mostly its own colour, brightest where it faces you
     col = base * (0.95 + 0.25 * key) + base * 0.35 * (1.0 - abs(n.y));
     alpha = 0.78;
+  }
+  if (uMist > 0.5) {
+    float w = mistWave(vPos, uTime);
+    col = base * (0.95 + 0.25 * key) * (0.8 + 0.5 * w);
+    alpha = 0.28 + 0.4 * w;
   }
   col *= vShade;
   float f = clamp((vDist - uFogRange.x) / (uFogRange.y - uFogRange.x), 0.0, 1.0);
@@ -134,7 +144,7 @@ async function parseGLB(buf) {
     prims.push({
       pos: floats(p.attributes.POSITION), nrm: floats(p.attributes.NORMAL),
       uv: p.attributes.TEXCOORD_0 != null ? floats(p.attributes.TEXCOORD_0) : null,
-      color: [lin2srgb(f[0]), lin2srgb(f[1]), lin2srgb(f[2]), f[3]], image,
+      color: [lin2srgb(f[0]), lin2srgb(f[1]), lin2srgb(f[2]), f[3]], image, mist: isMist(mat),
     });
   }
   return prims;
@@ -185,7 +195,7 @@ export class Lego {
     gl.linkProgram(p);
     if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
     this.u = {};
-    for (const n of ['uProj', 'uView', 'uModel', 'uColor', 'uTex', 'uHasTex', 'uEdges', 'uGlow', 'uFog', 'uFogRange']) this.u[n] = gl.getUniformLocation(p, n);
+    for (const n of ['uProj', 'uView', 'uModel', 'uColor', 'uTex', 'uHasTex', 'uEdges', 'uGlow', 'uMist', 'uTime', 'uFog', 'uFogRange']) this.u[n] = gl.getUniformLocation(p, n);
     this.a = {};
     for (const n of ['aPos', 'aNrm', 'aUV', 'iPos', 'iSize', 'iCol']) this.a[n] = gl.getAttribLocation(p, n);
     this.models = new Map(); // url -> Promise<[{vao, count, color, tex}]>
@@ -282,6 +292,8 @@ export class Lego {
     gl.uniformMatrix4fv(u.uView, false, view);
     gl.uniform3fv(u.uFog, this.fog);
     gl.uniform2fv(u.uFogRange, this.fogRange);
+    gl.uniform1f(u.uTime, performance.now() / 1000);
+    gl.uniform1f(u.uMist, 0);
     gl.uniform1i(u.uTex, 0);
     gl.uniform1f(u.uHasTex, 0);
     gl.uniformMatrix4fv(u.uModel, false, IDENT);
@@ -305,6 +317,7 @@ export class Lego {
           gl.bindVertexArray(p.vao);
           this.single(f.shade ?? 1);
           gl.uniform4fv(u.uColor, p.color);
+          gl.uniform1f(u.uMist, p.mist ? 1 : 0);
           gl.uniform1f(u.uHasTex, p.tex ? 1 : 0);
           if (p.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, p.tex); }
           gl.drawArrays(gl.TRIANGLES, 0, p.count);
@@ -321,6 +334,7 @@ export class Lego {
       gl.disable(gl.BLEND);
     }
     gl.uniform1f(u.uGlow, 0);
+    gl.uniform1f(u.uMist, 0);
     gl.bindVertexArray(null);
   }
 }

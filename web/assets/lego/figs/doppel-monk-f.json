@@ -1,0 +1,9 @@
+{
+ "base": "monk-f",
+ "label": "Doppelganger Monk",
+ "name": "Doppelganger Monk (female)",
+ "role": "monk",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

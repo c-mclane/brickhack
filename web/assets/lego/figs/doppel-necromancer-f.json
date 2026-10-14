@@ -1,0 +1,9 @@
+{
+ "base": "necromancer-f",
+ "label": "Doppelganger Necromancer",
+ "name": "Doppelganger Necromancer (female)",
+ "role": "necromancer",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

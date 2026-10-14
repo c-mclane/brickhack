@@ -1,0 +1,9 @@
+{
+ "base": "healer-f",
+ "label": "Doppelganger Healer",
+ "name": "Doppelganger Healer (female)",
+ "role": "healer",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

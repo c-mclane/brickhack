@@ -1,0 +1,9 @@
+{
+ "base": "caveman",
+ "label": "Doppelganger Caveman",
+ "name": "Doppelganger Caveman (male)",
+ "role": "caveman",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

@@ -1,0 +1,9 @@
+{
+ "base": "priest-f",
+ "label": "Doppelganger Priestess",
+ "name": "Doppelganger Priestess (female)",
+ "role": "priest",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

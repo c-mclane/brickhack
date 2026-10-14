@@ -1,0 +1,9 @@
+{
+ "base": "cavewoman",
+ "label": "Doppelganger Cavewoman",
+ "name": "Doppelganger Cavewoman (female)",
+ "role": "caveman",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

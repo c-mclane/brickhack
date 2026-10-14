@@ -1,0 +1,9 @@
+{
+ "base": "undead-slayer-f",
+ "label": "Doppelganger Undead Slayer",
+ "name": "Doppelganger Undead Slayer (female)",
+ "role": "undead slayer",
+ "gender": "female",
+ "race": "doppelganger",
+ "ghost": "right"
+}

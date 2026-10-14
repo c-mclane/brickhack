@@ -1,0 +1,32 @@
+{
+ "label": "Werewolf Undead Slayer",
+ "role": "undead slayer",
+ "gender": "female",
+ "race": "lycanthrope",
+ "head": "3626cpap",
+ "headColor": 72,
+ "hat": "11233p01",
+ "hatColor": 72,
+ "handColor": 72,
+ "hips": "3815",
+ "extras": [
+  {
+   "part": "18277",
+   "color": 72,
+   "pos": [
+    0,
+    34,
+    10
+   ]
+  }
+ ],
+ "torso": "973phl",
+ "torsoColor": 272,
+ "armColor": 272,
+ "hipColor": 0,
+ "legColor": 0,
+ "torsoRecolor": {
+  "14": "72"
+ },
+ "name": "Werewolf Undead Slayer (female)"
+}

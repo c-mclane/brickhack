@@ -1,0 +1,9 @@
+{
+ "base": "priest-m",
+ "label": "Doppelganger Priest",
+ "name": "Doppelganger Priest (male)",
+ "role": "priest",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}

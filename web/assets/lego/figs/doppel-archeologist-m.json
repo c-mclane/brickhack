@@ -1,0 +1,9 @@
+{
+ "base": "johnny-thunder",
+ "label": "Doppelganger Archaeologist",
+ "name": "Doppelganger Archaeologist (male)",
+ "role": "archeologist",
+ "gender": "male",
+ "race": "doppelganger",
+ "ghost": "right"
+}
