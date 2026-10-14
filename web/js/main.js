@@ -367,14 +367,15 @@ function setDream(on) {
   setSky();
   world.dirty = true;
 }
-// Dreamland is in daylight (a happy blue sky), until the Fountain of Dreams:
-// night again from there on, the stars all round, above and below
+// BrickHack's dungeon is a LEGO maze out in the open, under a blue sky, and
+// Dreamland is in daylight too, until the Fountain of Dreams: night from
+// there on, the stars all round, above and below
 function setSky() {
-  const night = !world.dream || world.dreamLevel >= DL.fountain;
+  const night = world.dream && world.dreamLevel >= DL.fountain;
   renderer.daySky = !night;
-  renderer.spaceBelow = world.dream && night;
+  renderer.spaceBelow = night;
   renderer.iridescent = world.dream && world.dreamLevel === DL.fountain;
-  renderer.fog = !world.dream ? DUNGEON_FOG : night ? NIGHT_FOG : DREAM_FOG;
+  renderer.fog = night ? NIGHT_FOG : DREAM_FOG;
 }
 const nameTags = new NameTags($('#nametags'));
 let figPicker = null; // the character select's minifig picker (figpick.js)
@@ -1129,6 +1130,7 @@ async function loadHeroFigure(name, who) {
   fig = fig || roster[0];
   localSet(FIG_KEY(name), fig.id);
   hero3d.id = fig.id;
+  hero3d.url = fig.url;
   hero3d.prims = null;
   try { hero3d.prims = await renderer.lego.model(fig.url); } catch (e) { console.warn('hero figure:', e); }
   // ...and in the inventory, beside your equipment
@@ -1931,8 +1933,9 @@ function frame(t) {
     }
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
-      renderer.legoFigures = [{ prims: hero3d.prims, matrix: figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw), shade: 1 }];
+      renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw), shade: 1 }];
     } else renderer.legoFigures = [];
+    { const [fx, fz] = motion.heroPos(t); renderer.focus = [fx + 0.5, 0, fz + 0.5]; } // (the BrickWorld's shadows follow you)
     renderer.buildSprites(sprites, cam.vyaw, (out) => {
       if (doll3d) dollQuads(out, t);
       drops.draw(t, (x, y, z, s, a, type) => renderer.miniBlock(out, x, y, z, s, a, type));
@@ -1940,7 +1943,7 @@ function frame(t) {
     updateHeld(t);
     fx.updateLabels(t, project);
     updateNameTags(t);
-    renderer.fogRange = opts.camera === 3 ? [30, 60] : world.dream ? [45, 150] : [18, 48];
+    renderer.fogRange = !world.dream ? [1e4, 2e4] : opts.camera === 3 ? [30, 60] : [45, 150]; // (no fog on LEGO levels, as in the viewer)
     let outline = null, color = [0, 0, 0, 1], cracks = null;
     if (game.playing) {
       if (game.mode === 'getpos' && game.cursor) {

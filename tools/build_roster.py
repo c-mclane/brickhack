@@ -22,7 +22,7 @@ PARTS = os.path.join(LEGO, 'parts')
 # The dungeon's pieces, as LDraw models (origin: the top middle of the frame).
 # A 1x4x6 door frame (60596) with its door (60616a) on the frame's hinge pins
 # at x = -32, z = 5: shut, swung open a quarter turn, or missing (a doorway).
-FRAME, DOOR = 0, 70   # black frame, reddish brown door
+FRAME, DOOR = 308, 70   # wooden: a dark brown frame, a reddish brown door
 DUNGEON_PARTS = {
     'door_closed': f"""1 {FRAME} 0 0 0 1 0 0 0 1 0 0 0 1 60596.dat
 1 {DOOR} -32 0 5 1 0 0 0 1 0 0 0 1 60616a.dat
@@ -31,6 +31,11 @@ DUNGEON_PARTS = {
 1 {DOOR} -32 0 5 0 0 1 0 1 0 -1 0 0 60616a.dat
 """,
     'doorway': f"""1 {FRAME} 0 0 0 1 0 0 0 1 0 0 0 1 60596.dat
+""",
+    # the dungeon itself: a green 4x4 plate for each floor square, grey 2x4 bricks for the walls
+    'plate4x4': """1 2 0 0 0 1 0 0 0 1 0 0 0 1 3031.dat
+""",
+    'brick2x4': """1 71 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
 """,
 }
 

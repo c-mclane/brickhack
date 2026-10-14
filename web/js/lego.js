@@ -20,8 +20,9 @@ export const FIG_HEIGHT = (72 + 32) * LDU; // feet to the top of a bare head: 1.
 // LDraw colours we build the dungeon from (sRGB, from LDConfig.ldr)
 const hex = (h) => [parseInt(h.slice(0, 2), 16) / 255, parseInt(h.slice(2, 4), 16) / 255, parseInt(h.slice(4, 6), 16) / 255];
 export const COLORS = {
-  lightBluishGrey: hex('A0A5A9'), // room floors
-  darkBluishGrey: hex('6C6E68'), // corridors, doorways and walls
+  green: hex('00852B'), // the floors and the baseplate under the level
+  lightBluishGrey: hex('A0A5A9'), // walls
+  darkBluishGrey: hex('6C6E68'),
   black: hex('1B2A34'),
 };
 

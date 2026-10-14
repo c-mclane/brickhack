@@ -3,7 +3,8 @@
 // NetHack tile atlas.
 
 import { CM, classify, wallTile, cmapTile, WALL_H, DOOR_H } from './terrain.js';
-import { Lego, COLORS, STUD_H, WALL_LAYERS, PARTS, DOOR_TOP, wallColumn, platform, partMatrix } from './lego.js';
+import { Lego, STUD_H, PARTS, DOOR_TOP, partMatrix } from './lego.js';
+import { BrickWorld } from './brickworld.js';
 
 const VS = `#version 300 es
 in vec3 aPos; in vec2 aUV; in vec3 aMisc; // shade, key (2 = water, 3 = a waterfall, 4 = mist), gray (waterfalls: 1 = still, 2 = rising; mist: its thickness)
@@ -419,10 +420,10 @@ export class Renderer {
     this.falls = this.makeMesh(); // iridescent waterfalls (world.falls)
     this.mist = this.makeMesh(); // mist round the edges of an Ascend map
     this.blockMesh = this.makeMesh();
-    this.lego = new Lego(gl); // the LEGO dungeon (bricks, plates, studs) and minifigs
+    this.lego = new Lego(gl); // (the character previews' renderer; the game world is the BrickWorld's)
+    this.brick = new BrickWorld(canvas, gl); // the LEGO dungeon and minifigs, drawn by three.js like the scene viewer
+    this.brickOn = false; // drawing a LEGO level (the dungeon), not a block one (Ascend)
     this.legoFigures = []; // [{prims, matrix, shade}] drawn this frame (the hero)
-    this.legoParts = []; // [{url, matrix, shade}] the level's LEGO pieces (doors), from buildTerrain
-    this.partPrims = {}; // url -> loaded model (null while loading)
     this.fog = [0.04, 0.04, 0.06];
     this.fov = 75;
   }
@@ -703,28 +704,21 @@ export class Renderer {
       });
     };
     const shade0 = 1;
-    // dungeon levels are LEGO: rooms and corridors are platforms of studded grey
-    // plates on bricks, walls are dark grey brick, doors real LEGO doors
+    // dungeon levels are a LEGO maze out in the open: green studded floors on a
+    // green baseplate, grey brick walls (the rock round the corridors too, so
+    // they are walled lanes), wooden LEGO doors
     const lego = !world.dream;
-    const inst = { box: [], stud: [] }, parts = [];
+    // what the BrickWorld builds: floor plates, walls, doors
+    const bricks = { w: W, h: H, floors: [], walls: [], doors: [] };
     // a door piece in its square, across the wall it stands in
-    const doorPiece = (x, y, name, alongZ, shade) => {
-      const url = PARTS[name];
-      if (!(url in this.partPrims)) {
-        this.partPrims[url] = null;
-        this.lego.model(url).then((p) => { this.partPrims[url] = p; }, (e) => console.warn(url, e));
-      }
-      parts.push({ url, matrix: partMatrix(x + 0.5, DOOR_TOP, y + 0.5, alongZ ? Math.PI / 2 : 0), shade });
-    };
+    const doorPiece = (x, y, name, alongZ, shade) =>
+      bricks.doors.push({ url: PARTS[name], matrix: partMatrix(x + 0.5, DOOR_TOP, y + 0.5, alongZ ? Math.PI / 2 : 0), shade });
     const wallAt = (xx, yy) => { const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx]; return !!n && n.type === 'wall'; };
     // a doorway's wall runs north-south when it has wall north or south of it
     const doorAlongZ = (x, y, c) => (c.cmap === CM.vcdoor || c.cmap === CM.vodoor ? true
       : c.cmap === CM.hcdoor || c.cmap === CM.hodoor ? false : wallAt(x, y - 1) || wallAt(x, y + 1));
-    const roomT = cmapTile(CM.room), plainFloor = new Map([
-      [roomT, COLORS.lightBluishGrey], [cmapTile(CM.darkroom), COLORS.lightBluishGrey],
-      [cmapTile(CM.corr), COLORS.darkBluishGrey], [cmapTile(CM.litcorr), COLORS.darkBluishGrey],
-      [cmapTile(CM.ndoor), COLORS.darkBluishGrey],
-    ]);
+    // plain floors get a studded plate; any other floor tile (stairs, an altar's square...) a smooth one, printed
+    const plainFloor = new Set([CM.room, CM.darkroom, CM.corr, CM.litcorr, CM.ndoor].map(cmapTile));
 
     for (let y = 0; y < H; y++)
       for (let x = 0; x < W; x++) {
@@ -748,14 +742,15 @@ export class Renderer {
         const doorTop = world.dream ? DOOR_H : WALL_H;
         switch (c.type) {
           case 'wall':
-            if (lego) wallColumn(inst, x, y, WALL_LAYERS, COLORS.darkBluishGrey, shade, !solidAt(x, y, WALL_H));
+            if (lego) bricks.walls.push({ x, z: y, shade });
             else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
           case 'rock':
-            if (!lego) column(0, T.stone ?? WALL_TILE, 0.45);
+            if (lego) bricks.walls.push({ x, z: y, shade });
+            else column(0, T.stone ?? WALL_TILE, 0.45);
             break;
           case 'door': // closed door: a two-block door with wall above (LEGO: a 1x4x6 door, shut)
-            if (lego) { platform(inst, x, y, COLORS.darkBluishGrey, shade); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
+            if (lego) { bricks.floors.push({ x, z: y, shade, studs: true }); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
             else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)), doorTop);
             break;
           case 'liquid':
@@ -781,9 +776,9 @@ export class Renderer {
             if (lego) {
               // a studded plate in the floor's colour; a special floor (stairs, an
               // altar's square...) is a smooth plate with its tile printed on top
-              const ft = c.floorTile ?? c.tile, col = plainFloor.get(ft);
-              platform(inst, x, y, col || COLORS.lightBluishGrey, shade, !!col);
-              if (!col) this.floor(out, x, y, 0.002, ft, shade);
+              const ft = c.floorTile ?? c.tile, plain = plainFloor.has(ft);
+              bricks.floors.push({ x, z: y, shade, studs: plain });
+              if (!plain) this.floor(out, x, y, 0.002, ft, shade);
               if (c.decal != null) this.floor(out, x, y, STUD_H + 0.005, c.decal, shade, 1);
               // an open door swung back in its frame; a doorway (no door, or a broken one): the frame alone
               if (c.type === 'odoor') doorPiece(x, y, 'door_open', doorAlongZ(x, y, c), shade);
@@ -815,9 +810,9 @@ export class Renderer {
         }
       }
     this.upload(this.terrain, out);
-    this.lego.setInstances(this.lego.box, inst.box);
-    this.legoParts = parts;
-    this.lego.setInstances(this.lego.stud, inst.stud);
+    // the baseplate under the whole level, a plate below the floors
+    this.brickOn = lego;
+    if (lego) this.brick.setTerrain(bricks);
     // placed / generated blocks: their own mesh.  In Dreamland (thousands of
     // blocks, even light) it is only rebuilt when the blocks change.
     const bkey = world.dream && world.blocks ? `${world.blocks.version}:${world.blocks.levelKey}:${this.atlasKey}:${T.dirt}` : null;
@@ -1037,17 +1032,24 @@ export class Renderer {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = Math.floor(c.clientWidth * dpr), h = Math.floor(c.clientHeight * dpr);
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
-    gl.viewport(0, 0, w, h);
-    gl.clearColor(...this.fog, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    if (this.showSky !== false) this.drawSky(yaw, pitch, w / h);
+    this.proj = mat4Perspective((this.fov * Math.PI) / 180, w / h, 0.05, 200);
+    this.view = mat4View(eye, yaw, pitch);
+    if (this.brickOn) {
+      // a LEGO level: the BrickWorld draws the world (and clears to its sky blue); our pass draws on top
+      this.brick.setFigures(this.legoFigures.filter((f) => f.url));
+      this.brick.render(this.proj, this.view, w, h, this.focus);
+      gl.viewport(0, 0, w, h);
+    } else {
+      gl.viewport(0, 0, w, h);
+      gl.clearColor(...this.fog, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      if (this.showSky !== false) this.drawSky(yaw, pitch, w / h);
+    }
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
     gl.frontFace(gl.CW);
     gl.useProgram(this.prog);
-    this.proj = mat4Perspective((this.fov * Math.PI) / 180, w / h, 0.05, 200);
-    this.view = mat4View(eye, yaw, pitch);
     gl.uniformMatrix4fv(this.u.uProj, false, this.proj);
     gl.uniformMatrix4fv(this.u.uView, false, this.view);
     gl.uniform3fv(this.u.uFog, this.fog);
@@ -1068,11 +1070,10 @@ export class Renderer {
       gl.disable(gl.POLYGON_OFFSET_FILL);
     }
     // the LEGO pass (its own shader), then back to ours
-    if (this.lego.box.count || this.lego.stud.count || this.legoFigures.length) {
+    if (!this.brickOn && this.legoFigures.length) { // (a minifig on a block level: Ascend)
       this.lego.fog = this.fog;
       this.lego.fogRange = this.fogRange || [10, 30];
-      const pieces = this.legoParts.map((p) => ({ prims: this.partPrims[p.url], matrix: p.matrix, shade: p.shade }));
-      this.lego.draw(this.proj, this.view, this.legoFigures.concat(pieces));
+      this.lego.draw(this.proj, this.view, this.legoFigures);
       gl.useProgram(this.prog);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
