@@ -14,11 +14,15 @@ SPEC example:
 "torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
 "dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs.
 "shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
-"extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...).
+"extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...),
+turned by "rot": [{"axis": [x, y, z], "deg": d}, ...] (in order) if given.
 "headRecolor": {"0": "4"} swaps colours in the face's print (black eyes made red...);
 "base": "barbarian-m" starts from another recipe; "ghost": "right" or "left"
 turns that side of the figure (as you face it) to doppelganger mist;
-"quantum": true makes every part plain and flashing (a quantum mechanic).
+"quantum": true makes every part plain and flashing (a quantum mechanic);
+"aura": true wraps the figure in a glowing white corona (an angel);
+"marble": {"color": 15, "detail": 71, "keep": ["11264p01"]} makes a statue: every
+part (but those kept) the one colour, its prints in the detail colour.
 "torsoRecolor" likewise for the torso's print (printed skin made pale);
 a hair's "recolor" does the same for the hair (an elf-hair's printed ears in the skin colour).
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
@@ -68,6 +72,14 @@ HELD = {
     '49492': {'center': (0, -40, 0), 'up': (0, -1, 0)},                     # shepherd's crook / crozier: the hook up
     '4499': {'center': (0, -1, 0), 'up': (0, -1, 0), 'face': (0, 0, 1)},     # bow with arrow: upright, 'face' is the arrow
     '2570': {'center': (0, 2, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},     # crossbow: by its pistol grip, the bolt forward
+    '4497': {'center': (0, 30, 0), 'up': (0, -1, 0)},                       # spear: held below the middle, point up
+    '30173a': {'center': (0, 6, 0), 'up': (0, -1, 0)},                      # katana: blade up out of the fist
+    '95049': {'center': (0, 14, 0), 'up': (0, -1, 0)},                      # staff with a ball: the ball up
+    '95050': {'center': (0, 12, 0), 'up': (0, -1, 0)},                      # staff with a crescent: the crescent up
+    '37341d': {'center': (0, -6, 0), 'up': (0, -1, 0)},                     # scythe: by the foot of its haft, blade up
+    '3835': {'center': (0, 22, 0), 'up': (0, -1, 0)},                       # hand-axe: low on the haft, head up
+    '37341b': {'center': (0, 4, 0), 'up': (0, -1, 0)},                      # knife: blade up out of the fist
+    '13790': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # club: by its handle, the thick end up
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
@@ -189,7 +201,8 @@ def _ldraw_file(name):
 
 
 def recolored(part, cmap):
-    """Path (without .dat) of `part` with colours swapped by cmap {'0': '4', ...}."""
+    """Path (without .dat) of `part` with colours swapped by cmap {'0': '4', ...};
+    '*' stands for every other colour the part has of its own (a print)."""
     if not cmap:
         return part
     cmap = {str(k): str(v) for k, v in cmap.items()}
@@ -206,6 +219,8 @@ def recolored(part, cmap):
             if len(t) > 2 and t[0] in '1234':
                 if t[1] in cmap:
                     t[1] = cmap[t[1]]
+                elif '*' in cmap and t[1] not in ('16', '24'):
+                    t[1] = cmap['*']
                 if t[0] == '1' and len(t) >= 15:
                     sub = ' '.join(t[14:])
                     new = recolored(sub, cmap)
@@ -232,6 +247,8 @@ def build(spec, base_dir='.'):
     out = [f"0 {spec.get('name', 'Minifig')}"]
     if spec.get('ghost'):   # a doppelganger: one side of the figure is mist (ldraw2glb.ghosted)
         out.append(f"0 !LEGOHACK GHOST {1 if spec['ghost'] == 'right' else -1}")
+    if spec.get('aura'):   # an angel: the renderers wrap the figure in a white glow
+        out.append("0 !LEGOHACK AURA")
     if spec.get('quantum'):   # a quantum mechanic: every part a plain colour, strobing (ldraw2glb.figure_geom)
         out.append("0 !LEGOHACK QUANTUM")
     if spec.get('torsoDecal'):   # a picture on the chest
@@ -279,7 +296,10 @@ def build(spec, base_dir='.'):
         out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
         out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legL', '3817')))
     for x in spec.get('extras', []):   # any other part, at a place in the figure's frame (e.g. a tiara in the hair)
-        out.append(line(x.get('color', 16), x['pos'], I, x['part']))
+        mat = I
+        for r in x.get('rot', []):   # turns, in order: {"axis": [x, y, z], "deg": d}
+            mat = rot_axis(r['axis'], np.radians(r['deg'])) @ mat
+        out.append(line(x.get('color', 16), x['pos'], mat, x['part']))
     for side, hand in sides.items():
         item = spec.get(side)
         if item:
@@ -293,6 +313,17 @@ def build(spec, base_dir='.'):
     elif spec.get('shortLegs'):
         # short legs end 16 LDU higher than legs: lower everything so the feet are on the floor
         out = [shift(l, 16) for l in out]
+    if spec.get('marble'):   # a statue: every part marble, its prints carved in one faint colour
+        m = spec['marble']
+        keep = set(m.get('keep', []))
+        for i, l in enumerate(out):
+            t = l.split()
+            if t[0] != '1' or len(t) < 15:
+                continue
+            part = ' '.join(t[14:])[:-4]
+            if part in keep:
+                continue
+            out[i] = ' '.join(t[:1] + [str(m.get('color', 15))] + t[2:14] + [recolored(part, {'*': str(m.get('detail', 71))}) + '.dat'])
     return '\n'.join(out) + '\n'
 
 

@@ -75,3 +75,88 @@ export function mistify(mesh) {
   mesh.castShadow = false;
   mesh.renderOrder = 2; // after the solid half and other glass
 }
+
+// An angel (tools/ldraw2glb.py marks the model {aura: true}): the whole figure
+// outlined in a glowing white corona. Shells round the figure, each puffed out
+// along the smoothed normals, light up towards the figure's outline (where
+// they're seen edge-on) and fade outwards, breathing slowly. Only their far
+// sides are drawn, so the figure itself hides them: the glow is round it, not on it.
+export const AURA = [ // offset (studs), strength
+  { off: 0.08, strength: 0.9 },
+  { off: 0.22, strength: 0.55 },
+  { off: 0.42, strength: 0.3 },
+];
+export const AURA_COLOR = [1.0, 0.98, 0.9];
+// rim brightness for a shell point: n, v unit view-space normal and direction to the eye
+export const AURA_GLSL = `
+float auraGlow(vec3 n, vec3 v, float strength, float t) {
+  if (dot(n, v) > 0.0) discard; // the far side only (by its normal: LDraw's windings can't be trusted)
+  float rim = 1.0 - abs(dot(n, v));
+  return pow(rim, 2.2) * strength * (0.85 + 0.15 * sin(t * 1.8));
+}`;
+
+// the shells for a model's triangles (positions, 9 floats a triangle): [{pos, nrm, strength}]
+export function auraShells(pos) {
+  const key = (i) => `${Math.round(pos[i] * 40)},${Math.round(pos[i + 1] * 40)},${Math.round(pos[i + 2] * 40)}`;
+  const sum = new Map(), face = new Float32Array(pos.length);
+  for (let t = 0; t < pos.length; t += 9) {
+    const ax = pos[t + 3] - pos[t], ay = pos[t + 4] - pos[t + 1], az = pos[t + 5] - pos[t + 2];
+    const bx = pos[t + 6] - pos[t], by = pos[t + 7] - pos[t + 1], bz = pos[t + 8] - pos[t + 2];
+    const n = [ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx]; // area-weighted
+    const l = Math.hypot(...n) || 1;
+    for (let k = 0; k < 9; k += 3) {
+      face.set([n[0] / l, n[1] / l, n[2] / l], t + k);
+      const s = sum.get(key(t + k)) || [0, 0, 0, 0];
+      s[0] += n[0]; s[1] += n[1]; s[2] += n[2]; s[3] += l;
+      sum.set(key(t + k), s);
+    }
+  }
+  const nrm = new Float32Array(pos.length);
+  for (let i = 0; i < pos.length; i += 3) {
+    const s = sum.get(key(i)), l = Math.hypot(s[0], s[1], s[2]);
+    // where the faces cancel out (both sides of a thin cape) use the face's own normal
+    if (l > 0.3 * s[3]) nrm.set([s[0] / l, s[1] / l, s[2] / l], i);
+    else nrm.set(face.subarray(i, i + 3), i);
+  }
+  return AURA.map(({ off, strength }) => {
+    const p = new Float32Array(pos.length);
+    for (let i = 0; i < pos.length; i++) p[i] = pos[i] + nrm[i] * off;
+    return { pos: p, nrm, strength };
+  });
+}
+
+// three.js: give a loaded model (gltf.scene) its aura, if it's an angel
+export function addAura(THREE, root) {
+  let angel = false;
+  root.traverse((o) => { if (o.userData && o.userData.aura) angel = true; });
+  if (!angel) return;
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const all = [];
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry;
+    const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), v = new THREE.Vector3();
+    const a = g.attributes.position;
+    for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m); all.push(v.x, v.y, v.z); }
+  });
+  startTicking();
+  for (const sh of auraShells(new Float32Array(all))) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(sh.pos, 3));
+    g.setAttribute('normal', new THREE.BufferAttribute(sh.nrm, 3));
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { uStrength: { value: sh.strength }, uMistTime: uTime, uColor: { value: new THREE.Vector3(...AURA_COLOR) } },
+      vertexShader: `varying vec3 vN; varying vec3 vP;
+        void main() { vN = normalize(normalMatrix * normal); vec4 p = modelViewMatrix * vec4(position, 1.0); vP = p.xyz; gl_Position = projectionMatrix * p; }`,
+      fragmentShader: `varying vec3 vN; varying vec3 vP; uniform float uStrength, uMistTime; uniform vec3 uColor;
+        ${AURA_GLSL}
+        void main() { float a = auraGlow(normalize(vN), normalize(-vP), uStrength, uMistTime); gl_FragColor = vec4(uColor * a, 1.0); }`,
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(g, mat);
+    mesh.renderOrder = 3;
+    mesh.castShadow = mesh.receiveShadow = false;
+    root.add(mesh);
+  }
+}

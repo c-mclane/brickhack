@@ -41,6 +41,11 @@ MIST = 9001
 QUANTUM, QUANTUM_PARTS = 9100, 100
 
 
+def figure_extras(ldr_text):
+    """What the renderers add to a figure: an angel's glowing aura (mist.js)."""
+    return {'aura': True} if '0 !LEGOHACK AURA' in ldr_text else None
+
+
 def figure_geom(lib, path, ldr_text):
     """A built figure's geometry, with the races' special looks: a quantum
     mechanic's every part one plain colour of its own (no prints, no decals:
@@ -301,7 +306,7 @@ def decal_png(image, rgb, pad=2):
     return out.getvalue(), im.size
 
 
-def to_glb(geom, colors, base_color, out_path):
+def to_glb(geom, colors, base_color, out_path, extras=None):
     buf = bytearray()
     accessors, views, meshes_prims, materials = [], [], [], []
     images, textures = [], []
@@ -363,7 +368,7 @@ def to_glb(geom, colors, base_color, out_path):
         materials.append(mat)
         meshes_prims.append({'attributes': attrs, 'material': len(materials) - 1, 'extras': {'ldrawColor': code}})
     gltf = {'asset': {'version': '2.0', 'generator': 'legohack ldraw2glb', 'copyright': 'LDraw.org Parts Library, CC BY 2.0/4.0'},
-            'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': [{'mesh': 0}],
+            'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': [dict({'mesh': 0}, **({'extras': extras} if extras else {}))],
             'meshes': [{'primitives': meshes_prims}], 'materials': materials,
             'accessors': accessors, 'bufferViews': views, 'buffers': [{'byteLength': len(buf)}]}
     if images:
