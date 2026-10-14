@@ -71,6 +71,7 @@
   },
   "Healer": {
    "races": [
+    "ANGEL",
     "ELF",
     "GNOME",
     "HOBBIT",
@@ -105,6 +106,7 @@
   },
   "Knight": {
    "races": [
+    "ANGEL",
     "HUMAN"
    ],
    "genders": [
@@ -117,6 +119,7 @@
   },
   "Monk": {
    "races": [
+    "ANGEL",
     "HOBBIT",
     "HUMAN"
    ],
@@ -147,6 +150,7 @@
   },
   "Priest": {
    "races": [
+    "ANGEL",
     "ELF",
     "HOBBIT",
     "HUMAN"
@@ -196,6 +200,7 @@
   },
   "Samurai": {
    "races": [
+    "ANGEL",
     "HUMAN"
    ],
    "genders": [
@@ -221,6 +226,7 @@
   },
   "Undead Slayer": {
    "races": [
+    "ANGEL",
     "ELF",
     "GNOME",
     "HOBBIT",
@@ -240,6 +246,7 @@
   },
   "Valkyrie": {
    "races": [
+    "ANGEL",
     "DWARF",
     "HUMAN"
    ],
@@ -430,7 +437,7 @@
   },
   "angel": {
    "races": [
-    "HUMAN"
+    "ANGEL"
    ],
    "genders": [
     "male",

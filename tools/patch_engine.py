@@ -231,6 +231,33 @@ edit("src/role.c", [
      "},\n"
      "/* Array terminator */\n{ 0, 0, 0, 0 }};"),
 ], "WEB_HOOK_RACES")
+# Angels are a people of their own, not men with wings: only the holy and
+# warrior roles take them (Priest, Knight, Valkyrie, Healer, Undead Slayer,
+# Monk, Samurai). Their race group is a bit no other race uses (0x0800, inside
+# ROLE_RACEMASK; it's M2_LORD among monster flags, but only the roles' and
+# races' allow masks are checked against it).
+ANGEL_ROLES = ["Healer", "Knight", "Monk", "Priest", "Samurai", "Undead Slayer", "Valkyrie"]
+edit("include/monflag.h", [
+    ("#define MH_VAMPIRE	M2_VAMPIRE\n",
+     "#define MH_VAMPIRE	M2_VAMPIRE\n#define MH_ANGEL	0x00000800L	/* WEB_HOOK_ANGELS: the roles angels can take */\n"),
+], "WEB_HOOK_ANGELS")
+_role_c = f"{src}/src/role.c"
+_s = open(_role_c, encoding="latin-1").read()
+if "WEB_HOOK_ANGELS" not in _s:
+    _old = "	PM_ANGEL, NON_PM, PM_HUMAN_MUMMY, PM_HUMAN_ZOMBIE,\n	" + RACE_ANY + ","
+    if _old not in _s:
+        sys.exit("patch_engine: angel race entry not found in src/role.c")
+    _s = _s.replace(_old, "	PM_ANGEL, NON_PM, PM_HUMAN_MUMMY, PM_HUMAN_ZOMBIE,\n"
+                    "	MH_ANGEL | ROLE_MALE|ROLE_FEMALE | ROLE_LAWFUL|ROLE_NEUTRAL|ROLE_CHAOTIC, /* WEB_HOOK_ANGELS */", 1)
+    _roles_end = _s.index("const struct Race races[]")
+    for _name in ANGEL_ROLES:
+        _i = _s.index('{"' + _name + '"')
+        _j = _s.index("MH_", _i)   # the role's allow mask: its first race group
+        if _j > _roles_end:
+            sys.exit(f"patch_engine: allow mask of {_name} not found in src/role.c")
+        _s = _s[:_j] + "MH_ANGEL|" + _s[_j:]
+    open(_role_c, "w", encoding="latin-1").write(_s)
+
 # (an Angel's wings: flying as an intrinsic, which SLASH'EM doesn't have)
 edit("include/youprop.h", [
     ("#define EFlying			u.uprops[FLYING].extrinsic\n#ifdef STEED\n# define Flying			(EFlying || is_flyer(youmonst.data) || \\",
