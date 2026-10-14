@@ -16,7 +16,7 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster } from './figpick.js';
-import { titleScene } from './brandlogo.js';
+import { menuPlate } from './brandlogo.js';
 import { makeSkin, loadSkinURL } from './skin.js';
 
 const $ = (s) => document.querySelector(s);
@@ -859,7 +859,11 @@ const CONTROLS = [
 
 function buildScreens() {
   $('#title .splash').textContent = SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
-  if (titleScene($('#title-plate'), $('#title .logo-slot'))) $('#title').classList.add('lego3d');
+  // every menu stands on a 3D LEGO baseplate; the title has BRICKHACK built on it
+  const shown = (id) => !$('#' + id).classList.contains('hidden');
+  const plated = SCREENS.filter((id) => $('#' + id).classList.contains('dirt'));
+  if (menuPlate($('#menu-plate'), $('#title .logo-slot'), () => ({ plate: plated.some(shown), title: shown('title') })))
+    document.body.classList.add('lego3d');
   else $('#title .logo').classList.add('no-gl');
   $('#title [data-act=singleplayer]').onclick = openWorlds;
   // Reset Game: delete every save, block world and bones (after a confirmation)

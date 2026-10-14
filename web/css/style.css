@@ -124,12 +124,11 @@ button { font-family: inherit; }
 #title .logo span { font-size: .45em; color: #b22; margin-left: 10px; vertical-align: top; }
 /* the title screen: a LEGO baseplate with the logo built on it in bricks (brandlogo.js);
    the logo slot is where the letters are framed; plain text and the flat plate only without WebGL2 */
-#title-plate { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
-#title.lego3d { background: none; }
-#title.lego3d::before { display: none; }
-#title.lego3d #title-plate { display: block; }
+#menu-plate { position: fixed; inset: 0; width: 100%; height: 100%; display: none; z-index: 9; }
+body.lego3d .screen.dirt { background: none; }
+body.lego3d .screen.dirt::before { display: none; }
 #title .logo .logo-slot { width: min(86vw, 860px); aspect-ratio: 53 / 7; }
-#title.lego3d .splash { bottom: -44px; right: -20px; } /* (below the brick letters, not on them) */
+body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick letters, not on them) */
 #title .logo .logo-text { display: none; font-size: 1em; color: inherit; margin: 0; }
 #title .logo.no-gl .logo-slot { display: none; }
 #title .logo.no-gl .logo-text { display: inline; }

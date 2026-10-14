@@ -1,8 +1,10 @@
-// The title screen: a grey LEGO baseplate seen from straight above, with
-// BRICKHACK built on its studs in white bricks.  Each pixel of a 5x7 font is
-// a 1x1 brick, two bricks tall with a stud on top, standing exactly on the
-// plate's stud grid.  The camera frames the letters into the page's logo slot
-// (so the menu's layout is unchanged) and the plate fills the whole screen.
+// The menus' background: a grey LEGO baseplate seen from straight above,
+// filling the screen behind every menu.  On the title screen BRICKHACK is
+// built on its studs in white bricks: each pixel of a 5x7 font is a 1x1
+// brick, two bricks tall with a stud on top, standing exactly on the plate's
+// stud grid.  The camera frames the letters into the page's logo slot (so the
+// menu's layout is unchanged); the other menus see the plate from the same
+// camera, so the studs look the same everywhere.
 
 import { Lego, perspective, BRICK_H, STUD_H, STUD_R, PLATE_H } from './lego.js';
 
@@ -23,8 +25,9 @@ const PLATE_SHADE = 0.85;
 const GAP = 0.003;
 const FOVY = (24 * Math.PI) / 180;
 
-// canvas: fills the title screen; slot: the element the letters are framed into
-export function titleScene(canvas, slot, text = 'BRICKHACK') {
+// canvas: fills the screen behind the menus; slot: the title's logo slot;
+// state(): {plate, title}: is a menu with the plate showing, is it the title
+export function menuPlate(canvas, slot, state, text = 'BRICKHACK') {
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
   if (!gl) return false;
   const lego = new Lego(gl);
@@ -46,28 +49,36 @@ export function titleScene(canvas, slot, text = 'BRICKHACK') {
   }
   const LW = (col - 1) * STUD, LD = 7 * STUD, TOP = LAYERS * BRICK_H;
 
-  const draw = () => {
+  let cam = null; // {h, cx, cz}: where the title last put the camera
+  const draw = (title) => {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const W = canvas.clientWidth, H = canvas.clientHeight;
     if (!W || !H) return;
     const cw = Math.floor(W * dpr), ch = Math.floor(H * dpr);
     if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
-    // frame the letters' tops into the slot: units per pixel there, then the
-    // camera height that gives it, and the camera's place over the plate
-    const c = canvas.getBoundingClientRect(), s = slot.getBoundingClientRect();
-    const upp = LW / s.width, aspect = W / H, tanH = Math.tan(FOVY / 2);
-    const h = TOP + (H * upp) / 2 / tanH;
-    const cx = LW / 2 - (s.left + s.width / 2 - c.left - W / 2) * upp;
-    const cz = LD / 2 - (s.top + s.height / 2 - c.top - H / 2) * upp;
+    const aspect = W / H, tanH = Math.tan(FOVY / 2);
+    const s = slot.getBoundingClientRect();
+    if (title && s.width) {
+      // frame the letters' tops into the slot: units per pixel there, then the
+      // camera height that gives it, and the camera's place over the plate
+      const c = canvas.getBoundingClientRect(), upp = LW / s.width;
+      cam = {
+        h: TOP + (H * upp) / 2 / tanH,
+        cx: LW / 2 - (s.left + s.width / 2 - c.left - W / 2) * upp,
+        cz: LD / 2 - (s.top + s.height / 2 - c.top - H / 2) * upp,
+      };
+    }
+    if (!cam) cam = { h: 12, cx: 0, cz: 0 };
+    const { h, cx, cz } = cam;
     // the baseplate: studs on the same grid as the letters, over all the plate in view
     const hw = h * tanH * aspect + STUD, hd = h * tanH + STUD;
-    const inst = { box: [...letters.box], stud: [...letters.stud] };
+    const inst = title ? { box: [...letters.box], stud: [...letters.stud] } : { box: [], stud: [] };
     const i0 = Math.floor((cx - hw) / STUD), i1 = Math.ceil((cx + hw) / STUD);
     const j0 = Math.floor((cz - hd) / STUD), j1 = Math.ceil((cz + hd) / STUD);
     inst.box.push(i0 * STUD, -PLATE_H, j0 * STUD, PLATE_SHADE, (i1 - i0) * STUD, PLATE_H, (j1 - j0) * STUD, ...PLATE);
     for (let i = i0; i < i1; i++)
       for (let j = j0; j < j1; j++)
-        if (!cells.has(`${i},${j}`))
+        if (!title || !cells.has(`${i},${j}`))
           inst.stud.push((i + 0.5) * STUD, 0, (j + 0.5) * STUD, PLATE_SHADE, STUD_R, STUD_H, STUD_R, ...PLATE);
     lego.setInstances(lego.box, inst.box);
     lego.setInstances(lego.stud, inst.stud);
@@ -79,9 +90,17 @@ export function titleScene(canvas, slot, text = 'BRICKHACK') {
     gl.enable(gl.DEPTH_TEST);
     lego.draw(perspective(FOVY, aspect, 0.1, h + 10), view, []);
   };
-  const ro = new ResizeObserver(draw);
-  ro.observe(canvas);
-  ro.observe(slot);
-  draw();
+  // redrawn only when something changes: which menu is up, or the window's size
+  let last = '';
+  const tick = () => {
+    requestAnimationFrame(tick);
+    const st = state();
+    canvas.style.display = st.plate ? 'block' : 'none';
+    if (!st.plate) return;
+    const s = slot.getBoundingClientRect();
+    const key = `${st.title}|${canvas.clientWidth}x${canvas.clientHeight}|${s.left},${s.top},${s.width}`;
+    if (key !== last) { last = key; draw(st.title); }
+  };
+  tick();
   return true;
 }
