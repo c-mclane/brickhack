@@ -1,0 +1,48 @@
+{
+ "label": "Hobbit Flame Mage",
+ "role": "flame mage",
+ "gender": "female",
+ "race": "hobbit",
+ "torso": "973p0w",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 14,
+ "head": "3626bp08",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 320
+ },
+ "hair": {
+  "part": "29634",
+  "color": 484
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/flame.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Hobbit Flame Mage (female)"
+}

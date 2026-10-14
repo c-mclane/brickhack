@@ -1,0 +1,51 @@
+{
+ "label": "Hobbit Ice Mage",
+ "role": "ice mage",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 212,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 15
+ },
+ "hair": {
+  "part": "25409",
+  "color": 71
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 212,
+   "decal": {
+    "image": "../decals/snowflake.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/snowflake.png"
+ },
+ "name": "Hobbit Ice Mage (male)"
+}

@@ -1,0 +1,35 @@
+{
+ "label": "Hobbit Wizard",
+ "role": "wizard",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 272
+ },
+ "hat": "6131p01",
+ "hatColor": 272,
+ "neck": [
+  {
+   "part": "93223",
+   "color": 15
+  },
+  {
+   "part": "50231c01",
+   "color": 272,
+   "decal": {
+    "image": "../decals/moon-stars.png"
+   }
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/moon-stars.png"
+ },
+ "name": "Hobbit Wizard (male)"
+}

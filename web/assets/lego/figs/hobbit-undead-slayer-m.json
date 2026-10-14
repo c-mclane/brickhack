@@ -1,0 +1,19 @@
+{
+ "label": "Hobbit Undead Slayer",
+ "role": "undead slayer",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973phl",
+ "torsoColor": 308,
+ "armColor": 308,
+ "handColor": 14,
+ "head": "3626bp3r",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 0
+ },
+ "hat": "13788",
+ "hatColor": 0,
+ "name": "Hobbit Undead Slayer (male)"
+}

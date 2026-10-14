@@ -1,0 +1,33 @@
+{
+ "label": "Hobbit Priest",
+ "role": "priest",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 15
+ },
+ "hair": {
+  "part": "3886",
+  "color": 71
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15,
+   "decal": {
+    "image": "../decals/sun.png"
+   }
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/sun.png"
+ },
+ "name": "Hobbit Priest (male)"
+}

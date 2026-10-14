@@ -1,0 +1,21 @@
+{
+ "label": "Hobbit Monk",
+ "role": "monk",
+ "gender": "female",
+ "race": "hobbit",
+ "torso": "973pd99",
+ "torsoColor": 378,
+ "armColor": 378,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 378
+ },
+ "hair": {
+  "part": "25613",
+  "color": 308
+ },
+ "name": "Hobbit Monk (female)"
+}

@@ -1,0 +1,21 @@
+{
+ "label": "Hobbit Archeologist",
+ "role": "archeologist",
+ "gender": "female",
+ "race": "hobbit",
+ "torso": "973pq7",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 28
+ },
+ "hair": {
+  "part": "29634",
+  "color": 70
+ },
+ "name": "Hobbit Archeologist (female)"
+}

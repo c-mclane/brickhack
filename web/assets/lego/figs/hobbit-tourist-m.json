@@ -1,0 +1,21 @@
+{
+ "label": "Hobbit Tourist",
+ "role": "tourist",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973p5l",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "head": "3626bp7b",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 19
+ },
+ "hair": {
+  "part": "3886",
+  "color": 70
+ },
+ "name": "Hobbit Tourist (male)"
+}

@@ -3,7 +3,7 @@
   "pos": [
    0,
    7,
-   28
+   30
   ],
   "target": [
    0,
@@ -22,131 +22,171 @@
    ]
   },
   {
-   "fig": "gnome-archeologist-m",
+   "fig": "hobbit-archeologist-m",
    "pos": [
-    -245,
+    -275,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-archeologist-f",
+   "fig": "hobbit-archeologist-f",
    "pos": [
-    -245,
+    -275,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-caveman-m",
+   "fig": "hobbit-flame-mage-m",
    "pos": [
-    -175,
+    -220,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-cavewoman",
+   "fig": "hobbit-flame-mage-f",
    "pos": [
-    -175,
+    -220,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-flame-mage-m",
+   "fig": "hobbit-healer-m",
    "pos": [
-    -105,
+    -165,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-flame-mage-f",
+   "fig": "hobbit-healer-f",
    "pos": [
-    -105,
+    -165,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-healer-m",
+   "fig": "hobbit-ice-mage-m",
    "pos": [
-    -35,
+    -110,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-healer-f",
+   "fig": "hobbit-ice-mage-f",
    "pos": [
-    -35,
+    -110,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-ice-mage-m",
+   "fig": "hobbit-monk-m",
    "pos": [
-    35,
+    -55,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-ice-mage-f",
+   "fig": "hobbit-monk-f",
    "pos": [
-    35,
+    -55,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-ranger-m",
+   "fig": "hobbit-priest-m",
    "pos": [
-    105,
+    0,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-ranger-f",
+   "fig": "hobbit-priestess",
    "pos": [
-    105,
+    0,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-undead-slayer-m",
+   "fig": "hobbit-ranger-m",
    "pos": [
-    175,
+    55,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-undead-slayer-f",
+   "fig": "hobbit-ranger-f",
    "pos": [
-    175,
+    55,
     -72,
     60
    ]
   },
   {
-   "fig": "gnome-wizard-m",
+   "fig": "hobbit-tourist-m",
    "pos": [
-    245,
+    110,
     -72,
     -60
    ]
   },
   {
-   "fig": "gnome-witch",
+   "fig": "hobbit-tourist-f",
    "pos": [
-    245,
+    110,
     -72,
     60
+   ]
+  },
+  {
+   "fig": "hobbit-undead-slayer-m",
+   "pos": [
+    165,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "hobbit-undead-slayer-f",
+   "pos": [
+    165,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "hobbit-wizard-m",
+   "pos": [
+    220,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "hobbit-witch",
+   "pos": [
+    220,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "hobbit-yeoman",
+   "pos": [
+    275,
+    -72,
+    -60
    ]
   }
  ]

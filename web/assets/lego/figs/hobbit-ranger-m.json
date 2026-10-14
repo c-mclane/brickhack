@@ -1,0 +1,46 @@
+{
+ "label": "Hobbit Ranger",
+ "role": "ranger",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973p3c",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 70
+ },
+ "hair": {
+  "part": "25409",
+  "color": 308
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 378
+  },
+  {
+   "part": "4498",
+   "color": 70,
+   "turn": 180
+  }
+ ],
+ "left": {
+  "part": "4499",
+  "color": 70,
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "face": [
+   0,
+   0,
+   1
+  ]
+ },
+ "name": "Hobbit Ranger (male)"
+}

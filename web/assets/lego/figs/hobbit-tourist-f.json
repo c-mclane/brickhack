@@ -1,0 +1,21 @@
+{
+ "label": "Hobbit Tourist",
+ "role": "tourist",
+ "gender": "female",
+ "race": "hobbit",
+ "torso": "973p5i",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp7c",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 212
+ },
+ "hair": {
+  "part": "29634",
+  "color": 226
+ },
+ "name": "Hobbit Tourist (female)"
+}

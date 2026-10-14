@@ -1,0 +1,21 @@
+{
+ "label": "Hobbit Yeoman",
+ "role": "yeoman",
+ "gender": "male",
+ "race": "hobbit",
+ "torso": "973p3c",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "shortLegs": {
+  "part": "16709p07",
+  "color": 308
+ },
+ "hair": {
+  "part": "3886",
+  "color": 70
+ },
+ "name": "Hobbit Yeoman (male)"
+}
