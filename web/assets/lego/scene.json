@@ -2,12 +2,12 @@
  "camera": {
   "pos": [
    0,
-   4.5,
-   16
+   10,
+   34
   ],
   "target": [
    0,
-   2.6,
+   1.8,
    0
   ]
  },
@@ -22,27 +22,163 @@
    ]
   },
   {
-   "fig": "dame-lazarus",
+   "fig": "elf-archeologist-m",
    "pos": [
-    -80,
+    -270,
     -72,
-    0
+    -60
    ]
   },
   {
-   "fig": "princess",
+   "fig": "elf-archeologist-f",
    "pos": [
-    0,
+    -270,
     -72,
-    0
+    60
    ]
   },
   {
-   "fig": "dragon-queen",
+   "fig": "elf-caveman-m",
    "pos": [
-    80,
+    -210,
     -72,
-    0
+    -60
+   ]
+  },
+  {
+   "fig": "elf-cavewoman",
+   "pos": [
+    -210,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-flame-mage-m",
+   "pos": [
+    -150,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-flame-mage-f",
+   "pos": [
+    -150,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-ice-mage-m",
+   "pos": [
+    -90,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-ice-mage-f",
+   "pos": [
+    -90,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-knight-m",
+   "pos": [
+    -30,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-knight-f",
+   "pos": [
+    -30,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-monk-m",
+   "pos": [
+    30,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-monk-f",
+   "pos": [
+    30,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-priest-m",
+   "pos": [
+    90,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-priestess",
+   "pos": [
+    90,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-samurai-m",
+   "pos": [
+    150,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-samurai-f",
+   "pos": [
+    150,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-undead-slayer-m",
+   "pos": [
+    210,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-undead-slayer-f",
+   "pos": [
+    210,
+    -72,
+    60
+   ]
+  },
+  {
+   "fig": "elf-yeoman-m",
+   "pos": [
+    270,
+    -72,
+    -60
+   ]
+  },
+  {
+   "fig": "elf-valkyrie",
+   "pos": [
+    270,
+    -72,
+    60
    ]
   }
  ]

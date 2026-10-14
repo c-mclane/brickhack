@@ -1,0 +1,45 @@
+{
+ "label": "Elven Ice Mage",
+ "role": "ice mage",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p0w",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 15
+ },
+ "hips": "3815",
+ "hipColor": 212,
+ "legColor": 212,
+ "neck": {
+  "part": "50231c01",
+  "color": 212,
+  "decal": {
+   "image": "../decals/snowflake.png"
+  }
+ },
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Elven Ice Mage (female)"
+}

@@ -1,0 +1,20 @@
+{
+ "label": "Elven Monk",
+ "role": "monk",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973pd99",
+ "torsoColor": 378,
+ "armColor": 378,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 71
+ },
+ "hips": "3815",
+ "hipColor": 378,
+ "legColor": 378,
+ "name": "Elven Monk (male)"
+}

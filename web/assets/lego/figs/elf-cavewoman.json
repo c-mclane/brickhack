@@ -1,0 +1,22 @@
+{
+ "label": "Elven Cavewoman",
+ "role": "caveman",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973pdg1",
+ "torsoColor": 70,
+ "armColor": 78,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 226
+ },
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "legR": "3816cpdg7",
+ "legL": "3817cpdg7",
+ "name": "Elven Cavewoman (female)"
+}

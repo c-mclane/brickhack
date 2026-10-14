@@ -1,0 +1,20 @@
+{
+ "label": "Elven Archeologist",
+ "role": "archeologist",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973pq7",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 226
+ },
+ "hips": "3815",
+ "hipColor": 28,
+ "legColor": 28,
+ "name": "Elven Archeologist (male)"
+}

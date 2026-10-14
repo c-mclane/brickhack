@@ -1,0 +1,45 @@
+{
+ "label": "Elven Flame Mage",
+ "role": "flame mage",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p0w",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 78,
+ "head": "3626bp08",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 484
+ },
+ "hips": "3815",
+ "hipColor": 320,
+ "legColor": 320,
+ "neck": {
+  "part": "50231c01",
+  "color": 0,
+  "decal": {
+   "image": "../decals/flame.png"
+  }
+ },
+ "right": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Elven Flame Mage (female)"
+}

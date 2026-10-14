@@ -1,0 +1,20 @@
+{
+ "label": "Elven Samurai",
+ "role": "samurai",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973pn0",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 78,
+ "head": "3626bp4c",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 0
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "name": "Elven Samurai (male)"
+}

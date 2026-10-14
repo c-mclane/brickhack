@@ -1,0 +1,42 @@
+{
+ "label": "Elven Valkyrie",
+ "role": "valkyrie",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p4g",
+ "torsoColor": 15,
+ "armColor": 179,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 226
+ },
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "neck": {
+  "part": "50231c01",
+  "color": 272
+ },
+ "right": {
+  "part": "3847",
+  "color": 179
+ },
+ "left": {
+  "part": "3876",
+  "color": 179,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ },
+ "name": "Elven Valkyrie (female)"
+}

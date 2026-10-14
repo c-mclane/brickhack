@@ -1,0 +1,48 @@
+{
+ "label": "Elven Knight",
+ "role": "knight",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 226
+ },
+ "hips": "3815",
+ "hipColor": 297,
+ "legColor": 288,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 320
+  },
+  {
+   "part": "2587",
+   "color": 297
+  }
+ ],
+ "right": {
+  "part": "3847",
+  "color": 179
+ },
+ "left": {
+  "part": "3876",
+  "color": 297,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ },
+ "name": "Elven Knight (male)"
+}

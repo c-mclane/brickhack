@@ -1,0 +1,22 @@
+{
+ "label": "Elven Caveman",
+ "role": "caveman",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973pdg1",
+ "torsoColor": 19,
+ "armColor": 78,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 70
+ },
+ "hips": "3815",
+ "hipColor": 19,
+ "legColor": 19,
+ "legR": "3816cpdg7",
+ "legL": "3817cpdg7",
+ "name": "Elven Caveman (male)"
+}

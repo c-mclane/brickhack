@@ -1,0 +1,20 @@
+{
+ "label": "Elven Yeoman",
+ "role": "yeoman",
+ "gender": "male",
+ "race": "elf",
+ "torso": "973pc53",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 78,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 308
+ },
+ "hips": "3815",
+ "hipColor": 288,
+ "legColor": 288,
+ "name": "Elven Yeoman (male)"
+}

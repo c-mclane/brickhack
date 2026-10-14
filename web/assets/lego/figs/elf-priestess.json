@@ -1,0 +1,27 @@
+{
+ "label": "Elven Priestess",
+ "role": "priest",
+ "gender": "female",
+ "race": "elf",
+ "torso": "973p0w",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 226
+ },
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "neck": {
+  "part": "50231c01",
+  "color": 15,
+  "decal": {
+   "image": "../decals/sun.png"
+  }
+ },
+ "name": "Elven Priestess (female)"
+}
