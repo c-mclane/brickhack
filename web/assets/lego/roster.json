@@ -129,5 +129,21 @@
  "dwarf-tourist-m",
  "dwarf-tourist-f",
  "dwarf-wizard-m",
- "dwarf-witch"
+ "dwarf-witch",
+ "gnome-archeologist-m",
+ "gnome-archeologist-f",
+ "gnome-caveman-m",
+ "gnome-cavewoman",
+ "gnome-flame-mage-m",
+ "gnome-flame-mage-f",
+ "gnome-healer-m",
+ "gnome-healer-f",
+ "gnome-ice-mage-m",
+ "gnome-ice-mage-f",
+ "gnome-ranger-m",
+ "gnome-ranger-f",
+ "gnome-undead-slayer-m",
+ "gnome-undead-slayer-f",
+ "gnome-wizard-m",
+ "gnome-witch"
 ]

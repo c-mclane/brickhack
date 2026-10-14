@@ -1,0 +1,28 @@
+{
+ "label": "Gnomish Witch",
+ "role": "wizard",
+ "gender": "female",
+ "race": "gnome",
+ "torso": "973p0w",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hat": "12894",
+ "hatColor": 22,
+ "shortLegs": {
+  "part": "16709",
+  "color": 22
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 22,
+   "decal": {
+    "image": "../decals/moon-stars.png"
+   }
+  }
+ ],
+ "name": "Gnomish Witch (female)"
+}

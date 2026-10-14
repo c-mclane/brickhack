@@ -1,0 +1,25 @@
+{
+ "label": "Gnomish Archeologist",
+ "role": "archeologist",
+ "gender": "male",
+ "race": "gnome",
+ "torso": "973pq7",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "13787p01",
+ "hatColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 28
+ },
+ "neck": [
+  {
+   "part": "6132",
+   "color": 15
+  }
+ ],
+ "name": "Gnomish Archeologist (male)"
+}

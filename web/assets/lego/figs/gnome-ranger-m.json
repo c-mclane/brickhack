@@ -1,0 +1,56 @@
+{
+ "label": "Gnomish Ranger",
+ "role": "ranger",
+ "gender": "male",
+ "race": "gnome",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 14,
+ "head": "3626bp35",
+ "headColor": 14,
+ "hat": "13787p01",
+ "hatColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "neck": [
+  {
+   "part": "93223",
+   "color": 70
+  },
+  {
+   "part": "4498",
+   "color": 70,
+   "turn": 180
+  }
+ ],
+ "left": {
+  "part": "4499",
+  "color": 70,
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "face": [
+   0,
+   0,
+   1
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/elf-ranger.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   30,
+   32
+  ]
+ },
+ "name": "Gnomish Ranger (male)"
+}

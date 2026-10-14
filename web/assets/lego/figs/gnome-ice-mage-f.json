@@ -1,0 +1,37 @@
+{
+ "label": "Gnomish Ice Mage",
+ "role": "ice mage",
+ "gender": "female",
+ "race": "gnome",
+ "torso": "973p0w",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hat": "12894",
+ "hatColor": 212,
+ "shortLegs": {
+  "part": "16709",
+  "color": 212
+ },
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Gnomish Ice Mage (female)"
+}

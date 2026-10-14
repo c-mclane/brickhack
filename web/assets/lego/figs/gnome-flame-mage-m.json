@@ -1,0 +1,46 @@
+{
+ "label": "Gnomish Flame Mage",
+ "role": "flame mage",
+ "gender": "male",
+ "race": "gnome",
+ "torso": "973",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "13787p02",
+ "hatColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 320
+ },
+ "neck": [
+  {
+   "part": "6132",
+   "color": 15
+  }
+ ],
+ "right": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "18395",
+  "color": 57,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/flame.png"
+ },
+ "name": "Gnomish Flame Mage (male)"
+}
