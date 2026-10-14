@@ -86,10 +86,14 @@ class Library:
             n = np.cross(arr[:, 1] - arr[:, 0], arr[:, 2] - arr[:, 0])
             ln = np.linalg.norm(n, axis=1); ok = ln > 1e-9
             facing = np.zeros(len(arr), bool)
-            facing[ok] = np.abs((n[ok] / ln[ok, None]) @ N) > 0.3
+            facing[ok] = np.abs((n[ok] / ln[ok, None]) @ N) > 0.08   # anything not edge-on; occlusion does the rest
             if occluders is not None:
+                # printed if any part of the face shows: test its centre, near its
+                # corners and its edge midpoints (long thin faces can hide their centre)
+                w = np.array([[1, 1, 1], [8, 1, 1], [1, 8, 1], [1, 1, 8], [4, 4, 1], [1, 4, 4], [4, 1, 4]], float)
+                w /= w.sum(1, keepdims=True)
                 for k in np.nonzero(facing)[0]:
-                    if occluded(arr[k].mean(0), -N, occluders):
+                    if all(occluded(pt, -N, occluders) for pt in w @ arr[k]):
                         facing[k] = False
             if (~facing).any():
                 add(code, None, arr[~facing], None)

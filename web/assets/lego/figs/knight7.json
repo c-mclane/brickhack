@@ -1,0 +1,45 @@
+{
+ "name": "Knight 7: modern Knight of the Holy Sepulchre (suit, beret, white cape)",
+ "torso": "973p18",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "90386",
+ "hatColor": 0,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "right": {
+  "part": "3847",
+  "color": 72
+ },
+ "left": {
+  "part": "3846",
+  "color": 15,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "decal": {
+   "image": "../decals/jerusalem-cross.png"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15,
+   "decal": {
+    "image": "../decals/jerusalem-cross.png"
+   }
+  }
+ ],
+ "label": "Knight of the Holy Sepulchre"
+}

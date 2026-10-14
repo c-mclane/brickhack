@@ -17,3 +17,7 @@ node_modules/
 /web/music
 /web/assets/lego/cache/
 /web/assets/lego/scene.built.json
+/web/assets/lego/roster/
+/web/assets/lego/roster.built.json
+/web/assets/lego/parts/
+__pycache__/

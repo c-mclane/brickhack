@@ -138,6 +138,9 @@ export class World {
         }
       }
     for (const d of this.decor) out.push(d);
+    // (LEGO levels: monsters and items at the minifig's scale)
+    const k = this.spriteScale || 1;
+    if (k !== 1) for (const s of out) s.size *= k;
     if (includeHero) {
       const c = this.cell(this.hero.x, this.hero.y);
       const tile = this.heroTile != null ? this.heroTile : c && c.t;
@@ -281,7 +284,7 @@ export class World {
         if (motion) {
           for (const m of motion.mobs.values()) {
             const [mx, mz] = motionPos(m, now);
-            const h = sizeHeight(m.size), lift = (m.fly ? 0.5 : 0) + this.standHeight(m.tx, m.tz), r = Math.min(0.45, h * 0.22);
+            const h = sizeHeight(m.size) * (this.spriteScale || 1), lift = (m.fly ? 0.5 : 0) + this.standHeight(m.tx, m.tz), r = Math.min(0.45, h * 0.22);
             if (py >= lift && py <= lift + h && Math.abs(px - mx - 0.5) < r && Math.abs(pz - mz - 0.5) < r)
               return { kind: 'mob', x: m.tx, y: m.tz, box: [mx + 0.5 - r, lift, mz + 0.5 - r, mx + 0.5 + r, lift + h, mz + 0.5 + r], mon: true };
           }
@@ -295,7 +298,7 @@ export class World {
       if (motion) {
         for (const m of motion.mobs.values()) {
           const [mx, mz] = motionPos(m, now);
-          const h = sizeHeight(m.size), lift = (m.fly ? 0.5 : 0) + this.standHeight(m.tx, m.tz), r = Math.min(0.45, h * 0.22);
+          const h = sizeHeight(m.size) * (this.spriteScale || 1), lift = (m.fly ? 0.5 : 0) + this.standHeight(m.tx, m.tz), r = Math.min(0.45, h * 0.22);
           if (py >= lift && py <= lift + h && Math.abs(px - mx - 0.5) < r && Math.abs(pz - mz - 0.5) < r)
             return { x: m.tx, y: m.tz, box: [mx + 0.5 - r, lift, mz + 0.5 - r, mx + 0.5 + r, lift + h, mz + 0.5 + r], mon: true };
         }

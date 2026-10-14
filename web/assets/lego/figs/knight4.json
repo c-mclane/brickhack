@@ -1,0 +1,56 @@
+{
+ "name": "Knight 4: Teutonic, white mantle with the Grand Master's cross",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 0,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "4503",
+ "hatColor": 71,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "right": {
+  "part": "3847",
+  "color": 72
+ },
+ "left": {
+  "part": "3846",
+  "color": 15,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "decal": {
+   "image": "../decals/teutonic-grandmaster.png"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15,
+   "decal": {
+    "image": "../decals/teutonic-grandmaster.png"
+   }
+  },
+  {
+   "part": "2587",
+   "color": 15,
+   "decal": {
+    "image": "../decals/teutonic-grandmaster.png"
+   }
+  }
+ ],
+ "plume": {
+  "part": "87694",
+  "color": 14
+ },
+ "label": "Teutonic Knight"
+}

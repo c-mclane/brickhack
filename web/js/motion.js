@@ -57,7 +57,8 @@ export class Motion {
   }
 
   heroHeight() {
-    return this.heroPoly ? sizeHeight(this.heroSize) : STEVE_HEIGHT;
+    // (figHeight: the LEGO minifig's height, on LEGO levels)
+    return this.heroPoly ? sizeHeight(this.heroSize) : this.figHeight || STEVE_HEIGHT;
   }
 
   // new monster positions for this turn: animate everyone to arrive with the hero

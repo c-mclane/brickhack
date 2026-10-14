@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MineHack</title>
+<title>BrickHack</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -46,7 +46,7 @@
   <div class="mc-panel inv-panel">
     <div class="inv-top">
       <div id="equip"></div>
-      <div id="hero-preview" title="Click to change your skin"><div class="icon big"></div><div class="name"></div></div>
+      <div id="hero-preview"><canvas class="hero-fig"></canvas><div class="icon big"></div><div class="name"></div></div>
       <div id="charstats"></div>
     </div>
     <div class="label" id="inv-label">Inventory</div>
@@ -76,7 +76,7 @@
 
 <!-- title / menus -->
 <div id="title" class="screen dirt">
-  <div class="logo">MINEHACK<div class="splash"></div></div>
+  <div class="logo">BRICKHACK<div class="splash"></div></div>
   <div class="col">
     <button class="mc-btn" data-act="singleplayer">Descend</button>
     <button class="mc-btn" data-act="dreamland">Ascend</button>
@@ -85,7 +85,7 @@
     <button class="mc-btn" data-act="options">Options...</button>
     <button class="mc-btn" data-act="reset">Reset Game...</button>
   </div>
-  <div class="footer">MineHack · built on SLASH'EM 0.0.8E0F2 and NetHack · game &amp; tiles by the SLASH'EM team and NetHack DevTeam</div>
+  <div class="footer">BrickHack · LEGO parts from the LDraw.org library (CC BY) · built on SLASH'EM 0.0.8E0F2 and NetHack · game &amp; tiles by the SLASH'EM team and NetHack DevTeam</div>
 </div>
 
 <div id="reset" class="screen dirt hidden">
@@ -125,21 +125,14 @@
   <label class="mc-label">Character Name</label>
   <input id="cname" class="mc-input" maxlength="30" value="Steve">
   <div class="skin-row">
-    <div class="skin-previews">
-      <div id="skin-preview" class="skin-preview" title="Your character"></div>
-      <div id="skin-ingame" class="skin-ingame" title="In-game size"></div>
-      <div class="skin-caption">Skin</div>
-    </div>
-    <div class="col skin-buttons">
-      <button class="mc-btn" data-act="upload">Upload Skin Image...</button>
-      <button class="mc-btn" data-skinopt="removeBg"></button>
-      <button class="mc-btn" data-skinopt="palette"></button>
-      <button class="mc-btn" data-act="clearskin">Use Role Default</button>
-      <button class="mc-btn" data-act="mcskin">Minecraft Skin (.png)...</button>
+    <div id="figpick" class="figpick" tabindex="0" title="Your knight (arrow keys or the buttons to change)">
+      <canvas></canvas>
+      <button class="mc-btn fig-prev" title="Previous">&#9664;</button>
+      <button class="mc-btn fig-next" title="Next">&#9654;</button>
+      <div class="fig-label">Loading...</div>
+      <div class="fig-count"></div>
     </div>
   </div>
-  <input type="file" id="skinfile" accept="image/*" hidden>
-  <input type="file" id="mcskinfile" accept="image/png" hidden>
   <div class="col">
     <button class="mc-btn cycle" data-key="role"></button>
     <button class="mc-btn cycle" data-key="race"></button>
@@ -170,7 +163,6 @@
     <button class="mc-btn" data-opt="wallStyle"></button>
     <button class="mc-btn" data-opt="tileset"></button>
     <button class="mc-btn" data-opt="playerModel"></button>
-    <button class="mc-btn" data-act="mcskin">Load Minecraft Skin (.png)...</button>
     <div class="mc-slider"><input type="range" min="50" max="110" data-opt="fov"><span></span></div>
     <div class="mc-slider"><input type="range" min="10" max="200" data-opt="sens"><span></span></div>
     <div class="mc-slider"><input type="range" min="0" max="100" data-opt="music"><span></span></div>

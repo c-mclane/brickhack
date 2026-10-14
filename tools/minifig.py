@@ -11,6 +11,9 @@ SPEC example:
    "right": {"part": "3847", "color": 72, "aim": [0, -1, -0.6], "face": [1, 0, 0]},
    "left":  {"part": "3846p4c", "color": 15, "aim": [0, -1, 0], "face": [0.3, 0, -1]}}
 
+"hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
+"plume": {"part": "87694", "color": 4} plugs a feather into the helmet's top.
+
 "neck" can be one part or a list (e.g. a cape and an armour plate).
 
 Held and neck items can carry "decal": {"image": "../decals/x.png"} (path
@@ -43,14 +46,25 @@ GRIP_AXIS = np.array([0.0, -10.65, -2.75]) / np.linalg.norm([0.0, -10.65, -2.75]
 HELD = {
     '3847': {'center': (0, 12, 0), 'up': (0, -1, 0), 'face': (1, 0, 0)},   # shortsword: blade out of the top of the fist
     '3846': {'center': (0, 9, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # triangular shield: front is -Z
+    '3876': {'center': (0, 9, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # round shield: same handle as 3846
+    '2530': {'center': (0, 0, 0), 'up': (0, -1, 0)},                        # cutlass: blade out of the top of the fist
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
 # its centre, its size, and whether it is seen from the part's front (-Z) or back (+Z).
 DECAL_SPOTS = {
     '3846': {'center': (0, 3, -10), 'size': (26, 26), 'side': 'front'},    # triangular shield
+    '3876': {'center': (0, 0, -14), 'size': (36, 36), 'side': 'front'},    # round shield (rodela)
     '2587': {'center': (0, 12, -22), 'size': (18, 18), 'side': 'front'},   # classic armour plate: the chest
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
+}
+
+
+# Plume sockets on top of helmets, in the helmet's own frame.
+PLUME_SOCKETS = {
+    '89520': (0, -15, 0),   # Kingdoms closed helm with eye slit
+    '4503': (0, -8, 0),     # helm with fixed face grille: hollow stud on top
+    '30048': (-7, -12, 7),  # morion: plume hole behind the crest, on its left
 }
 
 
@@ -166,8 +180,14 @@ def build(spec, base_dir='.'):
             out.append(decal_line(item, np.zeros(3), I, base_dir))
         out.append(line(item.get('color', 16), (0, 0, 0), I, item['part']))
     out.append(line(spec.get('headColor', 14), (0, -24, 0), I, spec.get('head', '3626bp01')))
+    if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
+        out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, spec['hair']['part']))
     if spec.get('hat'):
         out.append(line(spec.get('hatColor', 0), (0, -24, 0), I, spec['hat']))
+        plume = spec.get('plume')
+        if plume:
+            socket = next((v for k, v in PLUME_SOCKETS.items() if spec['hat'].startswith(k)), (0, -15, 0))
+            out.append(line(plume.get('color', 4), np.add((0, -24, 0), socket), I, plume.get('part', '87694')))
     out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
     out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
     out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legL', '3817')))

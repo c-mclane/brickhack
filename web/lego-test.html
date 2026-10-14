@@ -28,10 +28,13 @@ const cam = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 500);
 const ctl = new OrbitControls(cam, r.domElement);
 scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.6));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2);
-sun.position.set(6, 14, 9); sun.castShadow = true;
+sun.position.set(12, 28, 18); sun.castShadow = true;
 sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02; sun.shadow.mapSize.set(4096, 4096);
-Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, far: 60 });
+Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, far: 120 });   // covers a tall shelf
 scene.add(sun);
+// display-case fill: a soft shadowless light from the viewer's side, so shelves don't hide what's on them
+const fill = new THREE.DirectionalLight(0xfff4e6, 1.3);
+fill.position.set(0, 12, 20); scene.add(fill);
 
 const loader = new GLTFLoader();
 const models = new Map();   // url -> Promise<Object3D>

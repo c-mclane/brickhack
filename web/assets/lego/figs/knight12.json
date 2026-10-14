@@ -1,0 +1,56 @@
+{
+ "name": "Knight 12: Spanish conquistador of the Order of Alcantara",
+ "torso": "973",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 14,
+ "head": "3626bp3e",
+ "headColor": 14,
+ "hat": "30048",
+ "hatColor": 179,
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 320,
+   "decal": {
+    "image": "../decals/alcantara-cross.png"
+   }
+  },
+  {
+   "part": "2587",
+   "color": 179,
+   "decal": {
+    "image": "../decals/alcantara-cross.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "2530",
+  "color": 179
+ },
+ "left": {
+  "part": "3876",
+  "color": 179,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "decal": {
+   "image": "../decals/alcantara-cross.png"
+  }
+ },
+ "plume": {
+  "part": "64647",
+  "color": 2
+ },
+ "label": "Conquistador of Alc\u00e1ntara"
+}

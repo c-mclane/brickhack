@@ -2,8 +2,16 @@
 // Defaults are NetHack 3.6.7's numbering; the engine sends its own table in
 // the "hello" message (SLASH'EM numbers them differently), see setCmap().
 
-export const WALL_H = 4; // wall height in blocks (open air above for building)
-export const DOOR_H = 2; // doors and doorways are two blocks tall, like Minecraft
+// LEGO dungeon levels: rooms and corridors are platforms of 4x4-stud squares,
+// walls six bricks (1.8 blocks: 2 for walking and the camera) and doors real
+// 1x4x6 LEGO doors, as tall as the wall.  Ascend's block-built levels keep
+// 4-block walls and 2-block doors.
+export let WALL_H = 2; // wall height in blocks (open air above for building)
+export let DOOR_H = 2; // doors and doorways
+export function setBlockHeights(dream) {
+  WALL_H = dream ? 4 : 2;
+  DOOR_H = 2;
+}
 
 export const CM = {
   stone: 0, vwall: 1, hwall: 2, tlcorn: 3, trcorn: 4, blcorn: 5, brcorn: 6, crwall: 7,

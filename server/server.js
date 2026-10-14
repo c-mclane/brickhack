@@ -1,4 +1,4 @@
-// MineHack server: serves the web client and bridges each browser session
+// BrickHack server: serves the web client and bridges each browser session
 // to a native SLASH'EM process running the "web" window port.
 //   stdin  <- command lines from the client (see port/winweb.c)
 //   fd 3   -> JSON event lines, forwarded to the browser via Server-Sent Events
@@ -34,12 +34,12 @@ const VARIANTS = {
 };
 const installed = () => Object.keys(VARIANTS).filter((v) => fs.existsSync(path.join(VARIANTS[v].dir, VARIANTS[v].bin)));
 const variantOf = (v) => (VARIANTS[v] && installed().includes(v) ? v : installed()[0]);
-const PORT = +process.env.PORT || 8080;
+const PORT = +process.env.PORT || 8081; // (MineHack uses 8080)
 const HOST = process.env.HOST || '127.0.0.1';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css',
-  '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml',
+  '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.glb': 'model/gltf-binary',
 };
 
 /** sid -> { proc, res (SSE response), backlog[], timer } */
@@ -320,7 +320,7 @@ if (!installed().length) {
   console.error('SLASH\'EM is not built yet. Run tools/build-slashem.sh (or npm run build).');
   process.exit(1);
 }
-server.listen(PORT, HOST, () => console.log(`MineHack: http://${HOST}:${PORT}/`));
+server.listen(PORT, HOST, () => console.log(`BrickHack: http://${HOST}:${PORT}/`));
 for (const sig of ['SIGINT', 'SIGTERM']) {
   process.on(sig, () => {
     for (const s of sessions.values()) stopGame(s);

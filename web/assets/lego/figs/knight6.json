@@ -1,0 +1,52 @@
+{
+ "name": "Knight 6: black with white 8-point cross, black hair",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 0,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "3901",
+ "hatColor": 0,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "right": {
+  "part": "3847",
+  "color": 72
+ },
+ "left": {
+  "part": "3846",
+  "color": 0,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "decal": {
+   "image": "../decals/maltese-cross-white.png"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/maltese-cross-white.png"
+   }
+  },
+  {
+   "part": "2587",
+   "color": 0,
+   "decal": {
+    "image": "../decals/maltese-cross-white.png"
+   }
+  }
+ ],
+ "label": "Hospitaller (Black Habit)"
+}

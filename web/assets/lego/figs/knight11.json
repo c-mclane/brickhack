@@ -1,0 +1,52 @@
+{
+ "name": "Knight 11: Order of St. Thomas (of Acre), all white",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 15,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hat": "3896",
+ "hatColor": 71,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "right": {
+  "part": "3847",
+  "color": 72
+ },
+ "left": {
+  "part": "3846",
+  "color": 15,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "decal": {
+   "image": "../decals/scallop-cross.png"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15,
+   "decal": {
+    "image": "../decals/scallop-cross.png"
+   }
+  },
+  {
+   "part": "2587",
+   "color": 15,
+   "decal": {
+    "image": "../decals/scallop-cross.png"
+   }
+  }
+ ],
+ "label": "Knight of St. Thomas"
+}

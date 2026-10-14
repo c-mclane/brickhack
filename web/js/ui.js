@@ -208,6 +208,7 @@ export class UI {
     } else icon = tileIcon(s.herotile, 96, 'icon big');
     hp.querySelector('.icon').replaceWith(icon);
     hp.querySelector('.name').textContent = s.name;
+    hp.classList.toggle('has-fig', !!this.heroFigure && !s.poly); // (heroFigure: main.js shows your minifig)
   }
 
   showTitle(big, sub) {

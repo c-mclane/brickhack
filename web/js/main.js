@@ -3,7 +3,7 @@ import { Renderer } from './render.js';
 import { World } from './world.js';
 import { UI, setAtlas, itemActions, SLOT_LETTERS, tileIcon } from './ui.js';
 import { createChess, pieceName } from './chess.js';
-import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H } from './terrain.js';
+import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H, setBlockHeights } from './terrain.js';
 import { Motion } from './motion.js';
 import { BlockWorld, BLOCKS, BUILD_LIMIT, breakTime, minedAs } from './blocks.js';
 import { buildTextures } from './textures.js';
@@ -12,9 +12,11 @@ import { CombatFX } from './combat.js';
 import { DL, buildDreamscape, buildLevel2, buildLevel3, buildLevel4, palaceExtras, buildGlade, gladeExtras, dreamPath, dreamFire, dreamOaks, dreamIndoors, dreamPortal, dreamPortal3, dreamFlowers, dreamShrubs, buildLevel5 } from './dreamscape.js';
 import { NameTags, nameTagEntries } from './nametags.js';
 import { Drops } from './drops.js';
-import { normalizeSkin, defaultDollSkin, buildPlayerModel } from './playermodel.js';
+import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
-import { makeSkin, keyedSkin, skinFromDataURL, loadSkinURL, saveSkinURL } from './skin.js';
+import { figureMatrix, FIG_HEIGHT } from './lego.js';
+import { setupFigurePicker, figureView, loadRoster } from './figpick.js';
+import { makeSkin, loadSkinURL } from './skin.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -358,6 +360,7 @@ function clearDreamscape() {
 function setDream(on) {
   if (world.dream === on) return;
   world.dream = on;
+  setBlockHeights(on);
   if (!on) clearDreamscape();
   setSky();
   world.dirty = true;
@@ -372,6 +375,7 @@ function setSky() {
   renderer.fog = !world.dream ? DUNGEON_FOG : night ? NIGHT_FOG : DREAM_FOG;
 }
 const nameTags = new NameTags($('#nametags'));
+let figPicker = null; // the character select's minifig picker (figpick.js)
 // mined blocks lying on the ground, waiting to be picked up
 const drops = new Drops();
 function pickUpBlock(type) {
@@ -582,7 +586,7 @@ async function loadMonsterArt(m) {
 }
 
 async function init() {
-  // MineHack runs SLASH'EM only
+  // BrickHack runs SLASH'EM only
   game.variants = [{ id: 'slashem', label: "SLASH'EM" }];
   game.variant = 'slashem';
   const { img } = await loadAtlas('slashem');
@@ -590,12 +594,7 @@ async function init() {
   renderer.setAtlas(img, meta, await loadMonsterArt(meta));
   game.tilesets = await availableTilesets();
   loadHorizon();
-  // the brick wall tile doubles as the menu background (like Minecraft's dirt)
-  const c = document.createElement('canvas');
-  c.width = c.height = 16;
-  const WALL_TILE = wallTile(), own = ownAtlas.meta;
-  c.getContext('2d').drawImage(ownAtlas.img, (WALL_TILE % own.cols) * 16, Math.floor(WALL_TILE / own.cols) * 16, 16, 16, 0, 0, 16, 16);
-  document.documentElement.style.setProperty('--bgtile', `url(${c.toDataURL()})`);
+  document.documentElement.style.setProperty('--bgtile', `url(${legoPlateTile()})`);
   buildScreens();
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
   requestAnimationFrame(frame);
@@ -633,7 +632,7 @@ function handle(m) {
       cam.snap = true;
       break;
     case 'stat':
-      if (!game.charName) { game.charName = m.name; game.loadHotbar(); applySkin(m.name); applyMinecraftSkin(m.name); }
+      if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name); }
       world.heroTile = game.skinLoaded && !m.poly ? skinTile() : null;
       setDream(m.dream > 0);
       if (world.dreamLevel !== m.dream) { world.dreamLevel = m.dream; clearDreamscape(); setSky(); } // Dreamland level 1, 2... (0: not there)
@@ -797,6 +796,29 @@ function onGameOver() {
   game.rip = null;
 }
 
+// The menus' background: a LEGO plate seen from above, 4x4 studs to a tile
+// (dark bluish grey, each stud lit from the top left and casting a shadow)
+function legoPlateTile(size = 128) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const x = c.getContext('2d'), s = size / 4, r = s * 0.3;
+  x.fillStyle = '#6c6e68';
+  x.fillRect(0, 0, size, size);
+  for (let i = 0; i < 4; i++)
+    for (let j = 0; j < 4; j++) {
+      const cx = (i + 0.5) * s, cy = (j + 0.5) * s;
+      x.fillStyle = 'rgba(0,0,0,0.35)'; // shadow
+      x.beginPath(); x.arc(cx + r * 0.25, cy + r * 0.3, r * 1.04, 0, Math.PI * 2); x.fill();
+      const g = x.createLinearGradient(cx - r, cy - r, cx + r, cy + r); // the stud's side, lit top left
+      g.addColorStop(0, '#9a9c96'); g.addColorStop(1, '#4d4f4a');
+      x.fillStyle = g;
+      x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#767872'; // its flat top
+      x.beginPath(); x.arc(cx - r * 0.06, cy - r * 0.08, r * 0.78, 0, Math.PI * 2); x.fill();
+    }
+  return c.toDataURL();
+}
+
 // ------------------------------------------------------------------ screens
 const SCREENS = ['title', 'worlds', 'create', 'pause', 'options', 'controls', 'death', 'loading', 'chess', 'reset'];
 let returnTo = 'title';
@@ -866,9 +888,11 @@ function buildScreens() {
   $('#worlds [data-act=back]').onclick = () => show('title');
   $('#create [data-act=back]').onclick = () => show(game.createDream ? 'title' : 'worlds');
 
-  const choice = { role: 0, race: 0, gender: 0, align: 0, legacy: 0, ...safeJSON(localGet('nh3d.create')) };
+  // BrickHack starts you as a lawful human male Knight (role 7, race 1, gender 1, alignment 1)
+  const choice = { role: 7, race: 1, gender: 1, align: 1, legacy: 0, ...safeJSON(localGet('bh.create')) };
   const nameIn = $('#cname');
-  nameIn.value = localGet('nh3d.name') || 'Steve';
+  nameIn.value = localGet('nh3d.name') || '';
+  let syncPicker = () => {}; // the minifig picker follows the role and gender
   const draws = [];
   document.querySelectorAll('#create .cycle').forEach((b) => {
     const k = b.dataset.key;
@@ -876,20 +900,29 @@ function buildScreens() {
       choice[k] %= CYCLES[k][1].length;
       b.textContent = `${CYCLES[k][0]}: ${CYCLES[k][1][choice[k]].replace(/^./, (c) => c.toUpperCase())}`;
     };
-    b.onclick = (e) => { choice[k] = (choice[k] + (e.shiftKey ? CYCLES[k][1].length - 1 : 1)) % CYCLES[k][1].length; draw(); };
+    b.onclick = (e) => { choice[k] = (choice[k] + (e.shiftKey ? CYCLES[k][1].length - 1 : 1)) % CYCLES[k][1].length; draw(); syncPicker(); };
     draws.push(draw);
   });
   applyVariantLists = () => {
     CYCLES.role[1] = ROLES.slashem;
     CYCLES.race[1] = RACES.slashem;
     draws.forEach((d) => d());
+    syncPicker();
     $('#create h2').textContent = game.createDream ? 'Ascend: Create New Character' : 'Descend: Create New Character';
   };
-  setupSkinCreator();
+  // your character is named for the figure you pick, unless you have typed a name of your own
+  const figNames = new Set();
+  figPicker = setupFigurePicker($('#figpick'), () => !$('#create').classList.contains('hidden'), (fig) => {
+    if (!nameIn.value || nameIn.value === 'Steve' || figNames.has(nameIn.value)) nameIn.value = fig.label;
+    figNames.add(fig.label);
+  });
+  loadRoster().then((r) => r.forEach((f) => figNames.add(f.label)));
+  syncPicker = () => figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender]);
+  syncPicker();
   $('#create [data-act=go]').onclick = () => {
-    localSet('nh3d.create', JSON.stringify(choice));
+    localSet('bh.create', JSON.stringify(choice));
     localSet('nh3d.name', nameIn.value);
-    saveSkinURL(nameIn.value, creator.url);
+    if (figPicker.current()) localSet(FIG_KEY(nameIn.value), figPicker.current().id);
     const o = { name: nameIn.value };
     for (const k of ['role', 'race', 'gender', 'align']) {
       const v = CYCLES[k][1][choice[k]].toLowerCase();
@@ -931,14 +964,11 @@ function buildScreens() {
     await loadAtlas(game.variant);
     // the new atlas needs our block textures, the skins and the open screens again
     if (renderer.slots) rebuildTextures();
-    if (game.charName) { await applySkin(game.charName); await applyMinecraftSkin(game.charName); }
     heldTile = null;
     world.dirty = true;
     if (game.playing) ui.renderHotbar();
   };
   $('#options [data-opt=playerModel]').onclick = () => { opts.playerModel = opts.playerModel === 'model' ? 'sprite' : 'model'; drawOptions(); };
-  $('#options [data-act=mcskin]').onclick = () => pickMinecraftSkin(() => game.charName || $('#cname').value);
-  $('#create [data-act=mcskin]').onclick = () => pickMinecraftSkin(() => $('#cname').value);
   for (const k of ['fov', 'sens', 'music']) $(`#options [data-opt=${k}]`).oninput = (e) => { opts[k] = +e.target.value; drawOptions(); };
 
   $('#death [data-act=respawn]').onclick = () => game.lastStart && startGame(game.lastStart);
@@ -950,7 +980,7 @@ function drawOptions() {
   $('#options [data-opt=wallStyle]').textContent = `Wall blocks: ${opts.wallStyle === 'brick' ? 'Brick tile' : 'Exact wall tiles'}`;
   const ts = (game.tilesets || TILESETS).find((t) => t.id === opts.tileset) || TILESETS[0];
   $('#options [data-opt=tileset]').textContent = `Tileset: ${ts.label}`;
-  $('#options [data-opt=playerModel]').textContent = `Player: ${opts.playerModel === 'model' ? 'Minecraft model' : 'Game sprite'}`;
+  $('#options [data-opt=playerModel]').textContent = `Player: ${opts.playerModel === 'model' ? 'LEGO minifig' : 'Game sprite'}`;
   const f = $('#options [data-opt=fov]');
   f.value = opts.fov;
   f.nextElementSibling.textContent = `FOV: ${opts.fov}`;
@@ -1028,85 +1058,30 @@ function resume() {
 const creator = { file: null, url: null, removeBg: true, palette: true };
 const skinTile = () => meta.count; // first free slot in the tile atlas
 
-function setupSkinCreator() {
-  const fileIn = $('#skinfile');
-  const draw = () => {
-    $('#create [data-skinopt=removeBg]').textContent = `Remove background: ${creator.removeBg ? 'ON' : 'OFF'}`;
-    $('#create [data-skinopt=palette]').textContent = `NetHack colors: ${creator.palette ? 'ON' : 'OFF'}`;
-    for (const id of ['#skin-preview', '#skin-ingame']) $(id).style.backgroundImage = creator.url ? `url(${creator.url})` : '';
-    $('#skin-preview').classList.toggle('empty', !creator.url);
-    $('#skin-ingame').style.visibility = creator.url ? 'visible' : 'hidden';
-  };
-  const rebuild = async () => {
-    if (!creator.file) return draw();
-    try {
-      const c = await makeSkin(creator.file, creator);
-      creator.url = c.toDataURL('image/png');
-    } catch (err) {
-      ui.chat('Could not read that image.');
-      console.error(err);
-    }
-    draw();
-  };
-  $('#create [data-act=upload]').onclick = () => { fileIn.dataset.target = 'creator'; fileIn.click(); };
-  $('#create [data-act=clearskin]').onclick = () => { creator.file = null; creator.url = null; draw(); };
-  for (const k of ['removeBg', 'palette']) $(`#create [data-skinopt=${k}]`).onclick = () => { creator[k] = !creator[k]; rebuild(); };
-  $('#cname').addEventListener('change', () => { if (!creator.file) { creator.url = loadSkinURL($('#cname').value); draw(); } });
-  creator.url = loadSkinURL($('#cname').value);
-  fileIn.onchange = async () => {
-    const f = fileIn.files[0];
-    fileIn.value = '';
-    if (!f) return;
-    if (fileIn.dataset.target === 'ingame') {
-      // change skin mid-game from the inventory screen
-      try {
-        const c = await makeSkin(f, { removeBg: true, palette: true });
-        saveSkinURL(game.charName, c.toDataURL('image/png'));
-        await applySkin(game.charName);
-      } catch (err) { console.error(err); }
-      return;
-    }
-    creator.file = f;
-    rebuild();
-  };
-  $('#hero-preview').onclick = () => { if (!ui.selectMode) { fileIn.dataset.target = 'ingame'; fileIn.click(); } };
-  draw();
-}
 
-// ---- Minecraft player model ("doll") and its 64x64 skin
-const MC_SKIN_KEY = (name) => 'nh3d.mcskin.' + (name || '').toLowerCase();
+// ---- the hero as a LEGO minifig (on LEGO levels), chosen at character creation
+const FIG_KEY = (name) => 'lh.fig.' + (name || '').toLowerCase();
+const hero3d = { id: null, prims: null };
+async function loadHeroFigure(name) {
+  const roster = await loadRoster();
+  if (!roster.length) return;
+  const fig = roster.find((f) => f.id === localGet(FIG_KEY(name))) || roster[0];
+  hero3d.id = fig.id;
+  hero3d.prims = null;
+  try { hero3d.prims = await renderer.lego.model(fig.url); } catch (e) { console.warn('hero figure:', e); }
+  // ...and in the inventory, beside your equipment
+  if (!heroView) heroView = figureView($('#hero-preview .hero-fig'), () => $('#hero-preview').offsetParent !== null);
+  if (heroView) { await heroView.show(fig.url); ui.heroFigure = true; ui.renderCharStats(); }
+}
+let heroView = null;
+// the minifig stands in for the doll and the hero's sprite on LEGO levels
+const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
+
+// ---- the hero's walk cycle and facing (used to turn the minifig)
 const doll = { swing: 0, phase: 0, yaw: 0, skinURL: null };
 
 async function loadImageURL(url) {
   try { return await loadImage(url); } catch { return null; }
-}
-
-// skin priority: one the player loaded for this character, then the local
-// default (art/skins/steve.png, downloaded separately), then an original fallback
-async function applyMinecraftSkin(name) {
-  const own = localGet(MC_SKIN_KEY(name));
-  const img = (own && (await loadImageURL(own))) || (await loadImageURL('/art/skins/steve.png'));
-  const skin = img ? normalizeSkin(img) : defaultDollSkin();
-  doll.skinURL = skin.toDataURL();
-  if (renderer) renderer.setMinecraftSkin(skin);
-}
-
-function pickMinecraftSkin(name) {
-  const inp = $('#mcskinfile');
-  inp.onchange = async () => {
-    const f = inp.files[0];
-    inp.value = '';
-    if (!f) return;
-    const url = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); });
-    const img = await loadImageURL(url);
-    if (!img || img.width !== 64 || (img.height !== 64 && img.height !== 32)) {
-      alert('A Minecraft skin is a 64x64 (or old-style 64x32) PNG.');
-      return;
-    }
-    localSet(MC_SKIN_KEY(name()), url);
-    await applyMinecraftSkin(name());
-  };
-  inp.click();
 }
 
 function updateDoll(dt, now) {
@@ -1160,7 +1135,7 @@ function project(p) {
   return [((nx + 1) / 2) * c.clientWidth, ((1 - ny) / 2) * c.clientHeight];
 }
 
-const showDoll = () => opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
+const showDoll = () => false; // (BrickHack: the hero is a LEGO minifig, never the Minecraft doll)
 
 function dollQuads(out, now) {
   const [hx, hz] = motion.heroPos(now);
@@ -1169,23 +1144,6 @@ function dollQuads(out, now) {
     pitch: Math.max(-0.8, Math.min(0.8, cam.pitch)), swing: doll.swing, overlay: true,
     attack: fx.jab(now), weaponTile: wieldedTile(),
   }, (...a) => renderer.quad(...a));
-}
-
-// load the character's skin (if any) into the tile atlas
-async function applySkin(name) {
-  const url = loadSkinURL(name);
-  game.skinURL = url;
-  game.skinLoaded = false;
-  world.heroTile = null;
-  if (!url) return;
-  const c = await skinFromDataURL(url);
-  renderer.setTile(skinTile(), keyedSkin(c));
-  game.skinLoaded = true;
-  if (!(ui.stat && ui.stat.poly)) {
-    world.heroTile = skinTile();
-    ui.heroSkinURL = url;
-    ui.renderCharStats();
-  }
 }
 
 // ------------------------------------------------------------------ pointer lock
@@ -1267,8 +1225,10 @@ function updateCameraBase(now) {
     return;
   }
   const sign = opts.camera === 1 ? -1 : 1;
-  const target = [tx, (world.heroLift ?? phys.y) + heroH * 0.85, tz];
-  let dist = 4.2;
+  // (a minifig is taller than Steve: the camera stands further back, and looks over the helmet)
+  const fig = !!motion.figHeight && heroH === motion.figHeight;
+  const target = [tx, (world.heroLift ?? phys.y) + heroH * (fig ? 1.0 : 0.85), tz];
+  let dist = 4.2 * Math.max(1, heroH / 1.8);
   for (let t = 0.3; t < dist; t += 0.05) {
     const p = [target[0] + f[0] * t * sign, target[1] + f[1] * t * sign, target[2] + f[2] * t * sign];
     if (world.solidVoxel(Math.floor(p[0]), Math.floor(p[1]), Math.floor(p[2]), onRoof())) { dist = Math.max(0.3, t - 0.15); break; }
@@ -1890,9 +1850,12 @@ function frame(t) {
     processMovement(t);
     if (game.playing) { updatePhysics(dt, t); updateDoll(dt, t); checkPortal(); }
     updateCamera(t);
-    const doll3d = showDoll();
+    const fig3d = showFigure();
+    const doll3d = showDoll() && !fig3d;
+    motion.figHeight = hero3d.prims ? FIG_HEIGHT : null;
+    world.spriteScale = world.dream ? 1 : FIG_HEIGHT / 2.0; // a human-sized monster stands as tall as you
     world.camYaw = cam.vyaw; // creatures face the way they walk, as seen from here
-    const sprites = world.sprites(opts.camera !== 0 && !doll3d, motion, t, fx);
+    const sprites = world.sprites(opts.camera !== 0 && !doll3d && !fig3d, motion, t, fx);
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
     if (world.hearth && renderer.slots) sprites.push(...hearthSprites(world.hearth, t, renderer.slots));
     if (world.portal && renderer.slots) sprites.push(...portalSprites(world.portal, t, renderer.slots));
@@ -1904,6 +1867,10 @@ function frame(t) {
       const [hx, hz] = motion.heroPos(t);
       drops.update(dt, t, world, [hx + 0.5, world.heroLift ?? phys.y, hz + 0.5], pickUpBlock);
     }
+    if (fig3d) {
+      const [hx, hz] = motion.heroPos(t);
+      renderer.legoFigures = [{ prims: hero3d.prims, matrix: figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw), shade: 1 }];
+    } else renderer.legoFigures = [];
     renderer.buildSprites(sprites, cam.vyaw, (out) => {
       if (doll3d) dollQuads(out, t);
       drops.draw(t, (x, y, z, s, a, type) => renderer.miniBlock(out, x, y, z, s, a, type));
@@ -1911,7 +1878,7 @@ function frame(t) {
     updateHeld(t);
     fx.updateLabels(t, project);
     updateNameTags(t);
-    renderer.fogRange = opts.camera === 3 ? [30, 60] : world.dream ? [45, 150] : [10, 30];
+    renderer.fogRange = opts.camera === 3 ? [30, 60] : world.dream ? [45, 150] : [18, 48];
     let outline = null, color = [0, 0, 0, 1], cracks = null;
     if (game.playing) {
       if (game.mode === 'getpos' && game.cursor) {
@@ -2071,4 +2038,4 @@ $('#view').addEventListener('wheel', (e) => {
 }, { passive: true });
 
 // debugging handle (used for automated checks in the dev console)
-window.__nh = { cam, opts, world, game, ui, handle, creator, makeSkin, motion, music, blocks, phys, fx, nameTags, crosshairTarget, yawDir, LEAVES, get renderer() { return renderer; } };
+window.__nh = { cam, opts, world, game, ui, handle, creator, makeSkin, motion, music, blocks, phys, fx, nameTags, crosshairTarget, yawDir, LEAVES, hero3d, loadHeroFigure, get renderer() { return renderer; } };

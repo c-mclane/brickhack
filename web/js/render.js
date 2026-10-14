@@ -2,7 +2,8 @@
 // billboards for monsters / objects / the hero.  All art comes from the
 // NetHack tile atlas.
 
-import { CM, classify, wallTile, WALL_H, DOOR_H } from './terrain.js';
+import { CM, classify, wallTile, cmapTile, WALL_H, DOOR_H } from './terrain.js';
+import { Lego, COLORS, STUD_H, WALL_LAYERS, PARTS, DOOR_TOP, wallColumn, platform, partMatrix } from './lego.js';
 
 const VS = `#version 300 es
 in vec3 aPos; in vec2 aUV; in vec3 aMisc; // shade, key (2 = water, 3 = a waterfall, 4 = mist), gray (waterfalls: 1 = still, 2 = rising; mist: its thickness)
@@ -418,6 +419,10 @@ export class Renderer {
     this.falls = this.makeMesh(); // iridescent waterfalls (world.falls)
     this.mist = this.makeMesh(); // mist round the edges of an Ascend map
     this.blockMesh = this.makeMesh();
+    this.lego = new Lego(gl); // the LEGO dungeon (bricks, plates, studs) and minifigs
+    this.legoFigures = []; // [{prims, matrix, shade}] drawn this frame (the hero)
+    this.legoParts = []; // [{url, matrix, shade}] the level's LEGO pieces (doors), from buildTerrain
+    this.partPrims = {}; // url -> loaded model (null while loading)
     this.fog = [0.04, 0.04, 0.06];
     this.fov = 75;
   }
@@ -698,13 +703,36 @@ export class Renderer {
       });
     };
     const shade0 = 1;
+    // dungeon levels are LEGO: rooms and corridors are platforms of studded grey
+    // plates on bricks, walls are dark grey brick, doors real LEGO doors
+    const lego = !world.dream;
+    const inst = { box: [], stud: [] }, parts = [];
+    // a door piece in its square, across the wall it stands in
+    const doorPiece = (x, y, name, alongZ, shade) => {
+      const url = PARTS[name];
+      if (!(url in this.partPrims)) {
+        this.partPrims[url] = null;
+        this.lego.model(url).then((p) => { this.partPrims[url] = p; }, (e) => console.warn(url, e));
+      }
+      parts.push({ url, matrix: partMatrix(x + 0.5, DOOR_TOP, y + 0.5, alongZ ? Math.PI / 2 : 0), shade });
+    };
+    const wallAt = (xx, yy) => { const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx]; return !!n && n.type === 'wall'; };
+    // a doorway's wall runs north-south when it has wall north or south of it
+    const doorAlongZ = (x, y, c) => (c.cmap === CM.vcdoor || c.cmap === CM.vodoor ? true
+      : c.cmap === CM.hcdoor || c.cmap === CM.hodoor ? false : wallAt(x, y - 1) || wallAt(x, y + 1));
+    const roomT = cmapTile(CM.room), plainFloor = new Map([
+      [roomT, COLORS.lightBluishGrey], [cmapTile(CM.darkroom), COLORS.lightBluishGrey],
+      [cmapTile(CM.corr), COLORS.darkBluishGrey], [cmapTile(CM.litcorr), COLORS.darkBluishGrey],
+      [cmapTile(CM.ndoor), COLORS.darkBluishGrey],
+    ]);
+
     for (let y = 0; y < H; y++)
       for (let x = 0; x < W; x++) {
         const c = cls[y * W + x];
         if (!c || c.type === 'none') continue;
         const d = Math.hypot(x - hx, y - hy);
-        let shade = c.seen || world.dream ? 1.0 : 0.42; // (Ascend is mapped and in daylight)
-        shade *= world.dream ? 1 : Math.max(0.55, Math.min(1, 1.25 - d / 16)); // Dreamland is in daylight
+        let shade = c.seen || world.dream ? 1.0 : lego ? 0.62 : 0.42; // (Ascend is mapped and in daylight)
+        shade *= world.dream ? 1 : Math.max(lego ? 0.75 : 0.55, Math.min(1, 1.25 - d / 16)); // Dreamland is in daylight
         const blockTile = opts.wallStyle === 'exact' && c.type === 'wall' ? c.tile : WALL_TILE;
         const cull = (lvl) => ({
           n: solidAt(x, y - 1, lvl), s: solidAt(x, y + 1, lvl),
@@ -720,13 +748,15 @@ export class Renderer {
         const doorTop = world.dream ? DOOR_H : WALL_H;
         switch (c.type) {
           case 'wall':
-            column(0, null, shade, (l) => wallLayer(l, blockTile));
+            if (lego) wallColumn(inst, x, y, WALL_LAYERS, COLORS.darkBluishGrey, shade, !solidAt(x, y, WALL_H));
+            else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
           case 'rock':
-            column(0, T.stone ?? WALL_TILE, 0.45);
+            if (!lego) column(0, T.stone ?? WALL_TILE, 0.45);
             break;
-          case 'door': // closed door: a two-block door with wall above
-            column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)), doorTop);
+          case 'door': // closed door: a two-block door with wall above (LEGO: a 1x4x6 door, shut)
+            if (lego) { platform(inst, x, y, COLORS.darkBluishGrey, shade); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
+            else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)), doorTop);
             break;
           case 'liquid':
             if (world.dream) {
@@ -748,10 +778,20 @@ export class Renderer {
             const sq = `${x},${y}`;
             const indoors = world.indoors && world.indoors.has(sq);
             if (world.floating && T.dirt != null) slab(x, y, 0);
-            this.floor(out, x, y, 0, world.dream && world.paved && world.paved.has(sq) && T.marble != null ? T.marble
+            if (lego) {
+              // a studded plate in the floor's colour; a special floor (stairs, an
+              // altar's square...) is a smooth plate with its tile printed on top
+              const ft = c.floorTile ?? c.tile, col = plainFloor.get(ft);
+              platform(inst, x, y, col || COLORS.lightBluishGrey, shade, !!col);
+              if (!col) this.floor(out, x, y, 0.002, ft, shade);
+              if (c.decal != null) this.floor(out, x, y, STUD_H + 0.005, c.decal, shade, 1);
+              // an open door swung back in its frame; a doorway (no door, or a broken one): the frame alone
+              if (c.type === 'odoor') doorPiece(x, y, 'door_open', doorAlongZ(x, y, c), shade);
+              else if (c.cmap === CM.ndoor) doorPiece(x, y, 'doorway', doorAlongZ(x, y, c), shade);
+            } else this.floor(out, x, y, 0, world.dream && world.paved && world.paved.has(sq) && T.marble != null ? T.marble
               : world.dream && world.path && world.path.has(sq) && T.dirt != null ? T.dirt
               : world.dream && !indoors && T.grassTop != null && (c.cmap === CM.room || c.cmap === CM.darkroom || c.cmap === CM.tree) ? T.grassTop : c.floorTile ?? c.tile, shade);
-            if (c.decal != null) this.floor(out, x, y, 0.01, c.decal, shade, 1);
+            if (c.decal != null && !lego) this.floor(out, x, y, 0.01, c.decal, shade, 1);
             if (c.lintel && !world.dream) column(DOOR_H, null, shade, (l) => wallLayer(l, WALL_TILE));
             if (c.chest && T.chestSide != null) {
               // NetHack chests and boxes as Minecraft-style chest blocks
@@ -759,7 +799,7 @@ export class Renderer {
               this.box(out, x + m, 0, y + m, x + 1 - m, 0.875, y + 1 - m,
                 { n: T.chestSide, s: T.chestFront, w: T.chestSide, e: T.chestSide, top: T.chestTop }, shade);
             }
-            if (c.type === 'odoor') {
+            if (c.type === 'odoor' && !lego) {
               // swung-open door panel along one edge of the doorway, two blocks tall
               for (let l = 0; l < DOOR_H; l++) {
                 const a = l + 1, b = l;
@@ -775,6 +815,9 @@ export class Renderer {
         }
       }
     this.upload(this.terrain, out);
+    this.lego.setInstances(this.lego.box, inst.box);
+    this.legoParts = parts;
+    this.lego.setInstances(this.lego.stud, inst.stud);
     // placed / generated blocks: their own mesh.  In Dreamland (thousands of
     // blocks, even light) it is only rebuilt when the blocks change.
     const bkey = world.dream && world.blocks ? `${world.blocks.version}:${world.blocks.levelKey}:${this.atlasKey}:${T.dirt}` : null;
@@ -1023,6 +1066,16 @@ export class Renderer {
       gl.bindVertexArray(this.overlay.vao);
       gl.drawArrays(gl.TRIANGLES, 0, this.overlay.count);
       gl.disable(gl.POLYGON_OFFSET_FILL);
+    }
+    // the LEGO pass (its own shader), then back to ours
+    if (this.lego.box.count || this.lego.stud.count || this.legoFigures.length) {
+      this.lego.fog = this.fog;
+      this.lego.fogRange = this.fogRange || [10, 30];
+      const pieces = this.legoParts.map((p) => ({ prims: this.partPrims[p.url], matrix: p.matrix, shade: p.shade }));
+      this.lego.draw(this.proj, this.view, this.legoFigures.concat(pieces));
+      gl.useProgram(this.prog);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.tex);
     }
     gl.disable(gl.CULL_FACE);
     gl.bindVertexArray(this.sprites.vao);
