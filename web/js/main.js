@@ -958,13 +958,32 @@ function buildScreens() {
     draws.push(draw);
   });
   loadRules().then((r) => { rules = r; refresh(); });
-  // the dice: a random role, race and gender that go together (the alignment stays random)
+  // a lock beside each of them keeps it as it is when the dice roll; the
+  // alignment starts locked (on Random)
+  const locked = new Set(['align']);
+  for (const k of RULED) {
+    const b = $(`#create .cycle[data-key=${k}]`);
+    const row = document.createElement('div');
+    row.className = 'lock-row';
+    b.replaceWith(row);
+    const lock = document.createElement('button');
+    lock.className = 'mc-btn lock-btn';
+    const drawLock = () => {
+      lock.textContent = locked.has(k) ? '\u{1F512}' : '\u{1F513}';
+      lock.classList.toggle('on', locked.has(k));
+      lock.title = locked.has(k) ? `${CYCLES[k][0]} is locked: the dice leave it alone` : `Lock the ${CYCLES[k][0].toLowerCase()} so the dice leave it alone`;
+    };
+    lock.onclick = () => { locked.has(k) ? locked.delete(k) : locked.add(k); drawLock(); };
+    drawLock();
+    row.append(b, lock);
+  }
+  // the dice: everything unlocked rerolled, to something that goes with the locked ones
   $('#create [data-act=roll]').onclick = () => {
     const any = (k) => CYCLES[k][1].map((v, i) => i).filter((i) => CYCLES[k][1][i] !== 'random');
     const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
-    choice.align = 0;
-    for (const k of ['role', 'race', 'gender']) choice[k] = 0;
-    for (const k of ['role', 'race', 'gender']) {
+    const free = RULED.filter((k) => !locked.has(k));
+    for (const k of free) choice[k] = 0;
+    for (const k of free) {
       const ok = any(k).filter((i) => !conflicts(rules, pick(), k, CYCLES[k][1][i]).length);
       if (ok.length) choice[k] = pickOne(ok);
     }
