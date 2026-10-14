@@ -1,0 +1,310 @@
+// Client-side copy of the NetHack map as reported by the window port.
+import { classify, isSolidClass, WALL_H, DOOR_H, CM } from './terrain.js';
+
+const WALK_THROUGH = new Set(['gateOpen', 'fakeWeeds', 'fakeWeedsTop']);
+import { posAt as motionPos, sizeHeight } from './motion.js';
+import { mobAnim } from './anim.js';
+
+export class World {
+  constructor() {
+    // SLASH'EM's map is COLNO x ROWNO (MineHack: 120 x 64, for Dreamland);
+    // 'vis' messages carry the real size
+    this.w = 120;
+    this.h = 64;
+    this.dream = false; // on the Dreamland overland level
+    this.path = null; // squares of dirt path ("x,z")
+    this.paved = null; // squares of marble floor ("x,z")
+    this.decor = []; // scenery sprites (flowers)
+    this.reset();
+  }
+
+  resize(w, h) {
+    if (w === this.w && h === this.h) return;
+    this.w = w;
+    this.h = h;
+    this.reset();
+  }
+
+  reset() {
+    this.cells = new Array(this.w * this.h).fill(null);
+    this.floorMem = new Array(this.w * this.h).fill(null);
+    this.vis = null;
+    this.classes = [];
+    this.hero = { x: 0, y: 0 };
+    this.dirty = true;
+  }
+
+  cell(x, y) {
+    if (x < 0 || y < 0 || x >= this.w || y >= this.h) return null;
+    return this.cells[y * this.w + x];
+  }
+
+  visible(x, y) {
+    return !this.vis || this.vis[y * this.w + x] === '1';
+  }
+
+  applyMap(list) {
+    for (const [x, y, t, k, c, bt, bc] of list) this.cells[y * this.w + x] = { t, k, c, bt, bc };
+    this.dirty = true;
+  }
+
+  setVis(v, w, h) {
+    if (w && h) this.resize(w, h);
+    this.vis = v;
+    this.dirty = true;
+  }
+
+  setHero(x, y) {
+    if (x !== this.hero.x || y !== this.hero.y) this.dirty = true;
+    this.hero = { x, y };
+  }
+
+  rebuild() {
+    this.classes = new Array(this.w * this.h);
+    for (let y = 0; y < this.h; y++)
+      for (let x = 0; x < this.w; x++) this.classes[y * this.w + x] = classify(this, x, y);
+  }
+
+  classAt(x, y) {
+    if (x < 0 || y < 0 || x >= this.w || y >= this.h) return null;
+    return this.classes[y * this.w + x];
+  }
+
+  solid(x, y) {
+    return isSolidClass(this.classAt(x, y));
+  }
+
+  // everything drawn as a camera-facing sprite.  Monsters the engine
+  // identified (motion.mobs) are drawn at their animated positions; the
+  // hero at its animated position; everything else at its square.
+  sprites(includeHero, motion, now, fx = null) {
+    const out = [];
+    const bob = (x, y) => Math.sin(now / 400 + x * 1.7 + y * 2.3) * 0.06;
+    for (let y = 0; y < this.h; y++)
+      for (let x = 0; x < this.w; x++) {
+        const c = this.cells[y * this.w + x];
+        const cl = this.classes[y * this.w + x];
+        if (!c) continue;
+        const seen = this.visible(x, y);
+        const shade = seen ? 1 : 0.5;
+        // (a square with a Minecraft tree on it shows the tree instead of its tile)
+        // (a tree square in Dreamland's woods is drawn as blocks; a shrub is a little tree tile)
+        const sq = `${x},${y}`;
+        if (cl && cl.sprite && !(this.oaks && this.oaks.has(sq)))
+          out.push({ x, z: y, tile: cl.sprite.tile, size: this.shrubs && this.shrubs.has(sq) ? 1.0 : cl.sprite.size, shade });
+        const isHero = x === this.hero.x && y === this.hero.y;
+        if (cl && cl.type === 'liquid' && this.dream) {
+          // swimmers sink to their middle in the clear water
+          if (isHero || c.k === 'o') continue;
+          if (c.k === 'm' || c.k === 'p') {
+            const mob = motion.mobAt(x, y);
+            if (mob && !mob.fly) {
+              const [mx, mz] = motionPos(mob, now);
+              const an = mobAnim(mob, now, this.camYaw || 0);
+              out.push({ x: mx, z: mz, tile: c.t, size: sizeHeight(mob.size), lift: -0.55 + bob(x, y), shade, mon: true,
+                tilt: an.tilt, sx: an.sx, sy: an.sy, flip: an.flip });
+              continue;
+            }
+          }
+        }
+        switch (c.k) {
+          case 'm': case 'p': case 'i': case 'W': {
+            if (isHero) break; // drawn below
+            const mob = motion.mobAt(x, y);
+            if (mob) {
+              let [mx, mz] = motionPos(mob, now);
+              const h = sizeHeight(mob.size);
+              let lift = mob.fly ? 0.5 + bob(x, y) * 2 : 0, sh = shade;
+              const off = fx && fx.mobOffset(mob, now); // hit / dodge / lunge reaction
+              if (off) { mx += off.dx; mz += off.dz; lift += off.dy; if (off.flash) sh = 2.4; }
+              const an = mobAnim(mob, now, this.camYaw || 0); // waddle, hop, flap...
+              lift += this.standHeight(mob.tx, mob.tz); // up on a tower or a pillar
+              out.push({ x: mx, z: mz, tile: c.t, size: h, lift: lift + an.dy, shade: sh, mon: true,
+                tilt: an.tilt, sx: an.sx, sy: an.sy, flip: an.flip });
+            } else {
+              out.push({ x, z: y, tile: c.t, size: c.k === 'i' ? 1 : 2, shade, mon: true });
+            }
+            break;
+          }
+          case 's':
+            out.push({ x, z: y, tile: c.t, size: 2, shade, gray: true });
+            break;
+          case 'o': // dropped items float and bob like Minecraft item drops
+            out.push({ x, z: y, tile: c.t, size: 0.55, lift: 0.18 + bob(x, y), shade });
+            break;
+          case 'z': case 'x': case 'w': case 'e': // zaps, explosions, engulfing, other effects
+            out.push({ x, z: y, tile: c.t, size: 1.4, lift: 0.3, shade: 1.3 });
+            break;
+        }
+      }
+    for (const d of this.decor) out.push(d);
+    if (includeHero) {
+      const c = this.cell(this.hero.x, this.hero.y);
+      const tile = this.heroTile != null ? this.heroTile : c && c.t;
+      if (tile != null) {
+        const [hx, hz] = motion.heroPos(now);
+        out.push({ x: hx, z: hz, tile, size: motion.heroHeight(), lift: this.heroLift || 0, shade: 1, hero: true });
+      }
+    }
+    return out;
+  }
+
+  // ---- voxels: x = map column, y = height in blocks, z = map row --------
+  // roof: treat unexplored squares as solid rock (only when walking on top of walls)
+  // pick: for aiming (an open gate can be clicked; a fence is only its own block)
+  solidVoxel(x, y, z, roof = false, pick = false) {
+    if (y < 0) {
+      if (this.dream && this.isSky(x, z)) return false; // open sky round Dreamland's floating platforms: nothing below
+      return !(y === -1 && this.dream && this.isWater(x, z)); // bedrock under everything (but Dreamland's lakes are a block deep)
+    }
+    const b = this.blocks && this.blocks.get(x, y, z);
+    if (b) return b !== 'ladder' && (pick || !WALK_THROUGH.has(b)); // ladders are climbed, open gates and the secret path's weeds walked through
+    if (!pick && y === 1 && this.blocks) {
+      const below = this.blocks.get(x, 0, z);
+      if (below === 'fence' || below === 'gate') return true; // fences are too tall to jump
+    }
+    if (y >= WALL_H) return false;
+    const c = this.classAt(x, z);
+    if (!c) return roof;
+    if (c.type === 'wall' || c.type === 'rock' || c.type === 'door') return true;
+    return !!c.lintel && y >= DOOR_H;
+  }
+
+  // open air (Dreamland's sky levels): no ground at all
+  isSky(x, z) {
+    const c = this.classAt(x, z);
+    return !!c && c.type === 'none' && c.cmap === CM.air;
+  }
+
+  isWater(x, z) {
+    const c = this.classAt(x, z);
+    return !!c && c.type === 'liquid';
+  }
+
+  // how high a monster on (x, z) stands: on top of the blocks stacked there
+  // from the ground (a pillar, a tower), else on the ground
+  standHeight(x, z) {
+    if (!this.blocks) return 0;
+    let y = 0;
+    while (y < 32 && this.solidVoxel(x, y, z)) y++;
+    return y;
+  }
+
+  isLadder(x, y, z) {
+    return !!this.blocks && this.blocks.get(x, y, z) === 'ladder';
+  }
+
+  // top of the ladder in column (x, z) (0: none)
+  ladderTop(x, z) {
+    if (!this.blocks) return 0;
+    for (let y = 15; y >= 0; y--) if (this.isLadder(x, y, z)) return y + 1;
+    return 0;
+  }
+
+  // height of the surface the hero would stand on in column (x, z) from height `fromY`
+  // (a ladder's rungs hold you at any height)
+  groundAt(x, z, fromY, roof = false) {
+    for (let y = Math.floor(fromY + 0.05) - 1; y >= -2; y--)
+      if (this.solidVoxel(x, y, z, roof) || this.isLadder(x, y, z)) return y + 1;
+    return this.dream && this.isSky(x, z) ? -1000 : 0; // over open sky: nothing to land on
+  }
+
+  // where the hero ends up stepping from height `curY` into column (x, z):
+  // the highest surface reachable with a jump (+1.25) that has 2 blocks of headroom
+  // (a ladder: its top, from below)
+  landingAt(x, z, curY, roof = false) {
+    const lt = this.ladderTop(x, z);
+    if (lt && curY < lt - 0.05 && !this.solidVoxel(x, lt, z, roof) && !this.solidVoxel(x, lt + 1, z, roof)) return lt;
+    for (let h = Math.floor(curY + 1.25); h >= (this.dream ? -1 : 0); h--) {
+      if (!this.solidVoxel(x, h - 1, z, roof) && !this.isLadder(x, h - 1, z)) continue;
+      if (this.solidVoxel(x, h, z, roof) || this.solidVoxel(x, h + 1, z, roof)) return null; // wall in the way
+      return h;
+    }
+    return null;
+  }
+
+  // Amanatides-Woo voxel traversal. Returns {x, y, z, prev:[x,y,z], t} or null.
+  raycastVoxel(o, d, maxDist, roof = false) {
+    let x = Math.floor(o[0]), y = Math.floor(o[1]), z = Math.floor(o[2]);
+    const step = d.map((v) => (v > 0 ? 1 : -1));
+    const tDelta = d.map((v) => (v !== 0 ? Math.abs(1 / v) : Infinity));
+    const tMax = [0, 1, 2].map((i) => {
+      const p = o[i], v = d[i];
+      if (v === 0) return Infinity;
+      const b = v > 0 ? Math.floor(p) + 1 : Math.floor(p);
+      return (b - p) / v;
+    });
+    let prev = [x, y, z], t = 0;
+    for (let i = 0; i < 256 && t <= maxDist; i++) {
+      const inMap = x >= 0 && z >= 0 && x < this.w && z < this.h;
+      if (inMap && this.solidVoxel(x, y, z, roof, true) && !(y < 0 && !this.classAt(x, z))) return { x, y, z, prev, t };
+      if (y < -1) return null;
+      prev = [x, y, z];
+      const a = tMax[0] < tMax[1] ? (tMax[0] < tMax[2] ? 0 : 2) : tMax[1] < tMax[2] ? 1 : 2;
+      t = tMax[a];
+      tMax[a] += tDelta[a];
+      if (a === 0) x += step[0]; else if (a === 1) y += step[1]; else z += step[2];
+    }
+    return null;
+  }
+
+  // What the crosshair is on: a monster, a placed block, a wall or the floor.
+  // x/y are map coordinates (column/row); h is the block height; prev is the
+  // empty voxel in front of the hit face (where a new block would go).
+  target(o, d, maxDist, motion, now, roof = false) {
+    const v = this.raycastVoxel(o, d, maxDist, roof);
+    const limit = v ? v.t : maxDist;
+    const mob = this.pick(o, d, limit, motion, now, true);
+    if (mob) return mob;
+    if (!v) return null;
+    const base = { x: v.x, y: v.z, h: v.y, prev: v.prev, t: v.t };
+    if (v.y < 0) return { ...base, kind: 'floor', box: [v.x, -0.001, v.z, v.x + 1, 0.02, v.z + 1] };
+    if (this.blocks && this.blocks.get(v.x, v.y, v.z))
+      return { ...base, kind: 'block', type: this.blocks.get(v.x, v.y, v.z), box: [v.x, v.y, v.z, v.x + 1, v.y + 1, v.z + 1] };
+    const c = this.classAt(v.x, v.z);
+    const kind = c ? c.type : 'rock';
+    return { ...base, kind: kind === 'door' ? 'door' : kind === 'wall' ? 'wall' : 'rock', box: [v.x, v.y, v.z, v.x + 1, v.y + 1, v.z + 1] };
+  }
+
+  // March a ray through the grid; returns {x, y, box, kind} for the first hit.
+  pick(o, d, maxDist = 24, motion = null, now = 0, mobsOnly = false) {
+    const step = 0.04;
+    for (let t = 0; t < maxDist; t += step) {
+      const px = o[0] + d[0] * t, py = o[1] + d[1] * t, pz = o[2] + d[2] * t;
+      const cx = Math.floor(px), cz = Math.floor(pz);
+      if (cx < 0 || cz < 0 || cx >= this.w || cz >= this.h) {
+        if (py < 0) return null;
+        continue;
+      }
+      const cl = this.classAt(cx, cz);
+      if (mobsOnly) {
+        if (motion) {
+          for (const m of motion.mobs.values()) {
+            const [mx, mz] = motionPos(m, now);
+            const h = sizeHeight(m.size), lift = (m.fly ? 0.5 : 0) + this.standHeight(m.tx, m.tz), r = Math.min(0.45, h * 0.22);
+            if (py >= lift && py <= lift + h && Math.abs(px - mx - 0.5) < r && Math.abs(pz - mz - 0.5) < r)
+              return { kind: 'mob', x: m.tx, y: m.tz, box: [mx + 0.5 - r, lift, mz + 0.5 - r, mx + 0.5 + r, lift + h, mz + 0.5 + r], mon: true };
+          }
+        }
+        continue;
+      }
+      if (cl && (cl.type === 'wall' || cl.type === 'rock') && py >= 0 && py <= WALL_H)
+        return cl.type === 'rock' ? null : { x: cx, y: cz, box: [cx, 0, cz, cx + 1, WALL_H, cz + 1] };
+      if (cl && cl.type === 'door' && py >= 0 && py <= WALL_H)
+        return { x: cx, y: cz, box: [cx, 0, cz, cx + 1, DOOR_H, cz + 1] };
+      if (motion) {
+        for (const m of motion.mobs.values()) {
+          const [mx, mz] = motionPos(m, now);
+          const h = sizeHeight(m.size), lift = (m.fly ? 0.5 : 0) + this.standHeight(m.tx, m.tz), r = Math.min(0.45, h * 0.22);
+          if (py >= lift && py <= lift + h && Math.abs(px - mx - 0.5) < r && Math.abs(pz - mz - 0.5) < r)
+            return { x: m.tx, y: m.tz, box: [mx + 0.5 - r, lift, mz + 0.5 - r, mx + 0.5 + r, lift + h, mz + 0.5 + r], mon: true };
+        }
+      }
+      if (py <= 0) {
+        if (!cl || cl.type === 'none' || cl.type === 'rock') return null;
+        return { x: cx, y: cz, box: [cx, 0, cz, cx + 1, 0.02, cz + 1] };
+      }
+    }
+    return null;
+  }
+}

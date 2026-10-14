@@ -1,0 +1,13 @@
+{
+  "name": "minehack",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MineHack: SLASH'EM in a Minecraft-style 3D world",
+  "scripts": {
+    "build": "sh tools/build-slashem.sh && npm run tiles",
+    "tiles": "python3 tools/tiles2png.py vendor/SlashEM web/assets/slashem/tiles.png web/assets/slashem/tiles.json && python3 tools/monster_list.py web/assets/slashem/tiles.json art/monsters/MONSTERS.txt",
+    "start": "node server/server.js",
+    "monster": "python3 tools/new_monster.py",
+    "peanut-sprites": "sh tools/get_peanut_sprites.sh"
+  }
+}

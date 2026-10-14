@@ -1,0 +1,24 @@
+{
+  "name": "Waddle Dee",
+  "base": "monkey",
+  "about": "Kirby's most common foe. Same stats, attacks and behaviour as a monkey (it steals items).",
+  "tile": [
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMAAAAMMMMMM",
+    "MMMMAACCCCAAMMMM",
+    "MMMACCCCCCCCAMMM",
+    "MMACCLLLLLLCCAMM",
+    "MMACLLALLALLCAMM",
+    "MACCLLALLALLCCAM",
+    "MACCLLALLALLCCAM",
+    "MACCLDLLLLDLCCAM",
+    "MACCCLLLLLLCCCAM",
+    "MMACCCCCCCCCCAMM",
+    "MMAKCCCCCCCCKAMM",
+    "MMMAAKKKKKKAAMMM",
+    "MMAHHHAMMAHHHAMM",
+    "MMMAAAMMMMAAAMMM"
+  ],
+  "nogen": true
+}

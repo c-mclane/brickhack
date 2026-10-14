@@ -1,0 +1,10 @@
+{
+  "name": "cherub",
+  "base": "Aleax",
+  "about": "A gentle little angel of Dreamland: an Aleax at heart, but only level 2 with one small weapon attack. Only appears where a level places it.",
+  "replace": [
+    ["LVL(10, 8, 0, 30, 7), (G_NOHELL|G_NOCORPSE|1)", "LVL(2, 12, 6, 10, 7), (G_NOGEN|G_NOCORPSE)"],
+    ["A(ATTK(AT_WEAP, AD_PHYS, 1, 6), ATTK(AT_WEAP, AD_PHYS, 1, 6),\n\t  ATTK(AT_KICK, AD_PHYS, 1, 4), NO_ATTK, NO_ATTK, NO_ATTK)", "A(ATTK(AT_WEAP, AD_PHYS, 1, 4), NO_ATTK,\n\t  NO_ATTK, NO_ATTK, NO_ATTK, NO_ATTK)"],
+    ["M2_MINION|M2_STALK|M2_NASTY|M2_COLLECT", "M2_COLLECT"]
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Bomber",
+  "base": "gas spore",
+  "about": "A walking skull bomb from Peanut Plains: explodes like a gas spore.",
+  "nogen": true
+}

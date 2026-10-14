@@ -1,0 +1,6 @@
+{
+  "name": "Noddy",
+  "base": "homunculus",
+  "about": "A sleepy Peanut Plains enemy: its bite puts you to sleep, like a homunculus.",
+  "nogen": true
+}

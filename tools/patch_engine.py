@@ -1,0 +1,275 @@
+#!/usr/bin/env python3
+"""Hook NetHack / SLASH'EM core files into the web window port's block world.
+
+  hack.c   test_move: hero may climb onto blocks/walls the client approved;
+           NetHack-initiated moves (running, travel) never walk into blocks
+  mon.c    mfndpos:   monsters can't step into squares with placed blocks
+  mhitu.c  mattacku:  ground monsters can't melee a hero standing 2+ blocks up
+  u_init.c u_init:    every role starts with a pick-axe
+
+Idempotent: each hook is tagged with WEB_HOOK and skipped if present.
+usage: patch_engine.py <source dir>
+"""
+import re
+import sys
+
+src = sys.argv[1]
+TAG = "/* WEB_HOOK */"
+
+
+def patch(rel, decl, pattern, insert, after=True):
+    path = f"{src}/{rel}"
+    s = open(path, encoding="latin-1").read()
+    if TAG in s:
+        return
+    m = re.search(pattern, s, re.M)
+    if not m:
+        sys.exit(f"patch_engine: anchor not found in {rel}: {pattern}")
+    # insert after the match, or before its last group when after=False
+    pos = m.end() if after else m.start(m.lastindex or 0)
+    s = s[:pos] + insert + s[pos:]
+    if decl:
+        s = s.replace('#include "hack.h"\n', '#include "hack.h"\n' + decl + "\n", 1)
+    open(path, "w", encoding="latin-1").write(s)
+
+
+# hack.c: first thing test_move does after its declarations
+patch("src/hack.c",
+      "extern int FDECL(web_test_move, (int, int, int)); " + TAG,
+      r"^test_move\((?:.|\n)*?register struct rm \*ust;\n",
+      "\n    { " + TAG + "\n        int webr = web_test_move(x, y, mode);\n"
+      "        if (webr >= 0)\n            return (boolean) webr;\n    }\n")
+
+# mon.c: inside the neighbour loop of mfndpos
+patch("src/mon.c",
+      "extern int FDECL(web_cell_blocked, (int, int)); " + TAG,
+      r"^mfndpos\((?:.|\n)*?if\s*\(nx == x && ny == y\)\s*\n?\s*continue;\n",
+      "            if (web_cell_blocked(nx, ny)) " + TAG + "\n                continue;\n")
+
+# mhitu.c: before mattacku's first statement
+patch("src/mhitu.c",
+      "extern int FDECL(web_mon_cant_reach, (struct monst *)); " + TAG,
+      r"^mattacku\((?:.|\n)*?\n(\s*if\s*\(\s*!ranged\s*\)\s*\n?\s*nomul\(0\);)",
+      "    if (web_mon_cant_reach(mtmp)) " + TAG + "\n        return 0;\n",
+      after=False)
+
+# u_init.c: give everyone a pick-axe before race-specific setup
+patch("src/u_init.c", None,
+      r"\n(\s*/\*\*\* Race-specific initializations \*\*\*/)",
+      "\n    { " + TAG + " /* NetHack 3D: everyone starts with a pick-axe */\n"
+      "        static struct trobj Pickaxe[] = { { PICK_AXE, 0, TOOL_CLASS, 1, UNDEF_BLESS },\n"
+      "                                          { 0, 0, 0, 0, 0 } };\n"
+      "        if (!carrying(PICK_AXE) && !carrying(DWARVISH_MATTOCK))\n"
+      "            ini_inv(Pickaxe);\n    }\n",
+      after=False)
+
+# ---- MineHack: a bigger map (SLASH'EM coordinates are signed chars: max 127)
+def edit(rel, pairs, tag):
+    path = f"{src}/{rel}"
+    s = open(path, encoding="latin-1").read()
+    if tag in s:
+        return
+    for a, b in pairs:
+        if a not in s:
+            sys.exit(f"patch_engine: anchor not found in {rel}: {a[:60]}")
+        s = s.replace(a, b, 1)
+    open(path, "w", encoding="latin-1").write(s)
+
+edit("include/global.h", [("#define COLNO	80", "#define COLNO	120 /* MineHack: bigger maps; WEB_HOOK_MAPSIZE */"),
+                          ("#define ROWNO	21", "#define ROWNO	64")], "WEB_HOOK_MAPSIZE")
+edit("include/sp_lev.h", [("#define MAP_X_LIM	76", "#define MAP_X_LIM	118 /* WEB_HOOK_MAPSIZE */"),
+                          ("#define MAP_Y_LIM	21", "#define MAP_Y_LIM	62")], "WEB_HOOK_MAPSIZE")
+# the Planes of Air/Water hardcode the old 80x21 area; shift it to the centred map
+edit("src/mkmaze.c", [("	xmin = 3;\n	ymin = 1;\n	xmax = 78;\n	ymax = 20;",
+                       "	xmin = 3 + (COLNO - 80) / 2; /* WEB_HOOK_MAPSIZE */\n	ymin = 1 + (ROWNO - 21) / 2;\n	xmax = 78 + (COLNO - 80) / 2;\n	ymax = 20 + (ROWNO - 21) / 2;")],
+     "WEB_HOOK_MAPSIZE")
+
+# the level compiler keeps a whole MAP in a 4096-byte buffer: room for 118x62
+for rel in ("util/lev_comp.l", "sys/share/lev_lex.c"):
+    edit(rel, [("static char map[4096];", "static char map[16384]; /* WEB_HOOK_MAPSIZE */")], "WEB_HOOK_MAPSIZE")
+
+# ---- MineHack Dreamland: an overland start level, its own story, swimming
+edit("include/flag.h", [("	boolean  legacy;	/* print game entry \"story\" */",
+                         "	boolean  legacy;	/* print game entry \"story\" */\n	boolean  dreamland;	/* MineHack: start in Dreamland; WEB_HOOK_DREAM */")],
+     "WEB_HOOK_DREAM")
+edit("src/options.c", [('	{"legacy", &flags.legacy, TRUE, DISP_IN_GAME},',
+                        '	{"legacy", &flags.legacy, TRUE, DISP_IN_GAME},\n	{"dreamland", &flags.dreamland, FALSE, SET_IN_FILE}, /* WEB_HOOK_DREAM */')],
+     "WEB_HOOK_DREAM")
+# the first level of the Dungeons of Doom is the Dreamland overland
+# (mklev.c holds only Dreamland's hook: start from SLASH'EM's own copy each
+# build, so the hook can change)
+import subprocess as _sp
+_sp.run(["git", "-C", src, "checkout", "--", "src/mklev.c"], check=True)
+# Dreamland's levels (Ascend): level n of the first dungeon is "dreamln<n>"
+# (the first, "dreamlnd"), up to DREAM_LEVELS (dreamlnd.h, from
+# tools/dreamland_gen.py)
+edit("src/mklev.c", [("	    register s_level *slev = Is_special(&u.uz);\n",
+                      "	    register s_level *slev = Is_special(&u.uz);\n\n"
+                      "	    if (flags.dreamland && u.uz.dnum == 0 && u.uz.dlevel <= DREAM_LEVELS) { /* WEB_HOOK_DREAM */\n"
+                      "		char dname[16]; /* (level names are max 8 chars) */\n"
+                      "		if (u.uz.dlevel == 1) Strcpy(dname, \"dreamlnd\");\n"
+                      "		else Sprintf(dname, \"dreamln%d\", (int) u.uz.dlevel);\n"
+                      "		makemaz(dname);\n		return;\n	    }\n"),
+                     ("#include \"hack.h\"\n", "#include \"hack.h\"\n#include \"dreamlnd.h\" /* WEB_HOOK_DREAM: DREAM_LEVELS */\n")],
+     "WEB_HOOK_DREAM")
+edit("src/allmain.c", [("	if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1);\n	}",
+                        "	if (flags.dreamland) { /* WEB_HOOK_DREAM */\n		extern void NDECL(web_dreamland_intro);\n"
+                        "		flush_screen(1);\n		web_dreamland_intro();\n	} else if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1);\n	}")],
+     "WEB_HOOK_DREAM")
+# Dreamland heroes are blessed with swimming (the lakes are for paddling)
+edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
+                       "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"
+                       "    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */")],
+     "WEB_HOOK_DREAM")
+# Dreamland's lakes are clear and friendly: swimmers stay on the surface
+# (NetHack's swimming is underwater: the map shrinks to the squares around
+# you and your scrolls and potions get soaked)
+edit("src/trap.c", [("	/* happily wading in the same contiguous pool */",
+                     "	if (flags.dreamland && Swimming && u.uz.dnum == 0) { /* WEB_HOOK_SWIM */\n"
+                     "	    if (!is_pool(u.ux - u.dx, u.uy - u.dy))\n"
+                     "		You(\"splash into the clear water and paddle along.\");\n"
+                     "	    u.uinwater = 0;\n"
+                     "	    return(FALSE);\n"
+                     "	}\n\n"
+                     "	/* happily wading in the same contiguous pool */")],
+     "WEB_HOOK_SWIM")
+# Dreamland's creatures stay in Dreamland: leaving it, only pets come along
+edit("src/dog.c", [("	    if (pets_only && !mtmp->mtame) continue;",
+                    "	    if (pets_only && !mtmp->mtame) continue;\n"
+                    "	    if (flags.dreamland && u.uz.dnum == 0 && u.uz.dlevel == 1 && !mtmp->mtame) continue; /* WEB_HOOK_DREAM */")],
+     "WEB_HOOK_DREAM")
+# ...and no zapping wands at a hero who's out of reach up high
+edit("src/muse.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int FDECL(web_mon_cant_reach, (struct monst *)); /* WEB_HOOK_REACH */\n"),
+                    ("	m.offensive = (struct obj *)0;\n	m.has_offense = 0;\n",
+                     "	m.offensive = (struct obj *)0;\n	m.has_offense = 0;\n"
+                     "	if (web_mon_cant_reach(mtmp)) return FALSE; /* WEB_HOOK_REACH */\n")],
+     "WEB_HOOK_REACH")
+# Ascend: the stair in the house you start in goes down and out of the game
+edit("src/do.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int NDECL(web_dream_exit_here); /* WEB_HOOK_EXIT */\n"),
+                  ("	if (Role_if(PM_GNOME) && on_level(&mineend_level,&u.uz)) {",
+                   "	if (web_dream_exit_here()) { /* WEB_HOOK_EXIT */\n"
+                   "		if (yn(\"Beware, there will be no return! Still go down?\") != 'y')\n"
+                   "			return(0);\n"
+                   "		if (!next_to_u()) {\n"
+                   "			You(\"are held back by your pet!\");\n"
+                   "			return(0);\n"
+                   "		}\n"
+                   "		prev_level(TRUE); /* level 0: you leave, as up the Dungeons' first stairs */\n"
+                   "		return(1);\n"
+                   "	}\n"
+                   "	if (Role_if(PM_GNOME) && on_level(&mineend_level,&u.uz)) {"),
+                  ("doup()\n{\n",
+                   "doup()\n{\n"
+                   "	if (web_dream_exit_here()) { /* WEB_HOOK_EXIT: that stair only goes down */\n"
+                   "		You_cant(\"go up here.\");\n"
+                   "		return(0);\n"
+                   "	}\n")],
+     "WEB_HOOK_EXIT")
+# Dreamland's second level (Ascend: you come up through the portal on the
+# first level's tower)
+# Dreamland: food heals you, as in Kirby (a melon heals you completely, like a Maxim Tomato)
+edit("src/eat.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern void FDECL(web_dream_food, (struct obj *)); /* WEB_HOOK_FOOD */\n"),
+                   ("register struct obj *otmp;\n{\n	switch(otmp->otyp) {\n	    case SPRIG_OF_WOLFSBANE:",
+                    "register struct obj *otmp;\n{\n	web_dream_food(otmp); /* WEB_HOOK_FOOD */\n"
+                    "	switch(otmp->otyp) {\n	    case SPRIG_OF_WOLFSBANE:")],
+     "WEB_HOOK_FOOD")
+# a monster standing on top of a stack of blocks (put there by a Dreamland
+# level) stays up there: it only moves along the tops
+edit("src/mon.c", [("extern int FDECL(web_cell_blocked, (int, int)); /* WEB_HOOK */",
+                    "extern int FDECL(web_cell_blocked, (int, int)); /* WEB_HOOK */\n"
+                    "extern int FDECL(web_mon_step_blocked, (int, int, int, int)); /* WEB_HOOK_UP */"),
+                   ("            if (web_cell_blocked(nx, ny)) /* WEB_HOOK */",
+                    "            if (web_mon_step_blocked(x, y, nx, ny)) /* WEB_HOOK WEB_HOOK_UP */")],
+     "WEB_HOOK_UP")
+# Dreamland's palace: offering anything on its altar opens a portal in
+# one of the hedge mazes (whatever the gods make of the offering)
+edit("src/pray.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern void NDECL(web_dream_sacrifice); /* WEB_HOOK_ALTAR */\n"),
+                    ("    if (orac) return (offer_oracle(orac, otmp));",
+                     "    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n"
+                     "    if (orac) return (offer_oracle(orac, otmp));")],
+     "WEB_HOOK_ALTAR")
+# dev cheese: the "Blazing Cheese" armour sets monsters that hit you in melee on fire
+edit("src/mhitu.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int FDECL(web_cheese_burn, (struct monst *)); /* WEB_HOOK_CHEESE */\n"),
+                     ("	    if(sum[i] == 2) return 1;		/* attacker dead */",
+                      "	    if (sum[i] == 1 && !range2 && web_cheese_burn(mtmp)) return 1; /* WEB_HOOK_CHEESE: burnt up */\n"
+                      "	    if(sum[i] == 2) return 1;		/* attacker dead */")],
+     "WEB_HOOK_CHEESE")
+# MineHack races: dwarves and elves can be any role, of any alignment the
+# role allows (they also count as human for the roles' race lists), and two
+# new races, for every role too: the Quantum (born of a quantum mechanic:
+# teleports at random, from the start) and the Angel (flies, sees invisible)
+RACE_ANY = "MH_HUMAN | ROLE_MALE|ROLE_FEMALE | ROLE_LAWFUL|ROLE_NEUTRAL|ROLE_CHAOTIC"
+edit("src/role.c", [
+    ("	PM_DWARF, NON_PM, PM_DWARF_MUMMY, PM_DWARF_ZOMBIE,\n	MH_DWARF | ROLE_MALE|ROLE_FEMALE | ROLE_LAWFUL,",
+     "	PM_DWARF, NON_PM, PM_DWARF_MUMMY, PM_DWARF_ZOMBIE,\n	MH_DWARF | " + RACE_ANY + ", /* WEB_HOOK_RACES: any role */"),
+    ("	PM_ELF, NON_PM, PM_ELF_MUMMY, PM_ELF_ZOMBIE,\n	MH_ELF | ROLE_MALE|ROLE_FEMALE | ROLE_LAWFUL|ROLE_NEUTRAL,",
+     "	PM_ELF, NON_PM, PM_ELF_MUMMY, PM_ELF_ZOMBIE,\n	MH_ELF | " + RACE_ANY + ", /* WEB_HOOK_RACES: any role */"),
+    ("/* Array terminator */\n{ 0, 0, 0, 0 }};",
+     "{	\"quantum\", \"quantum\", \"quantumhood\", \"Qua\", /* WEB_HOOK_RACES */\n"
+     "	{0, 0},\n"
+     "	PM_QUANTUM_MECHANIC, NON_PM, PM_HUMAN_MUMMY, PM_HUMAN_ZOMBIE,\n"
+     "	" + RACE_ANY + ",\n"
+     "	MH_HUMAN, 0, MH_GNOME|MH_ORC,\n"
+     "	/*    Str     Int Wis Dex Con Cha */\n"
+     "	{      3,      3,  3,  3,  3,  3 },\n"
+     "	{ STR18(100), 20, 18, 20, 18, 18 },\n"
+     "	/* Init   Lower  Higher */\n"
+     "	{  2, 0,  0, 2,  1, 0 },	/* Hit points */\n"
+     "	{  2, 0,  2, 0,  2, 0 }		/* Energy */\n"
+     "},\n"
+     "{	\"angel\", \"angelic\", \"angelhood\", \"Ang\", /* WEB_HOOK_RACES */\n"
+     "	{0, 0},\n"
+     "	PM_ANGEL, NON_PM, PM_HUMAN_MUMMY, PM_HUMAN_ZOMBIE,\n"
+     "	" + RACE_ANY + ",\n"
+     "	MH_HUMAN, 0, MH_ORC,\n"
+     "	/*    Str     Int Wis Dex Con Cha */\n"
+     "	{      3,      3,  3,  3,  3,  3 },\n"
+     "	{ STR18(100), 18, 20, 18, 18, 20 },\n"
+     "	/* Init   Lower  Higher */\n"
+     "	{  2, 0,  0, 2,  1, 0 },	/* Hit points */\n"
+     "	{  3, 0,  3, 0,  3, 0 }		/* Energy */\n"
+     "},\n"
+     "/* Array terminator */\n{ 0, 0, 0, 0 }};"),
+], "WEB_HOOK_RACES")
+# (an Angel's wings: flying as an intrinsic, which SLASH'EM doesn't have)
+edit("include/youprop.h", [
+    ("#define EFlying			u.uprops[FLYING].extrinsic\n#ifdef STEED\n# define Flying			(EFlying || is_flyer(youmonst.data) || \\",
+     "#define EFlying			u.uprops[FLYING].extrinsic\n#define HFlying			u.uprops[FLYING].intrinsic /* WEB_HOOK_RACES */\n"
+     "#ifdef STEED\n# define Flying			(EFlying || HFlying || is_flyer(youmonst.data) || \\"),
+    ("# define Flying			(EFlying || is_flyer(youmonst.data))\n",
+     "# define Flying			(EFlying || HFlying || is_flyer(youmonst.data))\n"),
+], "WEB_HOOK_RACES")
+edit("src/attrib.c", [
+    ("	dop_abil[] = {",
+     "	qua_abil[] = { {   1, &(HTeleportation), \"\", \"\" }, /* WEB_HOOK_RACES: random teleports */\n"
+     "		       {   0, 0, 0, 0 } },\n\n"
+     "	ang_abil[] = { {   1, &(HFlying), \"\", \"\" }, /* WEB_HOOK_RACES */\n"
+     "		       {   1, &(HSee_invisible), \"\", \"\" },\n"
+     "		       {   0, 0, 0, 0 } },\n\n"
+     "	dop_abil[] = {"),
+    ("	case PM_DOPPELGANGER:	rabil = dop_abil;	break;",
+     "	case PM_DOPPELGANGER:	rabil = dop_abil;	break;\n"
+     "	case PM_QUANTUM_MECHANIC: rabil = qua_abil;	break; /* WEB_HOOK_RACES */\n"
+     "	case PM_ANGEL:		rabil = ang_abil;	break;"),
+], "WEB_HOOK_RACES")
+# Dreamland's levels have no random variants, even where the dungeon happens
+# to put one of SLASH'EM's special levels (makemaz would look for
+# "dreamln5-2.lev", fail and make a maze instead)
+edit("src/mkmaze.c", [
+    ("	    if(sp && sp->rndlevs) Sprintf(protofile, \"%s-%d\", s,",
+     "	    if(sp && sp->rndlevs && strncmp(s, \"dreamln\", 7)) /* WEB_HOOK_DREAMVARIANT */\n"
+     "			 Sprintf(protofile, \"%s-%d\", s,"),
+], "WEB_HOOK_DREAMVARIANT")
+# the Fountain of Dreams' trial runs once a turn (winweb.c web_dream_waves)
+edit("src/allmain.c", [
+    ("		    monstermoves++;\n		    moves++;\n",
+     "		    monstermoves++;\n		    moves++;\n"
+     "		    { extern void NDECL(web_dream_waves); web_dream_waves(); } /* WEB_HOOK_WAVES */\n"),
+], "WEB_HOOK_WAVES")
+# the Star Rod (the Fountain of Dreams' prize): its beam of stars (winweb.c web_star_rod)
+edit("src/zap.c", [
+    ("	if (otyp >= SPE_MAGIC_MISSILE && otyp <= SPE_ACID_STREAM)\n		skilldmg = spell_damage_bonus(obj->otyp);",
+     "	{ extern int FDECL(web_star_rod, (struct obj *)); if (web_star_rod(obj)) return; } /* WEB_HOOK_STARROD */\n"
+     "	if (otyp >= SPE_MAGIC_MISSILE && otyp <= SPE_ACID_STREAM)\n		skilldmg = spell_damage_bonus(obj->otyp);"),
+], "WEB_HOOK_STARROD")
+print("engine hooks applied:", src)

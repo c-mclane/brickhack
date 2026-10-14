@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MineHack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="nametags"></div>
+<div id="fx"><div id="hurt-flash"></div></div>
+<div id="nowplaying"></div>
+
+<div id="hud" class="hidden">
+  <div id="crosshair"></div>
+  <div id="held" class="hidden"><div class="item"></div></div>
+  <div id="info"></div>
+  <div id="raw-badge" class="hidden">RAW KEYS (` to exit)</div>
+  <div id="title-text"><div class="big"></div><div class="sub"></div></div>
+  <div id="chat"></div>
+  <div id="prompt" class="hidden"><div class="q"></div><div class="choices"></div></div>
+  <div id="cond"></div>
+  <div id="itemname"></div>
+  <div id="recommend" class="hidden"><div class="rec-title">Recommended</div><div class="rec-list"></div></div>
+  <button id="actions-btn" title="All actions (I)">Actions <span>[I]</span></button>
+  <div id="bottom">
+    <div id="stat-rows">
+      <div class="row"><div id="armor" class="icons"></div><div id="power" class="icons right"></div></div>
+      <div class="row"><div id="hearts" class="icons"></div><div id="hunger" class="icons right"></div></div>
+    </div>
+    <div id="xp"><div class="fill"></div><div class="lvl"></div></div>
+    <div id="hotbar"></div>
+  </div>
+</div>
+
+<!-- inventory (E) -->
+<div id="inv" class="screen hidden">
+  <div class="inv-tabs">
+    <button class="inv-tab on" data-tab="items">Inventory</button>
+    <button class="inv-tab" data-tab="actions">Actions</button>
+  </div>
+  <div id="actions-panel" class="mc-panel actions-panel hidden"></div>
+  <div class="mc-panel inv-panel">
+    <div class="inv-top">
+      <div id="equip"></div>
+      <div id="hero-preview" title="Click to change your skin"><div class="icon big"></div><div class="name"></div></div>
+      <div id="charstats"></div>
+    </div>
+    <div class="label" id="inv-label">Inventory</div>
+    <div id="grid" class="slots"></div>
+    <div class="label">Blocks (drag to the hotbar)</div>
+    <div id="inv-blocks" class="slots"></div>
+    <div class="label">Hotbar</div>
+    <div id="inv-hotbar" class="slots"></div>
+    <div id="inv-actions"></div>
+  </div>
+</div>
+
+<div id="chest" class="screen hidden">
+  <div class="mc-panel inv-panel">
+    <div class="label chest-title">Chest</div>
+    <div id="chest-grid" class="slots"></div>
+    <div class="label">Inventory</div>
+    <div id="chest-inv" class="slots"></div>
+    <div class="chest-hint">Click an item to move it · Esc to close</div>
+  </div>
+</div>
+<div id="menu" class="screen hidden"><div class="mc-panel menu-panel"><div class="title"></div><div class="list"></div><div class="buttons"></div></div></div>
+<div id="text" class="screen hidden"><div class="mc-panel text-panel"><pre class="body"></pre><div class="buttons"><button class="mc-btn" data-act="close">Done</button></div></div></div>
+<div id="lineinput" class="screen hidden"><div class="chatbar"><div class="q"></div><input type="text" autocomplete="off" spellcheck="false"><datalist id="extlist"></datalist></div></div>
+<div id="ctxmenu" class="hidden"></div>
+<div id="tooltip" class="hidden"></div>
+
+<!-- title / menus -->
+<div id="title" class="screen dirt">
+  <div class="logo">MINEHACK<div class="splash"></div></div>
+  <div class="col">
+    <button class="mc-btn" data-act="singleplayer">Descend</button>
+    <button class="mc-btn" data-act="dreamland">Ascend</button>
+    <button class="mc-btn" data-act="chess">Chess</button>
+    <button class="mc-btn" data-act="controls">Controls</button>
+    <button class="mc-btn" data-act="options">Options...</button>
+    <button class="mc-btn" data-act="reset">Reset Game...</button>
+  </div>
+  <div class="footer">MineHack · built on SLASH'EM 0.0.8E0F2 and NetHack · game &amp; tiles by the SLASH'EM team and NetHack DevTeam</div>
+</div>
+
+<div id="reset" class="screen dirt hidden">
+  <h2>Reset Game</h2>
+  <div class="reset-text">Delete every saved character, everything built in their worlds, and any bones?<br>This can't be undone. (High scores are kept.)</div>
+  <div class="row">
+    <button class="mc-btn" data-act="reset-yes">Delete Everything</button>
+    <button class="mc-btn" data-act="reset-no">Cancel</button>
+  </div>
+</div>
+
+<!-- Chess mode: the board is in the 3D view (main.js); this is its panel -->
+<div id="chess" class="hidden">
+  <div class="chess-side">
+    <h2>Chess</h2>
+    <div class="chess-status"></div>
+    <div class="chess-promo"></div>
+    <div class="chess-taken"></div>
+    <button class="mc-btn" data-act="chess-new">New Game</button>
+    <button class="mc-btn" data-act="chess-mode"></button>
+    <button class="mc-btn" data-act="chess-back">Back to Title</button>
+    <div class="chess-help">Click a piece, then a square. Drag to look around; scroll to zoom.</div>
+  </div>
+</div>
+
+<div id="worlds" class="screen dirt hidden">
+  <h2>Select Character</h2>
+  <div class="worldlist"></div>
+  <div class="row">
+    <button class="mc-btn" data-act="create">Create New Character</button>
+    <button class="mc-btn" data-act="back">Cancel</button>
+  </div>
+</div>
+
+<div id="create" class="screen dirt hidden">
+  <h2>Create New Character</h2>
+  <label class="mc-label">Character Name</label>
+  <input id="cname" class="mc-input" maxlength="30" value="Steve">
+  <div class="skin-row">
+    <div class="skin-previews">
+      <div id="skin-preview" class="skin-preview" title="Your character"></div>
+      <div id="skin-ingame" class="skin-ingame" title="In-game size"></div>
+      <div class="skin-caption">Skin</div>
+    </div>
+    <div class="col skin-buttons">
+      <button class="mc-btn" data-act="upload">Upload Skin Image...</button>
+      <button class="mc-btn" data-skinopt="removeBg"></button>
+      <button class="mc-btn" data-skinopt="palette"></button>
+      <button class="mc-btn" data-act="clearskin">Use Role Default</button>
+      <button class="mc-btn" data-act="mcskin">Minecraft Skin (.png)...</button>
+    </div>
+  </div>
+  <input type="file" id="skinfile" accept="image/*" hidden>
+  <input type="file" id="mcskinfile" accept="image/png" hidden>
+  <div class="col">
+    <button class="mc-btn cycle" data-key="role"></button>
+    <button class="mc-btn cycle" data-key="race"></button>
+    <button class="mc-btn cycle" data-key="gender"></button>
+    <button class="mc-btn cycle" data-key="align"></button>
+    <button class="mc-btn cycle" data-key="legacy"></button>
+  </div>
+  <div class="row">
+    <button class="mc-btn" data-act="go">Create Character</button>
+    <button class="mc-btn" data-act="back">Cancel</button>
+  </div>
+</div>
+
+<div id="pause" class="screen dim hidden">
+  <h2>Game Menu</h2>
+  <div class="col">
+    <button class="mc-btn" data-act="resume">Back to Game</button>
+    <button class="mc-btn" data-act="options">Options...</button>
+    <button class="mc-btn" data-act="controls">Controls</button>
+    <button class="mc-btn" data-act="savequit">Save and Quit to Title</button>
+  </div>
+</div>
+
+<div id="options" class="screen dim hidden">
+  <h2>Options</h2>
+  <div class="col">
+    <button class="mc-btn" data-opt="camera"></button>
+    <button class="mc-btn" data-opt="wallStyle"></button>
+    <button class="mc-btn" data-opt="tileset"></button>
+    <button class="mc-btn" data-opt="playerModel"></button>
+    <button class="mc-btn" data-act="mcskin">Load Minecraft Skin (.png)...</button>
+    <div class="mc-slider"><input type="range" min="50" max="110" data-opt="fov"><span></span></div>
+    <div class="mc-slider"><input type="range" min="10" max="200" data-opt="sens"><span></span></div>
+    <div class="mc-slider"><input type="range" min="0" max="100" data-opt="music"><span></span></div>
+    <button class="mc-btn" data-act="done">Done</button>
+  </div>
+</div>
+
+<div id="controls" class="screen dim hidden">
+  <h2>Controls</h2>
+  <div class="mc-panel controls-panel"><table id="controls-table"></table></div>
+  <button class="mc-btn" data-act="done">Done</button>
+</div>
+
+<div id="death" class="screen red hidden">
+  <h1>You Died!</h1>
+  <div class="how"></div>
+  <div class="score"></div>
+  <div class="col">
+    <button class="mc-btn" data-act="respawn">Respawn</button>
+    <button class="mc-btn" data-act="title">Title Screen</button>
+  </div>
+</div>
+
+<div id="loading" class="screen dirt hidden"><h2>Loading world...</h2></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
