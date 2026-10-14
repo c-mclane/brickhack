@@ -122,6 +122,17 @@ button { font-family: inherit; }
 #title .logo { font-size: clamp(64px, 14vw, 150px); letter-spacing: 6px; color: #d8d8d8; margin-bottom: 30px; position: relative;
   text-shadow: 6px 6px 0 #3a3a3a, 0 0 2px #000; -webkit-text-stroke: 2px #222; }
 #title .logo span { font-size: .45em; color: #b22; margin-left: 10px; vertical-align: top; }
+/* the title screen: a LEGO baseplate with the logo built on it in bricks (brandlogo.js);
+   the logo slot is where the letters are framed; plain text and the flat plate only without WebGL2 */
+#title-plate { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+#title.lego3d { background: none; }
+#title.lego3d::before { display: none; }
+#title.lego3d #title-plate { display: block; }
+#title .logo .logo-slot { width: min(86vw, 860px); aspect-ratio: 53 / 7; }
+#title.lego3d .splash { bottom: -44px; right: -20px; } /* (below the brick letters, not on them) */
+#title .logo .logo-text { display: none; font-size: 1em; color: inherit; margin: 0; }
+#title .logo.no-gl .logo-slot { display: none; }
+#title .logo.no-gl .logo-text { display: inline; }
 #title .splash { position: absolute; right: -60px; bottom: -8px; font-size: 22px; max-width: 260px; text-align: center; line-height: 1; color: #ff5; transform: rotate(-18deg);
   -webkit-text-stroke: 0; animation: splash .5s infinite alternate ease-in-out; letter-spacing: 0; text-shadow: 2px 2px 0 #3f3f00; }
 @keyframes splash { from { transform: rotate(-18deg) scale(1); } to { transform: rotate(-18deg) scale(1.08); } }

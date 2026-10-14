@@ -16,6 +16,7 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster } from './figpick.js';
+import { titleScene } from './brandlogo.js';
 import { makeSkin, loadSkinURL } from './skin.js';
 
 const $ = (s) => document.querySelector(s);
@@ -840,8 +841,8 @@ const CYCLES = {
   align: ['Alignment', ['random', 'lawful', 'neutral', 'chaotic']],
   legacy: ['Intro story', ['off', 'on']],
 };
-const SPLASHES = ['Now in 3D!', 'Elbereth!', 'Also try Minecraft!', 'The DevTeam thinks of everything!', 'Do not eat the cockatrice!',
-  'You hear the footsteps of a guard on patrol.', '100% tiles!', 'Ascend!', 'Hello, Steve!', 'Watch out for soldier ants!'];
+const SPLASHES = ['Now in 3D!', 'Elbereth!', 'Now with studs!', 'The DevTeam thinks of everything!', 'Do not eat the cockatrice!',
+  'You hear the footsteps of a guard on patrol.', '100% tiles!', 'Ascend!', 'Mind your bare feet!', 'Watch out for soldier ants!'];
 
 const CONTROLS = [
   ['Mouse', 'Look around'], ['W A S D', 'Move (relative to camera, 8 directions)'], ['Shift + WASD', 'Rush in a direction'],
@@ -858,6 +859,8 @@ const CONTROLS = [
 
 function buildScreens() {
   $('#title .splash').textContent = SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
+  if (titleScene($('#title-plate'), $('#title .logo-slot'))) $('#title').classList.add('lego3d');
+  else $('#title .logo').classList.add('no-gl');
   $('#title [data-act=singleplayer]').onclick = openWorlds;
   // Reset Game: delete every save, block world and bones (after a confirmation)
   const RESET_TEXT = $('#reset .reset-text').innerHTML;
