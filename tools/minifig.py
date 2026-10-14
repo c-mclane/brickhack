@@ -11,7 +11,7 @@ SPEC example:
    "right": {"part": "3847", "color": 72, "aim": [0, -1, -0.6], "face": [1, 0, 0]},
    "left":  {"part": "3846p4c", "color": 15, "aim": [0, -1, 0], "face": [0.3, 0, -1]}}
 
-"torsoDecal": {"image": ...} prints a picture on the chest.
+"torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
 "plume": {"part": "87694", "color": 4} plugs a feather into the helmet's top.
 
@@ -56,6 +56,7 @@ HELD = {
     '3959': {'center': (0, 0, 12), 'up': (0, 0, -1)},                       # torch: flame up
     '18395': {'center': (0, -5, 0), 'up': (0, -1, 0)},                      # flame: by its bar, burning upward
     '30385': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # crystal: standing on top of the fist
+    '49492': {'center': (0, -40, 0), 'up': (0, -1, 0)},                     # shepherd's crook / crozier: the hook up
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
@@ -195,6 +196,8 @@ def build(spec, base_dir='.'):
     if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
         out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, spec['hair']['part']))
     if spec.get('hat'):
+        if spec.get('hatDecal'):   # a picture on the hat's front ("center"/"size" in the hat's frame)
+            out.append(decal_line({'part': spec['hat'], 'decal': spec['hatDecal']}, np.array([0.0, -24, 0]), I, base_dir))
         out.append(line(spec.get('hatColor', 0), (0, -24, 0), I, spec['hat']))
         plume = spec.get('plume')
         if plume:

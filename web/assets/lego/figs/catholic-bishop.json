@@ -1,0 +1,57 @@
+{
+ "name": "Catholic Bishop",
+ "label": "Catholic Bishop",
+ "role": "priest",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "torsoDecal": {
+  "image": "../decals/orphrey.png",
+  "center": [
+   0,
+   14,
+   -10
+  ],
+  "size": [
+   22,
+   28
+  ]
+ },
+ "head": "3626bp4g",
+ "headColor": 14,
+ "hat": "2338",
+ "hatColor": 15,
+ "hatDecal": {
+  "image": "../decals/gold-cross.png",
+  "center": [
+   0,
+   -2,
+   -16
+  ],
+  "size": [
+   12,
+   14
+  ]
+ },
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "neck": {
+  "part": "50231c01",
+  "color": 320,
+  "decal": {
+   "image": "../decals/gold-cross.png"
+  }
+ },
+ "left": {
+  "part": "49492",
+  "color": 297,
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "label": "Poor Clare",
+ "role": "monk",
+ "gender": "female",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 308,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hat": "52345",
+ "hatColor": 15,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "torsoDecal": {
+  "image": "../decals/habit-franciscan.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   30,
+   32
+  ]
+ },
+ "name": "Poor Clare"
+}

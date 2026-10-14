@@ -1,0 +1,24 @@
+{
+ "label": "Necromancer",
+ "role": "necromancer",
+ "gender": "male",
+ "torso": "973pf0",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bp3e",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "30381",
+ "hatColor": 0,
+ "neck": {
+  "part": "50231c01",
+  "color": 85,
+  "decal": {
+   "image": "../decals/skull.png"
+  }
+ },
+ "name": "Necromancer (male)"
+}

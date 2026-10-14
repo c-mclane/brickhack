@@ -2,12 +2,12 @@
  "camera": {
   "pos": [
    0,
-   12,
-   40
+   6,
+   30
   ],
   "target": [
    0,
-   1.6,
+   2.2,
    0
   ]
  },
@@ -22,131 +22,115 @@
    ]
   },
   {
-   "fig": "monk-m",
+   "fig": "benedictine-monk",
    "pos": [
-    -280,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "monk-f",
-   "pos": [
-    -280,
+    -240,
     -72,
     60
    ]
   },
   {
-   "fig": "rogue-m",
+   "fig": "benedictine-nun",
    "pos": [
-    -200,
+    -240,
     -72,
     -60
    ]
   },
   {
-   "fig": "rogue-f",
+   "fig": "cistercian-monk",
    "pos": [
-    -200,
+    -160,
     -72,
     60
    ]
   },
   {
-   "fig": "ranger-m",
+   "fig": "cistercian-nun",
    "pos": [
-    -120,
+    -160,
     -72,
     -60
    ]
   },
   {
-   "fig": "ranger-f",
+   "fig": "carthusian-monk",
    "pos": [
-    -120,
+    -80,
     -72,
     60
    ]
   },
   {
-   "fig": "samurai-m",
+   "fig": "carthusian-nun",
    "pos": [
-    -40,
+    -80,
     -72,
     -60
    ]
   },
   {
-   "fig": "samurai-f",
+   "fig": "augustinian-friar",
    "pos": [
-    -40,
+    0,
     -72,
     60
    ]
   },
   {
-   "fig": "tourist-m",
+   "fig": "augustinian-nun",
    "pos": [
-    40,
+    0,
     -72,
     -60
    ]
   },
   {
-   "fig": "tourist-f",
+   "fig": "franciscan-friar",
    "pos": [
-    40,
+    80,
     -72,
     60
    ]
   },
   {
-   "fig": "undead-slayer-m",
+   "fig": "poor-clare",
    "pos": [
-    120,
+    80,
     -72,
     -60
    ]
   },
   {
-   "fig": "undead-slayer-f",
+   "fig": "dominican-friar",
    "pos": [
-    120,
+    160,
     -72,
     60
    ]
   },
   {
-   "fig": "wizard-m",
+   "fig": "dominican-nun",
    "pos": [
-    200,
+    160,
     -72,
     -60
    ]
   },
   {
-   "fig": "wizard-f",
+   "fig": "carmelite-friar",
    "pos": [
-    200,
+    240,
     -72,
     60
    ]
   },
   {
-   "fig": "yeoman-m",
+   "fig": "carmelite-nun",
    "pos": [
-    280,
+    240,
     -72,
     -60
-   ]
-  },
-  {
-   "fig": "yeoman-f",
-   "pos": [
-    280,
-    -72,
-    60
    ]
   }
  ]

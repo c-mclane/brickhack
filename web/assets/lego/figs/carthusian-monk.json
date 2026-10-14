@@ -1,0 +1,17 @@
+{
+ "label": "Carthusian Monk",
+ "role": "monk",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp01",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "hat": "4505a",
+ "hatColor": 15,
+ "name": "Carthusian Monk"
+}

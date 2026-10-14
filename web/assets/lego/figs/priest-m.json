@@ -1,0 +1,27 @@
+{
+ "label": "Priest",
+ "role": "priest",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp4g",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "hat": "4505a",
+ "hatColor": 15,
+ "neck": {
+  "part": "50231c01",
+  "color": 15,
+  "decal": {
+   "image": "../decals/sun.png"
+  }
+ },
+ "torsoDecal": {
+  "image": "../decals/sun.png"
+ },
+ "name": "Priest (male)"
+}

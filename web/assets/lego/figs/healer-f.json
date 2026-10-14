@@ -1,0 +1,19 @@
+{
+ "label": "Healer",
+ "role": "healer",
+ "gender": "female",
+ "torso": "973p25",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "hair": {
+  "part": "2632",
+  "color": 226
+ },
+ "name": "Healer (female)"
+}

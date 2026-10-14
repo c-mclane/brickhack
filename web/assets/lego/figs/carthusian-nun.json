@@ -1,0 +1,17 @@
+{
+ "label": "Carthusian Nun",
+ "role": "monk",
+ "gender": "female",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hat": "52345",
+ "hatColor": 15,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "name": "Carthusian Nun"
+}

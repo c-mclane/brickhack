@@ -1,0 +1,35 @@
+{
+ "label": "Carmelite Friar",
+ "role": "monk",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 70,
+ "armColor": 70,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "torsoDecal": {
+  "image": "../decals/habit-carmelite.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   30,
+   32
+  ]
+ },
+ "hair": {
+  "part": "12893",
+  "color": 0
+ },
+ "neck": {
+  "part": "50231c01",
+  "color": 15
+ },
+ "name": "Carmelite Friar"
+}

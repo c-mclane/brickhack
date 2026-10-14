@@ -1,0 +1,31 @@
+{
+ "name": "Catholic Priest",
+ "label": "Catholic Priest",
+ "role": "priest",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "torsoDecal": {
+  "image": "../decals/roman-collar-crucifix.png",
+  "center": [
+   0,
+   10.5,
+   -10
+  ],
+  "size": [
+   21,
+   21
+  ]
+ },
+ "head": "3626bp05",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 71
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0
+}

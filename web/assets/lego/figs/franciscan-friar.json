@@ -1,0 +1,31 @@
+{
+ "label": "Franciscan Friar",
+ "role": "monk",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 308,
+ "handColor": 14,
+ "head": "3626bp4g",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "torsoDecal": {
+  "image": "../decals/habit-franciscan.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   30,
+   32
+  ]
+ },
+ "hair": {
+  "part": "12893",
+  "color": 71
+ },
+ "name": "Franciscan Friar"
+}
