@@ -2,12 +2,12 @@
  "camera": {
   "pos": [
    0,
-   6,
+   10,
    30
   ],
   "target": [
    0,
-   2.2,
+   0,
    0
   ]
  },
@@ -19,118 +19,6 @@
     0,
     0,
     0
-   ]
-  },
-  {
-   "fig": "benedictine-monk",
-   "pos": [
-    -240,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "benedictine-nun",
-   "pos": [
-    -240,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "cistercian-monk",
-   "pos": [
-    -160,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "cistercian-nun",
-   "pos": [
-    -160,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "carthusian-monk",
-   "pos": [
-    -80,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "carthusian-nun",
-   "pos": [
-    -80,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "augustinian-friar",
-   "pos": [
-    0,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "augustinian-nun",
-   "pos": [
-    0,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "franciscan-friar",
-   "pos": [
-    80,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "poor-clare",
-   "pos": [
-    80,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "dominican-friar",
-   "pos": [
-    160,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "dominican-nun",
-   "pos": [
-    160,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "carmelite-friar",
-   "pos": [
-    240,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "carmelite-nun",
-   "pos": [
-    240,
-    -72,
-    -60
    ]
   }
  ]
