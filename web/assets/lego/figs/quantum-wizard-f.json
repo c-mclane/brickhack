@@ -1,0 +1,9 @@
+{
+ "base": "wizard-f",
+ "label": "Quantum Witch",
+ "name": "Quantum Witch (female)",
+ "role": "wizard",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

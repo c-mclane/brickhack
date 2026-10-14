@@ -1,0 +1,9 @@
+{
+ "base": "samurai-f",
+ "label": "Quantum Samurai",
+ "name": "Quantum Samurai (female)",
+ "role": "samurai",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

@@ -1,0 +1,9 @@
+{
+ "base": "caveman",
+ "label": "Quantum Caveman",
+ "name": "Quantum Caveman (male)",
+ "role": "caveman",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

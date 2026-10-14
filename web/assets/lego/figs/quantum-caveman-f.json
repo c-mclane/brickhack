@@ -1,0 +1,9 @@
+{
+ "base": "cavewoman",
+ "label": "Quantum Cavewoman",
+ "name": "Quantum Cavewoman (female)",
+ "role": "caveman",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

@@ -1,0 +1,9 @@
+{
+ "base": "yeoman-m",
+ "label": "Quantum Yeoman",
+ "name": "Quantum Yeoman (male)",
+ "role": "yeoman",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

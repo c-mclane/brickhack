@@ -1,0 +1,9 @@
+{
+ "base": "rogue-f",
+ "label": "Quantum Rogue",
+ "name": "Quantum Rogue (female)",
+ "role": "rogue",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

@@ -1,0 +1,9 @@
+{
+ "base": "wizard-m",
+ "label": "Quantum Wizard",
+ "name": "Quantum Wizard (male)",
+ "role": "wizard",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

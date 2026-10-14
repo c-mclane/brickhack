@@ -1,0 +1,9 @@
+{
+ "base": "ice-mage-f",
+ "label": "Quantum Ice Mage",
+ "name": "Quantum Ice Mage (female)",
+ "role": "ice mage",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

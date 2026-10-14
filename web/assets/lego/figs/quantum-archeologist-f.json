@@ -1,0 +1,9 @@
+{
+ "base": "archaeologist-f",
+ "label": "Quantum Archaeologist",
+ "name": "Quantum Archaeologist (female)",
+ "role": "archeologist",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

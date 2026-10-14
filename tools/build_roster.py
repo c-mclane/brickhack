@@ -55,7 +55,7 @@ def main():
         glb, ldr_path, keyfile = (os.path.join(OUT, name + ext) for ext in ('.glb', '.ldr', '.key'))
         if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):
             open(ldr_path, 'w').write(ldr)
-            print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.ghosted(lib.parse(ldr_path), ldr), colors, 71, glb)} tris')
+            print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.figure_geom(lib, ldr_path, ldr), colors, 71, glb)} tris')
             open(keyfile, 'w').write(key)
         built.append({'id': name, 'label': spec.get('label', name), 'url': f'assets/lego/roster/{name}.glb?v={key}',
                       'role': spec.get('role', 'knight'), 'gender': spec.get('gender', 'male'),

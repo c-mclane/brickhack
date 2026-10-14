@@ -1,0 +1,9 @@
+{
+ "base": "monk-m",
+ "label": "Quantum Monk",
+ "name": "Quantum Monk (male)",
+ "role": "monk",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

@@ -1,0 +1,9 @@
+{
+ "base": "flame-mage-m",
+ "label": "Quantum Flame Mage",
+ "name": "Quantum Flame Mage (male)",
+ "role": "flame mage",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

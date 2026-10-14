@@ -1,0 +1,9 @@
+{
+ "base": "samurai-m",
+ "label": "Quantum Samurai",
+ "name": "Quantum Samurai (male)",
+ "role": "samurai",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

@@ -49,7 +49,7 @@ def main(scene_path):
             src = obj['part'] + '.dat'
         glb = os.path.join(CACHE, key + '.glb')
         if not os.path.exists(glb):
-            print(f'  converting {key}: {ldraw2glb.to_glb(ldraw2glb.ghosted(lib.parse(src), open(src).read()), colors, color if color != 16 else 71, glb)} tris')
+            print(f'  converting {key}: {ldraw2glb.to_glb(ldraw2glb.figure_geom(lib, src, open(src).read()), colors, color if color != 16 else 71, glb)} tris')
         built.append({'url': f'assets/lego/cache/{key}.glb?v={int(os.path.getmtime(glb))}',
                       'pos': obj.get('pos', [0, 0, 0]), 'rotY': obj.get('rotY', 0)})
     out = {'objects': built, 'camera': scene.get('camera')}

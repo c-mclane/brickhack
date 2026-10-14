@@ -1,0 +1,9 @@
+{
+ "base": "necromancer-m",
+ "label": "Quantum Necromancer",
+ "name": "Quantum Necromancer (male)",
+ "role": "necromancer",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

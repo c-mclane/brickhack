@@ -1,0 +1,9 @@
+{
+ "base": "ice-mage-m",
+ "label": "Quantum Ice Mage",
+ "name": "Quantum Ice Mage (male)",
+ "role": "ice mage",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

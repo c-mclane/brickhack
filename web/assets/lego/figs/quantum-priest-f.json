@@ -1,0 +1,9 @@
+{
+ "base": "priest-f",
+ "label": "Quantum Priestess",
+ "name": "Quantum Priestess (female)",
+ "role": "priest",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

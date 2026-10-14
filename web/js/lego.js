@@ -7,7 +7,7 @@
 // door), a plate 0.1, and a minifig 1.3 blocks tall.
 // The .glb models are in studs (20 LDU = 1), so they are drawn at scale 0.25.
 
-import { MIST_GLSL, isMist } from './mist.js';
+import { MIST_GLSL, isMist, quantumPart, strobeHex } from './mist.js';
 
 export const LDU = 1 / 80;
 export const BRICK_H = 24 * LDU;
@@ -144,7 +144,7 @@ async function parseGLB(buf) {
     prims.push({
       pos: floats(p.attributes.POSITION), nrm: floats(p.attributes.NORMAL),
       uv: p.attributes.TEXCOORD_0 != null ? floats(p.attributes.TEXCOORD_0) : null,
-      color: [lin2srgb(f[0]), lin2srgb(f[1]), lin2srgb(f[2]), f[3]], image, mist: isMist(mat),
+      color: [lin2srgb(f[0]), lin2srgb(f[1]), lin2srgb(f[2]), f[3]], image, mist: isMist(mat), quantum: quantumPart(mat),
     });
   }
   return prims;
@@ -272,7 +272,7 @@ export class Lego {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
-    return { vao, count: p.pos.length / 3, color: p.color, tex };
+    return { vao, count: p.pos.length / 3, color: p.color, tex, mist: p.mist, quantum: p.quantum };
   }
 
   // the per-instance attributes as constants (for drawing a single model)
@@ -292,7 +292,8 @@ export class Lego {
     gl.uniformMatrix4fv(u.uView, false, view);
     gl.uniform3fv(u.uFog, this.fog);
     gl.uniform2fv(u.uFogRange, this.fogRange);
-    gl.uniform1f(u.uTime, performance.now() / 1000);
+    const now = performance.now() / 1000;
+    gl.uniform1f(u.uTime, now);
     gl.uniform1f(u.uMist, 0);
     gl.uniform1i(u.uTex, 0);
     gl.uniform1f(u.uHasTex, 0);
@@ -316,7 +317,10 @@ export class Lego {
           if ((p.color[3] < 1) !== glow) continue;
           gl.bindVertexArray(p.vao);
           this.single(f.shade ?? 1);
-          gl.uniform4fv(u.uColor, p.color);
+          if (p.quantum != null) {   // a quantum mechanic's part: flashing colours
+            const h = strobeHex(p.quantum, now);
+            gl.uniform4f(u.uColor, (h >> 16) / 255, ((h >> 8) & 255) / 255, (h & 255) / 255, 1);
+          } else gl.uniform4fv(u.uColor, p.color);
           gl.uniform1f(u.uMist, p.mist ? 1 : 0);
           gl.uniform1f(u.uHasTex, p.tex ? 1 : 0);
           if (p.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, p.tex); }

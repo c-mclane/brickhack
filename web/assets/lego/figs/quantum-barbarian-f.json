@@ -1,0 +1,9 @@
+{
+ "base": "barbarian-f",
+ "label": "Quantum Barbarian",
+ "name": "Quantum Barbarian (female)",
+ "role": "barbarian",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

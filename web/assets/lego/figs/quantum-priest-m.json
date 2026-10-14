@@ -1,0 +1,9 @@
+{
+ "base": "priest-m",
+ "label": "Quantum Priest",
+ "name": "Quantum Priest (male)",
+ "role": "priest",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

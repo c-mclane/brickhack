@@ -31,10 +31,37 @@ def load_colors(root):
             colors[code] = (rgb, alpha, t[2])
     # ours: a doppelganger's other half, a misty liquid green (the renderers make it shimmer)
     colors[MIST] = ([0.45, 1.0, 0.55], 0.5, 'Doppel_Mist')
+    # and a quantum mechanic's parts, each its own colour so each can flash on its own
+    for i in range(QUANTUM_PARTS):
+        colors[QUANTUM + i] = ([1.0, 1.0, 1.0], 1.0, f'Quantum_Strobe_{i}')
     return colors
 
 
 MIST = 9001
+QUANTUM, QUANTUM_PARTS = 9100, 100
+
+
+def figure_geom(lib, path, ldr_text):
+    """A built figure's geometry, with the races' special looks: a quantum
+    mechanic's every part one plain colour of its own (no prints, no decals:
+    faceless), each one strobing in the renderers (mist.js); a doppelganger's
+    one side mist (ghosted)."""
+    if '0 !LEGOHACK QUANTUM' not in ldr_text:
+        return ghosted(lib.parse(path), ldr_text)
+    out = []
+    parts = [l.split() for l in ldr_text.splitlines() if l.startswith('1 ')]
+    for i, t in enumerate(parts):
+        pos = np.array([float(v) for v in t[2:5]])
+        rot = np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+        for code, tex, arr, uv in lib.parse(' '.join(t[14:])):
+            if code == 24 or not len(arr):
+                continue
+            out.append((QUANTUM + i % QUANTUM_PARTS, None, arr.reshape(-1, 3) @ rot.T + pos, None))
+    # one primitive per part (its prints and all), so the whole part flashes as one
+    merged = {}
+    for c, _, a, _ in out:
+        merged.setdefault(c, []).append(a.reshape(-1, 3, 3))
+    return [(c, None, np.concatenate(a), None) for c, a in merged.items()]
 
 
 def ghosted(geom, ldr_text):

@@ -1,0 +1,9 @@
+{
+ "base": "ranger-f",
+ "label": "Quantum Ranger",
+ "name": "Quantum Ranger (female)",
+ "role": "ranger",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

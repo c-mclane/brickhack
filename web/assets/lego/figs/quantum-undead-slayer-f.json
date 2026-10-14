@@ -1,0 +1,9 @@
+{
+ "base": "undead-slayer-f",
+ "label": "Quantum Undead Slayer",
+ "name": "Quantum Undead Slayer (female)",
+ "role": "undead slayer",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

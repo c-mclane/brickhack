@@ -1,0 +1,9 @@
+{
+ "base": "tourist-m",
+ "label": "Quantum Tourist",
+ "name": "Quantum Tourist (male)",
+ "role": "tourist",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

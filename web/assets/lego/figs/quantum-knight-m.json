@@ -1,0 +1,9 @@
+{
+ "base": "knight",
+ "label": "Quantum Knight",
+ "name": "Quantum Knight (male)",
+ "role": "knight",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

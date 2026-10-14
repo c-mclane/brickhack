@@ -1,0 +1,9 @@
+{
+ "base": "healer-m",
+ "label": "Quantum Healer",
+ "name": "Quantum Healer (male)",
+ "role": "healer",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

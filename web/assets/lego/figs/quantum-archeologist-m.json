@@ -1,0 +1,9 @@
+{
+ "base": "johnny-thunder",
+ "label": "Quantum Archaeologist",
+ "name": "Quantum Archaeologist (male)",
+ "role": "archeologist",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

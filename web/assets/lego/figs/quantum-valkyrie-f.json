@@ -1,0 +1,9 @@
+{
+ "base": "valkyrie",
+ "label": "Quantum Valkyrie",
+ "name": "Quantum Valkyrie (female)",
+ "role": "valkyrie",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

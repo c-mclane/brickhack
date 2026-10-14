@@ -1,0 +1,9 @@
+{
+ "base": "dame-lazarus",
+ "label": "Quantum Dame",
+ "name": "Quantum Dame (female)",
+ "role": "knight",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}

@@ -1,0 +1,9 @@
+{
+ "base": "undead-slayer-m",
+ "label": "Quantum Undead Slayer",
+ "name": "Quantum Undead Slayer (male)",
+ "role": "undead slayer",
+ "gender": "male",
+ "race": "quantum",
+ "quantum": true
+}

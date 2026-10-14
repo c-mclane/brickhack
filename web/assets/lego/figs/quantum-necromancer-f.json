@@ -1,0 +1,9 @@
+{
+ "base": "necromancer-f",
+ "label": "Quantum Necromancer",
+ "name": "Quantum Necromancer (female)",
+ "role": "necromancer",
+ "gender": "female",
+ "race": "quantum",
+ "quantum": true
+}
