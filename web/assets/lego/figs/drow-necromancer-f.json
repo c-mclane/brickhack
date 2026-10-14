@@ -1,0 +1,35 @@
+{
+ "label": "Drow Necromancer",
+ "role": "necromancer",
+ "gender": "female",
+ "race": "drow",
+ "torso": "973p0w",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "head": "3626bp09",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "10055p01",
+  "color": 15,
+  "recolor": {
+   "78": "72"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 85,
+   "decal": {
+    "image": "../decals/skull.png"
+   }
+  }
+ ],
+ "name": "Drow Necromancer (female)"
+}

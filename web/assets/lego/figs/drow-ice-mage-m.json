@@ -1,0 +1,56 @@
+{
+ "label": "Drow Ice Mage",
+ "role": "ice mage",
+ "gender": "male",
+ "race": "drow",
+ "torso": "973",
+ "torsoColor": 85,
+ "armColor": 85,
+ "handColor": 72,
+ "head": "3626bp01",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "10055p01",
+  "color": 151,
+  "recolor": {
+   "78": "72"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/snowflake.png"
+   }
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "torsoDecal": {
+  "image": "../decals/snowflake.png"
+ },
+ "name": "Drow Ice Mage (male)"
+}

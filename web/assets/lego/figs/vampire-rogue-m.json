@@ -1,0 +1,29 @@
+{
+ "label": "Vampire Rogue",
+ "role": "rogue",
+ "gender": "male",
+ "race": "vampire",
+ "armColor": 0,
+ "handColor": 151,
+ "headColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp01",
+ "torso": "973p5s",
+ "torsoColor": 0,
+ "hair": {
+  "part": "21268",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "42450c01",
+   "color": 4
+  }
+ ],
+ "name": "Vampire Rogue (male)",
+ "headRecolor": {
+  "0": "4"
+ }
+}

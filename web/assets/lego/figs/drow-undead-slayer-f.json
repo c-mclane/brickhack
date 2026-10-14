@@ -1,0 +1,26 @@
+{
+ "label": "Drow Undead Slayer",
+ "role": "undead slayer",
+ "gender": "female",
+ "race": "drow",
+ "torso": "973phl",
+ "torsoColor": 85,
+ "armColor": 85,
+ "handColor": 72,
+ "head": "3626bp09",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "13766p01",
+  "color": 15,
+  "recolor": {
+   "78": "72"
+  }
+ },
+ "name": "Drow Undead Slayer (female)"
+}

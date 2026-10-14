@@ -1,0 +1,29 @@
+{
+ "label": "Vampire Wizard",
+ "role": "wizard",
+ "gender": "male",
+ "race": "vampire",
+ "armColor": 0,
+ "handColor": 151,
+ "headColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp01",
+ "torso": "973pc25",
+ "torsoColor": 0,
+ "hair": {
+  "part": "25972",
+  "color": 71
+ },
+ "neck": [
+  {
+   "part": "42450c01",
+   "color": 22
+  }
+ ],
+ "name": "Vampire Wizard (male)",
+ "headRecolor": {
+  "0": "4"
+ }
+}

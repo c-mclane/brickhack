@@ -1,0 +1,32 @@
+{
+ "label": "Vampire Necromancer",
+ "role": "necromancer",
+ "gender": "female",
+ "race": "vampire",
+ "armColor": 0,
+ "handColor": 151,
+ "headColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp08",
+ "headRecolor": {
+  "0": "4"
+ },
+ "torso": "973p0w",
+ "torsoColor": 0,
+ "torsoDecal": {
+  "image": "../decals/skull.png"
+ },
+ "hair": {
+  "part": "12890",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "42450c01",
+   "color": 85
+  }
+ ],
+ "name": "Vampire Necromancer (female)"
+}

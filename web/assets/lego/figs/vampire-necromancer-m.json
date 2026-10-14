@@ -1,0 +1,32 @@
+{
+ "label": "Vampire Necromancer",
+ "role": "necromancer",
+ "gender": "male",
+ "race": "vampire",
+ "armColor": 0,
+ "handColor": 151,
+ "headColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp01",
+ "torso": "973",
+ "torsoColor": 0,
+ "torsoDecal": {
+  "image": "../decals/skull.png"
+ },
+ "hair": {
+  "part": "21268",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "42450c01",
+   "color": 4
+  }
+ ],
+ "name": "Vampire Necromancer (male)",
+ "headRecolor": {
+  "0": "4"
+ }
+}

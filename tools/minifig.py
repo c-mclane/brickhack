@@ -15,6 +15,9 @@ SPEC example:
 "dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs.
 "shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
 "extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...).
+"headRecolor": {"0": "4"} swaps colours in the face's print (black eyes made red...);
+"torsoRecolor" likewise for the torso's print (printed skin made pale);
+a hair's "recolor" does the same for the hair (an elf-hair's printed ears in the skin colour).
 "hair": {"part": "3759", "color": 226} adds hair (and "hat" can still go on top).
 "plume": {"part": "87694", "color": 4} plugs a feather into the helmet's top.
 
@@ -31,7 +34,7 @@ item should turn about the handle. Or give "swing"/"roll" in degrees directly.
 
 LDraw axes: -Y is up, -Z is the minifig's front.
 """
-import json, os, sys
+import hashlib, json, os, sys
 import numpy as np
 
 # Arms and hands, exactly as LDraw's assembled torso 973c01 places them.
@@ -166,6 +169,51 @@ def decal_line(item, pos, mat, base_dir):
     return '0 !TEXMAP NEXT PLANAR ' + ' '.join(f'{v:.4f}' for v in pts.flatten()) + ' ' + img
 
 
+# ---- recoloured parts: a copy of a part (and of the sub-parts its print lives in)
+# with some colours swapped, e.g. a face's black eyes made red, an elf-hair's
+# printed ears in the wearer's skin colour.  Written once, referenced by path.
+LDRAW = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'vendor', 'ldraw', 'ldraw')
+DERIVED = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'lego', 'cache', 'derived')
+
+
+def _ldraw_file(name):
+    name = name.replace('\\', '/')
+    for d in ('parts', 'p'):
+        f = os.path.join(LDRAW, d, name if name.endswith('.dat') else name + '.dat')
+        if os.path.isfile(f):
+            return f, d == 'p'
+    return None, False
+
+
+def recolored(part, cmap):
+    """Path (without .dat) of `part` with colours swapped by cmap {'0': '4', ...}."""
+    if not cmap:
+        return part
+    cmap = {str(k): str(v) for k, v in cmap.items()}
+    src, primitive = _ldraw_file(part)
+    if not src or primitive:
+        return part
+    key = hashlib.sha1((part + json.dumps(cmap, sort_keys=True)).encode()).hexdigest()[:10]
+    out = os.path.join(DERIVED, os.path.basename(part.replace('\\', '/')).replace('.dat', '') + '_' + key)
+    if not os.path.exists(out + '.dat'):
+        os.makedirs(DERIVED, exist_ok=True)
+        lines = []
+        for l in open(src, encoding='utf-8', errors='replace'):
+            t = l.split()
+            if len(t) > 2 and t[0] in '1234':
+                if t[1] in cmap:
+                    t[1] = cmap[t[1]]
+                if t[0] == '1' and len(t) >= 15:
+                    sub = ' '.join(t[14:])
+                    new = recolored(sub, cmap)
+                    if new != sub:
+                        t = t[:14] + [new + '.dat']
+                l = ' '.join(t) + '\n'
+            lines.append(l)
+        open(out + '.dat', 'w').write(''.join(lines))
+    return out
+
+
 def line(color, pos, mat, part):
     p = ' '.join(f'{v:.4f}'.rstrip('0').rstrip('.') for v in pos)
     m = ' '.join(f'{v:.4f}'.rstrip('0').rstrip('.') for v in np.asarray(mat).flatten())
@@ -178,7 +226,7 @@ def build(spec, base_dir='.'):
     out = [f"0 {spec.get('name', 'Minifig')}"]
     if spec.get('torsoDecal'):   # a picture on the chest
         out.append(decal_line({'part': spec.get('torso', '973'), 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
-    out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, spec.get('torso', '973')))
+    out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, recolored(spec.get('torso', '973'), spec.get('torsoRecolor'))))
     sides = {}
     for side, arm, hand, part in (('right', ARM_R, HAND_R, spec.get('armR', '3818')),
                                   ('left', ARM_L, HAND_L, spec.get('armL', '3819'))):
@@ -197,9 +245,9 @@ def build(spec, base_dir='.'):
         if item.get('decal'):
             out.append(decal_line(item, np.zeros(3), R, base_dir))
         out.append(line(item.get('color', 16), (0, 0, 0), R, item['part']))
-    out.append(line(spec.get('headColor', 14), (0, -24, 0), I, spec.get('head', '3626bp01')))
+    out.append(line(spec.get('headColor', 14), (0, -24, 0), I, recolored(spec.get('head', '3626bp01'), spec.get('headRecolor'))))
     if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
-        out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, spec['hair']['part']))
+        out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, recolored(spec['hair']['part'], spec['hair'].get('recolor'))))
     if spec.get('hat'):
         if spec.get('hatDecal'):   # a picture on the hat's front ("center"/"size" in the hat's frame)
             out.append(decal_line({'part': spec['hat'], 'decal': spec['hatDecal']}, np.array([0.0, -24, 0]), I, base_dir))

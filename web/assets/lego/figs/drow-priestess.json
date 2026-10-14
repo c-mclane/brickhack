@@ -1,0 +1,46 @@
+{
+ "label": "Priestess of Lolth",
+ "role": "priest",
+ "gender": "female",
+ "race": "drow",
+ "torso": "973p0w",
+ "torsoColor": 85,
+ "armColor": 85,
+ "handColor": 72,
+ "head": "3626bp09",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "13766p01",
+  "color": 15,
+  "recolor": {
+   "78": "72"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/spider.png"
+   }
+  }
+ ],
+ "extras": [
+  {
+   "part": "33322",
+   "color": 179,
+   "pos": [
+    0,
+    -29,
+    1
+   ]
+  }
+ ],
+ "name": "Priestess of Lolth (female)"
+}

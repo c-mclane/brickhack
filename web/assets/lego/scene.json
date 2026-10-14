@@ -22,129 +22,81 @@
    ]
   },
   {
-   "fig": "orc-barbarian-m",
+   "fig": "vampire-barbarian-m",
    "pos": [
-    -245,
+    -280,
     -72,
     -60
    ]
   },
   {
-   "fig": "orc-barbarian-f",
+   "fig": "vampire-barbarian-f",
    "pos": [
-    -245,
+    -280,
     -72,
     60
    ]
   },
   {
-   "fig": "orc-flame-mage-m",
+   "fig": "vampire-ice-mage-m",
    "pos": [
-    -175,
+    -140,
     -72,
     -60
    ]
   },
   {
-   "fig": "orc-flame-mage-f",
+   "fig": "vampire-ice-mage-f",
    "pos": [
-    -175,
+    -140,
     -72,
     60
    ]
   },
   {
-   "fig": "orc-ice-mage-m",
+   "fig": "vampire-necromancer-m",
    "pos": [
-    -105,
+    0,
     -72,
     -60
    ]
   },
   {
-   "fig": "orc-ice-mage-f",
+   "fig": "vampire-necromancer-f",
    "pos": [
-    -105,
+    0,
     -72,
     60
    ]
   },
   {
-   "fig": "orc-necromancer-m",
+   "fig": "vampire-rogue-m",
    "pos": [
-    -35,
+    140,
     -72,
     -60
    ]
   },
   {
-   "fig": "orc-necromancer-f",
+   "fig": "vampire-rogue-f",
    "pos": [
-    -35,
+    140,
     -72,
     60
    ]
   },
   {
-   "fig": "orc-rogue-m",
+   "fig": "vampire-wizard-m",
    "pos": [
-    35,
+    280,
     -72,
     -60
    ]
   },
   {
-   "fig": "orc-rogue-f",
+   "fig": "vampire-witch",
    "pos": [
-    35,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "orc-ranger-m",
-   "pos": [
-    105,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "orc-ranger-f",
-   "pos": [
-    105,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "orc-undead-slayer-m",
-   "pos": [
-    175,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "orc-undead-slayer-f",
-   "pos": [
-    175,
-    -72,
-    60
-   ]
-  },
-  {
-   "fig": "orc-wizard-m",
-   "pos": [
-    245,
-    -72,
-    -60
-   ]
-  },
-  {
-   "fig": "orc-witch",
-   "pos": [
-    245,
+    280,
     -72,
     60
    ]

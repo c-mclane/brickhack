@@ -1,0 +1,30 @@
+{
+ "label": "Drow Witch",
+ "role": "wizard",
+ "gender": "female",
+ "race": "drow",
+ "torso": "973p0w",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "head": "3626bp09",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "6131",
+ "hatColor": 85,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 85,
+   "decal": {
+    "image": "../decals/moon-stars.png"
+   }
+  }
+ ],
+ "name": "Drow Witch (female)"
+}

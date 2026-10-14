@@ -1,0 +1,33 @@
+{
+ "label": "Drow Wizard",
+ "role": "wizard",
+ "gender": "male",
+ "race": "drow",
+ "torso": "973",
+ "torsoColor": 85,
+ "armColor": 85,
+ "handColor": 72,
+ "head": "3626bp01",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hat": "6131",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/moon-stars.png"
+   }
+  }
+ ],
+ "torsoDecal": {
+  "image": "../decals/moon-stars.png"
+ },
+ "name": "Drow Wizard (male)"
+}

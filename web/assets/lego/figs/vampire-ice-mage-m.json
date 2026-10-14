@@ -1,0 +1,50 @@
+{
+ "label": "Vampire Ice Mage",
+ "role": "ice mage",
+ "gender": "male",
+ "race": "vampire",
+ "armColor": 0,
+ "handColor": 151,
+ "headColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp01",
+ "torso": "973",
+ "torsoColor": 0,
+ "torsoDecal": {
+  "image": "../decals/snowflake.png"
+ },
+ "hair": {
+  "part": "21268",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "42450c01",
+   "color": 212
+  }
+ ],
+ "right": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "left": {
+  "part": "30385",
+  "color": 43,
+  "aim": [
+   0,
+   -1,
+   -0.25
+  ]
+ },
+ "name": "Vampire Ice Mage (male)",
+ "headRecolor": {
+  "0": "4"
+ }
+}

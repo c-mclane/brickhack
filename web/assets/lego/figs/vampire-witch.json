@@ -1,0 +1,34 @@
+{
+ "label": "Vampire Witch",
+ "role": "wizard",
+ "gender": "female",
+ "race": "vampire",
+ "armColor": 0,
+ "handColor": 151,
+ "headColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp08",
+ "headRecolor": {
+  "0": "4"
+ },
+ "torso": "973p0w",
+ "torsoColor": 0,
+ "torsoDecal": {
+  "image": "../decals/moon-stars.png"
+ },
+ "hat": "6131p01",
+ "hatColor": 0,
+ "hair": {
+  "part": "12890",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "42450c01",
+   "color": 22
+  }
+ ],
+ "name": "Vampire Witch"
+}

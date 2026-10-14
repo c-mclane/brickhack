@@ -1,0 +1,51 @@
+{
+ "label": "Drow Ranger",
+ "role": "ranger",
+ "gender": "female",
+ "race": "drow",
+ "torso": "973p41",
+ "torsoColor": 85,
+ "armColor": 85,
+ "handColor": 72,
+ "head": "3626bp09",
+ "headColor": 72,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "13766p01",
+  "color": 151,
+  "recolor": {
+   "78": "72"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  },
+  {
+   "part": "4498",
+   "color": 0,
+   "turn": 180
+  }
+ ],
+ "left": {
+  "part": "4499",
+  "color": 0,
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "face": [
+   0,
+   0,
+   1
+  ]
+ },
+ "name": "Drow Ranger (female)"
+}
