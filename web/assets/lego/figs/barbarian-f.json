@@ -1,0 +1,23 @@
+{
+ "name": "Barbarian (female)",
+ "label": "Barbarian",
+ "role": "barbarian",
+ "gender": "female",
+ "torso": "973p4x",
+ "torsoColor": 288,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp20",
+ "headColor": 14,
+ "hair": {
+  "part": "3759",
+  "color": 484
+ },
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "neck": {
+  "part": "50231c01",
+  "color": 308
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "name": "Barbarian (male)",
+ "label": "Barbarian",
+ "role": "barbarian",
+ "gender": "male",
+ "torso": "973p3h",
+ "torsoColor": 14,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp44",
+ "headColor": 14,
+ "hair": {
+  "part": "20595",
+  "color": 0
+ },
+ "hat": "53450c01",
+ "hatColor": 179,
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "neck": {
+  "part": "50231c01",
+  "color": 308
+ }
+}
