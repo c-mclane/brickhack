@@ -1,0 +1,19 @@
+{
+ "name": "Archaeologist (female)",
+ "label": "Archaeologist",
+ "role": "archeologist",
+ "gender": "female",
+ "torso": "973pq7",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 14,
+ "head": "3626bp09",
+ "headColor": 14,
+ "hair": {
+  "part": "88286",
+  "color": 70
+ },
+ "hips": "3815",
+ "hipColor": 28,
+ "legColor": 28
+}

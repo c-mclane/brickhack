@@ -48,6 +48,10 @@ HELD = {
     '3846': {'center': (0, 9, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # triangular shield: front is -Z
     '3876': {'center': (0, 9, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # round shield: same handle as 3846
     '2530': {'center': (0, 0, 0), 'up': (0, -1, 0)},                        # cutlass: blade out of the top of the fist
+    '3841': {'center': (0, 28, 0), 'up': (0, -1, 0)},                       # pick-axe: held low on the haft, head up
+    '61975': {'center': (0, 8, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # coiled whip: by its handle, the coil flat to the front
+    '30152a': {'center': (0, 2, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},  # magnifying glass: lens up, facing out
+    '3959': {'center': (0, 0, 12), 'up': (0, 0, -1)},                       # torch: flame up
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
