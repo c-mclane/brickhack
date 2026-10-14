@@ -1,0 +1,21 @@
+{
+ "name": "Caveman",
+ "label": "Caveman",
+ "role": "caveman",
+ "gender": "male",
+ "torso": "973pdg1",
+ "torsoColor": 28,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp4f",
+ "headColor": 14,
+ "hair": {
+  "part": "25412",
+  "color": 0
+ },
+ "hips": "3815",
+ "hipColor": 28,
+ "legColor": 28,
+ "legR": "3816cpdg1",
+ "legL": "3817cpdg1"
+}

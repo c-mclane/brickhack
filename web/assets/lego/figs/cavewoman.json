@@ -1,0 +1,21 @@
+{
+ "name": "Cavewoman",
+ "label": "Cavewoman",
+ "role": "caveman",
+ "gender": "female",
+ "torso": "973pdg1",
+ "torsoColor": 70,
+ "armColor": 14,
+ "handColor": 14,
+ "head": "3626bp40",
+ "headColor": 14,
+ "hair": {
+  "part": "29634",
+  "color": 0
+ },
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "legR": "3816cpdg7",
+ "legL": "3817cpdg7"
+}

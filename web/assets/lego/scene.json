@@ -22,7 +22,7 @@
    ]
   },
   {
-   "fig": "barbarian-m",
+   "fig": "caveman",
    "pos": [
     -50,
     -72,
@@ -30,7 +30,7 @@
    ]
   },
   {
-   "fig": "barbarian-f",
+   "fig": "cavewoman",
    "pos": [
     50,
     -72,
