@@ -157,68 +157,117 @@ export class BrickWorld {
     }
   }
 
-  // Fog over everything not yet explored ([{x, z, into, near}], render.js): a
-  // dense sea of puffy cloud, piled a little higher than the walls, with
-  // wisps creeping out low along the floor into the squares beside it. Out
-  // past the edge of the map it goes on a while. One draw of soft
-  // camera-facing puffs, each drifting and breathing slowly (fogShader).
+  // Haze over everything not yet explored ([{x, z, into, over}], render.js),
+  // up to the edge of the map, like dry-ice fog: one thick volume whose top
+  // churns and bubbles and sags softly toward its edges (HAZE_*), heavier than
+  // air, so wherever it sits against a room's wall it pours over the studs in
+  // a continuous stream, down the inside, dissolving halfway down; and where
+  // it meets a path you could walk, it slumps onto the floor and creeps along
+  // it (FLOW_*: sheets the streaks flow along).
   setFog(cells, w, h) {
-    const key = cells.length + ':' + cells.map((c) => c.x + c.z * 1000 + (c.near ? 0.5 : 0) + c.into.length * 0.1).reduce((a, b) => (a * 31 + b) % 1e9, 7);
+    const key = cells.length + ':' + cells.map((c) => c.x + c.z * 1000 + c.into.length * 0.1 + c.over.length * 0.01).reduce((a, b) => (a * 31 + b) % 1e9, 7);
     if (key === this.fogKey) return;
     this.fogKey = key;
-    const P = []; // per puff: x, y, z, size, alpha, driftX, driftY, driftZ, phase
-    const rnd = (x, z, k) => { // a fixed random number per square (the fog mustn't jump about when the map changes)
-      let h = Math.imul(x * 374761393 + z * 668265263 + k * 2147483647, 1274126177);
-      h = Math.imul(h ^ (h >>> 13), 1103515245);
-      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-    };
-    const puff = (x, y, z, size, alpha, dx = 0, dy = 0, dz = 0, ph = 0) => P.push(x, y, z, size, alpha, dx, dy, dz, ph);
-    const deep = (x, z) => { // far into the unknown: big overlapping puffs
-      const r = (k) => rnd(x, z, k);
-      puff(x + 0.5 + (r(1) - 0.5) * 0.6, 0.9 + r(2) * 0.5, z + 0.5 + (r(3) - 0.5) * 0.6, 2.3 + r(4) * 0.6, 0.9, 0, 0, 0, r(5));
-      if (r(6) < 0.6) puff(x + 0.5 + (r(7) - 0.5) * 0.6, 1.7 + r(8) * 0.5, z + 0.5 + (r(9) - 0.5) * 0.6, 1.8 + r(10) * 0.6, 0.85, 0, 0, 0, r(11));
-      puff(x + 0.5 + (r(12) - 0.5) * 0.4, 0.35, z + 0.5 + (r(13) - 0.5) * 0.4, 1.7 + r(14) * 0.4, 0.95, 0, 0, 0, r(15)); // (no floor showing through)
+    const fog = new Set(cells.map((c) => c.z * w + c.x));
+    const isFog = (x, z) => x >= 0 && z >= 0 && x < w && z < h && fog.has(z * w + x);
+    const T = HAZE_TOP, B = -0.05; // (a hair below the floor, so no seam shows at its foot)
+
+    // the haze: its top in 3x3 pieces a square (to billow), and how far each
+    // point is in from the haze's edge (0 at the edge: it sags and thins there)
+    const pos = [], edge = [];
+    const N = 3;
+    for (const c of cells) {
+      const { x, z } = c;
+      const open = [!isFog(x - 1, z), !isFog(x + 1, z), !isFog(x, z - 1), !isFog(x, z + 1)];
+      const inset = (vx, vz) => {
+        let d = 1;
+        if (open[0]) d = Math.min(d, vx - x);
+        if (open[1]) d = Math.min(d, x + 1 - vx);
+        if (open[2]) d = Math.min(d, vz - z);
+        if (open[3]) d = Math.min(d, z + 1 - vz);
+        return Math.min(1, d / 0.67);
+      };
+      const tv = (vx, vz) => { pos.push(vx, T, vz); edge.push(inset(vx, vz)); };
+      for (let i = 0; i < N; i++)
+        for (let j = 0; j < N; j++) {
+          const x0 = x + i / N, x1 = x + (i + 1) / N, z0 = z + j / N, z1 = z + (j + 1) / N;
+          tv(x0, z0); tv(x1, z0); tv(x1, z1); tv(x0, z0); tv(x1, z1); tv(x0, z1);
+        }
+      // a side wherever the haze ends (the explored dungeon, or the map's edge)
+      const side = (a, b, c, d) => { pos.push(...a, ...b, ...c, ...a, ...c, ...d); edge.push(0, 0, 0, 0, 0, 0); };
+      // and its floor, so what shows through it is more haze, not the baseplate
+      const F = B - 0.01;
+      side([x, F, z], [x + 1, F, z], [x + 1, F, z + 1], [x, F, z + 1]);
+      if (open[2]) side([x, B, z], [x + 1, B, z], [x + 1, T, z], [x, T, z]);
+      if (open[3]) side([x, B, z + 1], [x + 1, B, z + 1], [x + 1, T, z + 1], [x, T, z + 1]);
+      if (open[0]) side([x, B, z], [x, B, z + 1], [x, T, z + 1], [x, T, z]);
+      if (open[1]) side([x + 1, B, z], [x + 1, B, z + 1], [x + 1, T, z + 1], [x + 1, T, z]);
+    }
+    if (!this.hazeMesh) {
+      this.hazeMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: HAZE_VS, fragmentShader: HAZE_FS,
+        transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      });
+      this.hazeMesh = new THREE.Mesh(new THREE.BufferGeometry(), this.hazeMat);
+      this.hazeMesh.frustumCulled = false;
+      this.hazeMesh.renderOrder = 5;
+      this.scene.add(this.hazeMesh);
+    }
+    const hg = new THREE.BufferGeometry();
+    hg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    hg.setAttribute('aEdge', new THREE.Float32BufferAttribute(edge, 1));
+    this.hazeMesh.geometry.dispose();
+    this.hazeMesh.geometry = hg;
+
+    // the streams: a sheet along each edge it pours over, following the
+    // fog's path (out from the edge, height), streaks flowing along it
+    const OVER = [[-0.3, T - 0.45], [0.0, 1.97], [0.5, 1.94], [0.98, 1.92], [1.07, 1.72], [1.1, 1.35], [1.12, 0.95]];
+    const SLUMP = [[-0.25, 1.5], [0.1, 0.9], [0.35, 0.35], [0.7, 0.14], [1.3, 0.12], [2.0, 0.12]];
+    const fp = [], fu = [], fs = [], fv = [];
+    const sheet = (c, dx, dz, path, lift) => {
+      const bx = c.x + 0.5 + dx * 0.5, bz = c.z + 0.5 + dz * 0.5; // the middle of the edge
+      const ax = Math.abs(dz), az = Math.abs(dx); // along the edge
+      const along0 = bx * ax + bz * az; // (a world coordinate along the edge: streams join up along a wall)
+      let len = 0;
+      const pts = path.map(([o, y], i) => {
+        if (i) len += Math.hypot(o - path[i - 1][0], y - path[i - 1][1]);
+        return { o, y: y + lift, s: len };
+      });
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p = pts[i], q = pts[i + 1];
+        const corner = (pt, e) => [bx + dx * pt.o + ax * e, pt.y, bz + dz * pt.o + az * e];
+        const vs = [[p, -0.5], [p, 0.5], [q, 0.5], [p, -0.5], [q, 0.5], [q, -0.5]];
+        for (const [pt, e] of vs) {
+          fp.push(...corner(pt, e));
+          fu.push(along0 + e);
+          fs.push(pt.s);
+          fv.push(pt.s / len);
+        }
+      }
     };
     for (const c of cells) {
-      const r = (k) => rnd(c.x, c.z, k);
-      if (!c.near) { deep(c.x, c.z); continue; }
-      // beside the explored dungeon: smaller puffs that stay in their square (no slicing through walls)
-      for (let i = 0; i < 3; i++)
-        puff(c.x + 0.5 + (r(20 + i) - 0.5) * 0.2, 0.42 + i * 0.58 + r(30 + i) * 0.1, c.z + 0.5 + (r(40 + i) - 0.5) * 0.2, 0.95 + r(50 + i) * 0.2, 0.92, 0, 0, 0, r(60 + i));
-      // ...and wisps that creep out of it, low, into the squares you can walk
-      for (const [dx, dz] of c.into)
-        for (let i = 0; i < 2; i++)
-          puff(c.x + 0.5 + dx * 0.3, 0.18 + r(70 + i) * 0.45, c.z + 0.5 + dz * 0.3, 0.55 + r(80 + i) * 0.3, 0.5,
-            dx * (0.7 + r(90 + i) * 0.4), 0.05, dz * (0.7 + r(90 + i) * 0.4), r(100 + i));
+      for (const [dx, dz] of c.over) { sheet(c, dx, dz, OVER, 0); sheet(c, dx, dz, OVER.map(([o, y]) => [o + 0.05, y]), 0.06); }
+      for (const [dx, dz] of c.into) { sheet(c, dx, dz, SLUMP, 0); sheet(c, dx, dz, SLUMP.map(([o, y]) => [o + 0.05, y]), 0.08); }
     }
-    // the map's surroundings: more of the same, a good way out
-    const M = 10;
-    for (let z = -M; z < h + M; z++)
-      for (let x = -M; x < w + M; x++)
-        if (x < 0 || z < 0 || x >= w || z >= h) deep(x, z);
-    const n = P.length / 9;
-    if (!this.fogMesh) {
-      const g = new THREE.InstancedBufferGeometry();
-      const quad = new THREE.PlaneGeometry(1, 1);
-      g.index = quad.index;
-      g.setAttribute('position', quad.attributes.position);
-      g.setAttribute('uv', quad.attributes.uv);
-      this.fogMat = new THREE.ShaderMaterial({
-        uniforms: { uTex: { value: fogTexture() }, uTime: { value: 0 } },
-        vertexShader: FOG_VS, fragmentShader: FOG_FS,
-        transparent: true, depthWrite: false,
+    if (!this.flowMesh) {
+      this.flowMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: FLOW_VS, fragmentShader: FLOW_FS,
+        transparent: true, depthWrite: false, side: THREE.DoubleSide,
       });
-      this.fogMesh = new THREE.Mesh(g, this.fogMat);
-      this.fogMesh.frustumCulled = false;
-      this.fogMesh.renderOrder = 5; // after the solid world (and the glass)
-      this.scene.add(this.fogMesh);
+      this.flowMesh = new THREE.Mesh(new THREE.BufferGeometry(), this.flowMat);
+      this.flowMesh.frustumCulled = false;
+      this.flowMesh.renderOrder = 6;
+      this.scene.add(this.flowMesh);
     }
-    const g = this.fogMesh.geometry, buf = new Float32Array(P);
-    const ib = new THREE.InstancedInterleavedBuffer(buf, 9);
-    g.setAttribute('iPos', new THREE.InterleavedBufferAttribute(ib, 4, 0)); // xyz, size
-    g.setAttribute('iAlpha', new THREE.InterleavedBufferAttribute(ib, 1, 4));
-    g.setAttribute('iDrift', new THREE.InterleavedBufferAttribute(ib, 4, 5)); // drift xyz, phase
-    g.instanceCount = n;
+    const fg = new THREE.BufferGeometry();
+    fg.setAttribute('position', new THREE.Float32BufferAttribute(fp, 3));
+    fg.setAttribute('aU', new THREE.Float32BufferAttribute(fu, 1));
+    fg.setAttribute('aS', new THREE.Float32BufferAttribute(fs, 1));
+    fg.setAttribute('aV', new THREE.Float32BufferAttribute(fv, 1));
+    this.flowMesh.geometry.dispose();
+    this.flowMesh.geometry = fg;
   }
 
   // the figures to draw this frame: [{url, matrix, pose}] (the hero); pose:
@@ -260,67 +309,99 @@ export class BrickWorld {
       this.sun.position.set(focus[0] + 12, 28, focus[2] + 18);
       this.sun.target.updateMatrixWorld();
     }
-    if (this.fogMat) this.fogMat.uniforms.uTime.value = performance.now() / 1000;
+    const now = performance.now() / 1000;
+    if (this.hazeMat) this.hazeMat.uniforms.uTime.value = now;
+    if (this.flowMat) this.flowMat.uniforms.uTime.value = now;
     r.render(this.scene, this.cam);
     r.resetState();
   }
 }
 
-// ---- the fog's puffs
-// a puff of cloud: lumpy white, soft at the edges (drawn once, on a canvas)
-function fogTexture() {
-  const S = 128, c = document.createElement('canvas');
-  c.width = c.height = S;
-  const g = c.getContext('2d');
-  let seed = 7;
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  for (let i = 0; i < 26; i++) {
-    const a = rnd() * Math.PI * 2, d = rnd() * S * 0.22, r = S * (0.12 + rnd() * 0.16);
-    const x = S / 2 + Math.cos(a) * d, y = S / 2 + Math.sin(a) * d * 0.8;
-    const gr = g.createRadialGradient(x, y, 0, x, y, r);
-    gr.addColorStop(0, 'rgba(255,255,255,0.55)');
-    gr.addColorStop(0.6, 'rgba(255,255,255,0.25)');
-    gr.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = gr;
-    g.fillRect(0, 0, S, S);
-  }
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
-const FOG_VS = `
-attribute vec4 iPos; attribute float iAlpha; attribute vec4 iDrift;
-uniform float uTime;
-varying vec2 vUv; varying float vAlpha; varying float vH;
-void main() {
-  float ph = iDrift.w * 6.2832;
-  // wisps creep out and back (fading as they go); every puff drifts and breathes a little
-  float k = 0.5 - 0.5 * cos(uTime * 0.32 + ph);
-  vec3 p = iPos.xyz + iDrift.xyz * k;
-  p.x += sin(uTime * 0.11 + ph * 1.7) * 0.12;
-  p.z += cos(uTime * 0.09 + ph * 2.3) * 0.12;
-  p.y += sin(uTime * 0.19 + ph) * 0.06;
-  float size = iPos.w * (0.94 + 0.06 * sin(uTime * 0.45 + ph * 3.1));
-  // face the camera, turned a little each (so the puffs don't all look alike)
-  float a = ph + uTime * 0.03;
-  vec2 q = mat2(cos(a), sin(a), -sin(a), cos(a)) * position.xy * size;
-  vec4 mv = viewMatrix * vec4(p, 1.0);
-  mv.xy += q;
-  gl_Position = projectionMatrix * mv;
-  vUv = uv;
-  vAlpha = iAlpha * (length(iDrift.xyz) > 0.01 ? 1.0 - 0.85 * k : 1.0);
-  vH = p.y;
+// ---- the haze
+const HAZE_TOP = 2.6; // (a little over the walls, 1.8)
+const HAZE_COLOR = 'vec3(0.80, 0.84, 0.89)';
+// faint, slow noise: the haze is alive, not painted on
+const NOISE = `
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
 }`;
-const FOG_FS = `
-uniform sampler2D uTex;
-varying vec2 vUv; varying float vAlpha; varying float vH;
+// the top churns: each point of it rises and falls on slow rolling noise
+const BILLOW = `
+float billow(vec2 p, float t) {
+  return 0.22 * noise(p * 0.9 + vec2(t * 0.11, -t * 0.07)) + 0.14 * noise(p * 2.1 - vec2(t * 0.19, t * 0.13)) + 0.06 * noise(p * 4.3 + t * 0.3);
+}`;
+const HAZE_VS = `
+attribute float aEdge;
+uniform float uTime;
+varying vec3 vW; varying float vEdge;
+${NOISE}
+${BILLOW}
 void main() {
-  vec4 t = texture2D(uTex, vUv);
-  // white on top, a soft blue-grey underneath
-  vec3 col = mix(vec3(0.74, 0.78, 0.86), vec3(1.0), clamp(vH / 2.2, 0.0, 1.0));
-  float a = clamp(t.a * 1.6, 0.0, 1.0) * vAlpha;
-  if (a < 0.01) discard;
+  vec3 p = position;
+  // the top billows, and sags down toward the haze's edge (no hard ridge)
+  if (p.y > ${HAZE_TOP} - 0.01) p.y += (billow(p.xz, uTime) - 0.12) * (0.4 + 0.6 * aEdge) - (1.0 - aEdge) * 0.45;
+  vW = p; vEdge = aEdge;
+  gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+}`;
+const HAZE_FS = `
+uniform float uTime;
+varying vec3 vW; varying float vEdge;
+${NOISE}
+float fbm(vec2 p) {
+  float v = 0.0, a = 0.5;
+  for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; }
+  return v;
+}
+void main() {
+  // a fluid: wisps that curl and flow through it (noise warped by noise,
+  // drifting), light streaks over a slightly deeper haze; thick through
+  // (the sides use height as their second direction, so the swirls run on
+  // round the corners and up over the top)
+  float t = uTime;
+  vec2 p = vW.xz * 0.45 + vec2(vW.y * 0.5, -vW.y * 0.35);
+  vec2 q = vec2(fbm(p + vec2(0.0, t * 0.06)), fbm(p + vec2(5.2, 1.3) - t * 0.05));
+  vec2 r = vec2(fbm(p + 3.0 * q + vec2(1.7, 9.2) + t * 0.09), fbm(p + 3.0 * q + vec2(8.3, 2.8) - t * 0.07));
+  float f = fbm(p + 3.5 * r);
+  float wisp = smoothstep(0.35, 0.85, f);
+  vec3 deep = vec3(0.70, 0.75, 0.82), light = vec3(0.95, 0.96, 0.99);
+  vec3 col = mix(deep, light, wisp * 0.85 + 0.1 * length(q));
+  float a = 0.8 + 0.17 * wisp;
+  // its edges feather out: the sides thin toward their top, the top toward its edge
+  bool top = vW.y > 1.6 && vEdge > 0.001;
+  a *= top ? mix(0.55, 1.0, vEdge) : 1.0 - 0.6 * smoothstep(1.4, ${HAZE_TOP}, vW.y);
+  if (vW.y < -0.055) a = 1.0; // (the haze's floor)
   gl_FragColor = vec4(col, a);
 }`;
-
-export { PARTS };
+// a stream of fog: a sheet along the fog's path (aS: how far along it, aV:
+// the same 0..1, aU: across, in world units) with streaks flowing down it,
+// fading in out of the haze and dissolving toward its end
+const FLOW_VS = `
+attribute float aU; attribute float aS; attribute float aV;
+uniform float uTime;
+varying float vU; varying float vS; varying float vV; varying vec3 vW;
+void main() {
+  vU = aU; vS = aS; vV = aV; vW = position;
+  gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
+}`;
+const FLOW_FS = `
+uniform float uTime;
+varying float vU; varying float vS; varying float vV; varying vec3 vW;
+${NOISE}
+float fbm(vec2 p) {
+  float v = 0.0, a = 0.5;
+  for (int i = 0; i < 4; i++) { v += a * noise(p); p = p * 2.1 + vec2(3.1, 7.7); a *= 0.5; }
+  return v;
+}
+void main() {
+  // streaks: long along the flow, narrow across it, sliding along, wobbling side to side
+  float t = uTime;
+  vec2 q = vec2(vU * 2.2 + 0.4 * sin(vS * 2.0 - t * 0.9 + vU), vS * 1.1 - t * 0.42);
+  float n = fbm(q + fbm(q * 0.7 + t * 0.05) * 1.2);
+  float streak = smoothstep(0.32, 0.72, n);
+  float fade = smoothstep(0.0, 0.16, vV) * (1.0 - smoothstep(0.55, 1.0, vV));
+  float a = streak * fade * 0.75;
+  if (a < 0.004) discard;
+  gl_FragColor = vec4(mix(vec3(0.82, 0.86, 0.91), vec3(0.97, 0.98, 1.0), streak), a);
+}`;

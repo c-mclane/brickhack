@@ -706,9 +706,9 @@ export class Renderer {
     };
     const shade0 = 1;
     // dungeon levels are a LEGO maze out in the open: green studded floors on a
-    // green baseplate, grey brick walls, wooden LEGO doors, and fog over
-    // everything not yet explored (the rock round the corridors too: a path
-    // you haven't followed yet fades into cloud, it doesn't end in a wall)
+    // green baseplate, grey brick walls (and the rock you've seen round the
+    // corridors: walled lanes), wooden LEGO doors, and haze over everything
+    // not yet explored (a path you haven't followed yet fades into it)
     const lego = !world.dream;
     // what the BrickWorld builds: floor plates, walls, doors, fog
     const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [] };
@@ -721,11 +721,18 @@ export class Renderer {
       const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
       return !!n && n.type !== 'none' && n.type !== 'rock';
     };
+    const solid = (xx, yy) => {
+      const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
+      return !!n && (n.type === 'wall' || (n.type === 'rock' && n.known) || n.type === 'door');
+    };
+    // over: the walls it can pour over (a floor you can walk on just beyond)
     const fogAt = (x, y) => {
-      const into = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => passable(x + dx, y + dy));
+      const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      const into = dirs.filter(([dx, dy]) => passable(x + dx, y + dy));
+      const over = dirs.filter(([dx, dy]) => solid(x + dx, y + dy) && passable(x + 2 * dx, y + 2 * dy));
       let near = into.length > 0;
       for (let dy = -1; dy <= 1 && !near; dy++) for (let dx = -1; dx <= 1 && !near; dx++) near = known(x + dx, y + dy);
-      bricks.fog.push({ x, z: y, into, near });
+      bricks.fog.push({ x, z: y, into, over, near });
     };
     // a door piece in its square, across the wall it stands in
     const doorPiece = (x, y, name, alongZ, shade) =>
@@ -763,8 +770,8 @@ export class Renderer {
             if (lego) bricks.walls.push({ x, z: y, shade });
             else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
-          case 'rock':
-            if (lego) fogAt(x, y);
+          case 'rock': // known rock is wall; rock nobody has seen yet is fog
+            if (lego) { if (c.known) bricks.walls.push({ x, z: y, shade }); else fogAt(x, y); }
             else column(0, T.stone ?? WALL_TILE, 0.45);
             break;
           case 'door': // closed door: a two-block door with wall above (LEGO: a 1x4x6 door, shut)

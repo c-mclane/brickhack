@@ -67,7 +67,15 @@ export function classify(world, x, y) {
 function classifyCell(world, x, y) {
   const cell = world.cell(x, y);
   if (!cell || (cell.k === 'c' && cell.c === CM.stone)) {
-    // solid rock: only materialise next to known corridors so they read as tunnels
+    // a blank square. If it's in sight now (or ever was), or we've stood beside
+    // it, it's rock: no way on there (on LEGO levels: wall). Otherwise nobody
+    // knows yet (fog), though next to a known corridor it still counts as
+    // solid (the camera and the block world treat it so)
+    const i = y * world.w + x;
+    if (world.solidSeen && (world.solidSeen.has(i) || (world.vis && world.visible(x, y)) || world.besideHero.has(i))) {
+      world.solidSeen.add(i);
+      return { type: 'rock', seen: true, known: true };
+    }
     for (let dy = -1; dy <= 1; dy++)
       for (let dx = -1; dx <= 1; dx++) {
         const n = world.cell(x + dx, y + dy);

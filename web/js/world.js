@@ -28,6 +28,8 @@ export class World {
   reset() {
     this.cells = new Array(this.w * this.h).fill(null);
     this.floorMem = new Array(this.w * this.h).fill(null);
+    this.solidSeen = new Set(); // squares of rock we've seen (or stood beside): known not to lead anywhere
+    this.besideHero = new Set(); // squares we've stood next to
     this.vis = null;
     this.classes = [];
     this.hero = { x: 0, y: 0 };
@@ -57,6 +59,12 @@ export class World {
   setHero(x, y) {
     if (x !== this.hero.x || y !== this.hero.y) this.dirty = true;
     this.hero = { x, y };
+    // you always see the squares beside you: any of them still blank is rock
+    for (let dy = -1; dy <= 1; dy++)
+      for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx >= 0 && yy >= 0 && xx < this.w && yy < this.h) this.besideHero.add(yy * this.w + xx);
+      }
   }
 
   rebuild() {
