@@ -3775,5 +3775,295 @@
    ],
    "scale": 0.45
   }
+ },
+ "mummy wrapping": {
+  "lego": "A tattered white shroud and a bandage-wrapped head",
+  "parts": [
+   {
+    "part": "86038c01",
+    "color": 15
+   },
+   {
+    "part": "24073",
+    "color": 15
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "86038c01",
+     "color": 15
+    }
+   ],
+   "extras": [
+    {
+     "part": "24073",
+     "color": 15,
+     "pos": [
+      0,
+      -24,
+      0
+     ]
+    }
+   ]
+  }
+ },
+ "orcish cloak": {
+  "lego": "The short cape, dark brown (a coarse mantelet)",
+  "parts": [
+   {
+    "part": "99464c01",
+    "color": 308
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "99464c01",
+     "color": 308
+    }
+   ]
+  }
+ },
+ "dwarvish cloak": {
+  "lego": "A brown cape and the medieval cowl (a hooded cloak)",
+  "parts": [
+   {
+    "part": "50231c01",
+    "color": 70
+   },
+   {
+    "part": "4505a",
+    "color": 70
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "50231c01",
+     "color": 70
+    }
+   ],
+   "extras": [
+    {
+     "part": "4505a",
+     "color": 70,
+     "pos": [
+      0,
+      -24,
+      0
+     ]
+    }
+   ]
+  }
+ },
+ "oilskin cloak": {
+  "lego": "A dark blue cape (a slippery cloak)",
+  "parts": [
+   {
+    "part": "50231c01",
+    "color": 272
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "50231c01",
+     "color": 272
+    }
+   ]
+  }
+ },
+ "elven cloak": {
+  "lego": "The straight-sided cape in sand green (a faded pall)",
+  "parts": [
+   {
+    "part": "65384c01",
+    "color": 378
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "65384c01",
+     "color": 378
+    }
+   ]
+  }
+ },
+ "lab coat": {
+  "lego": "A long white cape (a white coat)",
+  "parts": [
+   {
+    "part": "50231c01",
+    "color": 15
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "50231c01",
+     "color": 15
+    }
+   ]
+  }
+ },
+ "leather cloak": {
+  "lego": "A reddish-brown cape",
+  "parts": [
+   {
+    "part": "50231c01",
+    "color": 70
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "50231c01",
+     "color": 70
+    }
+   ]
+  }
+ },
+ "robe": {
+  "lego": "A long dark red robe (the minifig dress)",
+  "parts": [
+   {
+    "part": "3678b",
+    "color": 320
+   }
+  ],
+  "wear": {
+   "neck": [],
+   "dress": {
+    "part": "3678b",
+    "color": 320
+   }
+  }
+ },
+ "alchemy smock": {
+  "lego": "A white straight skirt worn as an apron",
+  "parts": [
+   {
+    "part": "600880c01",
+    "color": 15
+   }
+  ],
+  "wear": {
+   "neck": [],
+   "extras": [
+    {
+     "part": "600880c01",
+     "color": 15,
+     "pos": [
+      0,
+      32,
+      0
+     ]
+    }
+   ]
+  }
+ },
+ "cloak of protection": {
+  "lego": "The tattered cape with holes, iron grey",
+  "parts": [
+   {
+    "part": "86038c01",
+    "color": 72
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "86038c01",
+     "color": 72
+    }
+   ]
+  }
+ },
+ "poisonous cloak": {
+  "lego": "The pixelated tattered cape, olive green (a dirty rag)",
+  "parts": [
+   {
+    "part": "u9490c01",
+    "color": 330
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "u9490c01",
+     "color": 330
+    }
+   ]
+  }
+ },
+ "cloak of invisibility": {
+  "lego": "The pointed high-collared cape, black (an opera cloak)",
+  "parts": [
+   {
+    "part": "42450c01",
+    "color": 0
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "42450c01",
+     "color": 0
+    }
+   ]
+  }
+ },
+ "cloak of magic resistance": {
+  "lego": "The scalloped 6-point cape, purple (an ornamental cope)",
+  "parts": [
+   {
+    "part": "38301c01",
+    "color": 22
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "38301c01",
+     "color": 22
+    }
+   ]
+  }
+ },
+ "cloak of displacement": {
+  "lego": "A plain tan cape (a piece of cloth)",
+  "parts": [
+   {
+    "part": "50231c01",
+    "color": 19
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "50231c01",
+     "color": 19
+    }
+   ]
+  }
+ },
+ "Deluder": {
+  "lego": "The scalloped 5-point cape in a doppelganger's mist",
+  "parts": [
+   {
+    "part": "56630c01",
+    "color": 9001
+   }
+  ],
+  "wear": {
+   "neck": [
+    {
+     "part": "56630c01",
+     "color": 9001
+    }
+   ]
+  }
  }
 }

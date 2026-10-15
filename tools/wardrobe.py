@@ -26,7 +26,8 @@ KEYS = {
     'pants': ['legColor', 'legR', 'legL', 'dress', 'shortLegs'],
     'belt': ['hips', 'hipColor'],
 }
-CAPES = ('50231', '20551', '42450', '38301', '56630', '99464', '86038', '65384')   # neck items that are capes
+CAPES = ('50231', '20551', '42450', '38301', '56630', '99464', '86038', '65384', 'u9490')   # neck items that are capes
+HOODS = ('4505a', '24073')   # a cloak's hood or wrap (extras on the head): a helm takes them off
 CROWNS = ('33322', '96491')   # tiaras (extras) go with the hat
 
 
@@ -42,7 +43,8 @@ def empty_handed(spec):
 
 def wearing(spec, item):
     """A recipe with a worn item on (items.json "wear": recipe keys, as a
-    helm's hat, hatColor, plume, extras; a shield's left). A helm takes the hair off (it
+    helm's hat, hatColor, plume, extras; a shield's left; a cloak's neck,
+    extras, dress). A helm takes the hair off (it
     would poke through) and whatever hat, plume or tiara the figure had; its
     extras go on beside the figure's own (an angel keeps its wings)."""
     wear = item.get('wear')
@@ -50,8 +52,18 @@ def wearing(spec, item):
         return spec
     if 'left' in wear:   # a shield, in the left hand
         return dict(spec, left=wear['left'])
+    if 'hat' not in wear:   # a cloak: its cape in place of the figure's (armour on the neck stays), a hood, an apron, a robe
+        neck = spec.get('neck') or []
+        neck = [n for n in (neck if isinstance(neck, list) else [neck]) if not is_cape(n)]
+        spec = dict(spec, neck=neck + list(wear.get('neck', [])), extras=list(spec.get('extras', [])) + list(wear.get('extras', [])))
+        if any(x['part'].startswith(HOODS) for x in wear.get('extras', [])):   # its hood up: the figure's own hat and hair off
+            spec = {k: v for k, v in spec.items() if k not in ('hair', 'hat', 'hatColor', 'hatDecal', 'plume')}
+        if wear.get('dress'):
+            spec['dress'] = wear['dress']
+        return spec
+    # a helm: the hair off, the old hat, plume, tiara and any hood (a cloak's, put on first) too
     spec = {k: v for k, v in spec.items() if k not in ('hair', 'hat', 'hatColor', 'hatDecal', 'plume')}
-    extras = [x for x in spec.get('extras', []) if not x['part'].startswith(CROWNS)]
+    extras = [x for x in spec.get('extras', []) if not x['part'].startswith(CROWNS + HOODS)]
     spec.update({k: v for k, v in wear.items() if k != 'extras' and v is not None})
     spec['extras'] = extras + list(wear.get('extras', []))
     return spec

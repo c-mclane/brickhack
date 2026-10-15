@@ -1207,9 +1207,9 @@ async function loadHeroFigure(name, who) {
 let heroView = null;
 
 // What you wear that shows on your minifig (items made in LEGO to be worn:
-// items.json "wear"): their names, comma-separated (your helm, your shield), or ''
+// items.json "wear"): their names, comma-separated (your cloak, helm, shield), or ''
 function wornHelm() {
-  return ['helm', 'shield'].map((slot) => {
+  return ['cloak', 'helm', 'shield'].map((slot) => { // (a cloak first: a helm takes its hood off)
     const h = game.inv.find((i) => i.w === slot);
     const l = h && legoItemForTile(h.t);
     return l && l.wear ? l.name : '';

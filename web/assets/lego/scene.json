@@ -24,218 +24,191 @@
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "86038c01",
+      "color": 15
+     }
+    ],
+    "extras": [
+     {
+      "part": "24073",
+      "color": 15,
+      "pos": [
+       0,
+       -24,
+       0
+      ]
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "3876",
-     "color": 70,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     -315,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "small shield"
+   "rotY": 160,
+   "label": "mummy wrapping"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "99464c01",
+      "color": 308
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "2586p4b",
-     "color": 15,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     -225,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "elven shield"
+   "rotY": 160,
+   "label": "orcish cloak"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "50231c01",
+      "color": 70
+     }
+    ],
+    "extras": [
+     {
+      "part": "4505a",
+      "color": 70,
+      "pos": [
+       0,
+       -24,
+       0
+      ]
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "10049p01",
-     "color": 0,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     -135,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "Uruk-hai shield"
+   "rotY": 160,
+   "label": "dwarvish cloak"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "50231c01",
+      "color": 272
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "3846pm0",
-     "color": 72,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     -45,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "orcish shield"
+   "rotY": 160,
+   "label": "oilskin cloak"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "65384c01",
+      "color": 378
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "18836p41",
-     "color": 320,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     45,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "large shield"
+   "rotY": 160,
+   "label": "elven cloak"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "50231c01",
+      "color": 15
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "75902p06",
-     "color": 308,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     135,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "dwarvish roundshield"
+   "rotY": 160,
+   "label": "lab coat"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [
+     {
+      "part": "50231c01",
+      "color": 70
+     }
+    ],
     "right": null,
-    "left": {
-     "part": "2586",
-     "color": 383,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     225,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "shield of reflection"
+   "rotY": 160,
+   "label": "leather cloak"
   },
   {
    "fig": "knight",
    "set": {
+    "neck": [],
+    "dress": {
+     "part": "3678b",
+     "color": 320
+    },
     "right": null,
-    "left": {
-     "part": "3876",
-     "color": 383,
-     "face": [
-      0,
-      0,
-      -1
-     ],
-     "aim": [
-      0,
-      -1,
-      0
-     ]
-    }
+    "left": null,
+    "hat": null
    },
    "pos": [
     315,
     -72,
     0
    ],
-   "rotY": -25,
-   "label": "Mirrorbright"
+   "rotY": 160,
+   "label": "robe"
   }
  ]
 }
