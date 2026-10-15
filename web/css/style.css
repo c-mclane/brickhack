@@ -355,6 +355,14 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 .figpick .fig-prev { left: 4px; }
 .figpick .fig-next { right: 4px; }
 .figpick .fig-label { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; color: #fff; font-size: 15px; text-shadow: 2px 2px 0 #3f3f3f; padding: 0 6px; }
+/* the wardrobe beside it: a row of arrows per part (figpick.js) */
+.wardrobe { display: flex; flex-direction: column; gap: 3px; width: 300px; max-width: 90vw; }
+.wardrobe .ward-row { display: grid; grid-template-columns: 62px 30px 1fr 30px; align-items: center; gap: 4px; }
+.wardrobe .ward-cat { color: #e8e8e8; font-size: 15px; text-align: right; text-shadow: 2px 2px 0 #222; }
+.wardrobe .mc-btn { min-width: 0; height: 26px; padding: 0; font-size: 13px; }
+.wardrobe .ward-val { color: #fff; font-size: 15px; text-shadow: 2px 2px 0 #222; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wardrobe .ward-val.changed { color: #ffffa0; }
+.wardrobe .ward-reset { margin-top: 4px; height: 30px; font-size: 16px; }
 .figpick .fig-count { position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; color: #aaa; font-size: 12px; }
 
 /* character creation: the options for a role, race, gender or alignment; greyed out where the game won't allow them */

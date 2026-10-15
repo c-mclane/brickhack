@@ -101,15 +101,6 @@
      "deg": -70
     }
    ]
-  },
-  {
-   "part": "33322",
-   "color": 334,
-   "pos": [
-    0,
-    -29,
-    1
-   ]
   }
  ],
  "marble": {
@@ -128,7 +119,7 @@
   "color": 15
  },
  "hair": {
-  "part": "11255",
+  "part": "3759",
   "color": 15
  },
  "right": {
@@ -154,5 +145,7 @@
    0
   ]
  },
- "name": "Angel Valkyrie (female)"
+ "name": "Angel Valkyrie (female)",
+ "hat": "60747",
+ "hatColor": 15
 }

@@ -21,3 +21,4 @@ node_modules/
 /web/assets/lego/roster.built.json
 /web/assets/lego/parts/
 __pycache__/
+/web/assets/lego/custom/

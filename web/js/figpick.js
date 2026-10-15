@@ -1,7 +1,9 @@
 // Character select: the LEGO minifig picker.  A turning 3D preview of the
 // chosen figure, with arrows to cycle through the figures for the chosen role
 // and gender (tools/build_roster.py) and the figure's name.  Your pick is
-// your hero.
+// your hero.  Beside it, the wardrobe: arrows to swap any part for one from
+// web/assets/lego/wardrobe.json (the game server builds the result:
+// /api/figure), and a button back to the figure as it comes.
 
 import { Lego, figureMatrix, perspective, lookAt, loadGLB, FIG_FEET } from './lego.js';
 
@@ -15,6 +17,27 @@ export function loadRoster() {
 }
 
 const LAST = 'lh.fig.last';
+const PARTS = 'lh.fig.parts.last'; // the wardrobe choices last made
+
+let wardrobeP = null;
+export function loadWardrobe() {
+  if (!wardrobeP)
+    wardrobeP = fetch('assets/lego/wardrobe.json', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+  return wardrobeP;
+}
+
+// a roster figure with wardrobe parts swapped in ({category: option id}):
+// the url of its model, built by the game server (null if it can't be)
+const customs = new Map();
+export function customFigureUrl(base, parts) {
+  if (!parts || !Object.keys(parts).length) return Promise.resolve(null);
+  const q = `base=${encodeURIComponent(base)}&parts=${encodeURIComponent(JSON.stringify(parts))}`;
+  if (!customs.has(q))
+    customs.set(q, fetch('/api/figure?' + q).then((r) => r.json()).then((j) => j.url || null).catch(() => null));
+  return customs.get(q);
+}
 const PREVIEW_SCALE = 0.5; // the preview's camera frames a figure drawn at half size (a 2.6-unit minifig)
 const lget = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const lset = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
@@ -94,16 +117,73 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
   if (!view) { label.textContent = 'WebGL2 is not available'; return { current: () => null, filter() {} }; }
   let all = [], roster = [], idx = 0;
   let want = { role: 'knight', gender: 'male', race: 'human' };
+  let parts = {};
+  try { parts = JSON.parse(lget(PARTS) || '{}') || {}; } catch {}
+  let shown = 0; // which show() is the latest (a slow build mustn't replace a newer figure)
 
   const show = async () => {
     const f = roster[idx];
     if (!f) return;
+    const n = ++shown;
     label.textContent = f.label;
     count.textContent = `${idx + 1} / ${roster.length}`;
     lset(LAST, f.id);
     onChange(f);
-    if (!(await view.show(f.url))) label.textContent = `${f.label} (missing: run npm run lego)`;
+    drawWardrobe();
+    let url = f.url;
+    if (Object.keys(parts).length) {
+      label.textContent = `${f.label} (dressing...)`;
+      url = (await customFigureUrl(f.id, parts)) || f.url;
+      if (n !== shown) return;
+      label.textContent = f.label;
+    }
+    if (!(await view.show(url)) && n === shown) label.textContent = `${f.label} (missing: run npm run lego)`;
   };
+
+  // the wardrobe: a row per category, its arrows going through the options
+  // (and back round to the figure's own); a button to put everything back
+  const wroot = document.getElementById('wardrobe');
+  let ward = null;
+  const rows = {};
+  function drawWardrobe() {
+    if (!ward) return;
+    for (const c of ward.categories) {
+      const o = (ward.options[c.key] || []).find((x) => x.id === parts[c.key]);
+      rows[c.key].textContent = o ? o.label : 'As it comes';
+      rows[c.key].classList.toggle('changed', !!o);
+    }
+    wroot.querySelector('.ward-reset').disabled = !Object.keys(parts).length;
+  }
+  const swap = (key, d) => {
+    const opts = ward.options[key] || [];
+    let i = opts.findIndex((x) => x.id === parts[key]); // -1: the figure's own
+    i = ((i + 1 + d + opts.length + 1) % (opts.length + 1)) - 1;
+    if (i < 0) delete parts[key]; else parts[key] = opts[i].id;
+    lset(PARTS, JSON.stringify(parts));
+    show();
+  };
+  if (wroot)
+    loadWardrobe().then((w) => {
+      if (!w) return;
+      ward = w;
+      for (const c of w.categories) {
+        const row = document.createElement('div');
+        row.className = 'ward-row';
+        row.innerHTML = `<span class="ward-cat"></span><button class="mc-btn ward-prev" title="Previous">&#9664;</button><span class="ward-val"></span><button class="mc-btn ward-next" title="Next">&#9654;</button>`;
+        row.querySelector('.ward-cat').textContent = c.label;
+        row.querySelector('.ward-prev').onclick = () => swap(c.key, -1);
+        row.querySelector('.ward-next').onclick = () => swap(c.key, 1);
+        rows[c.key] = row.querySelector('.ward-val');
+        wroot.appendChild(row);
+      }
+      const reset = document.createElement('button');
+      reset.className = 'mc-btn ward-reset';
+      reset.textContent = '\u21BA As recommended';
+      reset.title = 'Back to the figure for your role, as it comes';
+      reset.onclick = () => { parts = {}; lset(PARTS, '{}'); show(); };
+      wroot.appendChild(reset);
+      drawWardrobe();
+    });
   const step = (d) => { if (roster.length) { idx = (idx + d + roster.length) % roster.length; show(); } };
   root.querySelector('.fig-prev').onclick = () => step(-1);
   root.querySelector('.fig-next').onclick = () => step(1);
@@ -127,6 +207,7 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
 
   return {
     current: () => roster[idx] || null,
+    parts: () => ({ ...parts }), // the wardrobe choices ({} = the figure as it comes)
     // role, gender and race as the creation screen shows them ('Knight', 'female', 'elf', 'random'...)
     filter(role, gender, race = 'random') {
       want = { role: String(role).toLowerCase(), gender: String(gender).toLowerCase(), race: String(race).toLowerCase() };

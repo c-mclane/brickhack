@@ -1,5 +1,5 @@
 {
- "label": "Angel Monk",
+ "label": "Angel Nun",
  "role": "monk",
  "gender": "female",
  "race": "angel",
@@ -101,15 +101,6 @@
      "deg": -70
     }
    ]
-  },
-  {
-   "part": "33322",
-   "color": 334,
-   "pos": [
-    0,
-    -29,
-    1
-   ]
   }
  ],
  "marble": {
@@ -127,9 +118,7 @@
   "part": "3678b",
   "color": 15
  },
- "hair": {
-  "part": "11255",
-  "color": 15
- },
- "name": "Angel Monk (female)"
+ "name": "Angel Nun",
+ "hat": "52345",
+ "hatColor": 15
 }

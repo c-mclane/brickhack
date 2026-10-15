@@ -133,6 +133,44 @@ function body(req) {
   });
 }
 
+// ---- customized minifigs (the character select's wardrobe): built by a
+// long-running tools/figure_worker.py (the LDraw library stays loaded), one
+// request at a time, answered by id
+const figs = { proc: null, next: 1, waiting: new Map(), buf: '' };
+function figureWorker() {
+  if (figs.proc) return figs.proc;
+  const proc = (figs.proc = spawn('python3', [path.join(ROOT, 'tools', 'figure_worker.py')], { cwd: ROOT, stdio: ['pipe', 'pipe', 'inherit'] }));
+  proc.stdout.on('data', (d) => {
+    figs.buf += d;
+    let i;
+    while ((i = figs.buf.indexOf('\n')) >= 0) {
+      const line = figs.buf.slice(0, i);
+      figs.buf = figs.buf.slice(i + 1);
+      try {
+        const r = JSON.parse(line);
+        const done = figs.waiting.get(r.id);
+        if (done) { figs.waiting.delete(r.id); done(r); }
+      } catch {}
+    }
+  });
+  const fail = () => {
+    figs.proc = null;
+    for (const done of figs.waiting.values()) done({ error: 'figure builder stopped' });
+    figs.waiting.clear();
+  };
+  proc.on('exit', fail);
+  proc.on('error', fail);
+  return proc;
+}
+function buildFigure(base, parts) {
+  return new Promise((resolve) => {
+    const id = figs.next++;
+    figs.waiting.set(id, resolve);
+    try { figureWorker().stdin.write(JSON.stringify({ id, base, parts }) + '\n'); }
+    catch (e) { figs.waiting.delete(id); resolve({ error: String(e) }); }
+  });
+}
+
 function worldFile(variant, name) {
   return path.join(WORLDS, variant, cleanName(name) + '.json');
 }
@@ -298,6 +336,18 @@ const server = http.createServer(async (req, res) => {
     });
     return;
   }
+  // a roster figure with wardrobe parts swapped in: ?base=<figure id>&parts=<{category: option id} as JSON>
+  if (url.pathname === '/api/figure') {
+    const base = (url.searchParams.get('base') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 60);
+    let parts = {};
+    try { parts = JSON.parse(url.searchParams.get('parts') || '{}'); } catch {}
+    const clean = {};
+    for (const [k, v] of Object.entries(parts || {}).slice(0, 20))
+      clean[String(k).replace(/[^a-z]/g, '').slice(0, 20)] = String(v).replace(/[^a-z0-9-]/gi, '').slice(0, 40);
+    const r = await buildFigure(base, clean);
+    res.writeHead(r.url ? 200 : 400, { 'Content-Type': 'application/json' }).end(JSON.stringify(r.url ? { url: r.url } : { error: r.error || 'failed' }));
+    return;
+  }
   if (url.pathname === '/api/variants') {
     const list = installed().map((id) => ({ id, label: VARIANTS[id].label }));
     res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify(list));
@@ -324,6 +374,7 @@ server.listen(PORT, HOST, () => console.log(`BrickHack: http://${HOST}:${PORT}/`
 for (const sig of ['SIGINT', 'SIGTERM']) {
   process.on(sig, () => {
     for (const s of sessions.values()) stopGame(s);
+    if (figs.proc) figs.proc.kill();
     setTimeout(() => process.exit(0), 1500);
   });
 }

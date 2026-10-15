@@ -101,15 +101,6 @@
      "deg": -70
     }
    ]
-  },
-  {
-   "part": "33322",
-   "color": 334,
-   "pos": [
-    0,
-    -29,
-    1
-   ]
   }
  ],
  "marble": {
@@ -127,10 +118,6 @@
   "part": "3678b",
   "color": 15
  },
- "hair": {
-  "part": "13251",
-  "color": 15
- },
  "right": {
   "part": "30173a",
   "color": 15,
@@ -140,5 +127,7 @@
    -0.6
   ]
  },
- "name": "Angel Samurai (female)"
+ "name": "Angel Samurai (female)",
+ "hat": "30175",
+ "hatColor": 15
 }

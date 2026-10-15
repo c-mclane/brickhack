@@ -15,7 +15,7 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
-import { setupFigurePicker, figureView, loadRoster, figuresFor } from './figpick.js';
+import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -1009,7 +1009,10 @@ function buildScreens() {
   $('#create [data-act=go]').onclick = () => {
     localSet('bh.create', JSON.stringify(choice));
     localSet('nh3d.name', nameIn.value);
-    if (figPicker.current()) localSet(FIG_KEY(nameIn.value), figPicker.current().id);
+    if (figPicker.current()) {
+      localSet(FIG_KEY(nameIn.value), figPicker.current().id);
+      localSet(FIG_KEY(nameIn.value) + '.parts', JSON.stringify(figPicker.parts()));
+    }
     const o = { name: nameIn.value };
     for (const k of ['role', 'race', 'gender', 'align']) {
       const v = CYCLES[k][1][choice[k]].toLowerCase();
@@ -1147,7 +1150,8 @@ const skinTile = () => meta.count; // first free slot in the tile atlas
 
 
 // ---- the hero as a LEGO minifig (on LEGO levels), chosen at character creation
-const FIG_KEY = (name) => 'lh.fig.' + (name || '').toLowerCase();
+// (by the name as the server keeps it: server.js cleanName, so "Knight of St. Lazarus" is KnightofStLazarus)
+const FIG_KEY = (name) => 'lh.fig.' + (String(name || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 30) || 'Steve').toLowerCase();
 const hero3d = { id: null, prims: null };
 // who: the engine's status ({baserole, female, race}); a random role, race or
 // gender may have come out differently from the figure picked, so then take
@@ -1162,13 +1166,17 @@ async function loadHeroFigure(name, who) {
   }
   fig = fig || roster[0];
   localSet(FIG_KEY(name), fig.id);
+  // dressed up from the wardrobe at character creation? (the same swaps on whichever figure fits)
+  let parts = {};
+  try { parts = JSON.parse(localGet(FIG_KEY(name) + '.parts') || '{}') || {}; } catch {}
+  const url = (await customFigureUrl(fig.id, parts)) || fig.url;
   hero3d.id = fig.id;
-  hero3d.url = fig.url;
+  hero3d.url = url;
   hero3d.prims = null;
-  try { hero3d.prims = await renderer.lego.model(fig.url); } catch (e) { console.warn('hero figure:', e); }
+  try { hero3d.prims = await renderer.lego.model(url); } catch (e) { console.warn('hero figure:', e); }
   // ...and in the inventory, beside your equipment
   if (!heroView) heroView = figureView($('#hero-preview .hero-fig'), () => $('#hero-preview').offsetParent !== null);
-  if (heroView) { await heroView.show(fig.url); ui.heroFigure = true; ui.renderCharStats(); }
+  if (heroView) { await heroView.show(url); ui.heroFigure = true; ui.renderCharStats(); }
 }
 let heroView = null;
 // the minifig stands in for the doll and the hero's sprite on LEGO levels

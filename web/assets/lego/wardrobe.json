@@ -1,0 +1,1152 @@
+{
+ "categories": [
+  {
+   "key": "hat",
+   "label": "Hat"
+  },
+  {
+   "key": "hair",
+   "label": "Hair"
+  },
+  {
+   "key": "head",
+   "label": "Head"
+  },
+  {
+   "key": "torso",
+   "label": "Torso"
+  },
+  {
+   "key": "hands",
+   "label": "Hands"
+  },
+  {
+   "key": "pants",
+   "label": "Pants"
+  },
+  {
+   "key": "belt",
+   "label": "Belt"
+  },
+  {
+   "key": "cape",
+   "label": "Cape"
+  },
+  {
+   "key": "armor",
+   "label": "Armor"
+  },
+  {
+   "key": "gear",
+   "label": "Gear"
+  }
+ ],
+ "options": {
+  "hat": [
+   {
+    "id": "none",
+    "label": "No hat",
+    "set": {}
+   },
+   {
+    "id": "cap-blue",
+    "label": "Blue cap",
+    "set": {
+     "hat": "4485b",
+     "hatColor": 1
+    }
+   },
+   {
+    "id": "cap-red",
+    "label": "Red cap",
+    "set": {
+     "hat": "4485b",
+     "hatColor": 4
+    }
+   },
+   {
+    "id": "hard-hat",
+    "label": "Hard hat",
+    "set": {
+     "hat": "3833",
+     "hatColor": 14
+    }
+   },
+   {
+    "id": "cowboy",
+    "label": "Cowboy hat",
+    "set": {
+     "hat": "15424",
+     "hatColor": 70
+    }
+   },
+   {
+    "id": "top-hat",
+    "label": "Top hat",
+    "set": {
+     "hat": "3878",
+     "hatColor": 0
+    }
+   },
+   {
+    "id": "bowler",
+    "label": "Bowler hat",
+    "set": {
+     "hat": "95674",
+     "hatColor": 0
+    }
+   },
+   {
+    "id": "fedora",
+    "label": "Fedora",
+    "set": {
+     "hat": "13565",
+     "hatColor": 19
+    }
+   },
+   {
+    "id": "chef",
+    "label": "Chef's hat",
+    "set": {
+     "hat": "3898",
+     "hatColor": 15
+    }
+   },
+   {
+    "id": "police",
+    "label": "Police hat",
+    "set": {
+     "hat": "3624",
+     "hatColor": 0
+    }
+   },
+   {
+    "id": "tricorne",
+    "label": "Pirate tricorne",
+    "set": {
+     "hat": "2544",
+     "hatColor": 0
+    }
+   },
+   {
+    "id": "captain",
+    "label": "Captain's hat",
+    "set": {
+     "hat": "12895p01",
+     "hatColor": 15
+    }
+   },
+   {
+    "id": "fez",
+    "label": "Fez",
+    "set": {
+     "hat": "85975",
+     "hatColor": 4
+    }
+   },
+   {
+    "id": "wizard",
+    "label": "Wizard hat",
+    "set": {
+     "hat": "6131",
+     "hatColor": 1
+    }
+   },
+   {
+    "id": "crown",
+    "label": "Crown",
+    "set": {
+     "hat": "71015",
+     "hatColor": 334
+    }
+   },
+   {
+    "id": "viking",
+    "label": "Viking helmet",
+    "set": {
+     "hat": "53450c01",
+     "hatColor": 71
+    }
+   },
+   {
+    "id": "knight",
+    "label": "Knight's helmet",
+    "set": {
+     "hat": "3844",
+     "hatColor": 71
+    }
+   },
+   {
+    "id": "samurai",
+    "label": "Samurai helmet",
+    "set": {
+     "hat": "30175",
+     "hatColor": 0
+    }
+   },
+   {
+    "id": "bat",
+    "label": "Bat-wing helmet",
+    "set": {
+     "hat": "30105",
+     "hatColor": 0
+    }
+   },
+   {
+    "id": "space",
+    "label": "Space helmet",
+    "set": {
+     "hat": "3842b",
+     "hatColor": 1
+    }
+   },
+   {
+    "id": "banana",
+    "label": "Banana",
+    "set": {
+     "hat": "25977p01",
+     "hatColor": 14
+    }
+   }
+  ],
+  "hair": [
+   {
+    "id": "none",
+    "label": "Bald",
+    "set": {}
+   },
+   {
+    "id": "classic-brown",
+    "label": "Classic, brown",
+    "set": {
+     "hair": {
+      "part": "3901",
+      "color": 70
+     }
+    }
+   },
+   {
+    "id": "classic-black",
+    "label": "Classic, black",
+    "set": {
+     "hair": {
+      "part": "3901",
+      "color": 0
+     }
+    }
+   },
+   {
+    "id": "classic-blond",
+    "label": "Classic, blond",
+    "set": {
+     "hair": {
+      "part": "3901",
+      "color": 14
+     }
+    }
+   },
+   {
+    "id": "long-brown",
+    "label": "Long, brown",
+    "set": {
+     "hair": {
+      "part": "3625",
+      "color": 70
+     }
+    }
+   },
+   {
+    "id": "ponytail",
+    "label": "Ponytail, black",
+    "set": {
+     "hair": {
+      "part": "6093a",
+      "color": 0
+     }
+    }
+   },
+   {
+    "id": "spiky",
+    "label": "Spiky, tan",
+    "set": {
+     "hair": {
+      "part": "53981",
+      "color": 19
+     }
+    }
+   },
+   {
+    "id": "mohawk",
+    "label": "Red mohawk",
+    "set": {
+     "hair": {
+      "part": "27385",
+      "color": 4
+     }
+    }
+   },
+   {
+    "id": "pigtails",
+    "label": "Pigtails, orange",
+    "set": {
+     "hair": {
+      "part": "13784",
+      "color": 25
+     }
+    }
+   },
+   {
+    "id": "curls",
+    "label": "Long curls, blond",
+    "set": {
+     "hair": {
+      "part": "11255",
+      "color": 226
+     }
+    }
+   },
+   {
+    "id": "bun",
+    "label": "Grand bun, grey",
+    "set": {
+     "hair": {
+      "part": "13251",
+      "color": 71
+     }
+    }
+   },
+   {
+    "id": "laurel",
+    "label": "Laurel wreath",
+    "set": {
+     "hair": {
+      "part": "11264p01",
+      "color": 70
+     }
+    }
+   },
+   {
+    "id": "swept",
+    "label": "Swept back, black",
+    "set": {
+     "hair": {
+      "part": "21268",
+      "color": 0
+     }
+    }
+   }
+  ],
+  "head": [
+   {
+    "id": "smile",
+    "label": "Classic smile",
+    "set": {
+     "head": "3626bp01",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "grin",
+    "label": "Lopsided grin",
+    "set": {
+     "head": "3626bp0g",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "sunglasses",
+    "label": "Sunglasses",
+    "set": {
+     "head": "3626bp04",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "moustache",
+    "label": "Moustache",
+    "set": {
+     "head": "3626bp03",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "lady",
+    "label": "Eyelashes",
+    "set": {
+     "head": "3626bp09",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "red-lips",
+    "label": "Red lips",
+    "set": {
+     "head": "3626bp08",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "pirate",
+    "label": "Eye patch and beard",
+    "set": {
+     "head": "3626bp47",
+     "headColor": 14
+    }
+   },
+   {
+    "id": "fangs",
+    "label": "Fangs",
+    "set": {
+     "head": "3626bpc25",
+     "headColor": 15
+    }
+   },
+   {
+    "id": "wolf",
+    "label": "Wolf",
+    "set": {
+     "head": "3626cpap",
+     "headColor": 72
+    }
+   },
+   {
+    "id": "robot",
+    "label": "Robot",
+    "set": {
+     "head": "3626bp64",
+     "headColor": 0
+    }
+   },
+   {
+    "id": "alien",
+    "label": "Little green man",
+    "set": {
+     "head": "3626bp01",
+     "headColor": 10
+    }
+   },
+   {
+    "id": "blank",
+    "label": "Blank",
+    "set": {
+     "head": "3626bp01",
+     "headColor": 14,
+     "headRecolor": {
+      "*": "14"
+     }
+    }
+   }
+  ],
+  "torso": [
+   {
+    "id": "overalls",
+    "label": "Overalls",
+    "set": {
+     "torso": "973p7w",
+     "torsoColor": 212,
+     "armColor": 212
+    }
+   },
+   {
+    "id": "dungarees",
+    "label": "Red dungarees",
+    "set": {
+     "torso": "973p1c",
+     "torsoColor": 14,
+     "armColor": 14
+    }
+   },
+   {
+    "id": "pirate",
+    "label": "Pirate stripes",
+    "set": {
+     "torso": "973p32",
+     "torsoColor": 15,
+     "armColor": 15
+    }
+   },
+   {
+    "id": "space",
+    "label": "Classic Space",
+    "set": {
+     "torso": "973p6j",
+     "torsoColor": 1,
+     "armColor": 1
+    }
+   },
+   {
+    "id": "hawaiian",
+    "label": "Hawaiian shirt",
+    "set": {
+     "torso": "973p5i",
+     "torsoColor": 191,
+     "armColor": 191
+    }
+   },
+   {
+    "id": "chef",
+    "label": "Chef's jacket",
+    "set": {
+     "torso": "973p2a",
+     "torsoColor": 15,
+     "armColor": 15
+    }
+   },
+   {
+    "id": "police",
+    "label": "Police",
+    "set": {
+     "torso": "973p0g",
+     "torsoColor": 0,
+     "armColor": 0
+    }
+   },
+   {
+    "id": "formal",
+    "label": "Formal jacket",
+    "set": {
+     "torso": "973p5s",
+     "torsoColor": 0,
+     "armColor": 0
+    }
+   },
+   {
+    "id": "knight",
+    "label": "Lion knight",
+    "set": {
+     "torso": "973p4f",
+     "torsoColor": 71,
+     "armColor": 1
+    }
+   },
+   {
+    "id": "red",
+    "label": "Plain red",
+    "set": {
+     "torso": "973",
+     "torsoColor": 4,
+     "armColor": 4
+    }
+   },
+   {
+    "id": "white",
+    "label": "Plain white",
+    "set": {
+     "torso": "973",
+     "torsoColor": 15,
+     "armColor": 15
+    }
+   },
+   {
+    "id": "green",
+    "label": "Plain green",
+    "set": {
+     "torso": "973",
+     "torsoColor": 2,
+     "armColor": 2
+    }
+   }
+  ],
+  "hands": [
+   {
+    "id": "yellow",
+    "label": "Yellow",
+    "set": {
+     "handColor": 14
+    }
+   },
+   {
+    "id": "white",
+    "label": "White",
+    "set": {
+     "handColor": 15
+    }
+   },
+   {
+    "id": "black",
+    "label": "Black",
+    "set": {
+     "handColor": 0
+    }
+   },
+   {
+    "id": "red",
+    "label": "Red",
+    "set": {
+     "handColor": 4
+    }
+   },
+   {
+    "id": "blue",
+    "label": "Blue",
+    "set": {
+     "handColor": 1
+    }
+   },
+   {
+    "id": "green",
+    "label": "Green",
+    "set": {
+     "handColor": 2
+    }
+   },
+   {
+    "id": "tan",
+    "label": "Light nougat",
+    "set": {
+     "handColor": 78
+    }
+   },
+   {
+    "id": "brown",
+    "label": "Reddish brown",
+    "set": {
+     "handColor": 70
+    }
+   },
+   {
+    "id": "gold",
+    "label": "Gold",
+    "set": {
+     "handColor": 334
+    }
+   }
+  ],
+  "pants": [
+   {
+    "id": "blue",
+    "label": "Blue",
+    "set": {
+     "legColor": 1,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "black",
+    "label": "Black",
+    "set": {
+     "legColor": 0,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "red",
+    "label": "Red",
+    "set": {
+     "legColor": 4,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "white",
+    "label": "White",
+    "set": {
+     "legColor": 15,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "green",
+    "label": "Green",
+    "set": {
+     "legColor": 2,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "tan",
+    "label": "Tan",
+    "set": {
+     "legColor": 19,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "grey",
+    "label": "Dark grey",
+    "set": {
+     "legColor": 72,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "brown",
+    "label": "Brown",
+    "set": {
+     "legColor": 70,
+     "legR": "3816",
+     "legL": "3817"
+    }
+   },
+   {
+    "id": "short",
+    "label": "Short legs, blue",
+    "set": {
+     "shortLegs": {
+      "part": "16709",
+      "color": 1
+     }
+    }
+   },
+   {
+    "id": "barefoot",
+    "label": "Short and barefoot",
+    "set": {
+     "shortLegs": {
+      "part": "16709p07",
+      "color": 28
+     }
+    }
+   },
+   {
+    "id": "gown",
+    "label": "Long gown, pink",
+    "set": {
+     "dress": {
+      "part": "3678b",
+      "color": 13
+     }
+    }
+   },
+   {
+    "id": "robe",
+    "label": "Long robe, purple",
+    "set": {
+     "dress": {
+      "part": "3678b",
+      "color": 22
+     }
+    }
+   }
+  ],
+  "belt": [
+   {
+    "id": "blue",
+    "label": "Blue",
+    "set": {
+     "hips": "3815",
+     "hipColor": 1
+    }
+   },
+   {
+    "id": "black",
+    "label": "Black",
+    "set": {
+     "hips": "3815",
+     "hipColor": 0
+    }
+   },
+   {
+    "id": "red",
+    "label": "Red",
+    "set": {
+     "hips": "3815",
+     "hipColor": 4
+    }
+   },
+   {
+    "id": "white",
+    "label": "White",
+    "set": {
+     "hips": "3815",
+     "hipColor": 15
+    }
+   },
+   {
+    "id": "brown",
+    "label": "Brown",
+    "set": {
+     "hips": "3815",
+     "hipColor": 70
+    }
+   },
+   {
+    "id": "grey",
+    "label": "Dark grey",
+    "set": {
+     "hips": "3815",
+     "hipColor": 72
+    }
+   },
+   {
+    "id": "yellow",
+    "label": "Yellow",
+    "set": {
+     "hips": "3815",
+     "hipColor": 14
+    }
+   }
+  ],
+  "cape": [
+   {
+    "id": "none",
+    "label": "No cape",
+    "set": {}
+   },
+   {
+    "id": "red",
+    "label": "Red cape",
+    "set": {
+     "neck": {
+      "part": "50231c01",
+      "color": 4
+     }
+    }
+   },
+   {
+    "id": "blue",
+    "label": "Blue cape",
+    "set": {
+     "neck": {
+      "part": "50231c01",
+      "color": 1
+     }
+    }
+   },
+   {
+    "id": "black",
+    "label": "Black cape",
+    "set": {
+     "neck": {
+      "part": "50231c01",
+      "color": 0
+     }
+    }
+   },
+   {
+    "id": "purple",
+    "label": "Purple cape",
+    "set": {
+     "neck": {
+      "part": "50231c01",
+      "color": 22
+     }
+    }
+   },
+   {
+    "id": "dracula",
+    "label": "Dracula collar",
+    "set": {
+     "neck": {
+      "part": "20551p01c01",
+      "color": 4
+     }
+    }
+   },
+   {
+    "id": "spiky",
+    "label": "Spiky cape",
+    "set": {
+     "neck": {
+      "part": "42450c01",
+      "color": 0
+     }
+    }
+   },
+   {
+    "id": "scalloped",
+    "label": "Scalloped cape",
+    "set": {
+     "neck": {
+      "part": "38301c01",
+      "color": 26
+     }
+    }
+   },
+   {
+    "id": "tattered",
+    "label": "Tattered cape",
+    "set": {
+     "neck": {
+      "part": "86038c01",
+      "color": 72
+     }
+    }
+   }
+  ],
+  "armor": [
+   {
+    "id": "none",
+    "label": "Nothing",
+    "set": {}
+   },
+   {
+    "id": "plate",
+    "label": "Breastplate",
+    "set": {
+     "neck": {
+      "part": "2587",
+      "color": 71
+     }
+    }
+   },
+   {
+    "id": "gold-plate",
+    "label": "Gold breastplate",
+    "set": {
+     "neck": {
+      "part": "2587",
+      "color": 334
+     }
+    }
+   },
+   {
+    "id": "airtanks",
+    "label": "Air tanks",
+    "set": {
+     "neck": {
+      "part": "3838",
+      "color": 0
+     }
+    }
+   },
+   {
+    "id": "life-jacket",
+    "label": "Life jacket",
+    "set": {
+     "neck": {
+      "part": "38781",
+      "color": 4
+     }
+    }
+   },
+   {
+    "id": "beard",
+    "label": "Wizard's beard",
+    "set": {
+     "neck": {
+      "part": "6132",
+      "color": 15
+     }
+    }
+   },
+   {
+    "id": "quiver",
+    "label": "Quiver",
+    "set": {
+     "neck": {
+      "part": "4498",
+      "color": 70,
+      "turn": 180
+     }
+    }
+   }
+  ],
+  "gear": [
+   {
+    "id": "none",
+    "label": "Empty hands",
+    "set": {}
+   },
+   {
+    "id": "wrench",
+    "label": "Spanner",
+    "set": {
+     "right": {
+      "part": "4006",
+      "color": 71,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "hammer",
+    "label": "Hammer",
+    "set": {
+     "right": {
+      "part": "55295",
+      "color": 72,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "sword",
+    "label": "Sword and shield",
+    "set": {
+     "right": {
+      "part": "3847",
+      "color": 71,
+      "aim": [
+       0,
+       -1,
+       -0.6
+      ]
+     },
+     "left": {
+      "part": "3846",
+      "color": 15,
+      "face": [
+       0,
+       0,
+       -1
+      ],
+      "aim": [
+       0,
+       -1,
+       0
+      ]
+     }
+    }
+   },
+   {
+    "id": "cutlass",
+    "label": "Cutlass",
+    "set": {
+     "right": {
+      "part": "2530",
+      "color": 71,
+      "aim": [
+       0,
+       -1,
+       -0.6
+      ]
+     }
+    }
+   },
+   {
+    "id": "pickaxe",
+    "label": "Pick-axe",
+    "set": {
+     "right": {
+      "part": "3841",
+      "color": 72,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "torch",
+    "label": "Torch",
+    "set": {
+     "right": {
+      "part": "3959",
+      "color": 70,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "magnifier",
+    "label": "Magnifying glass",
+    "set": {
+     "right": {
+      "part": "30152a",
+      "color": 0,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "bow",
+    "label": "Bow",
+    "set": {
+     "left": {
+      "part": "4499",
+      "color": 70,
+      "face": [
+       0,
+       0,
+       1
+      ],
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "staff",
+    "label": "Wizard's staff",
+    "set": {
+     "right": {
+      "part": "95049",
+      "color": 70,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "flames",
+    "label": "Flames",
+    "set": {
+     "right": {
+      "part": "18395",
+      "color": 57,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     },
+     "left": {
+      "part": "18395",
+      "color": 57,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   },
+   {
+    "id": "ice",
+    "label": "Ice crystals",
+    "set": {
+     "right": {
+      "part": "30385",
+      "color": 43,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     },
+     "left": {
+      "part": "30385",
+      "color": 43,
+      "aim": [
+       0,
+       -1,
+       -0.25
+      ]
+     }
+    }
+   }
+  ]
+ }
+}

@@ -80,6 +80,8 @@ HELD = {
     '3835': {'center': (0, 22, 0), 'up': (0, -1, 0)},                       # hand-axe: low on the haft, head up
     '37341b': {'center': (0, 4, 0), 'up': (0, -1, 0)},                      # knife: blade up out of the fist
     '13790': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # club: by its handle, the thick end up
+    '4006': {'center': (0, 6, 0), 'up': (0, -1, 0)},                        # spanner: by the middle, the jaws up
+    '55295': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # hammer: by the handle, head up
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:

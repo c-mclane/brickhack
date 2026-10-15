@@ -123,10 +123,6 @@
    "color": 15
   }
  ],
- "hair": {
-  "part": "11264p01",
-  "color": 15
- },
  "right": {
   "part": "30173a",
   "color": 15,
@@ -136,5 +132,7 @@
    -0.6
   ]
  },
- "name": "Angel Samurai (male)"
+ "name": "Angel Samurai (male)",
+ "hat": "30175",
+ "hatColor": 15
 }
