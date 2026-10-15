@@ -33,7 +33,7 @@ export function loadLegoItems() {
   return readyP;
 }
 
-const ICON = 128; // px (shown smaller: crisp on big screens)
+const ICON = 192; // px (shown smaller: crisp on big and high-DPI screens)
 async function drawIcons() {
   if (!byTile.size) return;
   const canvas = document.createElement('canvas');

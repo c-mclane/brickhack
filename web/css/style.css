@@ -1,7 +1,7 @@
 :root {
   --font: 'VT323', 'Courier New', monospace;
-  --slot: 52px; /* (big enough for the LEGO items' pictures) */
-  --icon: 46px;
+  --slot: 78px; /* (big enough for the LEGO items' pictures to show well) */
+  --icon: 69px;
   --mc-gray: #c6c6c6;
   --mc-slot: #8b8b8b;
   --text-shadow: 2px 2px 0 #3f3f3f;
@@ -160,14 +160,14 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 .slots .slot.dragover, #equip .slot.dragover { background: #dbe8ff; }
 .slots .slot .qty, #equip .slot .qty { color: #fff; }
 .slot .ghost { opacity: .35; filter: grayscale(1); }
-.inv-panel { width: calc(var(--slot) * 9 + 28px); }
+.inv-panel { width: calc(var(--slot) * 9 + 28px); max-height: 96vh; overflow-y: auto; overflow-x: hidden; } /* (scrolls if the window is too short) */
 .inv-top { display: flex; gap: 8px; margin-bottom: 4px; }
 #equip { display: grid; grid-template-columns: repeat(2, var(--slot)); grid-auto-rows: var(--slot); }
 #equip .slot .lbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font-size: 13px; color: #555; text-align: center; line-height: 1; pointer-events: none; }
-#hero-preview { background: #000; border: 2px solid; border-color: #373737 #fff #fff #373737; width: 104px;
+#hero-preview { background: #000; border: 2px solid; border-color: #373737 #fff #fff #373737; flex: 1; min-width: 104px; /* (as wide as there's room for) */
   display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ddd; font-size: 16px; text-align: center; }
-#charstats { font-size: 17px; line-height: 1.05; flex: 1; color: #333; }
+#charstats { font-size: 17px; line-height: 1.05; flex: none; width: 11.5em; color: #333; } /* (just wide enough for its lines) */
 #charstats b { font-weight: normal; color: #000; }
 #inv-actions { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
 #inv.select #inv-label { color: #1a5c1a; }
@@ -212,7 +212,7 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 #death .score span { color: #ff5; }
 
 @media (max-width: 560px) {
-  :root { --slot: 38px; --icon: 34px; }
+  :root { --slot: 40px; --icon: 36px; } /* (a phone: nine still fit across) */
   .mc-btn { min-width: 80vw; }
 }
 
