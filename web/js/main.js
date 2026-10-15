@@ -16,7 +16,7 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, firstPersonMatrix, firstPersonGrip, mul as mul4 } from './minifig-anim.js';
+import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT } from './minifig-anim.js';
 import { loadLegoItems, legoItemForTile } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
@@ -1200,14 +1200,13 @@ function heroHold() {
     }
   return hold;
 }
-// lego.js entries for what's held, on a figure drawn at `matrix` with joint
-// matrices `arms` ({R, L}); grips: how each sits in its hand (default: the rig's grip)
-function heldEntries(hold, rig, matrix, arms, grips = {}) {
+// lego.js entries for what's held, on a figure drawn at `matrix` with its
+// hands' joint matrices `hands` ({R, L}): each item at its hand's grip
+function heldEntries(hold, rig, matrix, hands) {
   const out = [];
   for (const side of ['R', 'L']) {
     const url = hold[side], prims = url && heldPrims.get(url), j = rig['arm' + side];
-    const grip = grips[side] || (j && j.grip && new Float32Array(j.grip));
-    if (prims && grip && arms[side]) out.push({ prims, matrix: mul4(matrix, mul4(arms[side], grip)), shade: 1 });
+    if (prims && j && j.grip && hands[side]) out.push({ prims, matrix: mul4(matrix, mul4(hands[side], new Float32Array(j.grip))), shade: 1 });
   }
   return out;
 }
@@ -2042,7 +2041,7 @@ function frame(t) {
       const m = figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
       renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
         // (for the block levels' renderer, lego.js; the LEGO dungeon's hangs them on the hands itself)
-        ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.armR, L: pose.armL }) : [])];
+        ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL }) : [])];
     } else renderer.legoFigures = [];
     // first person: your own LEGO arm, and what it holds, in the corner of the
     // view; fighting with two weapons, your left one too, in the other corner
@@ -2051,10 +2050,13 @@ function frame(t) {
     if (fpOn) {
       const arms = [];
       for (const side of hold.two ? ['R', 'L'] : ['R']) {
-        const fm = firstPersonMatrix(rig, aspect, side), ap = pose['fpArm' + side];
+        const fm = firstPersonMatrix(rig, aspect, side, hold[side] ? FP_HOLD_TILT : FP_TILT), ap = pose['fpArm' + side];
         if (!fm || !ap) continue;
-        arms.push({ prims: hero3d.prims, matrix: fm, pose: { ['arm' + side]: ap, ['item' + side]: ap }, only: ['arm' + side, 'item' + side], skip: skipped(hold), shade: 1 },
-          ...heldEntries({ [side]: hold[side] }, rig, fm, { [side]: ap }, { [side]: firstPersonGrip(rig, fm, side) }));
+        // (the wrist turned so what's held points up into the view; the grip stays in the fist)
+        const W = hold[side] ? firstPersonWrist(rig, fm, side) : null, hp = W ? mul4(ap, W) : ap;
+        arms.push({ prims: hero3d.prims, matrix: fm, pose: { ['arm' + side]: ap, ['hand' + side]: hp, ['item' + side]: hp },
+          only: ['arm' + side, 'hand' + side, 'item' + side], skip: skipped(hold), shade: 1 },
+          ...heldEntries({ [side]: hold[side] }, rig, fm, { [side]: hp }));
       }
       renderer.fpArm = arms;
     } else renderer.fpArm = null;

@@ -291,6 +291,9 @@ def build(spec, base_dir='.'):
                                         'grip': {'pos': [float(v) for v in gp], 'mat': [float(v) for v in gm.flatten()]}}   # (where a held item goes: grip_frame)
         G('arm' + side[0].upper())
         out.append(line(spec.get('armColor', 15), a[0], a[1], part))
+        # the hand: a joint of its own (it turns at the wrist, about its own Z axis: pose_arm's roll)
+        rig['hand' + side[0].upper()] = {'pivot': [float(v) for v in h[0]], 'axis': [float(v) for v in np.array(h[1]).reshape(3, 3)[:, 2]]}
+        G('hand' + side[0].upper())
         out.append(line(spec.get('handColor', 14), h[0], h[1], '3820'))
     G('body')
     neck = spec.get('neck') or []   # capes, armour and other neck-bracket items sit between head and torso

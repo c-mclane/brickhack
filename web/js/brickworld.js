@@ -358,13 +358,13 @@ export class BrickWorld {
 
   // What the figure has in its hands (hold: {R, L}, each a LEGO item's url;
   // null: nothing, the hand empty; undefined: as the figure was built). A
-  // held item hangs on its arm's joint at the hand's grip (the rig's grip,
+  // held item hangs on its hand's joint at the hand's grip (the rig's grip,
   // tools/minifig.py grip_frame), the figure's own item in that hand hidden.
   holdItems(g, hold) {
     const j = g.userData.joints;
     const held = (g.userData.held = g.userData.held || {});
     for (const side of ['R', 'L']) {
-      const want = hold[side], baked = j.joints['item' + side], arm = j.joints['arm' + side];
+      const want = hold[side], baked = j.joints['item' + side], arm = j.joints['hand' + side] || j.joints['arm' + side];
       if (baked) baked.visible = want === undefined;
       const cur = held[side];
       if (cur && cur.url === want) continue;

@@ -62,15 +62,17 @@ const approach = (v, target, rate, dt) => v + (target - v) * Math.min(1, rate * 
 const bump = (t, a, b, c, d) => (t < a || t > d ? 0 : t < b ? ease((t - a) / (b - a)) : t < c ? 1 : 1 - ease((t - c) / (d - c)));
 
 const STRETCH_TIME = 2.2; // s
-export const ATTACK_TIME = 0.4; // s
+export const FP_TILT = 1.93; // first person: how far the arm is turned up (radians)
+export const FP_HOLD_TILT = 1.0; // ...holding something: lower, so the wrist can stand the blade straight up beside the view
+export const ATTACK_TIME = 0.55; // s
 // the slash, as keyframes over 0..1: shoulder swing (degrees, negative is up
 // in front), the arm thrown out sideways (degrees about the figure's forward
 // axis, positive out to its right), and the body's twist (radians, positive
 // turns it to its right)
 const SLASH = [
   { t: 0, swing: null, out: 0, twist: 0 }, // (from wherever the arm was)
-  { t: 0.34, swing: -150, out: 38, twist: 0.32 }, // wound up: high and out to the right, turned back
-  { t: 0.58, swing: -35, out: -40, twist: -0.38 }, // the cut: down and across to the left
+  { t: 0.36, swing: -172, out: 52, twist: 0.46 }, // wound up: right up overhead and out to the right, turned well back
+  { t: 0.62, swing: -12, out: -62, twist: -0.55 }, // the cut: a big swoop down and across to the left, following through
   { t: 1, swing: null, out: 0, twist: 0 }, // and back to where it was
 ];
 function slashAt(k, rest) {
@@ -162,6 +164,7 @@ export class FigureAnimator {
       // the right arm is on the figure's -X side, so out to the right is a turn about -Z)
       const M = mul(B, mul(turnAbout(j.pivot, [0, 0, side === 'R' ? -1 : 1], out * DEG), turnAbout(j.pivot, j.axis, (a - j.swing) * DEG)));
       P['arm' + side] = M;
+      P['hand' + side] = M; // (the hand, and what it holds, turn with the arm; first person also turns the wrist)
       P['item' + side] = M;
     }
 
@@ -175,7 +178,11 @@ export class FigureAnimator {
       let sw = swing * (side === 'R' ? 4 : -4) + Math.sin(t * 1.7 + (side === 'L' ? 1 : 0)) * 1.2, out = 0;
       const k = side === 'R' ? atk : state.twoweap ? atk - 0.25 : -1;
       if (k >= 0 && k < 1) {
-        const keys = [[0, 0, 0], [0.34, -14, 10], [0.58, 14, -40], [1, 0, 0]];
+        // (seen from behind your own arm, swing + brings the blade down toward the
+        // middle, out + carries the fist in toward the middle) a wind-up back and
+        // out, then a swoop down and across: the blade's tip from the top right,
+        // through the middle, down to the left
+        const keys = [[0, 0, 0], [0.36, -20, -15], [0.62, 65, 60], [1, 0, 0]];
         let i = 0;
         while (i < keys.length - 2 && k > keys[i + 1][0]) i++;
         const a = keys[i], b = keys[i + 1], u = ease((k - a[0]) / (b[0] - a[0]));
@@ -226,7 +233,7 @@ export function poseJoints(j, poses) {
 // right shoulder just below and right of the eye, and turned so the arm (as it
 // hangs, unposed) is held up before you: a big fist and its blade close in the
 // corner, Minecraft style. Pose the arm with FigureAnimator's fpArmR.
-export function firstPersonMatrix(rig, aspect = 16 / 9, side = 'R') {
+export function firstPersonMatrix(rig, aspect = 16 / 9, side = 'R', tilt = FP_TILT) {
   const j = rig && rig['arm' + side];
   if (!j) return null;
   const s = 0.16; // studs -> view units
@@ -235,36 +242,33 @@ export function firstPersonMatrix(rig, aspect = 16 / 9, side = 'R') {
   const toPivot = ident(); toPivot[12] = -j.pivot[0]; toPivot[13] = -j.pivot[1]; toPivot[14] = -j.pivot[2];
   const S = ident(); S[0] = S[5] = S[10] = s;
   const back = turnAbout([0, 0, 0], [0, 1, 0], Math.PI);
-  const tip = turnAbout([0, 0, 0], [1, 0, 0], 1.93); // (the arm held up: as in the arrival stretch)
+  const tip = turnAbout([0, 0, 0], [1, 0, 0], tilt); // (FP_TILT: the arm held up, as in the arrival stretch)
   const T = ident(); T[12] = shoulder[0]; T[13] = shoulder[1]; T[14] = shoulder[2];
   return mul(T, mul(tip, mul(back, mul(S, toPivot))));
 }
 
-// First person: how a held item sits in that hand (a matrix in the arm's
-// frame, in place of the rig's grip): at the grip, but turned so that at rest
-// (fm: firstPersonMatrix) its blade points up and a little in toward the
-// middle of the view, its flat toward you, as you'd hold it before you.
-export function firstPersonGrip(rig, fm, side = 'R') {
-  const j = rig && rig['arm' + side];
-  if (!j || !j.grip || !fm) return null;
+// First person: the turn of the wrist (a matrix in the arm's frame, about the
+// hand's own axis: tools/minifig.py pose_arm's roll) that brings what the hand
+// holds round so its blade stands up beside the view, raised and ready (the
+// grip stays in the fist). fm: firstPersonMatrix, with FP_HOLD_TILT.
+const wristCache = new Map();
+export function firstPersonWrist(rig, fm, side = 'R') {
+  const j = rig && rig['arm' + side], h = rig && rig['hand' + side];
+  if (!j || !j.grip || !h || !fm) return null;
+  const key = side + fm.join(',');
+  if (wristCache.has(key)) return wristCache.get(key);
   const G = new Float32Array(j.grip);
-  const A = mul(fm, G); // the item at rest, as it would be
-  const col = (m, c) => { const v = [m[c * 4], m[c * 4 + 1], m[c * 4 + 2]]; const l = Math.hypot(...v) || 1; return v.map((x) => x / l); };
-  const norm = (v) => { const l = Math.hypot(...v) || 1; return v.map((x) => x / l); };
-  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-  const ra = [col(A, 0), col(A, 1), col(A, 2)]; // its axes as they'd be, in view space
-  // where we want them: +Y (the blade) up and in, +X (its flat) toward you
   const sx = side === 'R' ? 1 : -1;
-  const y = norm([-0.35 * sx, 0.85, -0.4]);
-  let x = norm([0.25 * sx, 0.15, 0.95]);
-  const z = norm(cross(x, y));
-  x = cross(y, z);
-  const want = [x, y, z];
-  // the turn from as-it-would-be to as-wanted, in the item's own frame: R = Ra^T * Rw
-  const R = new Float32Array(16);
-  for (let c = 0; c < 3; c++)
-    for (let r = 0; r < 3; r++) R[c * 4 + r] = ra[r][0] * want[c][0] + ra[r][1] * want[c][1] + ra[r][2] * want[c][2];
-  R[15] = 1;
-  return mul(G, R);
+  const want = [-0.08 * sx, 1, -0.1], wl = Math.hypot(...want); // (straight up, beside the view)
+  let best = null;
+  for (let deg = 0; deg < 360; deg += 3) {
+    const W = turnAbout(h.pivot, h.axis, deg * DEG);
+    const A = mul(fm, mul(W, G));
+    const b = [A[4], A[5], A[6]], bl = Math.hypot(...b) || 1; // the item's +Y (its blade), in view space
+    const score = (b[0] * want[0] + b[1] * want[1] + b[2] * want[2]) / (bl * wl);
+    if (!best || score > best.score) best = { score, W };
+  }
+  if (wristCache.size > 64) wristCache.clear();
+  wristCache.set(key, best.W);
+  return best.W;
 }
-
