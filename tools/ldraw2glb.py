@@ -61,8 +61,10 @@ def figure_extras(ldr_text):
     """What the renderers need to know about a figure: an angel's glowing aura
     (mist.js), and its joints for the animation (figure_rig; minifig-anim.js)."""
     ex = {}
-    if '0 !LEGOHACK AURA' in ldr_text:
-        ex['aura'] = True
+    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK AURA')), None)
+    if line:   # (or '0 !LEGOHACK AURA {json}': its colour, thickness, the end that glows: mist.js addAura)
+        rest = line[len('0 !LEGOHACK AURA'):].strip()
+        ex['aura'] = json.loads(rest) if rest else True
     rig = figure_rig(ldr_text)
     if rig:
         ex['rig'] = rig
@@ -110,7 +112,7 @@ def figure_geom(lib, path, ldr_text):
                 merged.setdefault(c, []).append(a.reshape(-1, 3, 3))
             geom = [(c, None, np.concatenate(a), None) for c, a in merged.items()]
         elif name is None:
-            geom = ghosted(lib.parse(path), ldr_text)
+            geom = glowing(ghosted(lib.parse(path), ldr_text), ldr_text)
         else:
             # each joint's lines as a model of its own (named by its content: the library caches by name)
             text = '\n'.join(lines) + '\n'
@@ -149,6 +151,48 @@ def figure_rig(ldr_text):
     return rig
 
 
+def split(geom, d, t, code):
+    """Everything where (a point . d) >= t turns to colour `code`; triangles
+    across that plane are cut in two, so the shape stays the same."""
+    d = np.asarray(d, float)
+    out = {}
+
+    def put(key, tri, uv):
+        tr, u = out.setdefault(key, ([], []))
+        tr.append(tri)
+        u.append(uv)
+
+    def clip(poly, uvs, sgn):
+        # the part of a polygon where sgn * (p.d - t) >= 0 (Sutherland-Hodgman)
+        P, U = [], []
+        n = len(poly)
+        for i in range(n):
+            a, b = poly[i], poly[(i + 1) % n]
+            da, db = sgn * (a @ d - t), sgn * (b @ d - t)
+            if da >= 0:
+                P.append(a); U.append(uvs[i])
+            if (da >= 0) != (db >= 0):
+                k = da / (da - db)
+                P.append(a + k * (b - a)); U.append(uvs[i] + k * (uvs[(i + 1) % n] - uvs[i]))
+        return P, U
+
+    for c, tex, arr, uv in geom:
+        uvs = uv if uv is not None else np.zeros((len(arr), 3, 2))
+        x = arr @ d - t
+        for i in range(len(arr)):
+            if (x[i] >= 0).all():
+                put((code, None), arr[i], uvs[i])
+            elif (x[i] <= 0).all():
+                put((c, tex), arr[i], uvs[i])
+            else:
+                for key, sgn in (((code, None), 1), ((c, tex), -1)):
+                    P, U = clip(list(arr[i]), list(uvs[i]), sgn)
+                    for k in range(1, len(P) - 1):   # fan into triangles
+                        put(key, np.array([P[0], P[k], P[k + 1]]), np.array([U[0], U[k], U[k + 1]]))
+    return [(c, tx, np.array(tr).reshape(-1, 3, 3), np.array(u).reshape(-1, 3, 2) if tx else None)
+            for (c, tx), (tr, u) in out.items() if tr]
+
+
 def ghosted(geom, ldr_text):
     """A doppelganger: if the model says '0 !LEGOHACK GHOST <side>', everything
     on that side of the middle (x > 0 for side 1, x < 0 for -1) turns to mist.
@@ -156,42 +200,23 @@ def ghosted(geom, ldr_text):
     side = next((float(l.split()[3]) for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK GHOST')), None)
     if side is None:
         return geom
-    out = {}
+    return split(geom, (side, 0, 0), 0.0, MIST)
 
-    def put(key, tri, uv):
-        t, u = out.setdefault(key, ([], []))
-        t.append(tri)
-        u.append(uv)
 
-    def clip(poly, uvs, sgn):
-        # the part of a polygon where sgn * x >= 0 (Sutherland-Hodgman against the plane x = 0)
-        P, U = [], []
-        n = len(poly)
-        for i in range(n):
-            a, b = poly[i], poly[(i + 1) % n]
-            da, db = sgn * a[0], sgn * b[0]
-            if da >= 0:
-                P.append(a); U.append(uvs[i])
-            if (da >= 0) != (db >= 0):
-                t = da / (da - db)
-                P.append(a + t * (b - a)); U.append(uvs[i] + t * (uvs[(i + 1) % n] - uvs[i]))
-        return P, U
-
-    for code, tex, arr, uv in geom:
-        uvs = uv if uv is not None else np.zeros((len(arr), 3, 2))
-        x = arr[:, :, 0] * side
-        for i in range(len(arr)):
-            if (x[i] >= 0).all():
-                put((MIST, None), arr[i], uvs[i])
-            elif (x[i] <= 0).all():
-                put((code, tex), arr[i], uvs[i])
-            else:
-                for key, sgn in (((MIST, None), side), ((code, tex), -side)):
-                    P, U = clip(list(arr[i]), list(uvs[i]), sgn)
-                    for k in range(1, len(P) - 1):   # fan into triangles
-                        put(key, np.array([P[0], P[k], P[k + 1]]), np.array([U[0], U[k], U[k + 1]]))
-    return [(c, t, np.array(tr).reshape(-1, 3, 3), np.array(u).reshape(-1, 3, 2) if t else None)
-            for (c, t), (tr, u) in out.items() if tr]
+def glowing(geom, ldr_text):
+    """A glowing end (Sting's blade near its tip): if the model says
+    '0 !LEGOHACK GLOW <dx> <dy> <dz> <fraction> <colour>', the last fraction
+    of its length toward (dx, dy, dz) turns to that colour (a translucent one
+    glows in the renderers)."""
+    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK GLOW ')), None)
+    if line is None or not geom:
+        return geom
+    dx, dy, dz, frac, code = line.split()[3:8]
+    d = np.array([float(dx), float(dy), float(dz)])
+    d /= np.linalg.norm(d)
+    s = np.concatenate([arr.reshape(-1, 3) @ d for _, _, arr, _ in geom])
+    hi, lo = s.max(), s.min()
+    return split(geom, d, hi - float(frac) * (hi - lo), int(code))
 
 
 class Library:

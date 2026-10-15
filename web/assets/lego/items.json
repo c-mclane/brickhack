@@ -383,7 +383,6 @@
  },
  "Dagger of Creation": {
   "lego": "Realm Dagger: pearl gold hilt, dark turquoise blade, a blue gem in the pommel",
-  "vtile": 90000,
   "parts": [
    {
     "part": "64567a",
@@ -421,7 +420,6 @@
  },
  "Dagger of Protection": {
   "lego": "Realm Dagger: pearl gold hilt, green blade, a green gem in the pommel",
-  "vtile": 90001,
   "parts": [
    {
     "part": "64567a",
@@ -459,7 +457,6 @@
  },
  "Dagger of Destruction": {
   "lego": "Realm Dagger: pearl gold hilt, red blade, a red gem in the pommel",
-  "vtile": 90002,
   "parts": [
    {
     "part": "64567a",
@@ -2221,6 +2218,666 @@
    {
     "part": "80179",
     "color": 179
+   }
+  ]
+ },
+ "Firewall": {
+  "lego": "An athame in translucent orange: a firewall",
+  "parts": [
+   {
+    "part": "88288p01",
+    "color": 57
+   }
+  ]
+ },
+ "Magicbane": {
+  "lego": "An athame in translucent purple, the wizard's own",
+  "parts": [
+   {
+    "part": "88288p01",
+    "color": 52
+   }
+  ]
+ },
+ "Deep Freeze": {
+  "lego": "An athame in translucent light blue, ice",
+  "parts": [
+   {
+    "part": "88288p01",
+    "color": 43
+   }
+  ]
+ },
+ "Sting": {
+  "lego": "Sting itself: the LEGO Lord of the Rings small sword (10053), metallic silver, a thin blue glow round its blade toward the tip",
+  "parts": [
+   {
+    "part": "10053",
+    "color": 80
+   }
+  ],
+  "aura": {
+   "color": [
+    0.12,
+    0.32,
+    1.0
+   ],
+   "scale": 0.4,
+   "tip": {
+    "fraction": 0.55
+   }
+  }
+ },
+ "Giantkiller": {
+  "lego": "The battleaxe in pearl gold",
+  "parts": [
+   {
+    "part": "3848",
+    "color": 297
+   }
+  ]
+ },
+ "Quick Blade": {
+  "lego": "The elven short sword in translucent yellow, quick as lightning",
+  "parts": [
+   {
+    "part": "2674f",
+    "color": 46
+   }
+  ]
+ },
+ "Orcrist": {
+  "lego": "The LEGO Lord of the Rings elvish sword (Glamdring and Orcrist's), metallic silver, a thin blue glow round its blade toward the tip",
+  "parts": [
+   {
+    "part": "2674a",
+    "color": 80
+   }
+  ],
+  "aura": {
+   "color": [
+    0.12,
+    0.32,
+    1.0
+   ],
+   "scale": 0.4,
+   "tip": {
+    "fraction": 0.55
+   }
+  }
+ },
+ "Dragonbane": {
+  "lego": "The broadsword in dark red",
+  "parts": [
+   {
+    "part": "18031",
+    "color": 320
+   }
+  ]
+ },
+ "Excalibur": {
+  "lego": "The long sword in chrome gold",
+  "parts": [
+   {
+    "part": "59",
+    "color": 334
+   }
+  ]
+ },
+ "Sunsword": {
+  "lego": "The long sword in translucent yellow, sunlight",
+  "parts": [
+   {
+    "part": "59",
+    "color": 46
+   }
+  ]
+ },
+ "Snickersnee": {
+  "lego": "The katana in pearl gold",
+  "parts": [
+   {
+    "part": "30173a",
+    "color": 297
+   }
+  ]
+ },
+ "Sword of Justice": {
+  "lego": "The long sword in white",
+  "parts": [
+   {
+    "part": "59",
+    "color": 15
+   }
+  ]
+ },
+ "Demonbane": {
+  "lego": "The long sword in translucent clear, holy, in an angel's glow",
+  "parts": [
+   {
+    "part": "59",
+    "color": 47
+   }
+  ],
+  "aura": true
+ },
+ "Werebane": {
+  "lego": "The saber in pearl light grey",
+  "parts": [
+   {
+    "part": "59229",
+    "color": 135
+   }
+  ]
+ },
+ "Grayswandir": {
+  "lego": "The saber in pearl dark grey: grey Grayswandir",
+  "parts": [
+   {
+    "part": "59229",
+    "color": 148
+   }
+  ]
+ },
+ "Skullcrusher": {
+  "lego": "The spiked club in white, bone",
+  "parts": [
+   {
+    "part": "88001",
+    "color": 15
+   }
+  ]
+ },
+ "Trollsbane": {
+  "lego": "The morning star in pearl gold",
+  "parts": [
+   {
+    "part": "59232",
+    "color": 297
+   }
+  ]
+ },
+ "Ogresmasher": {
+  "lego": "The war hammer, its head in chrome gold on a black handle",
+  "parts": [
+   {
+    "part": "30374",
+    "color": 0
+   },
+   {
+    "part": "85861",
+    "color": 0,
+    "pos": [
+     0.0,
+     2.0,
+     0.0
+    ],
+    "mat": [
+     1.0,
+     -0.0,
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     0.0,
+     -0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "87087",
+    "color": 334,
+    "pos": [
+     -10,
+     -16,
+     0
+    ],
+    "mat": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1,
+     -1,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "54200",
+    "color": 334,
+    "pos": [
+     -10,
+     -16,
+     0
+    ],
+    "mat": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1,
+     -1,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "Reaper": {
+  "lego": "The halberd in black",
+  "parts": [
+   {
+    "part": "6123",
+    "color": 0
+   }
+  ]
+ },
+ "Holy Spear of Light": {
+  "lego": "The spear in translucent yellow, light",
+  "parts": [
+   {
+    "part": "4497",
+    "color": 46
+   }
+  ]
+ },
+ "Luckblade": {
+  "lego": "The short sword in bright green, a four-leaf clover's",
+  "parts": [
+   {
+    "part": "3847",
+    "color": 10
+   }
+  ]
+ },
+ "Sword of Balance": {
+  "lego": "The short sword in white",
+  "parts": [
+   {
+    "part": "3847",
+    "color": 15
+   }
+  ]
+ },
+ "Frost Brand": {
+  "lego": "The jagged sword (11439) in translucent light blue: frost, its stub in a pearl gold telescope for a hilt",
+  "parts": [
+   {
+    "part": "64644",
+    "color": 297
+   },
+   {
+    "part": "11439",
+    "color": 43,
+    "pos": [
+     0,
+     40,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "Fire Brand": {
+  "lego": "The jagged sword (11439) in translucent orange: fire, its stub in a pearl gold telescope for a hilt",
+  "parts": [
+   {
+    "part": "64644",
+    "color": 297
+   },
+   {
+    "part": "11439",
+    "color": 57,
+    "pos": [
+     0,
+     40,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "Vorpal Blade": {
+  "lego": "The shortsword (Luckblade's) in a doppelganger's mist",
+  "parts": [
+   {
+    "part": "3847",
+    "color": 9001
+   }
+  ]
+ },
+ "Disrupter": {
+  "lego": "The mace, its spiked ball in translucent purple on a black handle",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 0
+   },
+   {
+    "part": "24084",
+    "color": 52,
+    "pos": [
+     0,
+     -6,
+     0
+    ]
+   }
+  ]
+ },
+ "Mjollnir": {
+  "lego": "Thor's hammer (the sledgehammer is LEGO's Mjolnir) in flat silver",
+  "parts": [
+   {
+    "part": "75904",
+    "color": 179
+   }
+  ]
+ },
+ "Grimtooth": {
+  "lego": "The kunai in dark red",
+  "parts": [
+   {
+    "part": "98338",
+    "color": 320
+   }
+  ]
+ },
+ "Serpent's Tongue": {
+  "lego": "The dagger in dark green, venom",
+  "parts": [
+   {
+    "part": "44658",
+    "color": 288
+   }
+  ]
+ },
+ "Cleaver": {
+  "lego": "The LotR dwarven axe (2674d) in chrome silver",
+  "parts": [
+   {
+    "part": "2674d",
+    "color": 383
+   }
+  ]
+ },
+ "Doomblade": {
+  "lego": "The orcish short sword in black",
+  "parts": [
+   {
+    "part": "10053",
+    "color": 0
+   }
+  ]
+ },
+ "Stormbringer": {
+  "lego": "The runesword in smoky translucent black",
+  "parts": [
+   {
+    "part": "48495",
+    "color": 40
+   }
+  ]
+ },
+ "Thiefbane": {
+  "lego": "The long sword in blue-violet",
+  "parts": [
+   {
+    "part": "59",
+    "color": 89
+   }
+  ]
+ },
+ "Deathsword": {
+  "lego": "The two-handed sword in black",
+  "parts": [
+   {
+    "part": "2674b",
+    "color": 0
+   }
+  ]
+ },
+ "Bat from Hell": {
+  "lego": "The baseball bat in dark red",
+  "parts": [
+   {
+    "part": "93220",
+    "color": 320
+   }
+  ]
+ },
+ "Elfrist": {
+  "lego": "The orcish spear in black",
+  "parts": [
+   {
+    "part": "93789",
+    "color": 0
+   }
+  ]
+ },
+ "Plague": {
+  "lego": "The long bow in dark green, plague",
+  "parts": [
+   {
+    "part": "93231",
+    "color": 288
+   }
+  ]
+ },
+ "Hellfire": {
+  "lego": "The crossbow in dark red",
+  "parts": [
+   {
+    "part": "2570",
+    "color": 320
+   }
+  ]
+ },
+ "Houchou": {
+  "lego": "The spoon in chrome gold",
+  "parts": [
+   {
+    "part": "80179",
+    "color": 334
+   }
+  ]
+ },
+ "Nighthorn": {
+  "lego": "The spiral horn in black, a night unicorn's",
+  "parts": [
+   {
+    "part": "89522",
+    "color": 0
+   }
+  ]
+ },
+ "Sceptre of Might": {
+  "lego": "The mace, its spiked ball in chrome gold on a pearl gold handle",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 297
+   },
+   {
+    "part": "24084",
+    "color": 334,
+    "pos": [
+     0,
+     -6,
+     0
+    ]
+   }
+  ]
+ },
+ "Staff of Aesculapius": {
+  "lego": "A wooden staff with a pearl gold snake along its top, its head rising over the end",
+  "parts": [
+   {
+    "part": "63965",
+    "color": 70
+   },
+   {
+    "part": "30115",
+    "color": 297,
+    "pos": [
+     0,
+     -77,
+     -4
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "Great Dagger of Glaurgnaa": {
+  "lego": "The great dagger, its blade smoky translucent black on a black hilt",
+  "parts": [
+   {
+    "part": "64567a",
+    "color": 0
+   },
+   {
+    "part": "64727",
+    "color": 40,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   }
+  ]
+ },
+ "Longbow of Diana": {
+  "lego": "The long bow in white, the moon's",
+  "parts": [
+   {
+    "part": "93231",
+    "color": 15
+   }
+  ]
+ },
+ "Tsurugi of Muramasa": {
+  "lego": "The tsurugi in dark red, cursed Muramasa",
+  "parts": [
+   {
+    "part": "21459",
+    "color": 320
+   }
+  ]
+ },
+ "Stake of Van Helsing": {
+  "lego": "The stake, dark brown with a pearl gold point",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 308
+   },
+   {
+    "part": "27257",
+    "color": 297
+   }
+  ]
+ },
+ "Narsil": {
+  "lego": "The Sword that was Broken: the LotR sword with a broken blade (2674e), metallic silver",
+  "parts": [
+   {
+    "part": "2674e",
+    "color": 80
+   }
+  ]
+ },
+ "Glamdring": {
+  "lego": "Glamdring: a long sword with a thin guard (98370), metallic silver, a thin blue glow round its blade toward the tip",
+  "parts": [
+   {
+    "part": "98370",
+    "color": 80
+   }
+  ],
+  "aura": {
+   "color": [
+    0.12,
+    0.32,
+    1.0
+   ],
+   "scale": 0.4,
+   "tip": {
+    "fraction": 0.55
+   }
+  }
+ },
+ "Scythe of Quakes": {
+  "lego": "Golden weapon of Spinjitzu: the scythe with a cross-hatched grip, pearl gold",
+  "parts": [
+   {
+    "part": "37341d",
+    "color": 297
+   }
+  ]
+ },
+ "Nunchucks of Lightning": {
+  "lego": "Golden weapon of Spinjitzu: the nunchaku, pearl gold",
+  "parts": [
+   {
+    "part": "67100-f1",
+    "color": 297
+   }
+  ]
+ },
+ "Shurikens of Ice": {
+  "lego": "Golden weapon of Spinjitzu: a pair of throwing stars, pearl gold",
+  "parts": [
+   {
+    "part": "93058",
+    "color": 297
+   },
+   {
+    "part": "93058",
+    "color": 297,
+    "pos": [
+     0,
+     0,
+     36
+    ]
+   }
+  ]
+ },
+ "Sword of Fire": {
+  "lego": "Golden weapon of Spinjitzu: the katana with a dragon guard, pearl gold",
+  "parts": [
+   {
+    "part": "93055",
+    "color": 297
    }
   ]
  }

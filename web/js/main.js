@@ -17,7 +17,7 @@ import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
-import { loadLegoItems, legoItemForTile } from './legoitems.js';
+import { loadLegoItems, legoItemForTile, gameTile } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -1308,7 +1308,7 @@ function updateDoll(dt, now) {
 // the atlas tile of the wielded weapon (pick-axes count), or null
 function wieldedTile() {
   const w = game.inv.find((i) => i.w === 'weapon');
-  return w ? w.t : null;
+  return w ? gameTile(w.t) : null; // (an artifact: its base item's sprite)
 }
 
 // first-person: the wielded weapon held at the bottom-right, Minecraft style

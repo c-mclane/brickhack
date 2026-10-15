@@ -98,7 +98,16 @@ def main(scene_path):
             built.append({'tile': tile_index(obj['tile']), 'pos': obj.get('pos', [0, 0, 0]), 'label': obj.get('label')})
             continue
         if 'item' in obj:
-            text = item_ldr(lib, {'parts': obj['parts']} if 'parts' in obj else items[obj['item']], obj.get('stand', False))   # (or its own parts: a variant)
+            item = {'parts': obj['parts']} if 'parts' in obj else items[obj['item']]   # (or its own parts: a variant)
+            text = item_ldr(lib, item, obj.get('stand', False))
+            aura = item.get('aura')
+            if aura:   # an angel's glow round it (ldraw2glb.figure_extras); a tip's end: up standing, glTF +X lying down
+                if isinstance(aura, dict) and 'tip' in aura:
+                    aura = dict(aura, tip=dict({'dir': [0, 1, 0] if obj.get('stand') else [1, 0, 0]}, **aura['tip']))
+                text = '0 !LEGOHACK AURA' + (' ' + json.dumps(aura) if isinstance(aura, dict) else '') + '\n' + text
+            if item.get('glow'):   # its tip glowing (ldraw2glb.glowing): the tip is up when it stands, +X lying down
+                g = item['glow']
+                text = f"0 !LEGOHACK GLOW {'0 -1' if obj.get('stand') else '1 0'} 0 {g['fraction']} {g['color']}\n" + text
             key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text)).encode()).hexdigest()[:10]
             src, color = os.path.join(CACHE, key + '.ldr'), 16
             if not os.path.exists(src):

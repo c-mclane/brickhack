@@ -465,16 +465,16 @@ web_realm_count(struct obj *chain)
     return !!(seen & 1) + !!(seen & 2) + !!(seen & 4);
 }
 
-/* the client's id for an object's look: its tile, or for a Realm Dagger
-   REALM_TILE + which (they share the great dagger's tile, but each has its
-   own LEGO model: web/assets/lego/items.json "vtile") */
-#define REALM_TILE 90000
+/* the client's id for an object's look: its tile, or for an artifact
+   ART_TILE + its number (an artifact shares its base item's tile, but has a
+   LEGO model of its own: tools/build_items.py lists them for the client,
+   which falls back to the base item's look for one without) */
+#define ART_TILE 90000
 static int tile_of(int glyph);
 static int
 web_obj_tile(struct obj *o, int glyph)
 {
-    int k = web_realm_which(o);
-    return k >= 0 && !Hallucination ? REALM_TILE + k : tile_of(glyph);
+    return o->oartifact && !Hallucination ? ART_TILE + o->oartifact : tile_of(glyph);
 }
 
 /* artifact.c arti_invoke: 1 = the hero holds all three (the invoke opens a portal) */

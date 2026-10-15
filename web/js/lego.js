@@ -7,7 +7,7 @@
 // door), a plate 0.1, and a minifig 1.3 blocks tall.
 // The .glb models are in studs (20 LDU = 1), so they are drawn at scale 0.25.
 
-import { MIST_GLSL, AURA_GLSL, AURA_COLOR, isMist, quantumPart, strobeHex, auraShells } from './mist.js';
+import { MIST_GLSL, AURA_GLSL, AURA_COLOR, isMist, quantumPart, strobeHex, auraShells, tipOf } from './mist.js';
 
 export const LDU = 1 / 80;
 export const BRICK_H = 24 * LDU;
@@ -166,7 +166,8 @@ async function parseGLB(buf) {
       const all = new Float32Array(mine.reduce((n, p) => n + p.pos.length, 0));
       let at = 0;
       for (const p of mine) { all.set(p.pos, at); at += p.pos.length; }
-      for (const sh of auraShells(all)) prims.push({ pos: sh.pos, nrm: sh.nrm, uv: null, color: [1, 1, 1, 0.5], image: null, aura: sh.strength, group: g });
+      const cfg = typeof extras.aura === 'object' ? extras.aura : {}; // (this renderer's glow keeps its colour)
+      for (const sh of auraShells(tipOf(all, cfg.tip), cfg.scale ?? 1)) prims.push({ pos: sh.pos, nrm: sh.nrm, uv: null, color: [1, 1, 1, 0.5], image: null, aura: sh.strength, group: g });
     }
   }
   prims.rig = extras.rig || null; // the joints, for the animation

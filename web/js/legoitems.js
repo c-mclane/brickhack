@@ -12,10 +12,13 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const byTile = new Map(); // tile -> {name, url, lego}
 const icons = new Map(); // tile -> data URL
+const artBase = new Map(); // an artifact's tile (port/winweb.c: 90000 + its number) -> its base item's game tile
 let readyP = null;
 
 export const legoItemForTile = (t) => byTile.get(t) || null;
 export const legoIconForTile = (t) => icons.get(t) || null;
+// the game's own tile for a look (an artifact's: its base item's, for its sprite)
+export const gameTile = (t) => artBase.get(t) ?? t;
 
 // load the list and draw the pictures; resolves when they're all done
 export function loadLegoItems() {
@@ -23,13 +26,24 @@ export function loadLegoItems() {
     readyP = Promise.all([
       fetch('assets/lego/items.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})),
       fetch('assets/slashem/tiles.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : { names: [] })),
-    ]).then(async ([items, tiles]) => {
+      fetch('assets/lego/artifacts.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+    ]).then(async ([items, tiles, arts]) => {
+      const tileOf = new Map(); // an item's real name (lower case) -> its game tile
       (tiles.names || []).forEach((n, i) => {
         const real = n.split(' / ').pop();
+        const key = real.toLowerCase().replace(/-/g, ' '); // (the engine's names have no hyphens: "two handed sword")
+        if (!tileOf.has(key)) tileOf.set(key, i);
         if (items[real]) byTile.set(i, { name: real, ...items[real] });
       });
-      // artifacts with a look of their own: the game sends their own tile number (winweb.c web_obj_tile)
-      for (const [name, it] of Object.entries(items)) if (it.vtile != null) byTile.set(it.vtile, { name, ...it });
+      // artifacts: the game sends each as a tile of its own (winweb.c web_obj_tile): its own
+      // LEGO look if it has one, or else its base item's (model, or sprite)
+      for (const [t, a] of Object.entries(arts)) {
+        const tile = +t, base = tileOf.get(String(a.base).toLowerCase().replace(/-/g, ' '));
+        if (base != null) artBase.set(tile, base);
+        const own = items[a.name];
+        if (own) byTile.set(tile, { name: a.name, ...own });
+        else if (base != null && byTile.has(base)) byTile.set(tile, byTile.get(base));
+      }
       await drawIcons();
     }).catch((e) => console.warn('LEGO items:', e));
   return readyP;

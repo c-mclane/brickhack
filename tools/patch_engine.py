@@ -401,4 +401,20 @@ _s, _n = re.subn(r"MONSTER:monster\[\d\],random,\(\d+,\d+\)\n", "", _s)   # (the
 if _n != 27:
     sys.exit(f"patch_engine: expected 27 court monsters in dat/castle.des, found {_n}")
 open(_castle, "w", encoding="latin-1").write(_s)
+# ---- Narsil, the Sword that was Broken: Elendil's long sword, lawful, bane
+# of Sauron's orcs (as Orcrist is); and Glamdring, Gandalf's Foe-hammer, bane
+# of orcs and demons. They turn up as artifacts do. (Their LEGO looks: the
+# LotR swords, web/assets/lego/items.json.)
+edit("include/artilist.h", [
+    ("A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )",
+     "/* WEB_HOOK_NARSIL: the Sword that was Broken */\n"
+     "A(\"Narsil\",			LONG_SWORD,\n"
+     "	(SPFX_RESTR|SPFX_DFLAG2), 0, M2_ORC,\n"
+     "	PHYS(5,0),	NO_DFNS,	NO_CARY,	0, A_LAWFUL, NON_PM, NON_PM, 2500L ),\n\n"
+     "/* Glamdring, Foe-hammer: Gandalf's, bane of orcs and of demons (the Balrog) */\n"
+     "A(\"Glamdring\",		ELVEN_BROADSWORD,\n"
+     "	(SPFX_RESTR|SPFX_DFLAG2), 0, (M2_ORC|M2_DEMON),\n"
+     "	PHYS(5,0),	NO_DFNS,	NO_CARY,	0, A_NEUTRAL, NON_PM, NON_PM, 2500L ),\n\n"
+     "A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )"),
+], "WEB_HOOK_NARSIL")
 print("engine hooks applied:", src)

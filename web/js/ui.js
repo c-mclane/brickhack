@@ -1,5 +1,5 @@
 // HUD + Minecraft-style panels (inventory, menus, text windows, prompts).
-import { legoIconForTile } from './legoitems.js';
+import { legoIconForTile, gameTile } from './legoitems.js';
 import { BLOCKS } from './blocks.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -29,6 +29,7 @@ export function tileIcon(t, size = 32, cls = 'icon') {
     d.style.backgroundSize = 'contain';
     return d;
   }
+  t = gameTile(t); // (an artifact not yet in LEGO: its base item's sprite)
   d.style.backgroundImage = `url(${ATLAS.url})`;
   d.style.backgroundSize = `${ATLAS.cols * size}px ${ATLAS.rows * size}px`;
   d.style.backgroundPosition = `-${(t % ATLAS.cols) * size}px -${Math.floor(t / ATLAS.cols) * size}px`;

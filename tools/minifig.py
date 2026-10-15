@@ -125,6 +125,7 @@ HELD = {
     '80179': {'center': (0, -6, 0), 'up': (0, -1, 0)},                      # spoon: by the handle, the bowl up
     '15534': {'center': (0, 6, 0), 'up': (0, 1, 0)},                        # grappling hook with bar: by the bar, the hooks (at its +Y end) up
     '2614': {'center': (0, 10, 0), 'up': (0, -1, 0)},                       # fishing rod: by its handle, the rod up
+    '2674d': {'center': (0, 6, 0), 'up': (0, -1, 0)},                       # dwarven axe: by the haft, the head up
     '64644': {'center': (0, 14, 0), 'up': (0, 1, 0)},                       # telescope (a torch's handle): by its narrow end, the wide end (+Y) up
     '17010': {'center': (0, 6, 0), 'up': (0, -1, 0)},    # blaster with two barrels: by the grip, the barrels forward
     '18588': {'center': (0, 66, 44), 'up': (0, -1, 0)},                     # launcher barrel: by the pistol grip under its back (a bar down from a clip on a pin's bar), the barrel ahead

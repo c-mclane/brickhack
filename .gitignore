@@ -24,4 +24,5 @@ __pycache__/
 /web/assets/lego/custom/
 /web/assets/lego/items/
 /web/assets/lego/items.built.json
+/web/assets/lego/artifacts.built.json
 /web/assets/lego/monsters.built.json

@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   78,
-   62
+   80,
+   64
   ],
   "target": [
    0,
    0,
-   3
+   4
   ]
  },
  "objects": [
@@ -31,820 +31,499 @@
    ]
   },
   {
-   "tile": "spear",
-   "pos": [
-    -960,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "spear",
+   "item": "Firewall",
    "pos": [
     -850,
     0,
-    -420
+    -430
    ],
-   "label": "spear"
+   "label": "Firewall"
   },
   {
-   "tile": "silver spear",
-   "pos": [
-    -715,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "silver spear",
+   "item": "Sting",
    "pos": [
     -605,
     0,
-    -420
+    -430
    ],
-   "label": "silver spear"
+   "label": "Sting"
   },
   {
-   "tile": "dwarvish spear",
-   "pos": [
-    -470,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "dwarvish spear",
+   "item": "Giantkiller",
    "pos": [
     -360,
     0,
-    -420
+    -430
    ],
-   "label": "dwarvish spear"
+   "label": "Giantkiller"
   },
   {
-   "tile": "orcish spear",
-   "pos": [
-    -225,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "orcish spear",
+   "item": "Quick Blade",
    "pos": [
     -115,
     0,
-    -420
+    -430
    ],
-   "label": "orcish spear"
+   "label": "Quick Blade"
   },
   {
-   "tile": "elven spear",
-   "pos": [
-    20,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "elven spear",
+   "item": "Orcrist",
    "pos": [
     130,
     0,
-    -420
+    -430
    ],
-   "label": "elven spear"
+   "label": "Orcrist"
   },
   {
-   "tile": "javelin",
-   "pos": [
-    265,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "javelin",
+   "item": "Dragonbane",
    "pos": [
     375,
     0,
-    -420
+    -430
    ],
-   "label": "javelin"
+   "label": "Dragonbane"
   },
   {
-   "tile": "trident",
-   "pos": [
-    510,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "trident",
+   "item": "Excalibur",
    "pos": [
     620,
     0,
-    -420
+    -430
    ],
-   "label": "trident"
+   "label": "Excalibur"
   },
   {
-   "tile": "bow",
-   "pos": [
-    755,
-    -4,
-    -420
-   ]
-  },
-  {
-   "item": "bow",
+   "item": "Sunsword",
    "pos": [
     865,
     0,
-    -420
+    -430
    ],
-   "label": "bow"
+   "label": "Sunsword"
   },
   {
-   "tile": "orcish bow",
-   "pos": [
-    -960,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "orcish bow",
+   "item": "Snickersnee",
    "pos": [
     -850,
     0,
-    -255
+    -300
    ],
-   "label": "orcish bow"
+   "label": "Snickersnee"
   },
   {
-   "tile": "elven bow",
-   "pos": [
-    -715,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "elven bow",
+   "item": "Sword of Justice",
    "pos": [
     -605,
     0,
-    -255
+    -300
    ],
-   "label": "elven bow"
+   "label": "Sword of Justice"
   },
   {
-   "tile": "dark elven bow",
-   "pos": [
-    -470,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "dark elven bow",
+   "item": "Demonbane",
    "pos": [
     -360,
     0,
-    -255
+    -300
    ],
-   "label": "dark elven bow"
+   "label": "Demonbane"
   },
   {
-   "tile": "yumi",
-   "pos": [
-    -225,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "yumi",
+   "item": "Werebane",
    "pos": [
     -115,
     0,
-    -255
+    -300
    ],
-   "label": "yumi"
+   "label": "Werebane"
   },
   {
-   "tile": "arrow",
-   "pos": [
-    20,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "arrow",
+   "item": "Grayswandir",
    "pos": [
     130,
     0,
-    -255
+    -300
    ],
-   "label": "arrow"
+   "label": "Grayswandir"
   },
   {
-   "tile": "silver arrow",
-   "pos": [
-    265,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "silver arrow",
+   "item": "Skullcrusher",
    "pos": [
     375,
     0,
-    -255
+    -300
    ],
-   "label": "silver arrow"
+   "label": "Skullcrusher"
   },
   {
-   "tile": "elven arrow",
-   "pos": [
-    510,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "elven arrow",
+   "item": "Trollsbane",
    "pos": [
     620,
     0,
-    -255
+    -300
    ],
-   "label": "elven arrow"
+   "label": "Trollsbane"
   },
   {
-   "tile": "dark elven arrow",
-   "pos": [
-    755,
-    -4,
-    -255
-   ]
-  },
-  {
-   "item": "dark elven arrow",
+   "item": "Ogresmasher",
    "pos": [
     865,
     0,
-    -255
+    -300
    ],
-   "label": "dark elven arrow"
+   "label": "Ogresmasher"
   },
   {
-   "tile": "orcish arrow",
-   "pos": [
-    -960,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "orcish arrow",
+   "item": "Reaper",
    "pos": [
     -850,
     0,
-    -90
+    -170
    ],
-   "label": "orcish arrow"
+   "label": "Reaper"
   },
   {
-   "tile": "ya",
-   "pos": [
-    -715,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "ya",
+   "item": "Holy Spear of Light",
    "pos": [
     -605,
     0,
-    -90
+    -170
    ],
-   "label": "ya"
+   "label": "Holy Spear of Light"
   },
   {
-   "tile": "crossbow",
-   "pos": [
-    -470,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "crossbow",
+   "item": "Magicbane",
    "pos": [
     -360,
     0,
-    -90
+    -170
    ],
-   "label": "crossbow"
+   "label": "Magicbane"
   },
   {
-   "tile": "crossbow bolt",
-   "pos": [
-    -225,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "crossbow bolt",
+   "item": "Luckblade",
    "pos": [
     -115,
     0,
-    -90
+    -170
    ],
-   "label": "crossbow bolt"
+   "label": "Luckblade"
   },
   {
-   "tile": "sling",
-   "pos": [
-    20,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "sling",
+   "item": "Sword of Balance",
    "pos": [
     130,
     0,
-    -90
+    -170
    ],
-   "label": "sling"
+   "label": "Sword of Balance"
   },
   {
-   "tile": "dart",
-   "pos": [
-    265,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "dart",
+   "item": "Frost Brand",
    "pos": [
     375,
     0,
-    -90
+    -170
    ],
-   "label": "dart"
+   "label": "Frost Brand"
   },
   {
-   "tile": "shuriken",
-   "pos": [
-    510,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "shuriken",
+   "item": "Fire Brand",
    "pos": [
     620,
     0,
-    -90
+    -170
    ],
-   "label": "shuriken"
+   "label": "Fire Brand"
   },
   {
-   "tile": "boomerang",
-   "pos": [
-    755,
-    -4,
-    -90
-   ]
-  },
-  {
-   "item": "boomerang",
+   "item": "Vorpal Blade",
    "pos": [
     865,
     0,
-    -90
+    -170
    ],
-   "label": "boomerang"
+   "label": "Vorpal Blade"
   },
   {
-   "tile": "bullwhip",
-   "pos": [
-    -960,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "bullwhip",
+   "item": "Disrupter",
    "pos": [
     -850,
     0,
-    75
+    -40
    ],
-   "label": "bullwhip"
+   "label": "Disrupter"
   },
   {
-   "tile": "rubber hose",
-   "pos": [
-    -715,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "rubber hose",
+   "item": "Mjollnir",
    "pos": [
     -605,
     0,
-    75
+    -40
    ],
-   "label": "rubber hose"
+   "label": "Mjollnir"
   },
   {
-   "tile": "pistol",
-   "pos": [
-    -470,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "pistol",
+   "item": "Grimtooth",
    "pos": [
     -360,
     0,
-    75
+    -40
    ],
-   "label": "pistol"
+   "label": "Grimtooth"
   },
   {
-   "tile": "submachine gun",
-   "pos": [
-    -225,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "submachine gun",
+   "item": "Deep Freeze",
    "pos": [
     -115,
     0,
-    75
+    -40
    ],
-   "label": "submachine gun"
+   "label": "Deep Freeze"
   },
   {
-   "tile": "heavy machine gun",
-   "pos": [
-    20,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "heavy machine gun",
+   "item": "Serpent's Tongue",
    "pos": [
     130,
     0,
-    75
+    -40
    ],
-   "label": "heavy machine gun"
+   "label": "Serpent's Tongue"
   },
   {
-   "tile": "rifle",
-   "pos": [
-    265,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "rifle",
+   "item": "Cleaver",
    "pos": [
     375,
     0,
-    75
+    -40
    ],
-   "label": "rifle"
+   "label": "Cleaver"
   },
   {
-   "tile": "assault rifle",
-   "pos": [
-    510,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "assault rifle",
+   "item": "Doomblade",
    "pos": [
     620,
     0,
-    75
+    -40
    ],
-   "label": "assault rifle"
+   "label": "Doomblade"
   },
   {
-   "tile": "sniper rifle",
-   "pos": [
-    755,
-    -4,
-    75
-   ]
-  },
-  {
-   "item": "sniper rifle",
+   "item": "Stormbringer",
    "pos": [
     865,
     0,
-    75
+    -40
    ],
-   "label": "sniper rifle"
+   "label": "Stormbringer"
   },
   {
-   "tile": "shotgun",
-   "pos": [
-    -960,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "shotgun",
+   "item": "Thiefbane",
    "pos": [
     -850,
     0,
-    240
+    90
    ],
-   "label": "shotgun"
+   "label": "Thiefbane"
   },
   {
-   "tile": "auto shotgun",
-   "pos": [
-    -715,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "auto shotgun",
+   "item": "Deathsword",
    "pos": [
     -605,
     0,
-    240
+    90
    ],
-   "label": "auto shotgun"
+   "label": "Deathsword"
   },
   {
-   "tile": "grenade launcher",
-   "pos": [
-    -470,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "grenade launcher",
+   "item": "Bat from Hell",
    "pos": [
     -360,
     0,
-    240
+    90
    ],
-   "label": "grenade launcher"
+   "label": "Bat from Hell"
   },
   {
-   "tile": "rocket launcher",
-   "pos": [
-    -225,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "rocket launcher",
+   "item": "Elfrist",
    "pos": [
     -115,
     0,
-    240
+    90
    ],
-   "label": "rocket launcher"
+   "label": "Elfrist"
   },
   {
-   "tile": "frag grenade",
-   "pos": [
-    20,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "frag grenade",
+   "item": "Plague",
    "pos": [
     130,
     0,
-    240
+    90
    ],
-   "label": "frag grenade"
+   "label": "Plague"
   },
   {
-   "tile": "gas grenade",
-   "pos": [
-    265,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "gas grenade",
+   "item": "Hellfire",
    "pos": [
     375,
     0,
-    240
+    90
    ],
-   "label": "gas grenade"
+   "label": "Hellfire"
   },
   {
-   "tile": "stick of dynamite",
-   "pos": [
-    510,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "stick of dynamite",
+   "item": "Houchou",
    "pos": [
     620,
     0,
-    240
+    90
    ],
-   "label": "stick of dynamite"
+   "label": "Houchou"
   },
   {
-   "tile": "bullet",
-   "pos": [
-    755,
-    -4,
-    240
-   ]
-  },
-  {
-   "item": "bullet",
+   "item": "Nighthorn",
    "pos": [
     865,
     0,
-    240
+    90
    ],
-   "label": "bullet"
+   "label": "Nighthorn"
   },
   {
-   "tile": "silver bullet",
-   "pos": [
-    -960,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "silver bullet",
+   "item": "Sceptre of Might",
    "pos": [
     -850,
     0,
-    405
+    220
    ],
-   "label": "silver bullet"
+   "label": "Sceptre of Might"
   },
   {
-   "tile": "shotgun shell",
-   "pos": [
-    -715,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "shotgun shell",
+   "item": "Staff of Aesculapius",
    "pos": [
     -605,
     0,
-    405
+    220
    ],
-   "label": "shotgun shell"
+   "label": "Staff of Aesculapius"
   },
   {
-   "tile": "rocket",
-   "pos": [
-    -470,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "rocket",
+   "item": "Great Dagger of Glaurgnaa",
    "pos": [
     -360,
     0,
-    405
+    220
    ],
-   "label": "rocket"
+   "label": "Great Dagger of Glaurgnaa"
   },
   {
-   "tile": "torch",
-   "pos": [
-    -225,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "torch",
+   "item": "Longbow of Diana",
    "pos": [
     -115,
     0,
-    405
+    220
    ],
-   "label": "torch"
+   "label": "Longbow of Diana"
   },
   {
-   "tile": "fishing pole",
-   "pos": [
-    20,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "fishing pole",
+   "item": "Tsurugi of Muramasa",
    "pos": [
     130,
     0,
-    405
+    220
    ],
-   "label": "fishing pole"
+   "label": "Tsurugi of Muramasa"
   },
   {
-   "tile": "grappling hook",
-   "pos": [
-    265,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "grappling hook",
+   "item": "Stake of Van Helsing",
    "pos": [
     375,
     0,
-    405
+    220
    ],
-   "label": "grappling hook"
+   "label": "Stake of Van Helsing"
   },
   {
-   "tile": "unicorn horn",
-   "pos": [
-    510,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "unicorn horn",
+   "item": "Dagger of Creation",
    "pos": [
     620,
     0,
-    405
+    220
    ],
-   "label": "unicorn horn"
+   "label": "Dagger of Creation"
   },
   {
-   "tile": "spoon",
-   "pos": [
-    755,
-    -4,
-    405
-   ]
-  },
-  {
-   "item": "spoon",
+   "item": "Dagger of Protection",
    "pos": [
     865,
     0,
-    405
+    220
    ],
-   "label": "spoon"
+   "label": "Dagger of Protection"
+  },
+  {
+   "item": "Dagger of Destruction",
+   "pos": [
+    -850,
+    0,
+    350
+   ],
+   "label": "Dagger of Destruction"
+  },
+  {
+   "item": "Narsil",
+   "pos": [
+    -605,
+    0,
+    350
+   ],
+   "label": "Narsil"
+  },
+  {
+   "item": "Glamdring",
+   "pos": [
+    -360,
+    0,
+    350
+   ],
+   "label": "Glamdring"
+  },
+  {
+   "item": "Scythe of Quakes",
+   "pos": [
+    -500,
+    0,
+    430
+   ],
+   "label": "Scythe of Quakes"
+  },
+  {
+   "item": "Nunchucks of Lightning",
+   "pos": [
+    -170,
+    0,
+    430
+   ],
+   "label": "Nunchucks of Lightning"
+  },
+  {
+   "item": "Shurikens of Ice",
+   "pos": [
+    160,
+    0,
+    430
+   ],
+   "label": "Shurikens of Ice"
+  },
+  {
+   "item": "Sword of Fire",
+   "pos": [
+    490,
+    0,
+    430
+   ],
+   "label": "Sword of Fire"
   }
  ]
 }

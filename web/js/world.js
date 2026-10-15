@@ -4,7 +4,7 @@ import { classify, isSolidClass, WALL_H, DOOR_H, CM } from './terrain.js';
 const WALK_THROUGH = new Set(['gateOpen', 'fakeWeeds', 'fakeWeedsTop']);
 import { posAt as motionPos, sizeHeight } from './motion.js';
 import { mobAnim } from './anim.js';
-import { legoItemForTile } from './legoitems.js';
+import { legoItemForTile, gameTile } from './legoitems.js';
 
 export class World {
   constructor() {
@@ -161,7 +161,7 @@ export class World {
           case 'o': { // dropped items float and bob like Minecraft item drops (those made in LEGO lie on the floor: above)
             // (a pile: the top thing not yet made in LEGO floats over it)
             const t = pile ? pile.find((tt) => !legoItemForTile(tt)) : c.t;
-            if (t != null) out.push({ x, z: y, tile: t, size: 0.55, lift: 0.18 + bob(x, y) + (pile && pile.length > 1 ? 0.15 : 0), shade });
+            if (t != null) out.push({ x, z: y, tile: gameTile(t), size: 0.55, lift: 0.18 + bob(x, y) + (pile && pile.length > 1 ? 0.15 : 0), shade });
             break;
           }
           case 'z': case 'x': case 'w': case 'e': // zaps, explosions, engulfing, other effects
