@@ -523,6 +523,43 @@ web_realm_power(struct obj *obj)
     }
 }
 
+/* artifact.c arti_invoke: a golden weapon of Spinjitzu's power (tools/patch_engine.py
+   WEB_HOOK_SPINJITZU): the Scythe of Quakes shakes the ground under the
+   monsters about you (hurting and stunning those on it); the others loose a
+   ray of their element where you point */
+void
+web_golden_power(struct obj *obj)
+{
+    struct monst *mtmp, *next;
+    int type;
+
+    if (obj->oartifact == ART_SCYTHE_OF_QUAKES) {
+        pline("%s strikes the ground, and the ground shakes!", The(xname(obj)));
+        for (mtmp = fmon; mtmp; mtmp = next) {
+            next = mtmp->nmon;
+            if (DEADMONSTER(mtmp) || distu(mtmp->mx, mtmp->my) > 8 || is_flyer(mtmp->data)
+                || is_floater(mtmp->data))
+                continue;
+            wakeup(mtmp);
+            if (canseemon(mtmp))
+                pline("%s is thrown off %s feet!", Monnam(mtmp), mhis(mtmp));
+            if ((mtmp->mhp -= d(3, 6)) <= 0)
+                xkilled(mtmp, 1);
+            else
+                mtmp->mstun = 1;
+        }
+        return;
+    }
+    type = obj->oartifact == ART_NUNCHUCKS_OF_LIGHTNING ? ZT_LIGHTNING
+         : obj->oartifact == ART_SHURIKENS_OF_ICE ? ZT_COLD : ZT_FIRE;
+    if (!getdir((char *) 0) || (!u.dx && !u.dy)) {
+        pline("%s glows, then dims.", The(xname(obj)));
+        return;
+    }
+    pline("%s unleashes its power!", The(xname(obj)));
+    buzz(ZT_SPELL(type), 6, u.ux, u.uy, u.dx, u.dy);
+}
+
 /* makemon.c: King Skelly comes with the three daggers (once a game: they're
    artifacts); he wields one (monsters take an artifact over anything) */
 void
@@ -815,7 +852,13 @@ block_cmd(int c)
                 len = BUFSZ - 1;
             memcpy(what, inbuf + 1, len);
             what[len] = '\0';
-            otmp = readobjnam(what, (struct obj *) 0, TRUE);
+            {   /* an artifact by its name (even one never found in the dungeon,
+                   which a wish can't give: the golden weapons of Spinjitzu) */
+                short otyp;
+                const char *an = artifact_name(what, &otyp);
+                otmp = an ? oname(mksobj(otyp, TRUE, FALSE), an)
+                          : readobjnam(what, (struct obj *) 0, TRUE);
+            }
             if (!otmp)
                 pline("Nothing fitting \"%s\" exists.", what);
             else

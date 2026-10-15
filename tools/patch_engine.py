@@ -417,4 +417,40 @@ edit("include/artilist.h", [
      "	PHYS(5,0),	NO_DFNS,	NO_CARY,	0, A_NEUTRAL, NON_PM, NON_PM, 2500L ),\n\n"
      "A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )"),
 ], "WEB_HOOK_NARSIL")
+# ---- The four golden weapons of Spinjitzu (Ninjago): never found in the
+# dungeon (the dev command "give <name>" hands them over: winweb.c), each with
+# its element on its blows and, invoked, its power (winweb.c web_golden_power):
+# the Scythe of Quakes shakes the ground, the Nunchucks of Lightning, the
+# Shurikens of Ice and the Sword of Fire each loose a ray of their element.
+edit("include/artifact.h", [
+    ("#define REALM_DAGGER	(LAST_PROP+17)	/* WEB_HOOK_SKELLY */\n",
+     "#define REALM_DAGGER	(LAST_PROP+17)	/* WEB_HOOK_SKELLY */\n"
+     "#define SPINJITZU	(LAST_PROP+18)	/* WEB_HOOK_SPINJITZU */\n"),
+], "WEB_HOOK_SPINJITZU")
+edit("include/artilist.h", [
+    ("A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )",
+     "/* WEB_HOOK_SPINJITZU: the four golden weapons of Spinjitzu */\n"
+     "A(\"The Scythe of Quakes\",	FAUCHARD,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_ATTK), 0, 0,\n"
+     "	STUN(5,8),	NO_DFNS,	NO_CARY,	SPINJITZU, A_NONE, NON_PM, NON_PM, 4000L ),\n\n"
+     "A(\"The Nunchucks of Lightning\",	FLAIL,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_ATTK), 0, 0,\n"
+     "	ELEC(5,10),	NO_DFNS,	NO_CARY,	SPINJITZU, A_NONE, NON_PM, NON_PM, 4000L ),\n\n"
+     "A(\"The Shurikens of Ice\",	SHURIKEN,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_ATTK), 0, 0,\n"
+     "	COLD(5,10),	NO_DFNS,	NO_CARY,	SPINJITZU, A_NONE, NON_PM, NON_PM, 4000L ),\n\n"
+     "A(\"The Sword of Fire\",	KATANA,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_ATTK), 0, 0,\n"
+     "	FIRE(5,10),	NO_DFNS,	NO_CARY,	SPINJITZU, A_NONE, NON_PM, NON_PM, 4000L ),\n\n"
+     "A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )"),
+], "WEB_HOOK_SPINJITZU")
+edit("src/artifact.c", [
+    ("extern void FDECL(web_realm_power, (struct obj *));\n",
+     "extern void FDECL(web_realm_power, (struct obj *));\nextern void FDECL(web_golden_power, (struct obj *)); /* WEB_HOOK_SPINJITZU */\n"),
+    ("	case REALM_DAGGER: /* WEB_HOOK_SKELLY: apart, each its own power... */\n",
+     "	case SPINJITZU: /* WEB_HOOK_SPINJITZU: a golden weapon's power */\n"
+     "	    web_golden_power(obj);\n"
+     "	    break;\n"
+     "	case REALM_DAGGER: /* WEB_HOOK_SKELLY: apart, each its own power... */\n"),
+], "WEB_HOOK_SPINJITZU")
 print("engine hooks applied:", src)
