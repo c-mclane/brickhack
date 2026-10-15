@@ -735,9 +735,11 @@ export class Renderer {
       for (let dy = -1; dy <= 1 && !near; dy++) for (let dx = -1; dx <= 1 && !near; dx++) near = known(x + dx, y + dy);
       bricks.fog.push({ x, z: y, into, over, near });
     };
-    // a door piece in its square, across the wall it stands in
+    // a door piece in its square, across the wall it stands in; on a row of the
+    // floor's studs (a 4x4 plate: studs at 1/8, 3/8...; the frame's one stud deep,
+    // so an eighth off the middle, across the wall)
     const doorPiece = (x, y, name, alongZ, shade) =>
-      bricks.doors.push({ url: PARTS[name], matrix: partMatrix(x + 0.5, DOOR_TOP, y + 0.5, alongZ ? Math.PI / 2 : 0), shade });
+      bricks.doors.push({ url: PARTS[name], matrix: partMatrix(x + 0.5 + (alongZ ? 0.125 : 0), DOOR_TOP, y + 0.5 + (alongZ ? 0 : 0.125), alongZ ? Math.PI / 2 : 0), shade });
     const wallAt = (xx, yy) => { const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx]; return !!n && n.type === 'wall'; };
     // a doorway's wall runs north-south when it has wall north or south of it
     const doorAlongZ = (x, y, c) => (c.cmap === CM.vcdoor || c.cmap === CM.vodoor ? true
