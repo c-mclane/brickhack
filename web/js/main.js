@@ -1191,6 +1191,7 @@ async function loadHeroFigure(name, who) {
   try { parts = JSON.parse(localGet(FIG_KEY(name) + '.parts') || '{}') || {}; } catch {}
   hero3d.fig = fig;
   hero3d.parts = parts;
+  hero3d.start = null; // (this character's starting gear: startGear)
   hero3d.wear = wornHelm(); // (a helm on already: a restored game)
   const url = (await customFigureUrl(fig.id, parts, hero3d.wear)) || fig.url;
   hero3d.id = fig.id;
@@ -1207,11 +1208,32 @@ async function loadHeroFigure(name, who) {
 let heroView = null;
 
 // What you wear that shows on your minifig (items made in LEGO to be worn:
-// items.json "wear"): their names, comma-separated (your cloak, helm, shield), or ''
+// items.json "wear"): their names, comma-separated (your cloak, helm, shield), or ''.
+// Your starting gear shows only where it takes the place of something your
+// figure was designed wearing (a knight's helmet and shield, swapped for the
+// game's); elsewhere your figure keeps its look. Anything put on later shows
+// (a starting piece taken off and put on again too).
+const WORN_SLOTS = ['cloak', 'helm', 'shield']; // (a cloak first: a helm takes its hood off)
+function startGear() { // the letters of what you started wearing (kept with the character)
+  if (hero3d.start) return hero3d.start;
+  const key = FIG_KEY(game.charName) + '.start', kept = localGet(key);
+  if (kept) {
+    try { hero3d.start = new Set(JSON.parse(kept)); } catch { hero3d.start = new Set(); }
+  } else if (ui.stat && game.inv.length) { // (once the game has said what turn it is, and what you have)
+    // a new game: what's on now is your starting gear; a game from before this: none
+    hero3d.start = new Set(ui.stat.turn <= 1 ? game.inv.filter((i) => WORN_SLOTS.includes(i.w)).map((i) => i.l) : []);
+    localSet(key, JSON.stringify([...hero3d.start]));
+  }
+  return hero3d.start || new Set();
+}
 function wornHelm() {
-  return ['cloak', 'helm', 'shield'].map((slot) => { // (a cloak first: a helm takes its hood off)
+  const start = startGear(), slots = (hero3d.fig && hero3d.fig.slots) || {};
+  for (const l of [...start]) // (taken off: no longer starting gear)
+    if (!game.inv.some((i) => i.l === l && WORN_SLOTS.includes(i.w))) { start.delete(l); localSet(FIG_KEY(game.charName) + '.start', JSON.stringify([...start])); }
+  return WORN_SLOTS.map((slot) => {
     const h = game.inv.find((i) => i.w === slot);
-    const l = h && legoItemForTile(h.t);
+    if (!h || (start.has(h.l) && !slots[slot])) return '';
+    const l = legoItemForTile(h.t);
     return l && l.wear ? l.name : '';
   }).filter(Boolean).join(',');
 }

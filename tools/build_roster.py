@@ -71,9 +71,15 @@ def main():
 
     for name in json.load(open(os.path.join(LEGO, 'roster.json'))):
         spec, url = figure(name)
+        full = wardrobe.recipe(name)   # (as designed: its hands not emptied)
         built.append({'id': name, 'label': spec.get('label', name), 'url': url,
                       'role': spec.get('role', 'knight'), 'gender': spec.get('gender', 'male'),
-                      'race': spec.get('race', 'human')})
+                      'race': spec.get('race', 'human'),
+                      # the slots its design fills: starting gear shows only where it takes the place of something
+                      'slots': {'helm': bool(full.get('hat')),
+                                'cloak': any(wardrobe.is_cape(n) for n in (full.get('neck') or []) if isinstance(n, dict))
+                                         or (isinstance(full.get('neck'), dict) and wardrobe.is_cape(full['neck'])),
+                                'shield': bool(full.get('left'))}})
     json.dump(built, open(os.path.join(LEGO, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
     mons = {}
