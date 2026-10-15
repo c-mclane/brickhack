@@ -1207,32 +1207,38 @@ async function loadHeroFigure(name, who) {
 }
 let heroView = null;
 
-// What you wear that shows on your minifig (items made in LEGO to be worn:
-// items.json "wear"): their names, comma-separated (your cloak, helm, shield), or ''.
-// Your starting gear shows only where it takes the place of something your
-// figure was designed wearing (a knight's helmet and shield, swapped for the
-// game's); elsewhere your figure keeps its look. Anything put on later shows
-// (a starting piece taken off and put on again too).
+// What your minifig shows of what you wear, for the server to dress it in:
+// a list, comma-separated. A new character looks just as designed: the pieces
+// it was designed with ARE the gear it starts wearing (a knight's helmet, his
+// shield). Take a starting piece off and its designed piece goes with it
+// ("strip:<slot>"); anything else you put on shows (items made in LEGO to be
+// worn: items.json "wear"), in its slot. (A designed shield is put back in
+// hand while you wear the one you started with: "design:shield", the roster's
+// figures being built empty-handed.)
 const WORN_SLOTS = ['cloak', 'helm', 'shield']; // (a cloak first: a helm takes its hood off)
-function startGear() { // the letters of what you started wearing (kept with the character)
+function startGear() { // {items: {letter: slot} you started wearing, claimed: the slots they stood in} (kept with the character)
   if (hero3d.start) return hero3d.start;
   const key = FIG_KEY(game.charName) + '.start', kept = localGet(key);
-  if (kept) {
-    try { hero3d.start = new Set(JSON.parse(kept)); } catch { hero3d.start = new Set(); }
-  } else if (ui.stat && game.inv.length) { // (once the game has said what turn it is, and what you have)
+  let st = null;
+  try { st = kept && JSON.parse(kept); } catch {}
+  if (st && st.items) hero3d.start = st;
+  else if (ui.stat && game.inv.length) { // (once the game has said what turn it is, and what you have)
     // a new game: what's on now is your starting gear; a game from before this: none
-    hero3d.start = new Set(ui.stat.turn <= 1 ? game.inv.filter((i) => WORN_SLOTS.includes(i.w)).map((i) => i.l) : []);
-    localSet(key, JSON.stringify([...hero3d.start]));
+    const items = {};
+    if (ui.stat.turn <= 1) for (const i of game.inv) if (WORN_SLOTS.includes(i.w)) items[i.l] = i.w;
+    hero3d.start = { items, claimed: [...new Set(Object.values(items))] };
+    localSet(key, JSON.stringify(hero3d.start));
   }
-  return hero3d.start || new Set();
+  return hero3d.start || { items: {}, claimed: [] };
 }
 function wornHelm() {
   const start = startGear(), slots = (hero3d.fig && hero3d.fig.slots) || {};
-  for (const l of [...start]) // (taken off: no longer starting gear)
-    if (!game.inv.some((i) => i.l === l && WORN_SLOTS.includes(i.w))) { start.delete(l); localSet(FIG_KEY(game.charName) + '.start', JSON.stringify([...start])); }
+  for (const [l, slot] of Object.entries(start.items)) // (taken off: no longer starting gear)
+    if (!game.inv.some((i) => i.l === l && i.w === slot)) { delete start.items[l]; localSet(FIG_KEY(game.charName) + '.start', JSON.stringify(start)); }
   return WORN_SLOTS.map((slot) => {
     const h = game.inv.find((i) => i.w === slot);
-    if (!h || (start.has(h.l) && !slots[slot])) return '';
+    if (h && start.items[h.l]) return slot === 'shield' && slots.shield ? 'design:shield' : ''; // as designed
+    if (!h) return start.claimed.includes(slot) && slots[slot] ? 'strip:' + slot : ''; // its starting piece taken off
     const l = legoItemForTile(h.t);
     return l && l.wear ? l.name : '';
   }).filter(Boolean).join(',');

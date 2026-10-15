@@ -69,6 +69,21 @@ def wearing(spec, item):
     return spec
 
 
+def stripped(spec, slot):
+    """A recipe with its designed piece in a slot taken off (the starting gear
+    that piece stood for, taken off): 'helm' its hat (the hair under it stays),
+    'cloak' its cape (armour on the neck stays), 'shield' its shield."""
+    if slot == 'helm':
+        spec = {k: v for k, v in spec.items() if k not in ('hat', 'hatColor', 'hatDecal', 'plume')}
+        return dict(spec, extras=[x for x in spec.get('extras', []) if not x['part'].startswith(CROWNS + HOODS)])
+    if slot == 'cloak':
+        neck = spec.get('neck') or []
+        return dict(spec, neck=[n for n in (neck if isinstance(neck, list) else [neck]) if not is_cape(n)])
+    if slot == 'shield':
+        return {k: v for k, v in spec.items() if k != 'left'}
+    return spec
+
+
 def load_wardrobe():
     return json.load(open(os.path.join(LEGO, 'wardrobe.json')))
 

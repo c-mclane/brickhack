@@ -348,7 +348,8 @@ const server = http.createServer(async (req, res) => {
     for (const [k, v] of Object.entries(parts || {}).slice(0, 20))
       clean[String(k).replace(/[^a-z]/g, '').slice(0, 20)] = String(v).replace(/[^a-z0-9-]/gi, '').slice(0, 40);
     // what the hero wears (items of items.json, by name, comma-separated: a helm, a shield): put on the figure
-    const wear = (url.searchParams.get('wear') || '').replace(/[^a-z ,'-]/gi, '').slice(0, 120);
+    // (and "strip:<slot>", "design:shield": what the figure's design shows of its starting gear)
+    const wear = (url.searchParams.get('wear') || '').replace(/[^a-z ,':-]/gi, '').slice(0, 160);
     const r = await buildFigure(base, clean, wear);
     res.writeHead(r.url ? 200 : 400, { 'Content-Type': 'application/json' }).end(JSON.stringify(r.url ? { url: r.url } : { error: r.error || 'failed' }));
     return;
