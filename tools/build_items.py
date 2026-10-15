@@ -93,6 +93,8 @@ def main():
             print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.glowing(lib.parse(src), ldr), colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
         built[name] = {'url': f'assets/lego/items/{slug}.glb?v={key}', 'lego': item.get('lego', '')}
+        if item.get('wear'):   # worn on a minifig (a helm): the figure worker dresses the hero in it
+            built[name]['wear'] = True
         if name in art_num:   # an artifact with a look of its own (the game sends it as this tile: winweb.c web_obj_tile)
             built[name]['vtile'] = ART_TILE + art_num[name]
     json.dump(built, open(os.path.join(LEGO, 'items.built.json'), 'w'), indent=1)

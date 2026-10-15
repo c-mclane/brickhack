@@ -453,4 +453,12 @@ edit("src/artifact.c", [
      "	    break;\n"
      "	case REALM_DAGGER: /* WEB_HOOK_SKELLY: apart, each its own power... */\n"),
 ], "WEB_HOOK_SPINJITZU")
+# ---- Tiles follow appearances: SLASH'EM reshuffles its tile table to match
+# each game's shuffled appearances (o_init.c shuffle_tiles) only for its own
+# tile front ends (USE_TILES); without it the web port sends every potion,
+# scroll, ring, wand, helm... with its true item's tile, giving it away
+edit("include/global.h", [
+    ("#if defined(GL_GRAPHICS) || defined(SDL_GRAPHICS)\n",
+     "#if defined(GL_GRAPHICS) || defined(SDL_GRAPHICS) || defined(WEB_GRAPHICS) /* WEB_HOOK_TILES */\n"),
+], "WEB_HOOK_TILES")
 print("engine hooks applied:", src)

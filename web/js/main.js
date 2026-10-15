@@ -702,7 +702,7 @@ function handle(m) {
       cam.snap = false;
       ui.updateStatus(m);
       break;
-    case 'inv': game.setInventory(m.items); break;
+    case 'inv': game.setInventory(m.items); redressHero(); break;
     case 'msg':
       if (m.raw) console.log('[slashem]', m.s);
       if (/For instructions type a \?/.test(m.s)) { game.mode = 'getpos'; break; }
@@ -1189,7 +1189,10 @@ async function loadHeroFigure(name, who) {
   // dressed up from the wardrobe at character creation? (the same swaps on whichever figure fits)
   let parts = {};
   try { parts = JSON.parse(localGet(FIG_KEY(name) + '.parts') || '{}') || {}; } catch {}
-  const url = (await customFigureUrl(fig.id, parts)) || fig.url;
+  hero3d.fig = fig;
+  hero3d.parts = parts;
+  hero3d.wear = wornHelm(); // (a helm on already: a restored game)
+  const url = (await customFigureUrl(fig.id, parts, hero3d.wear)) || fig.url;
   hero3d.id = fig.id;
   hero3d.url = url;
   hero3d.prims = null;
@@ -1202,6 +1205,31 @@ async function loadHeroFigure(name, who) {
   if (heroView) { await heroView.show(url); ui.heroFigure = true; ui.renderCharStats(); }
 }
 let heroView = null;
+
+// The helm you wear (the item's name, if it's made in LEGO to be worn:
+// items.json "wear"), or ''
+function wornHelm() {
+  const h = game.inv.find((i) => i.w === 'helm');
+  const l = h && legoItemForTile(h.t);
+  return l && l.wear ? l.name : '';
+}
+// put on (or take off) a helm: your minifig, rebuilt by the server wearing
+// it (hair off, its own hat off: tools/wardrobe.py wearing), swapped in
+async function redressHero() {
+  if (!hero3d.fig) return;
+  const wear = wornHelm();
+  if (wear === hero3d.wear) return;
+  hero3d.wear = wear;
+  const url = (await customFigureUrl(hero3d.fig.id, hero3d.parts, wear)) || hero3d.fig.url;
+  if (hero3d.wear !== wear || url === hero3d.url) return; // (changed again meanwhile)
+  let prims = null;
+  try { prims = await renderer.lego.model(url); } catch (e) { console.warn('hero figure:', e); return; }
+  if (hero3d.wear !== wear) return;
+  hero3d.url = url;
+  hero3d.prims = prims;
+  hero3d.anim = prims && prims.rig ? new FigureAnimator(prims.rig) : null;
+  if (heroView) heroView.show(url);
+}
 // the minifig stands in for the doll and the hero's sprite on LEGO levels
 const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
 

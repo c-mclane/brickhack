@@ -3332,5 +3332,240 @@
     "color": 297
    }
   ]
+ },
+ "elven leather helm": {
+  "lego": "Forestman cap (a leather hat)",
+  "parts": [
+   {
+    "part": "4506",
+    "color": 70
+   }
+  ],
+  "wear": {
+   "hat": "4506",
+   "hatColor": 70
+  }
+ },
+ "orcish helm": {
+  "lego": "LotR Uruk-hai helmet (an iron skull cap)",
+  "parts": [
+   {
+    "part": "10051",
+    "color": 72
+   }
+  ],
+  "wear": {
+   "hat": "10051",
+   "hatColor": 72
+  }
+ },
+ "dwarvish iron helm": {
+  "lego": "Construction helmet in iron (a hard hat)",
+  "parts": [
+   {
+    "part": "3833",
+    "color": 72
+   }
+  ],
+  "wear": {
+   "hat": "3833",
+   "hatColor": 72
+  }
+ },
+ "fedora": {
+  "lego": "Fedora",
+  "parts": [
+   {
+    "part": "61506",
+    "color": 70
+   }
+  ],
+  "wear": {
+   "hat": "61506",
+   "hatColor": 70
+  }
+ },
+ "cornuthaum": {
+  "lego": "Wizard's hat, dark blue (a conical hat)",
+  "parts": [
+   {
+    "part": "6131",
+    "color": 272
+   }
+  ],
+  "wear": {
+   "hat": "6131",
+   "hatColor": 272
+  }
+ },
+ "dunce cap": {
+  "lego": "High cone hat, white (a conical hat)",
+  "parts": [
+   {
+    "part": "2338",
+    "color": 15
+   }
+  ],
+  "wear": {
+   "hat": "2338",
+   "hatColor": 15
+  }
+ },
+ "dented pot": {
+  "lego": "A bucket with a handle, upside down and crooked on the head",
+  "parts": [
+   {
+    "part": "12884c01",
+    "color": 72,
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "wear": {
+   "hat": null,
+   "extras": [
+    {
+     "part": "12884c01",
+     "color": 72,
+     "pos": [
+      0,
+      -2,
+      0
+     ],
+     "rot": [
+      {
+       "axis": [
+        1,
+        0,
+        0
+       ],
+       "deg": 180
+      },
+      {
+       "axis": [
+        0,
+        0,
+        1
+       ],
+       "deg": 12
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "helmet": {
+  "lego": "Castle helmet with a face grille and a red plume (a plumed helmet)",
+  "parts": [
+   {
+    "part": "4503",
+    "color": 71
+   },
+   {
+    "part": "87694",
+    "color": 4,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "wear": {
+   "hat": "4503",
+   "hatColor": 71,
+   "plume": {
+    "part": "87694",
+    "color": 4
+   }
+  }
+ },
+ "helm of brilliance": {
+  "lego": "Castle helmet with a dragon crown, chrome silver (an etched helmet)",
+  "parts": [
+   {
+    "part": "6122",
+    "color": 383
+   }
+  ],
+  "wear": {
+   "hat": "6122",
+   "hatColor": 383
+  }
+ },
+ "helm of opposite alignment": {
+  "lego": "LotR Rohan helmet with its comb, black (a crested helmet)",
+  "parts": [
+   {
+    "part": "10054",
+    "color": 0
+   }
+  ],
+  "wear": {
+   "hat": "10054",
+   "hatColor": 0
+  }
+ },
+ "helm of telepathy": {
+  "lego": "Classic Space helmet with its visor down, translucent light blue (a visored helmet)",
+  "parts": [
+   {
+    "part": "3842a",
+    "color": 71
+   },
+   {
+    "part": "2447b",
+    "color": 43
+   }
+  ],
+  "wear": {
+   "hat": "3842a",
+   "hatColor": 71,
+   "extras": [
+    {
+     "part": "2447b",
+     "color": 43,
+     "pos": [
+      0,
+      -24,
+      0
+     ]
+    }
+   ]
+  }
+ },
+ "Mitre of Holiness": {
+  "lego": "A tall white pointed hat (a mitre)",
+  "parts": [
+   {
+    "part": "17349",
+    "color": 15
+   }
+  ],
+  "wear": {
+   "hat": "17349",
+   "hatColor": 15
+  }
+ },
+ "Crown of Saint Edward": {
+  "lego": "The classic crown, chrome gold",
+  "parts": [
+   {
+    "part": "71015",
+    "color": 334
+   }
+  ],
+  "wear": {
+   "hat": "71015",
+   "hatColor": 334
+  }
  }
 }

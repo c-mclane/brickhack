@@ -29,12 +29,14 @@ export function loadWardrobe() {
   return wardrobeP;
 }
 
-// a roster figure with wardrobe parts swapped in ({category: option id}):
-// the url of its model, built by the game server (null if it can't be)
+// a roster figure with wardrobe parts swapped in ({category: option id}),
+// and wearing a helm (wear: its item name, items.json), if any: the url of
+// its model, built by the game server (null if it can't be)
 const customs = new Map();
-export function customFigureUrl(base, parts) {
-  if (!parts || !Object.keys(parts).length) return Promise.resolve(null);
-  const q = `base=${encodeURIComponent(base)}&parts=${encodeURIComponent(JSON.stringify(parts))}`;
+export function customFigureUrl(base, parts, wear) {
+  if ((!parts || !Object.keys(parts).length) && !wear) return Promise.resolve(null);
+  const q = `base=${encodeURIComponent(base)}&parts=${encodeURIComponent(JSON.stringify(parts || {}))}`
+    + (wear ? `&wear=${encodeURIComponent(wear)}` : '');
   if (!customs.has(q))
     customs.set(q, fetch('/api/figure?' + q).then((r) => r.json()).then((j) => j.url || null).catch(() => null));
   return customs.get(q);
