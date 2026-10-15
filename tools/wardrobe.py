@@ -2,10 +2,13 @@
 """Minifig customization: a roster figure with parts from the wardrobe swapped in.
 
 web/assets/lego/wardrobe.json lists, per category (hat, hair, head, torso,
-hands, pants, belt, cape, armor, gear), options that each set some recipe keys
+hands, pants, belt, cape, armor), options that each set some recipe keys
 (tools/minifig.py). A choice {category: option id} replaces everything the
 figure had in that category. What makes a race what it is stays: an angel's
 wings, glow and marble, a doppelganger's mist, a quantum mechanic's flashing.
+
+A character holds nothing of its own (empty_handed): what's in its hands is
+what the game gives it to wield.
 """
 import json, os
 
@@ -22,7 +25,6 @@ KEYS = {
     'hands': ['handColor'],
     'pants': ['legColor', 'legR', 'legL', 'dress', 'shortLegs'],
     'belt': ['hips', 'hipColor'],
-    'gear': ['right', 'left'],
 }
 CAPES = ('50231', '20551', '42450', '38301', '56630', '99464', '86038', '65384')   # neck items that are capes
 CROWNS = ('33322', '96491')   # tiaras (extras) go with the hat
@@ -30,6 +32,12 @@ CROWNS = ('33322', '96491')   # tiaras (extras) go with the hat
 
 def is_cape(item):
     return item['part'].startswith(CAPES)
+
+
+def empty_handed(spec):
+    """A character's recipe with nothing in its hands: what it holds is what
+    the game gives it (the weapon it wields), never the recipe's own."""
+    return {k: v for k, v in spec.items() if k not in ('right', 'left')}
 
 
 def load_wardrobe():

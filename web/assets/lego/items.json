@@ -1628,5 +1628,517 @@
     ]
    }
   ]
+ },
+ "spear": {
+  "lego": "Spear",
+  "parts": [
+   {
+    "part": "4497",
+    "color": 72
+   }
+  ]
+ },
+ "silver spear": {
+  "lego": "Spear in silver",
+  "parts": [
+   {
+    "part": "4497",
+    "color": 179
+   }
+  ]
+ },
+ "dwarvish spear": {
+  "lego": "Spear in pearl dark grey",
+  "parts": [
+   {
+    "part": "4497",
+    "color": 148
+   }
+  ]
+ },
+ "orcish spear": {
+  "lego": "Spear with a flat end, dark brown",
+  "parts": [
+   {
+    "part": "93789",
+    "color": 308
+   }
+  ]
+ },
+ "elven spear": {
+  "lego": "Elaborate pike with a pearl gold head",
+  "parts": [
+   {
+    "part": "90391p03",
+    "color": 19
+   }
+  ]
+ },
+ "javelin": {
+  "lego": "Spear with a flat end, tan",
+  "parts": [
+   {
+    "part": "93789",
+    "color": 19
+   }
+  ]
+ },
+ "trident": {
+  "lego": "Trident in pearl gold",
+  "parts": [
+   {
+    "part": "92290",
+    "color": 297
+   }
+  ]
+ },
+ "bow": {
+  "lego": "Bow with arrow",
+  "parts": [
+   {
+    "part": "4499",
+    "color": 70
+   }
+  ]
+ },
+ "orcish bow": {
+  "lego": "Bow with arrow, dark brown",
+  "parts": [
+   {
+    "part": "4499",
+    "color": 308
+   }
+  ]
+ },
+ "elven bow": {
+  "lego": "Long bow with arrow, pearl gold",
+  "parts": [
+   {
+    "part": "93231",
+    "color": 297
+   }
+  ]
+ },
+ "dark elven bow": {
+  "lego": "Long bow with arrow, black (the elven bow, dark)",
+  "parts": [
+   {
+    "part": "93231",
+    "color": 0
+   }
+  ]
+ },
+ "yumi": {
+  "lego": "Small bow with arrow, black",
+  "parts": [
+   {
+    "part": "95051",
+    "color": 0
+   }
+  ]
+ },
+ "arrow": {
+  "lego": "Harpoon with a smooth bar",
+  "parts": [
+   {
+    "part": "18041",
+    "color": 70
+   }
+  ]
+ },
+ "silver arrow": {
+  "lego": "Harpoon in silver",
+  "parts": [
+   {
+    "part": "18041",
+    "color": 179
+   }
+  ]
+ },
+ "elven arrow": {
+  "lego": "Harpoon in pearl gold",
+  "parts": [
+   {
+    "part": "18041",
+    "color": 297
+   }
+  ]
+ },
+ "dark elven arrow": {
+  "lego": "Harpoon in black",
+  "parts": [
+   {
+    "part": "18041",
+    "color": 0
+   }
+  ]
+ },
+ "orcish arrow": {
+  "lego": "Harpoon in dark brown",
+  "parts": [
+   {
+    "part": "18041",
+    "color": 308
+   }
+  ]
+ },
+ "ya": {
+  "lego": "Harpoon in tan",
+  "parts": [
+   {
+    "part": "18041",
+    "color": 19
+   }
+  ]
+ },
+ "crossbow": {
+  "lego": "Crossbow",
+  "parts": [
+   {
+    "part": "2570",
+    "color": 70
+   }
+  ]
+ },
+ "crossbow bolt": {
+  "lego": "Harpoon",
+  "parts": [
+   {
+    "part": "57467",
+    "color": 72
+   }
+  ]
+ },
+ "sling": {
+  "lego": "Slingshot",
+  "parts": [
+   {
+    "part": "20546",
+    "color": 70
+   }
+  ]
+ },
+ "dart": {
+  "lego": "Spike with four fins",
+  "parts": [
+   {
+    "part": "24482",
+    "color": 179
+   }
+  ]
+ },
+ "shuriken": {
+  "lego": "Three-pointed throwing star",
+  "parts": [
+   {
+    "part": "93058",
+    "color": 179
+   }
+  ]
+ },
+ "boomerang": {
+  "lego": "Boomerang",
+  "parts": [
+   {
+    "part": "25892",
+    "color": 19
+   }
+  ]
+ },
+ "bullwhip": {
+  "lego": "Coiled whip (Indiana Jones's)",
+  "parts": [
+   {
+    "part": "61975",
+    "color": 70
+   }
+  ]
+ },
+ "rubber hose": {
+  "lego": "Flexible whip, black",
+  "parts": [
+   {
+    "part": "88704",
+    "color": 0
+   }
+  ]
+ },
+ "pistol": {
+  "lego": "Semiautomatic pistol",
+  "parts": [
+   {
+    "part": "55707a",
+    "color": 0
+   }
+  ]
+ },
+ "submachine gun": {
+  "lego": "Machine gun with drum magazine",
+  "parts": [
+   {
+    "part": "55707b",
+    "color": 0
+   }
+  ]
+ },
+ "heavy machine gun": {
+  "lego": "A blaster, two round bricks on its front stud for a jacket, a bar 4L for its long barrel",
+  "parts": [
+   {
+    "part": "44709",
+    "color": 72
+   },
+   {
+    "part": "3062b",
+    "color": 0,
+    "pos": [
+     0.0,
+     -27.613,
+     -46.988
+    ],
+    "mat": [
+     1.0,
+     -0.0,
+     0.0,
+     0.0,
+     0.30902,
+     -0.95106,
+     0.0,
+     0.95106,
+     0.30902
+    ]
+   },
+   {
+    "part": "3062b",
+    "color": 0,
+    "pos": [
+     0.0,
+     -35.029,
+     -69.813
+    ],
+    "mat": [
+     1.0,
+     -0.0,
+     0.0,
+     0.0,
+     0.30902,
+     -0.95106,
+     0.0,
+     0.95106,
+     0.30902
+    ]
+   },
+   {
+    "part": "30374",
+    "color": 0,
+    "pos": [
+     0.0,
+     -33.793,
+     -66.009
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     -0.30902,
+     0.95106,
+     0.0,
+     -0.95106,
+     -0.30902
+    ]
+   }
+  ]
+ },
+ "rifle": {
+  "lego": "Musket (a long rifle)",
+  "parts": [
+   {
+    "part": "2561",
+    "color": 70
+   }
+  ]
+ },
+ "assault rifle": {
+  "lego": "Long blaster",
+  "parts": [
+   {
+    "part": "57899",
+    "color": 0
+   }
+  ]
+ },
+ "sniper rifle": {
+  "lego": "Rifle, black",
+  "parts": [
+   {
+    "part": "30141",
+    "color": 0
+   }
+  ]
+ },
+ "shotgun": {
+  "lego": "Two-barrel pistol (sawn off)",
+  "parts": [
+   {
+    "part": "95199",
+    "color": 70
+   }
+  ]
+ },
+ "auto shotgun": {
+  "lego": "Blaster with two barrels",
+  "parts": [
+   {
+    "part": "17010",
+    "color": 72
+   }
+  ]
+ },
+ "grenade launcher": {
+  "lego": "Shooting blaster, dark green",
+  "parts": [
+   {
+    "part": "15391",
+    "color": 288
+   }
+  ]
+ },
+ "rocket launcher": {
+  "lego": "Launcher barrel; a pin and bar in its lower back peg hole, a bar tube clipped on that bar, a bar 3L down from the tube for a pistol grip",
+  "parts": [
+   {
+    "part": "18588",
+    "color": 72
+   },
+   {
+    "part": "61184",
+    "color": 0,
+    "pos": [
+     0,
+     20,
+     0
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "11090",
+    "color": 0,
+    "pos": [
+     0,
+     20,
+     44
+    ]
+   },
+   {
+    "part": "87994",
+    "color": 0,
+    "pos": [
+     0,
+     32,
+     44
+    ]
+   }
+  ]
+ },
+ "frag grenade": {
+  "lego": "Grenade, dark green",
+  "parts": [
+   {
+    "part": "40598c",
+    "color": 288
+   }
+  ]
+ },
+ "gas grenade": {
+  "lego": "Grenade, yellow",
+  "parts": [
+   {
+    "part": "40598d",
+    "color": 14
+   }
+  ]
+ },
+ "stick of dynamite": {
+  "lego": "Dynamite sticks",
+  "parts": [
+   {
+    "part": "64728",
+    "color": 4
+   }
+  ]
+ },
+ "bullet": {
+  "lego": "Cone 1x1 in pearl gold",
+  "parts": [
+   {
+    "part": "4589",
+    "color": 297
+   }
+  ]
+ },
+ "silver bullet": {
+  "lego": "Cone 1x1 in silver",
+  "parts": [
+   {
+    "part": "4589",
+    "color": 179
+   }
+  ]
+ },
+ "shotgun shell": {
+  "lego": "A red round brick 1x1 on a gold round plate",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 4
+   },
+   {
+    "part": "6141",
+    "color": 297,
+    "pos": [
+     0,
+     24,
+     0
+    ]
+   }
+  ]
+ },
+ "rocket": {
+  "lego": "A round brick 1x1 with a red cone on top and a black round plate below",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 72
+   },
+   {
+    "part": "4589",
+    "color": 4,
+    "pos": [
+     0,
+     -24,
+     0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 0,
+    "pos": [
+     0,
+     24,
+     0
+    ]
+   }
+  ]
  }
 }

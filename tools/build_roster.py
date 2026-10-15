@@ -17,7 +17,7 @@ import hashlib, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import ldraw2glb, minifig
+import ldraw2glb, minifig, wardrobe
 
 LEGO = os.path.join(HERE, '..', 'web', 'assets', 'lego')
 OUT = os.path.join(LEGO, 'roster')
@@ -51,9 +51,13 @@ def main():
     figs = os.path.join(LEGO, 'figs')
     built = []
 
-    def figure(name):
-        """Build a recipe (when it changed): (its spec, its url)."""
+    def figure(name, character=True):
+        """Build a recipe (when it changed): (its spec, its url). A character
+        holds nothing of its own (wardrobe.empty_handed): the game gives it
+        what it wields."""
         spec = json.load(open(os.path.join(figs, name + '.json')))
+        if character:   # (its base merged in first: the base's hands are emptied too)
+            spec = wardrobe.empty_handed(wardrobe.recipe(name))
         ldr = minifig.build(spec, figs)
         # decal images count too: a changed picture rebuilds the figure
         stamp = ldr + ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in ldr.splitlines() if '!TEXMAP' in l) + ldraw2glb.extra_stamp(ldr)
@@ -74,7 +78,7 @@ def main():
     print(f'roster: {len(built)} figures')
     mons = {}
     for mon, m in json.load(open(os.path.join(LEGO, 'monsters.json'))).items():
-        mons[mon] = {'url': figure(m['fig'])[1], 'hold': m.get('hold')}
+        mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold')}
     json.dump(mons, open(os.path.join(LEGO, 'monsters.built.json'), 'w'), indent=1)
     print(f'monsters in LEGO: {len(mons)}')
     os.makedirs(PARTS, exist_ok=True)

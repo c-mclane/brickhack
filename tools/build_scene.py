@@ -12,7 +12,8 @@ brick's height, 8 = a plate's; -Y is up, -Z is toward the default camera's far s
   ]}
 
 "part" is any LDraw part; "fig" names a minifig recipe in
-web/assets/lego/figs/<name>.json (see tools/minifig.py); "item" names a
+web/assets/lego/figs/<name>.json (see tools/minifig.py; "hold": an item of
+items.json in its right hand, as the game holds it); "item" names a
 NetHack item in web/assets/lego/items.json, built from its LEGO parts and
 laid on its side on the studs, as if dropped (pos: where on the baseplate;
 "stand": true stands it upright instead);
@@ -56,6 +57,26 @@ def item_ldr(lib, item, stand=False):
     return ''.join(minifig.line(c, pos + shift, m, part) + '\n' for c, pos, m, part in lines)
 
 
+def hold_item(ldr_text, item):
+    """A figure (minifig.build's text) with an item (items.json) in its right
+    hand, just as the game holds it (brickworld.js holdItems): the item as
+    held (build_items.held_ldr) placed at the right arm's grip (the rig's,
+    minifig.grip_frame), on a joint of its own; the arm marked as holding,
+    so the viewer raises it as the game does."""
+    lines = ldr_text.splitlines()
+    i = next(i for i, l in enumerate(lines) if l.startswith('0 !LEGOHACK RIG '))
+    rig = json.loads(lines[i][len('0 !LEGOHACK RIG '):])
+    rig['armR']['holds'] = True
+    lines[i] = '0 !LEGOHACK RIG ' + json.dumps(rig, separators=(',', ':'))
+    gp, gm = np.array(rig['armR']['grip']['pos']), np.array(rig['armR']['grip']['mat']).reshape(3, 3)
+    lines.append('0 !LEGOHACK GROUP itemR')
+    for l in build_items.held_ldr(item).splitlines():
+        t = l.split()
+        pos, mat = np.array([float(v) for v in t[2:5]]), np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+        lines.append(minifig.line(t[1], gp + gm @ pos, gm @ mat, ' '.join(t[14:])[:-4]))
+    return '\n'.join(lines) + '\n'
+
+
 def tile_index(name):
     """The game's tile for a NetHack item, by name (tiles.json lists 'unidentified / real' names)."""
     t = json.load(open(os.path.join(WEB, 'assets', 'slashem', 'tiles.json')))
@@ -84,7 +105,13 @@ def main(scene_path):
                 open(src, 'w').write(text)
         elif 'fig' in obj:
             recipe = os.path.join(LEGO, 'figs', obj['fig'] + '.json')
-            ldr_text = minifig.build(json.load(open(recipe)), os.path.dirname(recipe))
+            spec = json.load(open(recipe))
+            if obj.get('hold'):
+                spec.pop('right', None)   # (its own hand items make way)
+                spec.pop('left', None)
+            ldr_text = minifig.build(spec, os.path.dirname(recipe))
+            if obj.get('hold'):
+                ldr_text = hold_item(ldr_text, items[obj['hold']])
             # decal images are part of the model too: changing one rebuilds it
             stamp = ldr_text + ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in ldr_text.splitlines() if '!TEXMAP' in l)
             key = 'fig_' + obj['fig'] + '_' + hashlib.sha1(stamp.encode()).hexdigest()[:10]

@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   22,
-   50
+   78,
+   62
   ],
   "target": [
    0,
-   5,
-   0
+   0,
+   3
   ]
  },
  "objects": [
@@ -16,130 +16,750 @@
    "part": "4186",
    "color": 2,
    "pos": [
-    0,
+    -490,
     0,
     0
    ]
   },
   {
-   "item": "halberd",
-   "stand": true,
+   "part": "4186",
+   "color": 2,
    "pos": [
-    -320,
+    490,
     0,
-    -120
-   ],
-   "label": "halberd"
+    0
+   ]
   },
   {
-   "item": "spetum",
-   "stand": true,
+   "tile": "spear",
    "pos": [
-    -160,
-    0,
-    -120
-   ],
-   "label": "spetum"
+    -960,
+    -4,
+    -420
+   ]
   },
   {
-   "item": "glaive",
-   "stand": true,
+   "item": "spear",
    "pos": [
+    -850,
     0,
-    0,
-    -120
+    -420
    ],
-   "label": "glaive"
+   "label": "spear"
   },
   {
-   "item": "partisan",
-   "stand": true,
+   "tile": "silver spear",
    "pos": [
-    160,
-    0,
-    -120
-   ],
-   "label": "partisan"
+    -715,
+    -4,
+    -420
+   ]
   },
   {
-   "item": "ranseur",
-   "stand": true,
+   "item": "silver spear",
    "pos": [
-    320,
+    -605,
     0,
-    -120
+    -420
    ],
-   "label": "ranseur"
+   "label": "silver spear"
   },
   {
-   "item": "bardiche",
-   "stand": true,
+   "tile": "dwarvish spear",
    "pos": [
-    480,
-    0,
-    -120
-   ],
-   "label": "bardiche"
+    -470,
+    -4,
+    -420
+   ]
   },
   {
-   "item": "voulge",
-   "stand": true,
+   "item": "dwarvish spear",
    "pos": [
-    -400,
+    -360,
     0,
-    120
+    -420
    ],
-   "label": "voulge"
+   "label": "dwarvish spear"
   },
   {
-   "item": "lucern hammer",
-   "stand": true,
+   "tile": "orcish spear",
    "pos": [
-    -240,
-    0,
-    120
-   ],
-   "label": "lucern hammer"
+    -225,
+    -4,
+    -420
+   ]
   },
   {
-   "item": "fauchard",
-   "stand": true,
+   "item": "orcish spear",
    "pos": [
-    -80,
+    -115,
     0,
-    120
+    -420
    ],
-   "label": "fauchard"
+   "label": "orcish spear"
   },
   {
-   "item": "guisarme",
-   "stand": true,
+   "tile": "elven spear",
    "pos": [
-    80,
-    0,
-    120
-   ],
-   "label": "guisarme"
+    20,
+    -4,
+    -420
+   ]
   },
   {
-   "item": "bill-guisarme",
-   "stand": true,
+   "item": "elven spear",
    "pos": [
-    240,
+    130,
     0,
-    120
+    -420
    ],
-   "label": "bill-guisarme"
+   "label": "elven spear"
   },
   {
-   "item": "bec de corbin",
-   "stand": true,
+   "tile": "javelin",
    "pos": [
-    400,
+    265,
+    -4,
+    -420
+   ]
+  },
+  {
+   "item": "javelin",
+   "pos": [
+    375,
     0,
-    120
+    -420
    ],
-   "label": "bec de corbin"
+   "label": "javelin"
+  },
+  {
+   "tile": "trident",
+   "pos": [
+    510,
+    -4,
+    -420
+   ]
+  },
+  {
+   "item": "trident",
+   "pos": [
+    620,
+    0,
+    -420
+   ],
+   "label": "trident"
+  },
+  {
+   "tile": "bow",
+   "pos": [
+    755,
+    -4,
+    -420
+   ]
+  },
+  {
+   "item": "bow",
+   "pos": [
+    865,
+    0,
+    -420
+   ],
+   "label": "bow"
+  },
+  {
+   "tile": "orcish bow",
+   "pos": [
+    -960,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "orcish bow",
+   "pos": [
+    -850,
+    0,
+    -255
+   ],
+   "label": "orcish bow"
+  },
+  {
+   "tile": "elven bow",
+   "pos": [
+    -715,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "elven bow",
+   "pos": [
+    -605,
+    0,
+    -255
+   ],
+   "label": "elven bow"
+  },
+  {
+   "tile": "dark elven bow",
+   "pos": [
+    -470,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "dark elven bow",
+   "pos": [
+    -360,
+    0,
+    -255
+   ],
+   "label": "dark elven bow"
+  },
+  {
+   "tile": "yumi",
+   "pos": [
+    -225,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "yumi",
+   "pos": [
+    -115,
+    0,
+    -255
+   ],
+   "label": "yumi"
+  },
+  {
+   "tile": "arrow",
+   "pos": [
+    20,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "arrow",
+   "pos": [
+    130,
+    0,
+    -255
+   ],
+   "label": "arrow"
+  },
+  {
+   "tile": "silver arrow",
+   "pos": [
+    265,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "silver arrow",
+   "pos": [
+    375,
+    0,
+    -255
+   ],
+   "label": "silver arrow"
+  },
+  {
+   "tile": "elven arrow",
+   "pos": [
+    510,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "elven arrow",
+   "pos": [
+    620,
+    0,
+    -255
+   ],
+   "label": "elven arrow"
+  },
+  {
+   "tile": "dark elven arrow",
+   "pos": [
+    755,
+    -4,
+    -255
+   ]
+  },
+  {
+   "item": "dark elven arrow",
+   "pos": [
+    865,
+    0,
+    -255
+   ],
+   "label": "dark elven arrow"
+  },
+  {
+   "tile": "orcish arrow",
+   "pos": [
+    -960,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "orcish arrow",
+   "pos": [
+    -850,
+    0,
+    -90
+   ],
+   "label": "orcish arrow"
+  },
+  {
+   "tile": "ya",
+   "pos": [
+    -715,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "ya",
+   "pos": [
+    -605,
+    0,
+    -90
+   ],
+   "label": "ya"
+  },
+  {
+   "tile": "crossbow",
+   "pos": [
+    -470,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "crossbow",
+   "pos": [
+    -360,
+    0,
+    -90
+   ],
+   "label": "crossbow"
+  },
+  {
+   "tile": "crossbow bolt",
+   "pos": [
+    -225,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "crossbow bolt",
+   "pos": [
+    -115,
+    0,
+    -90
+   ],
+   "label": "crossbow bolt"
+  },
+  {
+   "tile": "sling",
+   "pos": [
+    20,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "sling",
+   "pos": [
+    130,
+    0,
+    -90
+   ],
+   "label": "sling"
+  },
+  {
+   "tile": "dart",
+   "pos": [
+    265,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "dart",
+   "pos": [
+    375,
+    0,
+    -90
+   ],
+   "label": "dart"
+  },
+  {
+   "tile": "shuriken",
+   "pos": [
+    510,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "shuriken",
+   "pos": [
+    620,
+    0,
+    -90
+   ],
+   "label": "shuriken"
+  },
+  {
+   "tile": "boomerang",
+   "pos": [
+    755,
+    -4,
+    -90
+   ]
+  },
+  {
+   "item": "boomerang",
+   "pos": [
+    865,
+    0,
+    -90
+   ],
+   "label": "boomerang"
+  },
+  {
+   "tile": "bullwhip",
+   "pos": [
+    -960,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "bullwhip",
+   "pos": [
+    -850,
+    0,
+    75
+   ],
+   "label": "bullwhip"
+  },
+  {
+   "tile": "rubber hose",
+   "pos": [
+    -715,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "rubber hose",
+   "pos": [
+    -605,
+    0,
+    75
+   ],
+   "label": "rubber hose"
+  },
+  {
+   "tile": "pistol",
+   "pos": [
+    -470,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "pistol",
+   "pos": [
+    -360,
+    0,
+    75
+   ],
+   "label": "pistol"
+  },
+  {
+   "tile": "submachine gun",
+   "pos": [
+    -225,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "submachine gun",
+   "pos": [
+    -115,
+    0,
+    75
+   ],
+   "label": "submachine gun"
+  },
+  {
+   "tile": "heavy machine gun",
+   "pos": [
+    20,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "heavy machine gun",
+   "pos": [
+    130,
+    0,
+    75
+   ],
+   "label": "heavy machine gun"
+  },
+  {
+   "tile": "rifle",
+   "pos": [
+    265,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "rifle",
+   "pos": [
+    375,
+    0,
+    75
+   ],
+   "label": "rifle"
+  },
+  {
+   "tile": "assault rifle",
+   "pos": [
+    510,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "assault rifle",
+   "pos": [
+    620,
+    0,
+    75
+   ],
+   "label": "assault rifle"
+  },
+  {
+   "tile": "sniper rifle",
+   "pos": [
+    755,
+    -4,
+    75
+   ]
+  },
+  {
+   "item": "sniper rifle",
+   "pos": [
+    865,
+    0,
+    75
+   ],
+   "label": "sniper rifle"
+  },
+  {
+   "tile": "shotgun",
+   "pos": [
+    -960,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "shotgun",
+   "pos": [
+    -850,
+    0,
+    240
+   ],
+   "label": "shotgun"
+  },
+  {
+   "tile": "auto shotgun",
+   "pos": [
+    -715,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "auto shotgun",
+   "pos": [
+    -605,
+    0,
+    240
+   ],
+   "label": "auto shotgun"
+  },
+  {
+   "tile": "grenade launcher",
+   "pos": [
+    -470,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "grenade launcher",
+   "pos": [
+    -360,
+    0,
+    240
+   ],
+   "label": "grenade launcher"
+  },
+  {
+   "tile": "rocket launcher",
+   "pos": [
+    -225,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "rocket launcher",
+   "pos": [
+    -115,
+    0,
+    240
+   ],
+   "label": "rocket launcher"
+  },
+  {
+   "tile": "frag grenade",
+   "pos": [
+    20,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "frag grenade",
+   "pos": [
+    130,
+    0,
+    240
+   ],
+   "label": "frag grenade"
+  },
+  {
+   "tile": "gas grenade",
+   "pos": [
+    265,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "gas grenade",
+   "pos": [
+    375,
+    0,
+    240
+   ],
+   "label": "gas grenade"
+  },
+  {
+   "tile": "stick of dynamite",
+   "pos": [
+    510,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "stick of dynamite",
+   "pos": [
+    620,
+    0,
+    240
+   ],
+   "label": "stick of dynamite"
+  },
+  {
+   "tile": "bullet",
+   "pos": [
+    755,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "bullet",
+   "pos": [
+    865,
+    0,
+    240
+   ],
+   "label": "bullet"
+  },
+  {
+   "tile": "silver bullet",
+   "pos": [
+    -960,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "silver bullet",
+   "pos": [
+    -850,
+    0,
+    405
+   ],
+   "label": "silver bullet"
+  },
+  {
+   "tile": "shotgun shell",
+   "pos": [
+    -715,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "shotgun shell",
+   "pos": [
+    -605,
+    0,
+    405
+   ],
+   "label": "shotgun shell"
+  },
+  {
+   "tile": "rocket",
+   "pos": [
+    -470,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "rocket",
+   "pos": [
+    -360,
+    0,
+    405
+   ],
+   "label": "rocket"
   }
  ]
 }

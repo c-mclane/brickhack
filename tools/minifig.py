@@ -74,8 +74,8 @@ HELD = {
     '18395': {'center': (0, -5, 0), 'up': (0, -1, 0)},                      # flame: by its bar, burning upward
     '30385': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # crystal: standing on top of the fist
     '49492': {'center': (0, -40, 0), 'up': (0, -1, 0)},                     # shepherd's crook / crozier: the hook up
-    '4499': {'center': (0, -1, 0), 'up': (0, -1, 0), 'face': (0, 0, 1)},     # bow with arrow: upright, 'face' is the arrow
-    '2570': {'center': (0, 2, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},     # crossbow: by its pistol grip, the bolt forward
+    '4499': {'center': (0, -1, 0), 'up': (0, -1, 0)},                       # bow with arrow: upright, the arrow ahead, the string to the archer
+    '2570': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # crossbow: by its pistol grip, the bolt (its -Z) ahead
     '4497': {'center': (0, 30, 0), 'up': (0, -1, 0)},                       # spear: held below the middle, point up
     '30173a': {'center': (0, 6, 0), 'up': (0, -1, 0)},                      # katana: blade up out of the fist
     '95049': {'center': (0, 14, 0), 'up': (0, -1, 0)},                      # staff with a ball: the ball up
@@ -101,6 +101,28 @@ HELD = {
     '64567': {'center': (0, 18, 0), 'up': (0, -1, 0)},                      # lightsaber hilt (a great dagger's): by the hilt, the top up
     '55295': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # hammer: by the handle, head up
     '30374': {'center': (0, 58, 0), 'up': (0, -1, 0)},
+    '93789': {'center': (0, 30, 0), 'up': (0, -1, 0)},                      # spear with a flat end: below the middle, point up
+    '90391': {'center': (0, 30, 0), 'up': (0, -1, 0)},                      # elaborate pike: below the middle, head up
+    '92290': {'center': (0, -20, 0), 'up': (0, -1, 0)},                     # trident: low on the shaft, prongs up
+    '93231': {'center': (0, 0, 0), 'up': (0, -1, 0)},                      # long bow with arrow: likewise
+    '95051': {'center': (0, 0, 0), 'up': (0, -1, 0)},                      # small bow with arrow: likewise
+    '18041': {'center': (0, -12, 0), 'up': (0, -1, 0)},                     # harpoon (an arrow): by the shaft, point up
+    '57467': {'center': (0, -12, 0), 'up': (0, -1, 0)},                     # harpoon (a crossbow bolt): likewise
+    '24482': {'center': (0, 0, 0), 'up': (0, -1, 0)},                       # finned spike (a dart): point up
+    '2488': {'center': (0, 14, 0), 'up': (0, -1, 0)},                       # whip: by its handle
+    '88704': {'center': (0, -5, 0), 'up': (0, -1, 0)},                      # flexible whip (a rubber hose): by its end
+    '55707': {'center': (0, 12, 0), 'up': (0, -1, 0)},   # pistol, drum-magazine gun: by the grip, the barrel forward
+    '44709': {'center': (0, 0, 0), 'up': (0, -1, 0)},    # bulky blaster: by the grip, the barrel forward
+    '30141': {'center': (0, 0, 0), 'up': (0, -1, 0)},    # rifle
+    '57899': {'center': (0, 8, 0), 'up': (0, -1, 0)},    # long blaster
+    '92738': {'center': (0, 0, 0), 'up': (0, -1, 0)},    # blaster with a telescopic sight
+    '95199': {'center': (0, 0, 0), 'up': (0, -1, 0)},    # two-barrel pistol (a sawn-off shotgun)
+    '2561': {'center': (0, 30, 0), 'up': (0, 0, 1)},                        # musket: by the wrist of the stock, the barrel forward
+    '15391': {'center': (0, -8, 0), 'up': (0, -1, 0)},   # shooting blaster
+    '18588': {'center': (0, 0, 0), 'up': (0, -1, 0)},                       # launcher barrel
+    '20546': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # slingshot: by its handle, the fork up
+    '17010': {'center': (0, 6, 0), 'up': (0, -1, 0)},    # blaster with two barrels: by the grip, the barrels forward
+    '18588': {'center': (0, 66, 44), 'up': (0, -1, 0)},                     # launcher barrel: by the pistol grip under its back (a bar down from a clip on a pin's bar), the barrel ahead
     '6123': {'center': (0, 30, 0), 'up': (0, -1, 0)},                       # halberd: below the middle, head up
     '43899': {'center': (0, 150, 0), 'up': (0, -1, 0)},                     # spear with four side blades: low on the shaft, blades up
     '55237': {'center': (0, -15, 0), 'up': (0, -1, 0)},                     # bars with weapon heads (a polearm each): low down, head up
