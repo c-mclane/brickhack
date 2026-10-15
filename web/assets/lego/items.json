@@ -1969,11 +1969,30 @@
   ]
  },
  "sniper rifle": {
-  "lego": "Rifle, black",
+  "lego": "Rifle, black, with a black telescope laid along its top (the rifle has nothing to clip it to)",
   "parts": [
    {
     "part": "30141",
     "color": 0
+   },
+   {
+    "part": "64644",
+    "color": 0,
+    "pos": [
+     0,
+     -22,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": -90
+     }
+    ]
    }
   ]
  },
