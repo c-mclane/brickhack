@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   80,
-   64
+   5.5,
+   34
   ],
   "target": [
    0,
-   0,
-   4
+   3.2,
+   0
   ]
  },
  "objects": [
@@ -16,514 +16,133 @@
    "part": "4186",
    "color": 2,
    "pos": [
-    -490,
+    0,
     0,
     0
    ]
   },
   {
-   "part": "4186",
-   "color": 2,
+   "fig": "knight",
+   "set": {
+    "hat": "4503",
+    "hatColor": 71,
+    "plume": {
+     "part": "87694",
+     "color": 4
+    },
+    "hair": null,
+    "neck": null,
+    "right": null,
+    "left": null
+   },
    "pos": [
-    490,
-    0,
+    -270,
+    -72,
     0
-   ]
+   ],
+   "rotY": -20,
+   "label": "helmet"
   },
   {
-   "item": "Firewall",
+   "fig": "knight",
+   "set": {
+    "hat": "6122",
+    "hatColor": 383,
+    "hair": null,
+    "neck": null,
+    "right": null,
+    "left": null
+   },
    "pos": [
-    -850,
-    0,
-    -430
+    -180,
+    -72,
+    0
    ],
-   "label": "Firewall"
+   "rotY": -20,
+   "label": "helm of brilliance"
   },
   {
-   "item": "Sting",
+   "fig": "knight",
+   "set": {
+    "hat": "10054",
+    "hatColor": 0,
+    "hair": null,
+    "neck": null,
+    "right": null,
+    "left": null
+   },
    "pos": [
-    -605,
-    0,
-    -430
+    -90,
+    -72,
+    0
    ],
-   "label": "Sting"
+   "rotY": -20,
+   "label": "helm of opposite alignment"
   },
   {
-   "item": "Giantkiller",
+   "fig": "knight",
+   "set": {
+    "hat": "3842a",
+    "hatColor": 71,
+    "extras": [
+     {
+      "part": "2447b",
+      "color": 43,
+      "pos": [
+       0,
+       -24,
+       0
+      ]
+     }
+    ],
+    "hair": null,
+    "neck": null,
+    "right": null,
+    "left": null
+   },
    "pos": [
-    -360,
     0,
-    -430
+    -72,
+    0
    ],
-   "label": "Giantkiller"
+   "rotY": -20,
+   "label": "helm of telepathy"
   },
   {
-   "item": "Quick Blade",
+   "fig": "knight",
+   "set": {
+    "hat": "17349",
+    "hatColor": 15,
+    "hair": null,
+    "neck": null,
+    "right": null,
+    "left": null
+   },
    "pos": [
-    -115,
-    0,
-    -430
+    90,
+    -72,
+    0
    ],
-   "label": "Quick Blade"
+   "rotY": -20,
+   "label": "Mitre of Holiness"
   },
   {
-   "item": "Orcrist",
+   "fig": "knight",
+   "set": {
+    "hat": "71015",
+    "hatColor": 334,
+    "hair": null,
+    "neck": null,
+    "right": null,
+    "left": null
+   },
    "pos": [
-    130,
-    0,
-    -430
+    180,
+    -72,
+    0
    ],
-   "label": "Orcrist"
-  },
-  {
-   "item": "Dragonbane",
-   "pos": [
-    375,
-    0,
-    -430
-   ],
-   "label": "Dragonbane"
-  },
-  {
-   "item": "Excalibur",
-   "pos": [
-    620,
-    0,
-    -430
-   ],
-   "label": "Excalibur"
-  },
-  {
-   "item": "Sunsword",
-   "pos": [
-    865,
-    0,
-    -430
-   ],
-   "label": "Sunsword"
-  },
-  {
-   "item": "Snickersnee",
-   "pos": [
-    -850,
-    0,
-    -300
-   ],
-   "label": "Snickersnee"
-  },
-  {
-   "item": "Sword of Justice",
-   "pos": [
-    -605,
-    0,
-    -300
-   ],
-   "label": "Sword of Justice"
-  },
-  {
-   "item": "Demonbane",
-   "pos": [
-    -360,
-    0,
-    -300
-   ],
-   "label": "Demonbane"
-  },
-  {
-   "item": "Werebane",
-   "pos": [
-    -115,
-    0,
-    -300
-   ],
-   "label": "Werebane"
-  },
-  {
-   "item": "Grayswandir",
-   "pos": [
-    130,
-    0,
-    -300
-   ],
-   "label": "Grayswandir"
-  },
-  {
-   "item": "Skullcrusher",
-   "pos": [
-    375,
-    0,
-    -300
-   ],
-   "label": "Skullcrusher"
-  },
-  {
-   "item": "Trollsbane",
-   "pos": [
-    620,
-    0,
-    -300
-   ],
-   "label": "Trollsbane"
-  },
-  {
-   "item": "Ogresmasher",
-   "pos": [
-    865,
-    0,
-    -300
-   ],
-   "label": "Ogresmasher"
-  },
-  {
-   "item": "Reaper",
-   "pos": [
-    -850,
-    0,
-    -170
-   ],
-   "label": "Reaper"
-  },
-  {
-   "item": "Holy Spear of Light",
-   "pos": [
-    -605,
-    0,
-    -170
-   ],
-   "label": "Holy Spear of Light"
-  },
-  {
-   "item": "Magicbane",
-   "pos": [
-    -360,
-    0,
-    -170
-   ],
-   "label": "Magicbane"
-  },
-  {
-   "item": "Luckblade",
-   "pos": [
-    -115,
-    0,
-    -170
-   ],
-   "label": "Luckblade"
-  },
-  {
-   "item": "Sword of Balance",
-   "pos": [
-    130,
-    0,
-    -170
-   ],
-   "label": "Sword of Balance"
-  },
-  {
-   "item": "Frost Brand",
-   "pos": [
-    375,
-    0,
-    -170
-   ],
-   "label": "Frost Brand"
-  },
-  {
-   "item": "Fire Brand",
-   "pos": [
-    620,
-    0,
-    -170
-   ],
-   "label": "Fire Brand"
-  },
-  {
-   "item": "Vorpal Blade",
-   "pos": [
-    865,
-    0,
-    -170
-   ],
-   "label": "Vorpal Blade"
-  },
-  {
-   "item": "Disrupter",
-   "pos": [
-    -850,
-    0,
-    -40
-   ],
-   "label": "Disrupter"
-  },
-  {
-   "item": "Mjollnir",
-   "pos": [
-    -605,
-    0,
-    -40
-   ],
-   "label": "Mjollnir"
-  },
-  {
-   "item": "Grimtooth",
-   "pos": [
-    -360,
-    0,
-    -40
-   ],
-   "label": "Grimtooth"
-  },
-  {
-   "item": "Deep Freeze",
-   "pos": [
-    -115,
-    0,
-    -40
-   ],
-   "label": "Deep Freeze"
-  },
-  {
-   "item": "Serpent's Tongue",
-   "pos": [
-    130,
-    0,
-    -40
-   ],
-   "label": "Serpent's Tongue"
-  },
-  {
-   "item": "Cleaver",
-   "pos": [
-    375,
-    0,
-    -40
-   ],
-   "label": "Cleaver"
-  },
-  {
-   "item": "Doomblade",
-   "pos": [
-    620,
-    0,
-    -40
-   ],
-   "label": "Doomblade"
-  },
-  {
-   "item": "Stormbringer",
-   "pos": [
-    865,
-    0,
-    -40
-   ],
-   "label": "Stormbringer"
-  },
-  {
-   "item": "Thiefbane",
-   "pos": [
-    -850,
-    0,
-    90
-   ],
-   "label": "Thiefbane"
-  },
-  {
-   "item": "Deathsword",
-   "pos": [
-    -605,
-    0,
-    90
-   ],
-   "label": "Deathsword"
-  },
-  {
-   "item": "Bat from Hell",
-   "pos": [
-    -360,
-    0,
-    90
-   ],
-   "label": "Bat from Hell"
-  },
-  {
-   "item": "Elfrist",
-   "pos": [
-    -115,
-    0,
-    90
-   ],
-   "label": "Elfrist"
-  },
-  {
-   "item": "Plague",
-   "pos": [
-    130,
-    0,
-    90
-   ],
-   "label": "Plague"
-  },
-  {
-   "item": "Hellfire",
-   "pos": [
-    375,
-    0,
-    90
-   ],
-   "label": "Hellfire"
-  },
-  {
-   "item": "Houchou",
-   "pos": [
-    620,
-    0,
-    90
-   ],
-   "label": "Houchou"
-  },
-  {
-   "item": "Nighthorn",
-   "pos": [
-    865,
-    0,
-    90
-   ],
-   "label": "Nighthorn"
-  },
-  {
-   "item": "Sceptre of Might",
-   "pos": [
-    -850,
-    0,
-    220
-   ],
-   "label": "Sceptre of Might"
-  },
-  {
-   "item": "Staff of Aesculapius",
-   "pos": [
-    -605,
-    0,
-    220
-   ],
-   "label": "Staff of Aesculapius"
-  },
-  {
-   "item": "Great Dagger of Glaurgnaa",
-   "pos": [
-    -360,
-    0,
-    220
-   ],
-   "label": "Great Dagger of Glaurgnaa"
-  },
-  {
-   "item": "Longbow of Diana",
-   "pos": [
-    -115,
-    0,
-    220
-   ],
-   "label": "Longbow of Diana"
-  },
-  {
-   "item": "Tsurugi of Muramasa",
-   "pos": [
-    130,
-    0,
-    220
-   ],
-   "label": "Tsurugi of Muramasa"
-  },
-  {
-   "item": "Stake of Van Helsing",
-   "pos": [
-    375,
-    0,
-    220
-   ],
-   "label": "Stake of Van Helsing"
-  },
-  {
-   "item": "Dagger of Creation",
-   "pos": [
-    620,
-    0,
-    220
-   ],
-   "label": "Dagger of Creation"
-  },
-  {
-   "item": "Dagger of Protection",
-   "pos": [
-    865,
-    0,
-    220
-   ],
-   "label": "Dagger of Protection"
-  },
-  {
-   "item": "Dagger of Destruction",
-   "pos": [
-    -850,
-    0,
-    350
-   ],
-   "label": "Dagger of Destruction"
-  },
-  {
-   "item": "Narsil",
-   "pos": [
-    -605,
-    0,
-    350
-   ],
-   "label": "Narsil"
-  },
-  {
-   "item": "Glamdring",
-   "pos": [
-    -360,
-    0,
-    350
-   ],
-   "label": "Glamdring"
-  },
-  {
-   "item": "Scythe of Quakes",
-   "pos": [
-    -500,
-    0,
-    430
-   ],
-   "label": "Scythe of Quakes"
-  },
-  {
-   "item": "Nunchucks of Lightning",
-   "pos": [
-    -170,
-    0,
-    430
-   ],
-   "label": "Nunchucks of Lightning"
-  },
-  {
-   "item": "Shurikens of Ice",
-   "pos": [
-    160,
-    0,
-    430
-   ],
-   "label": "Shurikens of Ice"
-  },
-  {
-   "item": "Sword of Fire",
-   "pos": [
-    490,
-    0,
-    430
-   ],
-   "label": "Sword of Fire"
+   "rotY": -20,
+   "label": "Crown of Saint Edward"
   }
  ]
 }

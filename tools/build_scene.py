@@ -13,7 +13,8 @@ brick's height, 8 = a plate's; -Y is up, -Z is toward the default camera's far s
 
 "part" is any LDraw part; "fig" names a minifig recipe in
 web/assets/lego/figs/<name>.json (see tools/minifig.py; "hold": an item of
-items.json in its right hand, as the game holds it); "item" names a
+items.json in its right hand, as the game holds it; "set": recipe keys to
+change, e.g. a helm to try on); "item" names a
 NetHack item in web/assets/lego/items.json, built from its LEGO parts and
 laid on its side on the studs, as if dropped (pos: where on the baseplate;
 "stand": true stands it upright instead);
@@ -117,6 +118,7 @@ def main(scene_path):
         elif 'fig' in obj:
             recipe = os.path.join(LEGO, 'figs', obj['fig'] + '.json')
             spec = json.load(open(recipe))
+            spec.update(obj.get('set', {}))   # recipe keys to change (a helm to try on: "hat", "hatColor"...)
             if obj.get('hold'):
                 spec.pop('right', None)   # (its own hand items make way)
                 spec.pop('left', None)
