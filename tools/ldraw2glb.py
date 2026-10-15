@@ -44,6 +44,19 @@ MIST = 9001
 QUANTUM, QUANTUM_PARTS = 9100, 100
 
 
+def extra_stamp(ldr_text):
+    """When the hand-made parts (EXTRA) a model uses last changed: for build
+    caches keyed by a model's text, which doesn't change when such a part does."""
+    out = []
+    for l in ldr_text.splitlines():
+        t = l.split()
+        if len(t) >= 15 and t[0] == '1':
+            f = os.path.join(EXTRA, 'parts', ' '.join(t[14:]))
+            if os.path.isfile(f):
+                out.append(f'{t[14]}:{os.path.getmtime(f)}')
+    return ';'.join(out)
+
+
 def figure_extras(ldr_text):
     """What the renderers need to know about a figure: an angel's glowing aura
     (mist.js), and its joints for the animation (figure_rig; minifig-anim.js)."""

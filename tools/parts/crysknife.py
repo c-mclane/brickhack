@@ -6,28 +6,92 @@ used instead: ldraw2glb.EXTRA).
 
   crysknife.py   -> ldraw-extra/parts/5685.dat
 
-LDraw units, -Y up, like a held sword: the grip along Y (its ribbed grip from
-y = 0 down to its knob with a hole through it), a ring guard on top, and the
-blade above it, broad, sweeping forward (+Z) to its point, a thick spine at
-its back, thinning to the cutting edge; its flat faces +-X.
+LDraw units, -Y up, as a held sword is: the handle along Y (y = 0 at the
+foot of the collar), the blade above. The handle is one turned profile
+(LATHE); the blade a broad curved claw (SPINE, EDGE: its back on +Z, its
+cutting edge on -Z), faceted, thick at the back, thinning to the edge; its
+flats face +-X.
 """
-import os
+import math, os
 
 OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'ldraw-extra', 'parts', '5685.dat')
-f = lambda v: f'{v:.3f}'.rstrip('0').rstrip('.')
+f = lambda v: f'{v:.3f}'.rstrip('0').rstrip('.') if abs(v) > 1e-9 else '0'
+
+# Traced from a photo of the part (its grip 8 LDU across): the handle about
+# 22 LDU (a collar, eight ribs, a rounded knob with a hole in the end), the
+# blade about as long again, broad (some 13 LDU at its widest), bellying out
+# low on one side and running nearly straight to the point on the other.
+
+# the handle's profile, top to bottom: (radius, y)
+LATHE = [(3.6, -3.0), (4.5, -2.6), (4.6, -1.0), (4.4, 0.0), (3.5, 0.4)]   # the collar
+for i in range(8):  # eight ribs round the grip
+    y0 = 0.6 + i * 1.55
+    LATHE += [(3.4, y0), (4.0, y0 + 0.35), (4.0, y0 + 0.95), (3.4, y0 + 1.3)]
+LATHE += [(3.5, 13.2), (4.3, 13.8), (4.6, 15.0), (4.5, 16.2), (4.0, 17.0), (3.0, 17.5), (1.6, 17.6)]  # the rounded knob
+
+# the blade's outline, base to point: (z, y) along its back (nearly straight,
+# drifting a little toward the point's side), and along its cutting edge
+# (bellying out low, then running up to the point)
+SPINE = [(3.4, -0.6), (3.0, -3.0), (1.1, -9.0), (1.6, -14.6), (2.3, -19.2), (3.0, -23.9), (3.7, -27.5)]
+EDGE = [(-4.3, -0.6), (-5.6, -3.1), (-8.6, -6.8), (-11.2, -11.8), (-5.1, -18.7), (-1.7, -22.0), (0.8, -24.7), (3.7, -27.5)]
+TIP_Y = -27.5
+# (its base set right down into the collar, as wide as it, so they meet fully;
+# and the blade drawn a little taller than traced: TALL times, from the collar)
+TALL = 1.15
+SPINE = [(z, y if y > -3 else -3 + (y + 3) * TALL) for z, y in SPINE]
+EDGE = [(z, y if y > -3 else -3 + (y + 3) * TALL) for z, y in EDGE]
+TIP_Y = -3 + (TIP_Y + 3) * TALL
 
 
-def prim(name, x, y, z, rx, ry, rz):
-    """A primitive (unit size, along +Y), scaled: rx, rz the radius, ry the height."""
-    return f'1 16 {f(x)} {f(y)} {f(z)} {f(rx)} 0 0 0 {f(ry)} 0 0 0 {f(rz)} {name}'
+def quad(a, b, c, d):
+    return '4 16 ' + ' '.join(f(v) for p in (a, b, c, d) for v in p)
 
 
 def tri(a, b, c):
     return '3 16 ' + ' '.join(f(v) for p in (a, b, c) for v in p)
 
 
-def quad(a, b, c, d):
-    return '4 16 ' + ' '.join(f(v) for p in (a, b, c, d) for v in p)
+def lathe(profile, n=16):
+    out = []
+    ring = lambda r, y: [(r * math.cos(2 * math.pi * k / n), y, r * math.sin(2 * math.pi * k / n)) for k in range(n)]
+    rings = [ring(r, y) for r, y in profile]
+    for a, b in zip(rings, rings[1:]):
+        for k in range(n):
+            out.append(quad(a[k], a[(k + 1) % n], b[(k + 1) % n], b[k]))
+    for rg, (r, y) in ((rings[0], profile[0]), (rings[-1], profile[-1])):  # the ends, closed
+        for k in range(n):
+            out.append(tri((0, y, 0), rg[k], rg[(k + 1) % n]))
+    return out
+
+
+def along(points, y):
+    """z of an outline (points base to point, y falling) at height y."""
+    for (z0, y0), (z1, y1) in zip(points, points[1:]):
+        if y1 <= y <= y0:
+            t = (y0 - y) / (y0 - y1) if y0 != y1 else 0
+            return z0 + (z1 - z0) * t
+    return points[-1][0]
+
+
+def blade(n=20):
+    """The blade, slice by slice: on each face a flat by the back, a ridge, and a
+    bevel down to the cutting edge (the faceting the real one has)."""
+    out = []
+    y0 = SPINE[0][1]
+    S = []
+    for i in range(n + 1):
+        t = i / n
+        y = y0 + (TIP_Y - y0) * t
+        zs, ze = along(SPINE, y), along(EDGE, y)
+        th = 0.95 * (1 - t) ** 1.4 + 0.03         # its thickness, tapering away to a fine point
+        zr = zs + (ze - zs) * 0.45                # the ridge, a little nearer the back
+        S.append([(th, y, zs), (th * 0.85, y, zr), (0.04, y, ze), (-0.04, y, ze), (-th * 0.85, y, zr), (-th, y, zs)])   # (a keen edge)
+    for a, b in zip(S, S[1:]):
+        for k in range(6):   # round the section: back, ridge, edge, edge, ridge, back
+            out.append(quad(a[k], a[(k + 1) % 6], b[(k + 1) % 6], b[k]))
+    s0 = S[0]
+    out += [quad(s0[0], s0[1], s0[4], s0[5]), quad(s0[1], s0[2], s0[3], s0[4])]   # into the collar
+    return out
 
 
 def main():
@@ -38,30 +102,8 @@ def main():
          '0 BFC NOCERTIFY',
          '0 !KEYWORDS Dune, crysknife, Paul Atreides, BrickLink 5685',
          '']
-    # the guard: a ring collar on top of the grip (y -3 .. 0)
-    L += [prim('4-4cyli.dat', 0, -3, 0, 5.5, 3, 5.5), prim('4-4disc.dat', 0, -3, 0, 5.5, 1, 5.5), prim('4-4disc.dat', 0, 0, 0, 5.5, 1, 5.5)]
-    # the grip (y 0 .. 22), ribbed: five raised rings
-    L += [prim('4-4cyli.dat', 0, 0, 0, 3.6, 22, 3.6)]
-    for y in (3, 7, 11, 15, 19):
-        L += [prim('4-4cyli.dat', 0, y, 0, 4.4, 1.6, 4.4), prim('4-4ring4.dat', 0, y, 0, 0.88, 1, 0.88), prim('4-4ring4.dat', 0, y + 1.6, 0, 0.88, 1, 0.88)]
-    # the knob at the end (y 22 .. 25), a hole through it
-    L += [prim('4-4cyli.dat', 0, 22, 0, 4.2, 3, 4.2), prim('4-4ring1.dat', 0, 25, 0, 2.1, 1, 2.1),
-          prim('4-4cyli.dat', 0, 23, 0, 2.1, 2, 2.1), prim('4-4disc.dat', 0, 23, 0, 2.1, 1, 2.1)]
-    # the blade: N slices from the guard (t 0, y -3) to the point (t 1, y -50)
-    N = 14
-    def slice_(t):
-        y = -3 - 47 * t
-        spine = -3.5 + 15.5 * t * t           # its back, curving forward
-        edge = 4.5 + 10 * t - 2.5 * t * t     # its cutting edge, bellied, meeting the spine at the point
-        thick = 1.6 * (1 - t) + 0.25 * t      # thinner toward the point
-        return [(thick, y, spine), (-thick, y, spine), (0.3 * (1 - t), y, edge), (-0.3 * (1 - t), y, edge)]
-    S = [slice_(i / N) for i in range(N + 1)]
-    for a, b in zip(S, S[1:]):
-        (sp, sm, ep, em), (sp2, sm2, ep2, em2) = a, b
-        L += [quad(sp, ep, ep2, sp2), quad(sm, sm2, em2, em),     # the flats
-              quad(sp, sp2, sm2, sm), quad(ep, em, em2, ep2)]     # the spine, the edge
-    sp, sm, ep, em = S[0]
-    L += [quad(sp, sm, em, ep)]                                   # where it meets the guard
+    L += lathe(LATHE)
+    L += blade()
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, 'w').write('\n'.join(L) + '\n')
     print(f'{OUT}: {len(L)} lines')

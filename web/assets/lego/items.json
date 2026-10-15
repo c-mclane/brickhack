@@ -234,10 +234,10 @@
   ]
  },
  "orcish dagger": {
-  "lego": "Curved knife with cross-hatched grip",
+  "lego": "Kunai (Ninjago short spear), dark grey",
   "parts": [
    {
-    "part": "37341b",
+    "part": "98338",
     "color": 72
    }
   ]
@@ -270,19 +270,19 @@
   ]
  },
  "elven dagger": {
-  "lego": "Kunai (Ninjago short spear), pearl gold",
+  "lego": "Small sword with angular guard (Ninjago), pearl gold",
   "parts": [
    {
-    "part": "98338",
+    "part": "95053",
     "color": 142
    }
   ]
  },
  "dark elven dagger": {
-  "lego": "Kunai (Ninjago short spear), black",
+  "lego": "Small sword with angular guard (Ninjago), black",
   "parts": [
    {
-    "part": "98338",
+    "part": "95053",
     "color": 0
    }
   ]
@@ -301,14 +301,14 @@
   ]
  },
  "great dagger": {
-  "lego": "Lightsaber hilt with a faceted blade",
+  "lego": "Lightsaber hilt (black) with a 3L blade on a bar (64727)",
   "parts": [
    {
     "part": "64567a",
-    "color": 72
+    "color": 0
    },
    {
-    "part": "23860",
+    "part": "64727",
     "color": 71,
     "pos": [
      0,
@@ -337,11 +337,20 @@
   ]
  },
  "stiletto": {
-  "lego": "Small sword with angular guard",
+  "lego": "Lightsaber hilt (black) with a finned spike (24482)",
   "parts": [
    {
-    "part": "95053",
-    "color": 179
+    "part": "64567a",
+    "color": 0
+   },
+   {
+    "part": "24482",
+    "color": 19,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
    }
   ]
  },

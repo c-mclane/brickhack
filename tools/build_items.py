@@ -43,7 +43,7 @@ def main():
     built = {}
     for name, item in json.load(open(os.path.join(LEGO, 'items.json'))).items():
         ldr = held_ldr(item)
-        key = hashlib.sha1(ldr.encode()).hexdigest()[:12]
+        key = hashlib.sha1((ldr + ldraw2glb.extra_stamp(ldr)).encode()).hexdigest()[:12]   # (a hand-made part changed: rebuild)
         slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
         glb, src, keyfile = (os.path.join(OUT, slug + ext) for ext in ('.glb', '.ldr', '.key'))
         if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):

@@ -50,7 +50,7 @@ def main():
         spec = json.load(open(os.path.join(figs, name + '.json')))
         ldr = minifig.build(spec, figs)
         # decal images count too: a changed picture rebuilds the figure
-        stamp = ldr + ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in ldr.splitlines() if '!TEXMAP' in l)
+        stamp = ldr + ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in ldr.splitlines() if '!TEXMAP' in l) + ldraw2glb.extra_stamp(ldr)
         key = hashlib.sha1(stamp.encode()).hexdigest()[:12]
         glb, ldr_path, keyfile = (os.path.join(OUT, name + ext) for ext in ('.glb', '.ldr', '.key'))
         if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):

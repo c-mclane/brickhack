@@ -76,7 +76,7 @@ def main(scene_path):
             continue
         if 'item' in obj:
             text = item_ldr(lib, items[obj['item']])
-            key = 'item_' + hashlib.sha1(text.encode()).hexdigest()[:10]
+            key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text)).encode()).hexdigest()[:10]
             src, color = os.path.join(CACHE, key + '.ldr'), 16
             if not os.path.exists(src):
                 open(src, 'w').write(text)
