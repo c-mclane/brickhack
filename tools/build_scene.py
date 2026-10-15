@@ -105,6 +105,8 @@ def main(scene_path):
                 if isinstance(aura, dict) and 'tip' in aura:
                     aura = dict(aura, tip=dict({'dir': [0, 1, 0] if obj.get('stand') else [1, 0, 0]}, **aura['tip']))
                 text = '0 !LEGOHACK AURA' + (' ' + json.dumps(aura) if isinstance(aura, dict) else '') + '\n' + text
+            if item.get('lightning'):   # lightning crackling over it (mist.js addLightning)
+                text = '0 !LEGOHACK LIGHTNING\n' + text
             if item.get('glow'):   # its tip glowing (ldraw2glb.glowing): the tip is up when it stands, +X lying down
                 g = item['glow']
                 text = f"0 !LEGOHACK GLOW {'0 -1' if obj.get('stand') else '1 0'} 0 {g['fraction']} {g['color']}\n" + text

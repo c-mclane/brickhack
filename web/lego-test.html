@@ -17,7 +17,7 @@ html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px syst
 // rebuilds the scene whenever it changes, keeping the camera where it is.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura } from './js/mist.js';
+import { isMist, mistify, quantumPart, strobify, addAura, addLightning } from './js/mist.js';
 import { FigureAnimator, figureJoints, poseJoints, ATTACK_TIME } from './js/minifig-anim.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -53,6 +53,7 @@ function model(url) {
       if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
     });
     addAura(THREE, g.scene); // an angel's glow
+    addLightning(THREE, g.scene); // Mjollnir's crackle
     res(g.scene);
   }, undefined, rej)));
   return models.get(url);

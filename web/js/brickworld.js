@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura } from './mist.js';
+import { isMist, mistify, quantumPart, strobify, addAura, addLightning } from './mist.js';
 import { figureJoints, poseJoints } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './lego.js';
 
@@ -77,6 +77,7 @@ export class BrickWorld {
           if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
         });
         addAura(THREE, g.scene); // an angel's glow
+        addLightning(THREE, g.scene); // Mjollnir's crackle
         res(g.scene);
       }, undefined, rej)));
     return this.models.get(url);

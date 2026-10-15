@@ -65,6 +65,8 @@ def figure_extras(ldr_text):
     if line:   # (or '0 !LEGOHACK AURA {json}': its colour, thickness, the end that glows: mist.js addAura)
         rest = line[len('0 !LEGOHACK AURA'):].strip()
         ex['aura'] = json.loads(rest) if rest else True
+    if '0 !LEGOHACK LIGHTNING' in ldr_text:   # lightning crackling over it (mist.js addLightning)
+        ex['lightning'] = True
     rig = figure_rig(ldr_text)
     if rig:
         ex['rig'] = rig

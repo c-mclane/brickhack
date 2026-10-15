@@ -81,7 +81,7 @@ def main():
         aura = item.get('aura')
         if isinstance(aura, dict) and 'tip' in aura:
             aura = dict(aura, tip=dict({'dir': [0, 1, 0]}, **aura['tip']))
-        extras = {'aura': aura} if aura else None
+        extras = dict({'aura': aura} if aura else {}, **({'lightning': True} if item.get('lightning') else {})) or None
         glow = item.get('glow')   # its tip glowing: {"fraction": of its length from the tip, "color": a translucent one}
         if glow:   # (held, its tip is up: -Y)
             ldr = f"0 !LEGOHACK GLOW 0 -1 0 {glow['fraction']} {glow['color']}\n" + ldr

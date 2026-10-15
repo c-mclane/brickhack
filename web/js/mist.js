@@ -185,3 +185,71 @@ function auraOf(THREE, root, cfg = {}) {
     root.add(mesh);
   }
 }
+
+// three.js: lightning crackling over a model (Mjollnir), if it's marked so
+// (userData.lightning): jagged bolts between points on it, a few sets of
+// them baked in; the shader flashes one set at a time, now and then
+const BOLT_SETS = 8;
+export function addLightning(THREE, root) {
+  let host = null;
+  root.traverse((o) => { if (!host && o.userData && o.userData.lightning) host = o; });
+  if (!host) return;
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const pts = [], v = new THREE.Vector3();
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), a = o.geometry.attributes.position;
+    for (let i = 0; i < a.count; i += 3) { v.fromBufferAttribute(a, i).applyMatrix4(m); pts.push(v.clone()); }
+  });
+  if (pts.length < 2) return;
+  const box = new THREE.Box3().setFromPoints(pts), size = box.getSize(new THREE.Vector3()).length();
+  const center = box.getCenter(new THREE.Vector3());
+  const pos = [], set = [], up = new THREE.Vector3(0, 1, 0), side = new THREE.Vector3(1, 0, 0);
+  const rnd = (n) => (Math.random() * 2 - 1) * n;
+  const ribbon = (a, b, s, w) => { // a flat strip a-b, twice (crossed), so it shows from anywhere
+    const d = b.clone().sub(a).normalize();
+    for (const ref of [up, side]) {
+      const n = d.clone().cross(ref).normalize().multiplyScalar(w);
+      if (!n.lengthSq()) continue;
+      const q = [a.clone().add(n), a.clone().sub(n), b.clone().sub(n), b.clone().add(n)];
+      for (const k of [0, 1, 2, 0, 2, 3]) { pos.push(q[k].x, q[k].y, q[k].z); set.push(s); }
+    }
+  };
+  for (let s = 0; s < BOLT_SETS; s++)
+    for (let b = 0; b < 4; b++) {
+      const a = pts[(Math.random() * pts.length) | 0];
+      // out into the air from it, away from its middle (so it's seen, not hidden inside)
+      const away = a.clone().sub(center).normalize().add(new THREE.Vector3(rnd(0.7), rnd(0.7), rnd(0.7))).normalize();
+      const end = a.clone().add(away.multiplyScalar(size * (0.2 + Math.random() * 0.25)));
+      let prev = a.clone();
+      const steps = 7;
+      for (let k = 1; k <= steps; k++) {
+        const p = a.clone().lerp(end, k / steps);
+        if (k < steps) p.add(new THREE.Vector3(rnd(1), rnd(1), rnd(1)).multiplyScalar(size * 0.06));
+        ribbon(prev, p, s, size * 0.01);
+        prev = p;
+      }
+    }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('aSet', new THREE.Float32BufferAttribute(set, 1));
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uMistTime: uTime },
+    vertexShader: `attribute float aSet; varying float vSet;
+      void main() { vSet = aSet; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `varying float vSet; uniform float uMistTime;
+      float hash(float n) { return fract(sin(n) * 43758.5453); }
+      void main() {
+        float f = floor(uMistTime * 16.0);
+        if (abs(mod(f, ${BOLT_SETS}.0) - vSet) > 0.5 || hash(f) < 0.2) discard; // this set, this moment (or none)
+        gl_FragColor = vec4(0.75, 0.88, 1.0, 1.0);
+      }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+  });
+  const mesh = new THREE.Mesh(g, mat);
+  mesh.renderOrder = 3;
+  mesh.castShadow = mesh.receiveShadow = false;
+  root.add(mesh);
+  startTicking();
+}
