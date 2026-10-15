@@ -100,6 +100,15 @@ HELD = {
     '95053': {'center': (0, 5, 0), 'up': (0, -1, 0)},                       # small sword, angular guard (a stiletto)
     '64567': {'center': (0, 18, 0), 'up': (0, -1, 0)},                      # lightsaber hilt (a great dagger's): by the hilt, the top up
     '55295': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # hammer: by the handle, head up
+    '30374': {'center': (0, 58, 0), 'up': (0, -1, 0)},                      # bar 4L (a battle-axe's haft): low down, its top up
+    '3848': {'center': (0, 45, 0), 'up': (0, -1, 0)},                       # battleaxe: low on the long haft, head up
+    '39802': {'center': (0, 22, 0), 'up': (0, -1, 0)},                      # axe with a pick end (a mattock): low on the haft, head up
+    '88001': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # spiked club: by the handle, the spikes up
+    '93220': {'center': (0, 6, 0), 'up': (0, -1, 0)},                       # baseball bat: by the handle, the barrel up
+    '59232': {'center': (0, -8, 0), 'up': (0, -1, 0)},                      # morning star (a flail): by the handle, the chain and ball up
+    '67100': {'center': (0, 6, 0), 'up': (0, -1, 0)},                       # nunchaku (a flail): by one stick, the other up
+    '75904': {'center': (0, 14, 0), 'up': (0, -1, 0)},                      # sledgehammer: by the handle, head up
+    '63965': {'center': (0, -42, 0), 'up': (0, -1, 0)},                     # bar 6L with stop ring (a quarterstaff): held in the middle
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:

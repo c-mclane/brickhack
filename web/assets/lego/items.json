@@ -494,5 +494,254 @@
     ]
    }
   ]
+ },
+ "axe": {
+  "lego": "Battleaxe",
+  "parts": [
+   {
+    "part": "3848",
+    "color": 72
+   }
+  ]
+ },
+ "battle-axe": {
+  "lego": "Two battleaxe blades (53454) clipped back to back on a bar 4L",
+  "parts": [
+   {
+    "part": "30374",
+    "color": 70
+   },
+   {
+    "part": "53454",
+    "color": 179,
+    "pos": [
+     0,
+     16,
+     0
+    ]
+   },
+   {
+    "part": "53454",
+    "color": 179,
+    "pos": [
+     0,
+     16,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "pick-axe": {
+  "lego": "Pickaxe",
+  "parts": [
+   {
+    "part": "3841",
+    "color": 72
+   }
+  ]
+ },
+ "dwarvish mattock": {
+  "lego": "Axe with pick end and long handle",
+  "parts": [
+   {
+    "part": "39802",
+    "color": 148
+   }
+  ]
+ },
+ "club": {
+  "lego": "Spiked club (the caveman's)",
+  "parts": [
+   {
+    "part": "88001",
+    "color": 70
+   }
+  ]
+ },
+ "aklys": {
+  "lego": "Billy club",
+  "parts": [
+   {
+    "part": "13790",
+    "color": 308
+   }
+  ]
+ },
+ "baseball bat": {
+  "lego": "Baseball bat",
+  "parts": [
+   {
+    "part": "93220",
+    "color": 19
+   }
+  ]
+ },
+ "mace": {
+  "lego": "Spiked ball 24084 on a bar 3L",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 70
+   },
+   {
+    "part": "24084",
+    "color": 148,
+    "pos": [
+     0,
+     -6,
+     0
+    ]
+   }
+  ]
+ },
+ "silver mace": {
+  "lego": "Spiked ball 24084 in silver on a bar 3L",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 70
+   },
+   {
+    "part": "24084",
+    "color": 179,
+    "pos": [
+     0,
+     -6,
+     0
+    ]
+   }
+  ]
+ },
+ "morning star": {
+  "lego": "Morning star (ball and chain)",
+  "parts": [
+   {
+    "part": "59232",
+    "color": 0
+   }
+  ]
+ },
+ "flail": {
+  "lego": "Nunchaku (two sticks on a chain)",
+  "parts": [
+   {
+    "part": "67100-f1",
+    "color": 70
+   }
+  ]
+ },
+ "war hammer": {
+  "lego": "A 1x1 brick with a stud on its side and a cheese slope for a head, on a bar 4L",
+  "parts": [
+   {
+    "part": "30374",
+    "color": 70
+   },
+   {
+    "part": "6141",
+    "color": 70,
+    "pos": [
+     0,
+     2,
+     0
+    ]
+   },
+   {
+    "part": "87087",
+    "color": 179,
+    "pos": [
+     -10,
+     -16,
+     0
+    ],
+    "mat": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1,
+     -1,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "54200",
+    "color": 179,
+    "pos": [
+     -10,
+     -16,
+     0
+    ],
+    "mat": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1,
+     -1,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "heavy hammer": {
+  "lego": "Sledgehammer",
+  "parts": [
+   {
+    "part": "75904",
+    "color": 0
+   }
+  ]
+ },
+ "quarterstaff": {
+  "lego": "Bar 6L with stop ring",
+  "parts": [
+   {
+    "part": "63965",
+    "color": 70
+   }
+  ]
+ },
+ "fly swatter": {
+  "lego": "Bar 3L with a grille tile",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 0
+   },
+   {
+    "part": "2412b",
+    "color": 10,
+    "pos": [
+     0,
+     -10,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ]
  }
 }

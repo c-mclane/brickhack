@@ -1,19 +1,19 @@
 {
  "camera": {
   "pos": [
-   -3,
-   5,
-   11
+   0,
+   46,
+   36
   ],
   "target": [
-   -4,
-   1.5,
-   0
+   0,
+   0,
+   3
   ]
  },
  "objects": [
   {
-   "part": "3811",
+   "part": "4186",
    "color": 2,
    "pos": [
     0,
@@ -22,143 +22,259 @@
    ]
   },
   {
-   "item": "great dagger",
+   "tile": "axe",
    "pos": [
-    0,
-    0,
-    -60
-   ],
-   "label": "turquoise blade, medium blue gem",
-   "parts": [
-    {
-     "part": "64567a",
-     "color": 297
-    },
-    {
-     "part": "64727",
-     "color": 3,
-     "pos": [
-      0,
-      -4,
-      0
-     ]
-    },
-    {
-     "part": "30153",
-     "color": 41,
-     "pos": [
-      0,
-      36,
-      0
-     ],
-     "rot": [
-      {
-       "axis": [
-        1,
-        0,
-        0
-       ],
-       "deg": 180
-      }
-     ]
-    }
+    -450,
+    -4,
+    -330
    ]
   },
   {
-   "item": "great dagger",
+   "item": "axe",
    "pos": [
+    -325,
     0,
-    0,
-    0
+    -330
    ],
-   "label": "green blade, green gem",
-   "parts": [
-    {
-     "part": "64567a",
-     "color": 297
-    },
-    {
-     "part": "64727",
-     "color": 2,
-     "pos": [
-      0,
-      -4,
-      0
-     ]
-    },
-    {
-     "part": "30153",
-     "color": 34,
-     "pos": [
-      0,
-      36,
-      0
-     ],
-     "rot": [
-      {
-       "axis": [
-        1,
-        0,
-        0
-       ],
-       "deg": 180
-      }
-     ]
-    }
+   "label": "axe"
+  },
+  {
+   "tile": "battle-axe",
+   "pos": [
+    -200,
+    -4,
+    -330
    ]
   },
   {
-   "item": "great dagger",
+   "item": "battle-axe",
    "pos": [
+    -75,
     0,
-    0,
-    60
+    -330
    ],
-   "label": "red blade, red gem",
-   "parts": [
-    {
-     "part": "64567a",
-     "color": 297
-    },
-    {
-     "part": "64727",
-     "color": 4,
-     "pos": [
-      0,
-      -4,
-      0
-     ]
-    },
-    {
-     "part": "30153",
-     "color": 36,
-     "pos": [
-      0,
-      36,
-      0
-     ],
-     "rot": [
-      {
-       "axis": [
-        1,
-        0,
-        0
-       ],
-       "deg": 180
-      }
-     ]
-    }
+   "label": "battle-axe"
+  },
+  {
+   "tile": "pick-axe",
+   "pos": [
+    50,
+    -4,
+    -330
    ]
   },
   {
-   "fig": "king-skelly-iii",
+   "item": "pick-axe",
    "pos": [
-    -150,
-    -73,
-    0
+    175,
+    0,
+    -330
    ],
-   "rotY": 0,
-   "label": "King Skelly III"
+   "label": "pick-axe"
+  },
+  {
+   "tile": "dwarvish mattock",
+   "pos": [
+    300,
+    -4,
+    -330
+   ]
+  },
+  {
+   "item": "dwarvish mattock",
+   "pos": [
+    425,
+    0,
+    -330
+   ],
+   "label": "dwarvish mattock"
+  },
+  {
+   "tile": "club",
+   "pos": [
+    -450,
+    -4,
+    -110
+   ]
+  },
+  {
+   "item": "club",
+   "pos": [
+    -325,
+    0,
+    -110
+   ],
+   "label": "club"
+  },
+  {
+   "tile": "aklys",
+   "pos": [
+    -200,
+    -4,
+    -110
+   ]
+  },
+  {
+   "item": "aklys",
+   "pos": [
+    -75,
+    0,
+    -110
+   ],
+   "label": "aklys"
+  },
+  {
+   "tile": "baseball bat",
+   "pos": [
+    50,
+    -4,
+    -110
+   ]
+  },
+  {
+   "item": "baseball bat",
+   "pos": [
+    175,
+    0,
+    -110
+   ],
+   "label": "baseball bat"
+  },
+  {
+   "tile": "mace",
+   "pos": [
+    300,
+    -4,
+    -110
+   ]
+  },
+  {
+   "item": "mace",
+   "pos": [
+    425,
+    0,
+    -110
+   ],
+   "label": "mace"
+  },
+  {
+   "tile": "silver mace",
+   "pos": [
+    -450,
+    -4,
+    110
+   ]
+  },
+  {
+   "item": "silver mace",
+   "pos": [
+    -325,
+    0,
+    110
+   ],
+   "label": "silver mace"
+  },
+  {
+   "tile": "morning star",
+   "pos": [
+    -200,
+    -4,
+    110
+   ]
+  },
+  {
+   "item": "morning star",
+   "pos": [
+    -75,
+    0,
+    110
+   ],
+   "label": "morning star"
+  },
+  {
+   "tile": "flail",
+   "pos": [
+    50,
+    -4,
+    110
+   ]
+  },
+  {
+   "item": "flail",
+   "pos": [
+    175,
+    0,
+    110
+   ],
+   "label": "flail"
+  },
+  {
+   "tile": "war hammer",
+   "pos": [
+    300,
+    -4,
+    110
+   ]
+  },
+  {
+   "item": "war hammer",
+   "pos": [
+    425,
+    0,
+    110
+   ],
+   "label": "war hammer"
+  },
+  {
+   "tile": "heavy hammer",
+   "pos": [
+    -450,
+    -4,
+    330
+   ]
+  },
+  {
+   "item": "heavy hammer",
+   "pos": [
+    -325,
+    0,
+    330
+   ],
+   "label": "heavy hammer"
+  },
+  {
+   "tile": "quarterstaff",
+   "pos": [
+    -200,
+    -4,
+    330
+   ]
+  },
+  {
+   "item": "quarterstaff",
+   "pos": [
+    -75,
+    0,
+    330
+   ],
+   "label": "quarterstaff"
+  },
+  {
+   "tile": "fly swatter",
+   "pos": [
+    50,
+    -4,
+    330
+   ]
+  },
+  {
+   "item": "fly swatter",
+   "pos": [
+    175,
+    0,
+    330
+   ],
+   "label": "fly swatter"
   }
  ]
 }
