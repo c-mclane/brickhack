@@ -12,7 +12,7 @@ Usage:
 Coordinates: LDraw units (LDU) are converted to studs (1 stud = 20 LDU),
 and LDraw's -Y-up is flipped to glTF's +Y-up. A 1x1 brick is 1 x 1.2 x 1.
 """
-import json, os, struct, sys
+import hashlib, json, os, struct, sys
 import numpy as np
 
 LDRAW = os.path.join(os.path.dirname(__file__), '..', 'vendor', 'ldraw', 'ldraw')
@@ -42,31 +42,87 @@ QUANTUM, QUANTUM_PARTS = 9100, 100
 
 
 def figure_extras(ldr_text):
-    """What the renderers add to a figure: an angel's glowing aura (mist.js)."""
-    return {'aura': True} if '0 !LEGOHACK AURA' in ldr_text else None
+    """What the renderers need to know about a figure: an angel's glowing aura
+    (mist.js), and its joints for the animation (figure_rig; minifig-anim.js)."""
+    ex = {}
+    if '0 !LEGOHACK AURA' in ldr_text:
+        ex['aura'] = True
+    rig = figure_rig(ldr_text)
+    if rig:
+        ex['rig'] = rig
+    return ex or None
+
+
+def figure_groups(ldr_text):
+    """The figure's lines by the joint they move with ('0 !LEGOHACK GROUP <name>'
+    before them; tools/minifig.py), in order: [(name, [lines])]."""
+    groups, cur = {}, None
+    for l in ldr_text.splitlines():
+        if l.startswith('0 !LEGOHACK GROUP '):
+            cur = l.split()[3]
+            groups.setdefault(cur, [])
+        elif cur and (l.startswith('1 ') or l.startswith('0 !TEXMAP') or l.startswith('0 !:')):
+            groups[cur].append(l)
+    return list(groups.items())
 
 
 def figure_geom(lib, path, ldr_text):
     """A built figure's geometry, with the races' special looks: a quantum
     mechanic's every part one plain colour of its own (no prints, no decals:
     faceless), each one strobing in the renderers (mist.js); a doppelganger's
-    one side mist (ghosted)."""
-    if '0 !LEGOHACK QUANTUM' not in ldr_text:
-        return ghosted(lib.parse(path), ldr_text)
-    out = []
-    parts = [l.split() for l in ldr_text.splitlines() if l.startswith('1 ')]
-    for i, t in enumerate(parts):
-        pos = np.array([float(v) for v in t[2:5]])
-        rot = np.array([float(v) for v in t[5:14]]).reshape(3, 3)
-        for code, tex, arr, uv in lib.parse(' '.join(t[14:])):
-            if code == 24 or not len(arr):
-                continue
-            out.append((QUANTUM + i % QUANTUM_PARTS, None, arr.reshape(-1, 3) @ rot.T + pos, None))
-    # one primitive per part (its prints and all), so the whole part flashes as one
-    merged = {}
-    for c, _, a, _ in out:
-        merged.setdefault(c, []).append(a.reshape(-1, 3, 3))
-    return [(c, None, np.concatenate(a), None) for c, a in merged.items()]
+    one side mist (ghosted). A figure in joints (figure_groups) comes back as
+    {joint: geometry}, for to_glb to make a node of each."""
+    groups = figure_groups(ldr_text)
+    quantum = '0 !LEGOHACK QUANTUM' in ldr_text
+    if not groups:
+        groups = [(None, ldr_text.splitlines())]
+    out, i = {}, 0
+    for name, lines in groups:
+        if quantum:
+            geom = []
+            for t in (l.split() for l in lines if l.startswith('1 ')):
+                pos = np.array([float(v) for v in t[2:5]])
+                rot = np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+                for code, tex, arr, uv in lib.parse(' '.join(t[14:])):
+                    if code == 24 or not len(arr):
+                        continue
+                    geom.append((QUANTUM + i % QUANTUM_PARTS, None, arr.reshape(-1, 3) @ rot.T + pos, None))
+                i += 1
+            # one primitive per part (its prints and all), so the whole part flashes as one
+            merged = {}
+            for c, _, a, _ in geom:
+                merged.setdefault(c, []).append(a.reshape(-1, 3, 3))
+            geom = [(c, None, np.concatenate(a), None) for c, a in merged.items()]
+        elif name is None:
+            geom = ghosted(lib.parse(path), ldr_text)
+        else:
+            # each joint's lines as a model of its own (named by its content: the library caches by name)
+            text = '\n'.join(lines) + '\n'
+            sub = os.path.join(os.path.dirname(os.path.abspath(path)), 'joints',
+                               hashlib.sha1(text.encode()).hexdigest()[:16] + '.ldr')
+            if not os.path.exists(sub):
+                os.makedirs(os.path.dirname(sub), exist_ok=True)
+                open(sub, 'w').write(text)
+            geom = ghosted(lib.parse(sub), ldr_text)
+        if name is None:
+            return geom
+        out[name] = geom
+    return out
+
+
+def figure_rig(ldr_text):
+    """The figure's joints ('0 !LEGOHACK RIG', LDraw units) in the model's units
+    and axes (as to_glb writes it: studs, Y up, Z to the front), or None."""
+    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK RIG ')), None)
+    if not line:
+        return None
+    flip = np.array([1, -1, -1])
+    rig = json.loads(line[len('0 !LEGOHACK RIG '):])
+    for j in rig.values():
+        j['pivot'] = (np.array(j['pivot']) * SCALE * flip).round(5).tolist()
+        if 'axis' in j:
+            j['axis'] = (np.array(j['axis']) * flip).round(5).tolist()
+    return rig
 
 
 def ghosted(geom, ldr_text):
@@ -331,45 +387,62 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
         accessors.append(acc)
         return len(accessors) - 1
 
-    for code, tex, arr, uv in sorted(geom, key=lambda g: (g[0], g[1] or '')):
-        if code == 16:
-            code = base_color
-        if code == 24:
-            continue
-        verts = (arr.reshape(-1, 3) * SCALE * np.array([1, -1, -1])).astype(np.float32)
-        # flipping Y and Z keeps handedness, so winding is unchanged
-        tri = verts.reshape(-1, 3, 3)
-        nrm = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
-        ln = np.linalg.norm(nrm, axis=1, keepdims=True)
-        keep = ln[:, 0] > 1e-9
-        tri, nrm = tri[keep], (nrm[keep] / ln[keep])
-        if not len(tri):
-            continue
-        ntris += len(tri)
-        attrs = {'POSITION': accessor(tri.reshape(-1, 3).astype(np.float32), 'VEC3', True),
-                 'NORMAL': accessor(np.repeat(nrm, 3, axis=0).astype(np.float32), 'VEC3')}
-        rgb, alpha, cname = colors.get(code, ([1, 0, 1], 1.0, f'unknown{code}'))
-        # LDConfig colours are sRGB; glTF's baseColorFactor is linear (textures stay sRGB)
-        pbr = {'baseColorFactor': [srgb_to_linear(c) for c in rgb] + [alpha], 'metallicFactor': 0.0, 'roughnessFactor': 0.35}
-        if tex:
-            png, (w, h) = decal_png(tex, rgb)
-            pad = 2
-            st = uv[keep].reshape(-1, 2)
-            st = np.stack([(st[:, 0] * w + pad) / (w + 2 * pad), (st[:, 1] * h + pad) / (h + 2 * pad)], -1)
-            attrs['TEXCOORD_0'] = accessor(st.astype(np.float32), 'VEC2')
-            images.append({'bufferView': put(png, None), 'mimeType': 'image/png', 'name': os.path.basename(tex)})
-            textures.append({'source': len(images) - 1, 'sampler': 0})
-            pbr['baseColorTexture'] = {'index': len(textures) - 1}
-            pbr['baseColorFactor'] = [1, 1, 1, alpha]
-            cname += ' + ' + os.path.basename(tex)
-        mat = {'name': cname, 'doubleSided': True, 'pbrMetallicRoughness': pbr}
-        if alpha < 1:
-            mat['alphaMode'] = 'BLEND'
-        materials.append(mat)
-        meshes_prims.append({'attributes': attrs, 'material': len(materials) - 1, 'extras': {'ldrawColor': code}})
+    def add_prims(geom, meshes_prims):
+        n = 0
+        for code, tex, arr, uv in sorted(geom, key=lambda g: (g[0], g[1] or '')):
+            if code == 16:
+                code = base_color
+            if code == 24:
+                continue
+            verts = (arr.reshape(-1, 3) * SCALE * np.array([1, -1, -1])).astype(np.float32)
+            # flipping Y and Z keeps handedness, so winding is unchanged
+            tri = verts.reshape(-1, 3, 3)
+            nrm = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+            ln = np.linalg.norm(nrm, axis=1, keepdims=True)
+            keep = ln[:, 0] > 1e-9
+            tri, nrm = tri[keep], (nrm[keep] / ln[keep])
+            if not len(tri):
+                continue
+            n += len(tri)
+            attrs = {'POSITION': accessor(tri.reshape(-1, 3).astype(np.float32), 'VEC3', True),
+                     'NORMAL': accessor(np.repeat(nrm, 3, axis=0).astype(np.float32), 'VEC3')}
+            rgb, alpha, cname = colors.get(code, ([1, 0, 1], 1.0, f'unknown{code}'))
+            # LDConfig colours are sRGB; glTF's baseColorFactor is linear (textures stay sRGB)
+            pbr = {'baseColorFactor': [srgb_to_linear(c) for c in rgb] + [alpha], 'metallicFactor': 0.0, 'roughnessFactor': 0.35}
+            if tex:
+                png, (w, h) = decal_png(tex, rgb)
+                pad = 2
+                st = uv[keep].reshape(-1, 2)
+                st = np.stack([(st[:, 0] * w + pad) / (w + 2 * pad), (st[:, 1] * h + pad) / (h + 2 * pad)], -1)
+                attrs['TEXCOORD_0'] = accessor(st.astype(np.float32), 'VEC2')
+                images.append({'bufferView': put(png, None), 'mimeType': 'image/png', 'name': os.path.basename(tex)})
+                textures.append({'source': len(images) - 1, 'sampler': 0})
+                pbr['baseColorTexture'] = {'index': len(textures) - 1}
+                pbr['baseColorFactor'] = [1, 1, 1, alpha]
+                cname += ' + ' + os.path.basename(tex)
+            mat = {'name': cname, 'doubleSided': True, 'pbrMetallicRoughness': pbr}
+            if alpha < 1:
+                mat['alphaMode'] = 'BLEND'
+            materials.append(mat)
+            meshes_prims.append({'attributes': attrs, 'material': len(materials) - 1, 'extras': {'ldrawColor': code}})
+        return n
+
+    # a figure in joints ({name: geometry}) gets a mesh and a node for each, under one root
+    named = list(geom.items()) if isinstance(geom, dict) else [(None, geom)]
+    meshes = []
+    for gname, gm in named:
+        prims = []
+        ntris += add_prims(gm, prims)
+        meshes.append(dict({'primitives': prims}, **({'name': gname} if gname else {})))
+    root_extras = {'extras': extras} if extras else {}
+    if named[0][0] is None:
+        nodes = [dict({'mesh': 0}, **root_extras)]
+    else:
+        nodes = [dict({'name': 'figure', 'children': list(range(1, len(named) + 1))}, **root_extras)]
+        nodes += [{'name': n, 'mesh': i} for i, (n, _) in enumerate(named)]
     gltf = {'asset': {'version': '2.0', 'generator': 'legohack ldraw2glb', 'copyright': 'LDraw.org Parts Library, CC BY 2.0/4.0'},
-            'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': [dict({'mesh': 0}, **({'extras': extras} if extras else {}))],
-            'meshes': [{'primitives': meshes_prims}], 'materials': materials,
+            'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': nodes,
+            'meshes': meshes, 'materials': materials,
             'accessors': accessors, 'bufferViews': views, 'buffers': [{'byteLength': len(buf)}]}
     if images:
         gltf.update(images=images, textures=textures,

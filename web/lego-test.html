@@ -17,6 +17,7 @@ html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px syst
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura } from './js/mist.js';
+import { FigureAnimator, figureJoints, poseJoints } from './js/minifig-anim.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const r = new THREE.WebGLRenderer({ antialias: true });
@@ -57,6 +58,9 @@ function model(url) {
 }
 
 const root = new THREE.Group(); scene.add(root);
+// the figures come alive (minifig-anim.js): each breathes and looks about;
+// W: everyone walks (on the spot), Space: everyone attacks, R: stretch again
+let animated = [], walking = false;
 const status = document.getElementById('status');
 let version = null, camKey = null;
 
@@ -69,6 +73,7 @@ async function apply(data) {
     return m;
   }));
   root.clear(); objs.forEach(m => root.add(m));
+  animated = objs.map((m, i) => { const j = figureJoints(m); if (!j) return null; const a = new FigureAnimator(j.rig, { phase: i * 0.77 }); a.spawn(); return { j, a }; }).filter(Boolean);
   const ck = JSON.stringify(data.camera);
   if (data.camera && ck !== camKey) {
     cam.position.set(...data.camera.pos); ctl.target.set(...data.camera.target);
@@ -115,6 +120,17 @@ btn.addEventListener('pointerdown', e => {   // pointerdown, so the page's own f
   btn.textContent = btn.textContent.replace(/click to (pause|play)$/, playing ? 'click to pause' : 'click to play');
 });
 
-(function loop() { requestAnimationFrame(loop); ctl.update(); r.render(scene, cam); })();
+addEventListener('keydown', e => {
+  if (e.key === 'w' || e.key === 'W') walking = !walking;
+  if (e.key === ' ') { animated.forEach(x => x.a.attack()); e.preventDefault(); }
+  if (e.key === 'r' || e.key === 'R') animated.forEach(x => x.a.spawn());
+});
+let last = performance.now();
+(function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.1, ((now || last) - last) / 1000); last = now || last;
+  for (const x of animated) poseJoints(x.j, x.a.update(dt, { moving: walking }));
+  ctl.update(); r.render(scene, cam);
+})();
 addEventListener('resize', () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); });
 </script></body></html>

@@ -16,6 +16,7 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
+import { FigureAnimator, firstPersonMatrix } from './minifig-anim.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -1152,7 +1153,7 @@ const skinTile = () => meta.count; // first free slot in the tile atlas
 // ---- the hero as a LEGO minifig (on LEGO levels), chosen at character creation
 // (by the name as the server keeps it: server.js cleanName, so "Knight of St. Lazarus" is KnightofStLazarus)
 const FIG_KEY = (name) => 'lh.fig.' + (String(name || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 30) || 'Steve').toLowerCase();
-const hero3d = { id: null, prims: null };
+const hero3d = { id: null, prims: null, anim: null, jabT0: -1 };
 // who: the engine's status ({baserole, female, race}); a random role, race or
 // gender may have come out differently from the figure picked, so then take
 // the best fit for the character the game made (figuresFor)
@@ -1174,6 +1175,9 @@ async function loadHeroFigure(name, who) {
   hero3d.url = url;
   hero3d.prims = null;
   try { hero3d.prims = await renderer.lego.model(url); } catch (e) { console.warn('hero figure:', e); }
+  // the figure comes alive (minifig-anim.js): a big stretch as you arrive, then breathing, looking about...
+  hero3d.anim = hero3d.prims && hero3d.prims.rig ? new FigureAnimator(hero3d.prims.rig) : null;
+  if (hero3d.anim) hero3d.anim.spawn();
   // ...and in the inventory, beside your equipment
   if (!heroView) heroView = figureView($('#hero-preview .hero-fig'), () => $('#hero-preview').offsetParent !== null);
   if (heroView) { await heroView.show(url); ui.heroFigure = true; ui.renderCharStats(); }
@@ -1181,6 +1185,18 @@ async function loadHeroFigure(name, who) {
 let heroView = null;
 // the minifig stands in for the doll and the hero's sprite on LEGO levels
 const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
+
+// the hero minifig's joints this frame: walking when moving (or falling),
+// swinging what's in the right hand on each attack (fx.attack)
+function heroPose(dt, now) {
+  const a = hero3d.anim;
+  if (!a) return null;
+  if (fx.jabT0 !== hero3d.jabT0) {
+    if (hero3d.jabT0 !== -1) a.attack();
+    hero3d.jabT0 = fx.jabT0;
+  }
+  return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround) });
+}
 
 // ---- the hero's walk cycle and facing (used to turn the minifig)
 const doll = { swing: 0, phase: 0, yaw: 0, skinURL: null };
@@ -1211,7 +1227,7 @@ function wieldedTile() {
 let heldTile = null;
 function updateHeld(now) {
   const el = $('#held');
-  const t = game.playing && opts.camera === 0 && !anyScreen() ? wieldedTile() : null;
+  const t = game.playing && opts.camera === 0 && !anyScreen() && !hero3d.fpArm ? wieldedTile() : null;
   el.classList.toggle('hidden', t == null);
   if (t == null) return;
   if (t !== heldTile) {
@@ -1972,10 +1988,16 @@ function frame(t) {
       const [hx, hz] = motion.heroPos(t);
       drops.update(dt, t, world, [hx + 0.5, world.heroLift ?? phys.y, hz + 0.5], pickUpBlock);
     }
+    const pose = hero3d.prims ? heroPose(dt, t) : null;
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
-      renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw), shade: 1 }];
+      renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw), shade: 1, pose }];
     } else renderer.legoFigures = [];
+    // first person: your own LEGO arm, and what it holds, in the corner of the view
+    const fpOn = !!pose && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
+    const vc = $('#view');
+    renderer.fpArm = fpOn ? { prims: hero3d.prims, matrix: firstPersonMatrix(hero3d.prims.rig, vc.clientWidth / Math.max(1, vc.clientHeight)), pose, only: ['armR', 'itemR'], shade: 1 } : null;
+    hero3d.fpArm = fpOn;
     { const [fx, fz] = motion.heroPos(t); renderer.focus = [fx + 0.5, 0, fz + 0.5]; } // (the BrickWorld's shadows follow you)
     renderer.buildSprites(sprites, cam.vyaw, (out) => {
       if (doll3d) dollQuads(out, t);

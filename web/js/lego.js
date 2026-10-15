@@ -140,7 +140,8 @@ async function parseGLB(buf) {
   const view = (i) => { const v = json.bufferViews[i]; return bin.slice(v.byteOffset || 0, (v.byteOffset || 0) + v.byteLength); };
   const floats = (a) => new Float32Array(view(json.accessors[a].bufferView));
   const prims = [];
-  for (const p of json.meshes[0].primitives) {
+  // a figure in joints has a mesh per joint (named: body, head, armR...; minifig-anim.js)
+  for (const mesh of json.meshes) for (const p of mesh.primitives) {
     const mat = json.materials[p.material] || {};
     const pbr = mat.pbrMetallicRoughness || {};
     const f = pbr.baseColorFactor || [1, 1, 1, 1];
@@ -153,15 +154,22 @@ async function parseGLB(buf) {
       pos: floats(p.attributes.POSITION), nrm: floats(p.attributes.NORMAL),
       uv: p.attributes.TEXCOORD_0 != null ? floats(p.attributes.TEXCOORD_0) : null,
       color: [lin2srgb(f[0]), lin2srgb(f[1]), lin2srgb(f[2]), f[3]], image, mist: isMist(mat), quantum: quantumPart(mat),
+      group: mesh.name || null,
     });
   }
-  // an angel: glow shells round the whole figure (drawn last, added on top)
-  if (json.nodes && json.nodes[0] && json.nodes[0].extras && json.nodes[0].extras.aura) {
-    const all = new Float32Array(prims.reduce((n, p) => n + p.pos.length, 0));
-    let at = 0;
-    for (const p of prims) { all.set(p.pos, at); at += p.pos.length; }
-    for (const sh of auraShells(all)) prims.push({ pos: sh.pos, nrm: sh.nrm, uv: null, color: [1, 1, 1, 0.5], image: null, aura: sh.strength });
+  const extras = (json.nodes && json.nodes[0] && json.nodes[0].extras) || {};
+  // an angel: glow shells round the figure, a set per joint (drawn last, added on top)
+  if (extras.aura) {
+    const groups = [...new Set(prims.map((p) => p.group))];
+    for (const g of groups) {
+      const mine = prims.filter((p) => p.group === g);
+      const all = new Float32Array(mine.reduce((n, p) => n + p.pos.length, 0));
+      let at = 0;
+      for (const p of mine) { all.set(p.pos, at); at += p.pos.length; }
+      for (const sh of auraShells(all)) prims.push({ pos: sh.pos, nrm: sh.nrm, uv: null, color: [1, 1, 1, 0.5], image: null, aura: sh.strength, group: g });
+    }
   }
+  prims.rig = extras.rig || null; // the joints, for the animation
   return prims;
 }
 
@@ -172,6 +180,13 @@ export function loadGLB(url) {
 }
 
 const IDENT = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+function mul4(a, b) { // column-major a * b
+  const o = new Float32Array(16);
+  for (let c = 0; c < 4; c++)
+    for (let r = 0; r < 4; r++)
+      o[c * 4 + r] = a[r] * b[c * 4] + a[4 + r] * b[c * 4 + 1] + a[8 + r] * b[c * 4 + 2] + a[12 + r] * b[c * 4 + 3];
+  return o;
+}
 
 // model matrix: stand a figure's feet at (x, y, z), facing yaw (the game's
 // yaw: 0 looks north, toward -Z), at LEGO scale
@@ -258,7 +273,7 @@ export class Lego {
 
   // upload a .glb's primitives into this GL context
   model(url) {
-    if (!this.models.has(url)) this.models.set(url, loadGLB(url).then((prims) => prims.map((p) => this.uploadPrim(p))));
+    if (!this.models.has(url)) this.models.set(url, loadGLB(url).then((prims) => Object.assign(prims.map((p) => this.uploadPrim(p)), { rig: prims.rig })));
     return this.models.get(url);
   }
 
@@ -287,7 +302,7 @@ export class Lego {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
-    return { vao, count: p.pos.length / 3, color: p.color, tex, mist: p.mist, quantum: p.quantum, aura: p.aura };
+    return { vao, count: p.pos.length / 3, color: p.color, tex, mist: p.mist, quantum: p.quantum, aura: p.aura, group: p.group };
   }
 
   // the per-instance attributes as constants (for drawing a single model)
@@ -298,9 +313,10 @@ export class Lego {
     gl.vertexAttrib3f(a.iCol, 1, 1, 1);
   }
 
-  // Draw the instanced bricks and studs, then any models: [{prims, matrix, shade}]
-  // (prims: the resolved result of model(url)).
-  draw(proj, view, figures = []) {
+  // Draw the instanced bricks and studs, then any models: [{prims, matrix, shade,
+  // pose, only}] (prims: the resolved result of model(url); pose: a matrix per
+  // joint, minifig-anim.js; only: draw just these joints). figuresOnly: skip the bricks.
+  draw(proj, view, figures = [], figuresOnly = false) {
     const gl = this.gl, u = this.u;
     gl.useProgram(this.prog);
     gl.uniformMatrix4fv(u.uProj, false, proj);
@@ -317,7 +333,7 @@ export class Lego {
     gl.uniform4f(u.uColor, 1, 1, 1, 1);
     gl.disable(gl.CULL_FACE);
     for (const [m, edges] of [[this.box, 1], [this.stud, 0]]) {
-      if (!m.count) continue;
+      if (!m.count || figuresOnly) continue;
       gl.uniform1f(u.uEdges, edges);
       gl.bindVertexArray(m.vao);
       gl.drawArraysInstanced(gl.TRIANGLES, 0, m.verts, m.count);
@@ -329,8 +345,17 @@ export class Lego {
       for (const f of figures) {
         if (!f.prims) continue;
         gl.uniformMatrix4fv(u.uModel, false, f.matrix);
+        // posed joints (minifig-anim.js): the figure's matrix times the joint's
+        const posed = f.pose ? {} : null;
+        let current = null;
         for (const p of f.prims) {
           if ((p.color[3] < 1) !== glow) continue;
+          if (f.only && !f.only.includes(p.group)) continue;
+          if (posed && p.group !== current) {
+            current = p.group;
+            if (!(current in posed)) posed[current] = f.pose[current] ? mul4(f.matrix, f.pose[current]) : f.matrix;
+            gl.uniformMatrix4fv(u.uModel, false, posed[current]);
+          }
           gl.bindVertexArray(p.vao);
           this.single(f.shade ?? 1);
           if (p.quantum != null) {   // a quantum mechanic's part: flashing colours

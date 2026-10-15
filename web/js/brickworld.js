@@ -9,6 +9,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura } from './mist.js';
+import { figureJoints, poseJoints } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H } from './lego.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
@@ -155,7 +156,8 @@ export class BrickWorld {
     }
   }
 
-  // the figures to draw this frame: [{url, matrix}] (the hero)
+  // the figures to draw this frame: [{url, matrix, pose}] (the hero); pose:
+  // a matrix per joint (minifig-anim.js), for a figure in joints
   setFigures(list) {
     const key = list.map((f) => f.url).join('|');
     if (key !== this.figKey) {
@@ -165,11 +167,16 @@ export class BrickWorld {
         const g = new THREE.Group();
         g.matrixAutoUpdate = false;
         this.figures.add(g);
-        this.model(f.url).then((m) => g.add(m.clone()));
+        this.model(f.url).then((m) => { const c = m.clone(); g.add(c); g.userData.joints = figureJoints(c); });
         return g;
       });
     }
-    list.forEach((f, i) => { const g = this.figObjs[i]; g.matrix.fromArray(f.matrix); g.matrixWorldNeedsUpdate = true; });
+    list.forEach((f, i) => {
+      const g = this.figObjs[i];
+      g.matrix.fromArray(f.matrix);
+      g.matrixWorldNeedsUpdate = true;
+      poseJoints(g.userData.joints, f.pose);
+    });
   }
 
   // draw, with the game's camera (column-major projection and view matrices), the

@@ -125,12 +125,18 @@ export function auraShells(pos) {
   });
 }
 
-// three.js: give a loaded model (gltf.scene) its aura, if it's an angel
+// three.js: give a loaded model (gltf.scene) its aura, if it's an angel; a
+// figure in joints gets a set of shells per joint, so the glow moves with them
 export function addAura(THREE, root) {
-  let angel = false;
-  root.traverse((o) => { if (o.userData && o.userData.aura) angel = true; });
+  let angel = null;
+  root.traverse((o) => { if (!angel && o.userData && o.userData.aura) angel = o; });
   if (!angel) return;
+  const parts = angel.userData.rig && angel.children.some((c) => c.name) ? angel.children.filter((c) => c.name) : [root];
   root.updateMatrixWorld(true);
+  startTicking();
+  for (const part of parts) auraOf(THREE, part);
+}
+function auraOf(THREE, root) {
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
   const all = [];
   root.traverse((o) => {
@@ -140,7 +146,7 @@ export function addAura(THREE, root) {
     const a = g.attributes.position;
     for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m); all.push(v.x, v.y, v.z); }
   });
-  startTicking();
+  if (!all.length) return;
   for (const sh of auraShells(new Float32Array(all))) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(sh.pos, 3));

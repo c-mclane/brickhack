@@ -6,6 +6,7 @@
 // /api/figure), and a button back to the figure as it comes.
 
 import { Lego, figureMatrix, perspective, lookAt, loadGLB, FIG_FEET } from './lego.js';
+import { FigureAnimator } from './minifig-anim.js';
 
 let rosterP = null;
 export function loadRoster() {
@@ -50,7 +51,7 @@ export function figureView(canvas, visible) {
   if (!gl) return null;
   const lego = new Lego(gl);
   lego.fogRange = [100, 200];
-  let prims = null, want = null, spin = 0, last = performance.now();
+  let prims = null, want = null, spin = 0, last = performance.now(), anim = null;
   let fit = { lo: 0, hi: 2.9 }; // the figure's height range (feet to the top of a hat, flame...)
   const frame = (now) => {
     requestAnimationFrame(frame);
@@ -74,7 +75,8 @@ export function figureView(canvas, visible) {
     const dist = Math.max(7.4, ((fit.hi - fit.lo) / 2 + 0.45) / Math.tan(fov / 2));
     const proj = perspective(fov, w / h, 0.1, 50 + dist);
     const view = lookAt([0, mid + dist * 0.07, dist], [0, mid, 0]);
-    lego.draw(proj, view, [{ prims, matrix: figureMatrix(0, 0, 0, yaw, PREVIEW_SCALE), shade: 1.05 }]);
+    const pose = anim ? anim.update(dt) : null;
+    lego.draw(proj, view, [{ prims, matrix: figureMatrix(0, 0, 0, yaw, PREVIEW_SCALE), shade: 1.05, pose }]);
   };
   requestAnimationFrame(frame);
   return {
@@ -91,6 +93,9 @@ export function figureView(canvas, visible) {
         for (const q of raw) for (let i = 1; i < q.pos.length; i += 3) { lo = Math.min(lo, q.pos[i]); hi = Math.max(hi, q.pos[i]); }
         fit = { lo: (lo + FIG_FEET) * PREVIEW_SCALE, hi: (hi + FIG_FEET) * PREVIEW_SCALE };
         prims = p;
+        // it comes alive: a stretch on arrival, then breathing and looking about
+        anim = p.rig ? new FigureAnimator(p.rig) : null;
+        if (anim) anim.spawn();
         return true;
       } catch { return false; }
     },

@@ -253,10 +253,12 @@ def build(spec, base_dir='.'):
         out.append("0 !LEGOHACK AURA")
     if spec.get('quantum'):   # a quantum mechanic: every part a plain colour, strobing (ldraw2glb.figure_geom)
         out.append("0 !LEGOHACK QUANTUM")
+    G = lambda g: out.append(f'0 !LEGOHACK GROUP {g}')   # what follows moves with this joint (animation)
+    G('body')
     if spec.get('torsoDecal'):   # a picture on the chest
         out.append(decal_line({'part': spec.get('torso', '973'), 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
     out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, recolored(spec.get('torso', '973'), spec.get('torsoRecolor'))))
-    sides = {}
+    sides, rig = {}, {}
     for side, arm, hand, part in (('right', ARM_R, HAND_R, spec.get('armR', '3818')),
                                   ('left', ARM_L, HAND_L, spec.get('armL', '3819'))):
         item = spec.get(side) or {}
@@ -266,14 +268,19 @@ def build(spec, base_dir='.'):
             swing, roll = item.get('swing', 0), item.get('roll', 0)
         a, h = pose_arm(arm, hand, swing, roll)
         sides[side] = h
+        # the shoulder: the arm swings about its own X axis through its origin (pose_arm)
+        rig['arm' + side[0].upper()] = {'pivot': list(map(float, arm[0])), 'axis': list(map(float, np.array(arm[1], float).reshape(3, 3)[:, 0])), 'swing': float(swing)}
+        G('arm' + side[0].upper())
         out.append(line(spec.get('armColor', 15), a[0], a[1], part))
         out.append(line(spec.get('handColor', 14), h[0], h[1], '3820'))
+    G('body')
     neck = spec.get('neck') or []   # capes, armour and other neck-bracket items sit between head and torso
     for item in neck if isinstance(neck, list) else [neck]:
         R = rot_axis((0, 1, 0), np.radians(item.get('turn', 0)))   # e.g. a quiver turned round onto the back
         if item.get('decal'):
             out.append(decal_line(item, np.zeros(3), R, base_dir))
         out.append(line(item.get('color', 16), (0, 0, 0), R, item['part']))
+    G('head')
     out.append(line(spec.get('headColor', 14), (0, -24, 0), I, recolored(spec.get('head', '3626bp01'), spec.get('headRecolor'))))
     if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
         out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, recolored(spec['hair']['part'], spec['hair'].get('recolor'))))
@@ -285,6 +292,7 @@ def build(spec, base_dir='.'):
         if plume:
             socket = next((v for k, v in PLUME_SOCKETS.items() if spec['hat'].startswith(k)), (0, -15, 0))
             out.append(line(plume.get('color', 4), np.add((0, -24, 0), socket), I, plume.get('part', '87694')))
+    G('body')
     if spec.get('dress'):
         # a long dress, the classic LEGO way: no hips or legs, the torso straight on
         # a sloped brick's top studs, turned round so its slope is at the back
@@ -295,9 +303,13 @@ def build(spec, base_dir='.'):
         out.append(line(spec['shortLegs'].get('color', 16), (0, 32, 0), I, spec['shortLegs'].get('part', '16709')))
     else:
         out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
+        G('legR')
         out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
+        G('legL')
         out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legL', '3817')))
+        rig['legs'] = {'pivot': [0.0, 44.0, 0.0], 'axis': [1.0, 0.0, 0.0]}   # the hip pin
     for x in spec.get('extras', []):   # any other part, at a place in the figure's frame (e.g. a tiara in the hair)
+        G('head' if x['pos'][1] < -20 else 'body')   # (a tiara turns with the head; wings and tails stay on the body)
         mat = I
         for r in x.get('rot', []):   # turns, in order: {"axis": [x, y, z], "deg": d}
             mat = rot_axis(r['axis'], np.radians(r['deg'])) @ mat
@@ -306,15 +318,25 @@ def build(spec, base_dir='.'):
         item = spec.get(side)
         if item:
             pos, mat = grip(hand, item['part'], item.get('face'))
+            G('item' + side[0].upper())   # moves with its arm; a separate node so the game can swap what's held
+            rig['arm' + side[0].upper()]['holds'] = True
             if item.get('decal'):
                 out.append(decal_line(item, pos, mat, base_dir))
             out.append(line(item.get('color', 16), pos, mat, item['part']))
+    dy = 0
     if spec.get('dress'):
         # the dress brick (48 LDU) is 8 taller than hips and legs (40): lift everything so she still stands on the floor
-        out = [shift(l, -(48 - 40)) for l in out]
+        dy = -(48 - 40)
     elif spec.get('shortLegs'):
         # short legs end 16 LDU higher than legs: lower everything so the feet are on the floor
-        out = [shift(l, 16) for l in out]
+        dy = 16
+    out = [shift(l, dy) for l in out]
+    # the joints, for the animation: shoulders, hips, neck (LDraw units, the figure's frame)
+    rig['head'] = {'pivot': [0.0, 0.0, 0.0], 'axis': [0.0, 1.0, 0.0]}   # turns about the neck
+    rig['waist'] = {'pivot': [0.0, 32.0, 0.0]}   # (breathing: the body swells from the waist)
+    for j in rig.values():
+        j['pivot'][1] += dy
+    out.insert(1, '0 !LEGOHACK RIG ' + json.dumps(rig, separators=(',', ':')))
     if spec.get('marble'):   # a statue: every part marble, its prints carved in one faint colour
         m = spec['marble']
         keep = set(m.get('keep', []))
