@@ -4,6 +4,7 @@
 html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px system-ui,sans-serif}
 #status{position:fixed;left:10px;bottom:10px;padding:4px 9px;border-radius:6px;background:#0008;color:#fff;transition:background .3s}
 #status.flash{background:#2a8f3a}
+.tag{position:fixed;transform:translate(-50%,0);color:#fff;font:12px monospace;text-shadow:1px 1px 0 #000,-1px -1px 0 #000;white-space:nowrap;pointer-events:none}
 #music{position:fixed;right:10px;bottom:10px;padding:5px 11px;border:0;border-radius:6px;background:#0008;color:#fff;font:inherit;cursor:pointer}
 #music:hover{background:#000a}
 </style>
@@ -64,8 +65,62 @@ let animated = [], walking = false;
 const status = document.getElementById('status');
 let version = null, camKey = null;
 
+// NetHack's own sprites (assets/slashem/tiles.png), laid flat beside their
+// LEGO versions: the sheet with its key colour made see-through
+const TILE_KEY = [71, 108, 108];
+let tileSheet = null;
+function tiles() {
+  if (!tileSheet) tileSheet = Promise.all([
+    fetch('assets/slashem/tiles.json').then(r => r.json()),
+    new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = 'assets/slashem/tiles.png'; }),
+  ]).then(([meta, im]) => {
+    const c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+    const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height);
+    for (let i = 0; i < d.data.length; i += 4)
+      if (d.data[i] === TILE_KEY[0] && d.data[i + 1] === TILE_KEY[1] && d.data[i + 2] === TILE_KEY[2]) d.data[i + 3] = 0;
+    g.putImageData(d, 0, 0);
+    const tex = new THREE.CanvasTexture(c);
+    tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.colorSpace = THREE.SRGBColorSpace;
+    return { meta, tex };
+  });
+  return tileSheet;
+}
+async function tileMesh(i) {
+  const { meta, tex } = await tiles();
+  const geo = new THREE.PlaneGeometry(3, 3); // (3 studs: most of a map square)
+  const cols = meta.cols, rows = meta.rows, u0 = (i % cols) / cols, v1 = 1 - Math.floor(i / cols) / rows;
+  const u1 = u0 + 1 / cols, v0 = v1 - 1 / rows;
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute([u0, v1, u1, v1, u0, v0, u1, v0], 2));
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.5 }));
+  m.rotation.x = -Math.PI / 2; // lying on the ground
+  return m;
+}
+// labels under things, kept over them on screen
+let tags = [];
+function placeTags() {
+  const v = new THREE.Vector3();
+  for (const t of tags) {
+    v.copy(t.at).project(cam);
+    const show = v.z < 1;
+    t.el.style.display = show ? '' : 'none';
+    if (show) { t.el.style.left = ((v.x + 1) / 2 * innerWidth) + 'px'; t.el.style.top = ((1 - v.y) / 2 * innerHeight) + 'px'; }
+  }
+}
+
 async function apply(data) {
+  for (const t of tags) t.el.remove();
+  tags = [];
   const objs = await Promise.all(data.objects.map(async o => {
+    if (o.tile != null) {
+      const m = await tileMesh(o.tile);
+      m.position.set(o.pos[0] / 20, -o.pos[1] / 20 + 0.01, -o.pos[2] / 20);
+      return m;
+    }
+    if (o.label) {
+      const el = document.createElement('div'); el.className = 'tag'; el.textContent = o.label; document.body.appendChild(el);
+      tags.push({ el, at: new THREE.Vector3(o.pos[0] / 20, 0.3, -o.pos[2] / 20 + 1.6) });
+    }
     const m = (await model(o.url)).clone();
     // LDraw units -> studs, LDraw's -Y up -> +Y up (the .glb itself is already converted)
     m.position.set(o.pos[0] / 20, -o.pos[1] / 20, -o.pos[2] / 20);
@@ -130,7 +185,7 @@ let last = performance.now();
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, ((now || last) - last) / 1000); last = now || last;
   for (const x of animated) poseJoints(x.j, x.a.update(dt, { moving: walking }));
-  ctl.update(); r.render(scene, cam);
+  ctl.update(); r.render(scene, cam); placeTags();
 })();
 addEventListener('resize', () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); });
 </script></body></html>

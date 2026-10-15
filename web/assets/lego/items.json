@@ -1,0 +1,236 @@
+{
+ "orcish short sword": {
+  "lego": "Small sword with curved blade",
+  "parts": [
+   {
+    "part": "10053",
+    "color": 72
+   }
+  ]
+ },
+ "short sword": {
+  "lego": "Shortsword",
+  "parts": [
+   {
+    "part": "3847",
+    "color": 179
+   }
+  ]
+ },
+ "silver short sword": {
+  "lego": "Shortsword, chrome",
+  "parts": [
+   {
+    "part": "3847",
+    "color": 383
+   }
+  ]
+ },
+ "dwarvish short sword": {
+  "lego": "Roman gladius",
+  "parts": [
+   {
+    "part": "18034",
+    "color": 179
+   }
+  ]
+ },
+ "elven short sword": {
+  "lego": "Small sword, upturned crossguard",
+  "parts": [
+   {
+    "part": "2674f",
+    "color": 142
+   }
+  ]
+ },
+ "dark elven short sword": {
+  "lego": "Small sword, upturned crossguard",
+  "parts": [
+   {
+    "part": "2674f",
+    "color": 0
+   }
+  ]
+ },
+ "broadsword": {
+  "lego": "Longsword with thick guard",
+  "parts": [
+   {
+    "part": "18031",
+    "color": 179
+   }
+  ]
+ },
+ "runesword": {
+  "lego": "Sword with angular hilt",
+  "parts": [
+   {
+    "part": "48495",
+    "color": 0
+   }
+  ]
+ },
+ "elven broadsword": {
+  "lego": "Elvish sword",
+  "parts": [
+   {
+    "part": "2674a",
+    "color": 142
+   }
+  ]
+ },
+ "long sword": {
+  "lego": "Greatsword (the classic Castle sword)",
+  "parts": [
+   {
+    "part": "59",
+    "color": 179
+   }
+  ]
+ },
+ "silver long sword": {
+  "lego": "Greatsword, chrome",
+  "parts": [
+   {
+    "part": "59",
+    "color": 383
+   }
+  ]
+ },
+ "katana": {
+  "lego": "Katana",
+  "parts": [
+   {
+    "part": "30173a",
+    "color": 179
+   }
+  ]
+ },
+ "two-handed sword": {
+  "lego": "Greatsword with capped pommel",
+  "parts": [
+   {
+    "part": "2674b",
+    "color": 179
+   }
+  ]
+ },
+ "tsurugi": {
+  "lego": "Katana with smooth endcap",
+  "parts": [
+   {
+    "part": "21459",
+    "color": 80
+   }
+  ]
+ },
+ "scimitar": {
+  "lego": "Scimitar",
+  "parts": [
+   {
+    "part": "43887",
+    "color": 179
+   }
+  ]
+ },
+ "rapier": {
+  "lego": "Rapier (the fencing sword)",
+  "parts": [
+   {
+    "part": "93550",
+    "color": 179
+   }
+  ]
+ },
+ "silver saber": {
+  "lego": "Saber with clip pommel",
+  "parts": [
+   {
+    "part": "59229",
+    "color": 383
+   }
+  ]
+ },
+ "green lightsaber": {
+  "lego": "Lightsaber hilt and bar",
+  "parts": [
+   {
+    "part": "18673",
+    "color": 72
+   },
+   {
+    "part": "30374",
+    "color": 34,
+    "pos": [
+     0,
+     -83.9,
+     0
+    ]
+   }
+  ]
+ },
+ "blue lightsaber": {
+  "lego": "Lightsaber hilt and bar",
+  "parts": [
+   {
+    "part": "18673",
+    "color": 72
+   },
+   {
+    "part": "30374",
+    "color": 33,
+    "pos": [
+     0,
+     -83.9,
+     0
+    ]
+   }
+  ]
+ },
+ "red lightsaber": {
+  "lego": "Lightsaber hilt and bar",
+  "parts": [
+   {
+    "part": "18673",
+    "color": 72
+   },
+   {
+    "part": "30374",
+    "color": 36,
+    "pos": [
+     0,
+     -83.9,
+     0
+    ]
+   }
+  ]
+ },
+ "red double lightsaber": {
+  "lego": "Lightsaber hilt and bar (two blades)",
+  "parts": [
+   {
+    "part": "18673",
+    "color": 72
+   },
+   {
+    "part": "30374",
+    "color": 36,
+    "pos": [
+     0,
+     -83.9,
+     0
+    ]
+   },
+   {
+    "part": "30374",
+    "color": 36,
+    "pos": [
+     0,
+     35.4,
+     0
+    ]
+   }
+  ]
+ }
+}

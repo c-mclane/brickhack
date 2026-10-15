@@ -10,7 +10,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura } from './mist.js';
 import { figureJoints, poseJoints } from './minifig-anim.js';
-import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H } from './lego.js';
+import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './lego.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
 
@@ -50,6 +50,7 @@ export class BrickWorld {
     this.pieces = {}; // name -> [{geometry, material}] for instancing
     this.inst = {}; // name -> [InstancedMesh]
     this.doors = new Map(); // where -> the door's group
+    this.items = new Map(); // where + what -> a LEGO item lying on the floor
     this.data = null;
     this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => { this.pieces[k] = await this.partsOf(url); }))
       .then(() => this.data && this.setTerrain(this.data));
@@ -277,6 +278,58 @@ export class BrickWorld {
     fg.setAttribute('aV', new THREE.Float32BufferAttribute(fv, 1));
     this.flowMesh.geometry.dispose();
     this.flowMesh.geometry = fg;
+  }
+
+  // Items lying on the floor as LEGO models ([{x, z, url, level}], world.js):
+  // each laid flat on its side (its length along the floor, the flat of a
+  // blade up) across its square at a diagonal. A pile is stacked: the bottom
+  // one (level 0) on the studs, each next one resting on top of the one
+  // below, turned the other way so they cross like a heap of swords. Kept
+  // from frame to frame; only what's picked up, dropped or changed is redone.
+  setItems(list) {
+    const keep = new Map(), touched = new Set();
+    for (const it of list) {
+      const level = it.level || 0;
+      const key = `${it.x},${it.z},${level},${it.url}`;
+      let g = this.items.get(key);
+      if (!g) {
+        g = new THREE.Group();
+        // a slant of its own: diagonal, crossing the one below, and a little off true
+        const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
+        const turn = (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
+        g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
+        g.rotation.y = turn;
+        g.scale.setScalar(MODEL_SCALE);
+        g.userData = { square: `${it.x},${it.z}`, level, thick: 0 };
+        this.world.add(g);
+        this.model(it.url).then((m) => {
+          const lay = m.clone();
+          lay.rotation.z = -Math.PI / 2; // on its side: a blade's length (the model's Y) along the floor
+          lay.updateMatrixWorld(true);
+          const box = new THREE.Box3().setFromObject(lay);
+          const c = box.getCenter(new THREE.Vector3());
+          lay.position.set(-c.x, -box.min.y, -c.z); // centred on the square, its underside at the group's height
+          g.add(lay);
+          g.userData.thick = (box.max.y - box.min.y) * MODEL_SCALE;
+          this.restack(g.userData.square);
+        });
+        touched.add(g.userData.square);
+      }
+      keep.set(key, g);
+    }
+    for (const [key, g] of this.items) if (!keep.has(key)) { this.world.remove(g); touched.add(g.userData.square); }
+    this.items = keep;
+    for (const sq of touched) this.restack(sq);
+  }
+
+  // a square's pile, each item resting on the one below
+  restack(square) {
+    const pile = [...this.items.values()].filter((g) => g.userData.square === square).sort((a, b) => a.userData.level - b.userData.level);
+    let y = STUD_H;
+    for (const g of pile) {
+      g.position.y = y;
+      y += g.userData.thick * 0.85; // (they settle into each other a little)
+    }
   }
 
   // the figures to draw this frame: [{url, matrix, pose}] (the hero); pose:

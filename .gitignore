@@ -22,3 +22,5 @@ node_modules/
 /web/assets/lego/parts/
 __pycache__/
 /web/assets/lego/custom/
+/web/assets/lego/items/
+/web/assets/lego/items.built.json

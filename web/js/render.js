@@ -425,6 +425,7 @@ export class Renderer {
     this.brickOn = false; // drawing a LEGO level (the dungeon), not a block one (Ascend)
     this.legoFigures = []; // [{prims, matrix, shade}] drawn this frame (the hero)
     this.fpArm = null; // {prims, matrix, pose, only}: first person, the hero's arm in view space
+    this.legoItems = []; // [{x, z, url}]: items lying on the floor as LEGO models (the LEGO dungeon)
     this.fog = [0.04, 0.04, 0.06];
     this.fov = 75;
   }
@@ -1062,6 +1063,7 @@ export class Renderer {
     if (this.brickOn) {
       // a LEGO level: the BrickWorld draws the world (and clears to its sky blue); our pass draws on top
       this.brick.setFigures(this.legoFigures.filter((f) => f.url));
+      this.brick.setItems(this.legoItems || []);
       this.brick.render(this.proj, this.view, w, h, this.focus);
       gl.viewport(0, 0, w, h);
     } else {

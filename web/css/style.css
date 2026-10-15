@@ -1,7 +1,7 @@
 :root {
   --font: 'VT323', 'Courier New', monospace;
-  --slot: 36px;
-  --icon: 32px;
+  --slot: 52px; /* (big enough for the LEGO items' pictures) */
+  --icon: 46px;
   --mc-gray: #c6c6c6;
   --mc-slot: #8b8b8b;
   --text-shadow: 2px 2px 0 #3f3f3f;
@@ -212,7 +212,7 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 #death .score span { color: #ff5; }
 
 @media (max-width: 560px) {
-  :root { --slot: 30px; --icon: 26px; }
+  :root { --slot: 38px; --icon: 34px; }
   .mc-btn { min-width: 80vw; }
 }
 
@@ -377,3 +377,6 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 #create .lock-btn.on { opacity: 1; }
 #create .cycle.conflict { color: #ff7a7a; }
 #create [data-act=go]:disabled { opacity: .45; cursor: not-allowed; }
+
+/* an item made in LEGO: a rendered picture of its model (legoitems.js), drawn smooth */
+.icon.lego-icon { image-rendering: auto; background-repeat: no-repeat; background-position: center; }

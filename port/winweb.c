@@ -698,6 +698,7 @@ static int mapglyph_buf[ROWNO][COLNO], mapbk_buf[ROWNO][COLNO];
 static boolean map_dirty[ROWNO][COLNO];
 static boolean map_cleared;
 static char last_vis[ROWNO * COLNO + 1];
+static unsigned long last_pile[ROWNO][COLNO]; /* what was last sent of each square's pile */
 static int cur_x = -1, cur_y = -1;
 static int last_level_key = -1;
 static char *last_inv, *last_stat, *last_mons;
@@ -767,6 +768,7 @@ reset_map(void)
             mapglyph_buf[y][x] = cmap_to_glyph(S_stone);
             mapbk_buf[y][x] = NO_GLYPH;
             map_dirty[y][x] = FALSE;
+            last_pile[y][x] = 0;
         }
     map_cleared = TRUE;
     last_vis[0] = '\0';
@@ -819,6 +821,47 @@ flush_vis(void)
         Strcpy(last_vis, vis);
         fprintf(out, "{\"t\":\"vis\",\"w\":%d,\"h\":%d,\"v\":\"%s\"", COLNO,
                 ROWNO, vis);
+        endmsg();
+    }
+}
+
+/* Piles: the map shows only the top object of a pile, but the client lays
+ * every item there on the floor (as LEGO). For each square in sight (yours
+ * too), the tiles of the objects on it, top first, when that changes:
+ *   {"t":"piles","p":[[x, y, [tile, ...]], ...]}  ([] : nothing there now) */
+#define PILE_MAX 12
+static void
+flush_piles(void)
+{
+    int x, y, n = 0;
+
+    if (!program_state.in_moveloop)
+        return;
+    for (y = 0; y < ROWNO; y++)
+        for (x = 1; x < COLNO; x++) {
+            struct obj *o;
+            int tiles[PILE_MAX], k = 0, i;
+            unsigned long sig = 1;
+
+            if (!cansee(x, y) && !(x == u.ux && y == u.uy))
+                continue;
+            for (o = level.objects[x][y]; o && k < PILE_MAX; o = o->nexthere) {
+                tiles[k] = tile_of(obj_to_glyph(o));
+                sig = sig * 1000003UL + (unsigned long) (tiles[k] + 7);
+                k++;
+            }
+            if (sig == last_pile[y][x] || (k == 0 && last_pile[y][x] == 0))
+                continue;
+            last_pile[y][x] = k ? sig : 0;
+            fputs(n ? "," : "{\"t\":\"piles\",\"p\":[", out);
+            fprintf(out, "[%d,%d,[", x, y);
+            for (i = 0; i < k; i++)
+                fprintf(out, i ? ",%d" : "%d", tiles[i]);
+            fputs("]]", out);
+            n++;
+        }
+    if (n) {
+        fputc(']', out);
         endmsg();
     }
 }
@@ -1088,6 +1131,7 @@ sync_all(void)
             endmsg();
         }
         flush_vis();
+        flush_piles();
         flush_snap(&last_stat, build_status());
         flush_snap(&last_inv, build_inventory());
         flush_snap(&last_mons, build_monsters());

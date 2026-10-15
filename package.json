@@ -9,6 +9,6 @@
     "start": "node server/server.js",
     "monster": "python3 tools/new_monster.py",
     "peanut-sprites": "sh tools/get_peanut_sprites.sh",
-    "lego": "python3 tools/build_roster.py"
+    "lego": "python3 tools/build_roster.py && python3 tools/build_items.py"
   }
 }

@@ -17,6 +17,7 @@ import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix } from './minifig-anim.js';
+import { loadLegoItems } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -592,6 +593,8 @@ async function init() {
   loadHorizon();
   document.documentElement.style.setProperty('--bgtile', `url(${legoPlateTile()})`);
   buildScreens();
+  // the items made in LEGO (legoitems.js): their models for the floor, their pictures for the slots
+  loadLegoItems().then(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
   requestAnimationFrame(frame);
   // music can only start after the first click or key press (browser autoplay rules)
@@ -623,6 +626,7 @@ function handle(m) {
     case 'mons': motion.setMobs(m, performance.now()); break;
     case 'map': world.applyMap(m.c); break;
     case 'vis': world.setVis(m.v, m.w, m.h); break;
+    case 'piles': world.applyPiles(m.p); break;
     case 'level':
       ui.showTitle(`Level ${m.depth}`, m.dname);
       cam.snap = true;
@@ -1985,6 +1989,7 @@ function frame(t) {
     world.spriteScale = world.dream ? 1 : FIG_HEIGHT / 2.0; // a human-sized monster stands as tall as you
     world.camYaw = cam.vyaw; // creatures face the way they walk, as seen from here
     const sprites = world.sprites(opts.camera !== 0 && !doll3d && !fig3d, motion, t, fx);
+    renderer.legoItems = world.legoDrops || [];
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
     if (world.hearth && renderer.slots) sprites.push(...hearthSprites(world.hearth, t, renderer.slots));
     if (world.portal && renderer.slots) sprites.push(...portalSprites(world.portal, t, renderer.slots));

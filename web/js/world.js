@@ -4,6 +4,7 @@ import { classify, isSolidClass, WALL_H, DOOR_H, CM } from './terrain.js';
 const WALK_THROUGH = new Set(['gateOpen', 'fakeWeeds', 'fakeWeedsTop']);
 import { posAt as motionPos, sizeHeight } from './motion.js';
 import { mobAnim } from './anim.js';
+import { legoItemForTile } from './legoitems.js';
 
 export class World {
   constructor() {
@@ -30,6 +31,7 @@ export class World {
     this.floorMem = new Array(this.w * this.h).fill(null);
     this.solidSeen = new Set(); // squares of rock we've seen (or stood beside): known not to lead anywhere
     this.besideHero = new Set(); // squares we've stood next to
+    this.piles = new Map(); // square -> the tiles of everything lying there, top first (as last seen)
     this.vis = null;
     this.classes = [];
     this.hero = { x: 0, y: 0 };
@@ -48,6 +50,14 @@ export class World {
   applyMap(list) {
     for (const [x, y, t, k, c, bt, bc] of list) this.cells[y * this.w + x] = { t, k, c, bt, bc };
     this.dirty = true;
+  }
+
+  // what lies on each square, from the engine ([[x, y, [tile, ...]]]; [] : nothing now)
+  applyPiles(list) {
+    for (const [x, y, tiles] of list) {
+      if (tiles.length) this.piles.set(y * this.w + x, tiles);
+      else this.piles.delete(y * this.w + x);
+    }
   }
 
   setVis(v, w, h) {
@@ -87,6 +97,7 @@ export class World {
   // hero at its animated position; everything else at its square.
   sprites(includeHero, motion, now, fx = null) {
     const out = [];
+    this.legoDrops = []; // items lying on the floor as LEGO models (the LEGO dungeon): [{x, z, url}]
     const bob = (x, y) => Math.sin(now / 400 + x * 1.7 + y * 2.3) * 0.06;
     for (let y = 0; y < this.h; y++)
       for (let x = 0; x < this.w; x++) {
@@ -101,6 +112,16 @@ export class World {
         if (cl && cl.sprite && !(this.oaks && this.oaks.has(sq)))
           out.push({ x, z: y, tile: cl.sprite.tile, size: this.shrubs && this.shrubs.has(sq) ? 1.0 : cl.sprite.size, shade });
         const isHero = x === this.hero.x && y === this.hero.y;
+        // the LEGO dungeon: everything lying here as LEGO models, the bottom one first, each
+        // on the one below (brickworld.js stacks them), even under you or a monster
+        const pile = !this.dream ? this.piles.get(y * this.w + x) || (c.k === 'o' ? [c.t] : null) : null;
+        if (pile) {
+          let level = 0;
+          for (let i = pile.length - 1; i >= 0; i--) {
+            const lego = legoItemForTile(pile[i]);
+            if (lego) this.legoDrops.push({ x, z: y, url: lego.url, level: level++ });
+          }
+        }
         if (cl && cl.type === 'liquid' && this.dream) {
           // swimmers sink to their middle in the clear water
           if (isHero || c.k === 'o') continue;
@@ -137,9 +158,12 @@ export class World {
           case 's':
             out.push({ x, z: y, tile: c.t, size: 2, shade, gray: true });
             break;
-          case 'o': // dropped items float and bob like Minecraft item drops
-            out.push({ x, z: y, tile: c.t, size: 0.55, lift: 0.18 + bob(x, y), shade });
+          case 'o': { // dropped items float and bob like Minecraft item drops (those made in LEGO lie on the floor: above)
+            // (a pile: the top thing not yet made in LEGO floats over it)
+            const t = pile ? pile.find((tt) => !legoItemForTile(tt)) : c.t;
+            if (t != null) out.push({ x, z: y, tile: t, size: 0.55, lift: 0.18 + bob(x, y) + (pile && pile.length > 1 ? 0.15 : 0), shade });
             break;
+          }
           case 'z': case 'x': case 'w': case 'e': // zaps, explosions, engulfing, other effects
             out.push({ x, z: y, tile: c.t, size: 1.4, lift: 0.3, shade: 1.3 });
             break;

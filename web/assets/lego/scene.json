@@ -2,18 +2,18 @@
  "camera": {
   "pos": [
    0,
-   8,
-   30
+   46,
+   26
   ],
   "target": [
    0,
-   1.8,
-   0
+   0,
+   1
   ]
  },
  "objects": [
   {
-   "part": "3811",
+   "part": "4186",
    "color": 2,
    "pos": [
     0,
@@ -22,12 +22,361 @@
    ]
   },
   {
-   "fig": "knight",
+   "tile": "orcish short sword",
    "pos": [
+    -425,
+    -4,
+    -360
+   ]
+  },
+  {
+   "item": "orcish short sword",
+   "pos": [
+    -285,
     0,
-    -72,
+    -360
+   ],
+   "label": "orcish short sword"
+  },
+  {
+   "tile": "short sword",
+   "pos": [
+    -95,
+    -4,
+    -360
+   ]
+  },
+  {
+   "item": "short sword",
+   "pos": [
+    45,
+    0,
+    -360
+   ],
+   "label": "short sword"
+  },
+  {
+   "tile": "silver short sword",
+   "pos": [
+    235,
+    -4,
+    -360
+   ]
+  },
+  {
+   "item": "silver short sword",
+   "pos": [
+    375,
+    0,
+    -360
+   ],
+   "label": "silver short sword"
+  },
+  {
+   "tile": "dwarvish short sword",
+   "pos": [
+    -425,
+    -4,
+    -240
+   ]
+  },
+  {
+   "item": "dwarvish short sword",
+   "pos": [
+    -285,
+    0,
+    -240
+   ],
+   "label": "dwarvish short sword"
+  },
+  {
+   "tile": "elven short sword",
+   "pos": [
+    -95,
+    -4,
+    -240
+   ]
+  },
+  {
+   "item": "elven short sword",
+   "pos": [
+    45,
+    0,
+    -240
+   ],
+   "label": "elven short sword"
+  },
+  {
+   "tile": "dark elven short sword",
+   "pos": [
+    235,
+    -4,
+    -240
+   ]
+  },
+  {
+   "item": "dark elven short sword",
+   "pos": [
+    375,
+    0,
+    -240
+   ],
+   "label": "dark elven short sword"
+  },
+  {
+   "tile": "broadsword",
+   "pos": [
+    -425,
+    -4,
+    -120
+   ]
+  },
+  {
+   "item": "broadsword",
+   "pos": [
+    -285,
+    0,
+    -120
+   ],
+   "label": "broadsword"
+  },
+  {
+   "tile": "runesword",
+   "pos": [
+    -95,
+    -4,
+    -120
+   ]
+  },
+  {
+   "item": "runesword",
+   "pos": [
+    45,
+    0,
+    -120
+   ],
+   "label": "runesword"
+  },
+  {
+   "tile": "elven broadsword",
+   "pos": [
+    235,
+    -4,
+    -120
+   ]
+  },
+  {
+   "item": "elven broadsword",
+   "pos": [
+    375,
+    0,
+    -120
+   ],
+   "label": "elven broadsword"
+  },
+  {
+   "tile": "long sword",
+   "pos": [
+    -425,
+    -4,
     0
    ]
+  },
+  {
+   "item": "long sword",
+   "pos": [
+    -285,
+    0,
+    0
+   ],
+   "label": "long sword"
+  },
+  {
+   "tile": "silver long sword",
+   "pos": [
+    -95,
+    -4,
+    0
+   ]
+  },
+  {
+   "item": "silver long sword",
+   "pos": [
+    45,
+    0,
+    0
+   ],
+   "label": "silver long sword"
+  },
+  {
+   "tile": "katana",
+   "pos": [
+    235,
+    -4,
+    0
+   ]
+  },
+  {
+   "item": "katana",
+   "pos": [
+    375,
+    0,
+    0
+   ],
+   "label": "katana"
+  },
+  {
+   "tile": "two-handed sword",
+   "pos": [
+    -425,
+    -4,
+    120
+   ]
+  },
+  {
+   "item": "two-handed sword",
+   "pos": [
+    -285,
+    0,
+    120
+   ],
+   "label": "two-handed sword"
+  },
+  {
+   "tile": "tsurugi",
+   "pos": [
+    -95,
+    -4,
+    120
+   ]
+  },
+  {
+   "item": "tsurugi",
+   "pos": [
+    45,
+    0,
+    120
+   ],
+   "label": "tsurugi"
+  },
+  {
+   "tile": "scimitar",
+   "pos": [
+    235,
+    -4,
+    120
+   ]
+  },
+  {
+   "item": "scimitar",
+   "pos": [
+    375,
+    0,
+    120
+   ],
+   "label": "scimitar"
+  },
+  {
+   "tile": "rapier",
+   "pos": [
+    -425,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "rapier",
+   "pos": [
+    -285,
+    0,
+    240
+   ],
+   "label": "rapier"
+  },
+  {
+   "tile": "silver saber",
+   "pos": [
+    -95,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "silver saber",
+   "pos": [
+    45,
+    0,
+    240
+   ],
+   "label": "silver saber"
+  },
+  {
+   "tile": "green lightsaber",
+   "pos": [
+    235,
+    -4,
+    240
+   ]
+  },
+  {
+   "item": "green lightsaber",
+   "pos": [
+    375,
+    0,
+    240
+   ],
+   "label": "green lightsaber"
+  },
+  {
+   "tile": "blue lightsaber",
+   "pos": [
+    -425,
+    -4,
+    360
+   ]
+  },
+  {
+   "item": "blue lightsaber",
+   "pos": [
+    -285,
+    0,
+    360
+   ],
+   "label": "blue lightsaber"
+  },
+  {
+   "tile": "red lightsaber",
+   "pos": [
+    -95,
+    -4,
+    360
+   ]
+  },
+  {
+   "item": "red lightsaber",
+   "pos": [
+    45,
+    0,
+    360
+   ],
+   "label": "red lightsaber"
+  },
+  {
+   "tile": "red double lightsaber",
+   "pos": [
+    235,
+    -4,
+    360
+   ]
+  },
+  {
+   "item": "red double lightsaber",
+   "pos": [
+    375,
+    0,
+    360
+   ],
+   "label": "red double lightsaber"
   }
  ]
 }
