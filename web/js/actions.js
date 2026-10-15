@@ -125,6 +125,7 @@ export function recommend(ctx) {
   if (cm === CM.upstair || cm === CM.upladder) add({ label: 'Go up', keys: '<', why: 'stairs here' });
   if (cm === CM.dnstair || cm === CM.dnladder) add({ label: 'Go down', keys: '>', why: 'stairs here' });
   if (cm === CM.altar) { add({ label: 'Offer', ext: 'offer', why: 'altar here' }); add({ label: 'Pray', ext: 'pray', why: 'altar here' }); }
+  if (cm === CM.grave) add({ label: 'Read the headstone', keys: 'r.', why: 'grave here' }); // (r, then "." for what's written here)
   if (cm === CM.fountain) { add({ label: 'Drink from fountain', keys: 'q', answers: [{ key: 'y', re: /fountain/i }], why: 'fountain' }); add({ label: 'Dip in fountain', ext: 'dip', why: 'fountain' }); }
   if (cm === CM.sink) add({ label: 'Drink from sink', keys: 'q', answers: [{ key: 'y', re: /sink/i }], why: 'sink' });
   if (cm === CM.throne || cm === CM.toilet) add({ label: 'Sit', ext: 'sit', why: cm === CM.throne ? 'throne' : 'toilet' });

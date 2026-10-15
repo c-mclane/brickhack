@@ -119,7 +119,7 @@ export class UI {
     this.drag = null;
     this.titleTimer = 0;
     this.hotbarSel = 0;
-    this.selectMode = null; // {letters:Set, allowDash} when inventory answers a prompt
+    this.selectMode = null; // {letters:Set, allowDash, allowHere} when inventory answers a prompt
     this.buildStatic();
   }
 
@@ -344,6 +344,11 @@ export class UI {
       if (this.selectMode.allowDash) {
         const b = el('button', 'mc-btn small', 'Nothing / bare hands (-)');
         b.onclick = () => this.g.answerSelect('-');
+        acts.appendChild(b);
+      }
+      if (this.selectMode.allowHere) { // (read the headstone or engraving you stand on)
+        const b = el('button', 'mc-btn small', /read/i.test(this.selectMode.q) ? "What's written here (.)" : 'Here (.)');
+        b.onclick = () => this.g.answerSelect('.');
         acts.appendChild(b);
       }
       const b2 = el('button', 'mc-btn small', 'Cancel');

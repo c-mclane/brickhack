@@ -783,9 +783,11 @@ function onYN(m) {
       } else if (spec[k] === '-') allowDash = true;
       else if (/[a-zA-Z$#]/.test(spec[k])) letters.add(spec[k]);
     }
+    // "... or .": something here to use instead (reading: the headstone or engraving you stand on)
+    const allowHere = /\bor\b[^\]]*\./.test(br[1]);
     game.mode = 'select';
     releaseLock();
-    ui.openInventory({ q: m.q, letters, allowDash });
+    ui.openInventory({ q: m.q, letters, allowDash, allowHere });
     return;
   }
   game.mode = 'yn';
