@@ -2134,7 +2134,7 @@
   ]
  },
  "rocket": {
-  "lego": "A round brick 1x1 with a red cone on top and a black round plate below",
+  "lego": "A round brick 1x1 with a red cone on top and a finned round brick below",
   "parts": [
    {
     "part": "3062b",
@@ -2150,13 +2150,77 @@
     ]
    },
    {
-    "part": "6141",
+    "part": "4588",
     "color": 0,
     "pos": [
      0,
      24,
      0
     ]
+   }
+  ]
+ },
+ "torch": {
+  "lego": "A dark brown telescope, wide end up, a feather plume in translucent orange in it for the flame",
+  "parts": [
+   {
+    "part": "64644",
+    "color": 308
+   },
+   {
+    "part": "87694",
+    "color": 57,
+    "pos": [
+     0,
+     40,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "fishing pole": {
+  "lego": "Fishing rod",
+  "parts": [
+   {
+    "part": "2614",
+    "color": 70
+   }
+  ]
+ },
+ "grappling hook": {
+  "lego": "Grappling hook with bar",
+  "parts": [
+   {
+    "part": "15534",
+    "color": 72
+   }
+  ]
+ },
+ "unicorn horn": {
+  "lego": "Spiral horn",
+  "parts": [
+   {
+    "part": "89522",
+    "color": 15
+   }
+  ]
+ },
+ "spoon": {
+  "lego": "Spoon",
+  "parts": [
+   {
+    "part": "80179",
+    "color": 179
    }
   ]
  }

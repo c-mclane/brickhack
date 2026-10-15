@@ -760,6 +760,91 @@
     405
    ],
    "label": "rocket"
+  },
+  {
+   "tile": "torch",
+   "pos": [
+    -225,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "torch",
+   "pos": [
+    -115,
+    0,
+    405
+   ],
+   "label": "torch"
+  },
+  {
+   "tile": "fishing pole",
+   "pos": [
+    20,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "fishing pole",
+   "pos": [
+    130,
+    0,
+    405
+   ],
+   "label": "fishing pole"
+  },
+  {
+   "tile": "grappling hook",
+   "pos": [
+    265,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "grappling hook",
+   "pos": [
+    375,
+    0,
+    405
+   ],
+   "label": "grappling hook"
+  },
+  {
+   "tile": "unicorn horn",
+   "pos": [
+    510,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "unicorn horn",
+   "pos": [
+    620,
+    0,
+    405
+   ],
+   "label": "unicorn horn"
+  },
+  {
+   "tile": "spoon",
+   "pos": [
+    755,
+    -4,
+    405
+   ]
+  },
+  {
+   "item": "spoon",
+   "pos": [
+    865,
+    0,
+    405
+   ],
+   "label": "spoon"
   }
  ]
 }
