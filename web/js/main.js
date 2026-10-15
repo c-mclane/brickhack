@@ -1342,14 +1342,26 @@ function updateCameraBase(now) {
   const fig = !!motion.figHeight && heroH === motion.figHeight;
   const target = [tx, (world.heroLift ?? phys.y) + heroH * (fig ? 1.0 : 0.85), tz];
   let dist = 4.2 * Math.max(1, heroH / 1.8);
+  let overHaze = false;
   for (let t = 0.3; t < dist; t += 0.05) {
     const p = [target[0] + f[0] * t * sign, target[1] + f[1] * t * sign, target[2] + f[2] * t * sign];
-    if (world.solidVoxel(Math.floor(p[0]), Math.floor(p[1]), Math.floor(p[2]), onRoof())) { dist = Math.max(0.3, t - 0.15); break; }
+    const vx = Math.floor(p[0]), vy = Math.floor(p[1]), vz = Math.floor(p[2]);
+    if (world.solidVoxel(vx, vy, vz, onRoof())) { dist = Math.max(0.3, t - 0.15); break; }
+    if (p[1] < HAZE_CLEAR && world.isHaze(vx, vz)) overHaze = true;
   }
   cam.eye = [target[0] + f[0] * dist * sign, target[1] + f[1] * dist * sign, target[2] + f[2] * dist * sign];
   cam.vyaw = opts.camera === 1 ? cam.yaw : cam.yaw + Math.PI;
   cam.vpitch = opts.camera === 1 ? cam.pitch : -cam.pitch;
+  // the camera never goes into the haze over the unexplored: where it would,
+  // it rises over it and looks down at you (the haze stays white and solid)
+  if (overHaze && cam.eye[1] < HAZE_CLEAR) {
+    cam.eye[1] = HAZE_CLEAR;
+    const d = [target[0] - cam.eye[0], target[1] - cam.eye[1], target[2] - cam.eye[2]];
+    cam.vyaw = Math.atan2(d[0], -d[2]);
+    cam.vpitch = Math.atan2(d[1], Math.hypot(d[0], d[2]));
+  }
 }
+const HAZE_CLEAR = 3.2; // (over the haze's billowing top, brickworld.js HAZE_TOP)
 
 function crosshairTarget() {
   if (!renderer) return null;

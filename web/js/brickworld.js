@@ -49,7 +49,7 @@ export class BrickWorld {
     this.models = new Map(); // url -> Promise<Object3D>
     this.pieces = {}; // name -> [{geometry, material}] for instancing
     this.inst = {}; // name -> [InstancedMesh]
-    this.doors = [];
+    this.doors = new Map(); // where -> the door's group
     this.data = null;
     this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => { this.pieces[k] = await this.partsOf(url); }))
       .then(() => this.data && this.setTerrain(this.data));
@@ -144,17 +144,24 @@ export class BrickWorld {
     this.place('course', courses);
     this.place('brick', bricks);
     this.setFog(data.fog || [], data.w, data.h);
-    // doors: a few, so plain copies of the model
-    for (const d of this.doors) this.world.remove(d);
-    this.doors = [];
+    // doors: a few, so plain copies of the model. The terrain is rebuilt at
+    // every step, so a door that's still there (the same piece in the same
+    // place) is kept as it is: one thrown away and loaded again would blink
+    const doors = new Map();
     for (const d of data.doors) {
-      const g = new THREE.Group();
-      g.matrixAutoUpdate = false;
-      g.matrix.fromArray(d.matrix);
-      this.doors.push(g);
-      this.world.add(g);
-      this.model(d.url).then((m) => g.add(m.clone()));
+      const key = d.url + '@' + Array.from(d.matrix, (v) => v.toFixed(3)).join(',');
+      let g = this.doors.get(key);
+      if (!g) {
+        g = new THREE.Group();
+        g.matrixAutoUpdate = false;
+        g.matrix.fromArray(d.matrix);
+        this.world.add(g);
+        this.model(d.url).then((m) => g.add(m.clone()));
+      }
+      doors.set(key, g);
     }
+    for (const [key, g] of this.doors) if (!doors.has(key)) this.world.remove(g);
+    this.doors = doors;
   }
 
   // Haze over everything not yet explored ([{x, z, into, over}], render.js),
@@ -198,16 +205,18 @@ export class BrickWorld {
       // and its floor, so what shows through it is more haze, not the baseplate
       const F = B - 0.01;
       side([x, F, z], [x + 1, F, z], [x + 1, F, z + 1], [x, F, z + 1]);
-      if (open[2]) side([x, B, z], [x + 1, B, z], [x + 1, T, z], [x, T, z]);
-      if (open[3]) side([x, B, z + 1], [x + 1, B, z + 1], [x + 1, T, z + 1], [x, T, z + 1]);
-      if (open[0]) side([x, B, z], [x, B, z + 1], [x, T, z + 1], [x, T, z]);
-      if (open[1]) side([x + 1, B, z], [x + 1, B, z + 1], [x + 1, T, z + 1], [x + 1, T, z]);
+      // (a hair inside its own square: never in the same plane as a wall's face, where they'd flicker)
+      const I = 0.03;
+      if (open[2]) side([x, B, z + I], [x + 1, B, z + I], [x + 1, T, z + I], [x, T, z + I]);
+      if (open[3]) side([x, B, z + 1 - I], [x + 1, B, z + 1 - I], [x + 1, T, z + 1 - I], [x, T, z + 1 - I]);
+      if (open[0]) side([x + I, B, z], [x + I, B, z + 1], [x + I, T, z + 1], [x + I, T, z]);
+      if (open[1]) side([x + 1 - I, B, z], [x + 1 - I, B, z + 1], [x + 1 - I, T, z + 1], [x + 1 - I, T, z]);
     }
     if (!this.hazeMesh) {
       this.hazeMat = new THREE.ShaderMaterial({
         uniforms: { uTime: { value: 0 } },
         vertexShader: HAZE_VS, fragmentShader: HAZE_FS,
-        transparent: true, depthWrite: false, side: THREE.DoubleSide,
+        side: THREE.DoubleSide, // (opaque: it hides what's behind it, and the streams behind it too)
       });
       this.hazeMesh = new THREE.Mesh(new THREE.BufferGeometry(), this.hazeMat);
       this.hazeMesh.frustumCulled = false;
@@ -318,7 +327,7 @@ export class BrickWorld {
 }
 
 // ---- the haze
-const HAZE_TOP = 2.6; // (a little over the walls, 1.8)
+const HAZE_TOP = 2.6; // (a little over the walls)
 const HAZE_COLOR = 'vec3(0.80, 0.84, 0.89)';
 // faint, slow noise: the haze is alive, not painted on
 const NOISE = `
@@ -365,14 +374,10 @@ void main() {
   vec2 r = vec2(fbm(p + 3.0 * q + vec2(1.7, 9.2) + t * 0.09), fbm(p + 3.0 * q + vec2(8.3, 2.8) - t * 0.07));
   float f = fbm(p + 3.5 * r);
   float wisp = smoothstep(0.35, 0.85, f);
-  vec3 deep = vec3(0.70, 0.75, 0.82), light = vec3(0.95, 0.96, 0.99);
+  vec3 deep = vec3(0.86, 0.88, 0.92), light = vec3(0.98, 0.99, 1.0);
   vec3 col = mix(deep, light, wisp * 0.85 + 0.1 * length(q));
-  float a = 0.8 + 0.17 * wisp;
-  // its edges feather out: the sides thin toward their top, the top toward its edge
-  bool top = vW.y > 1.6 && vEdge > 0.001;
-  a *= top ? mix(0.55, 1.0, vEdge) : 1.0 - 0.6 * smoothstep(1.4, ${HAZE_TOP}, vW.y);
-  if (vW.y < -0.055) a = 1.0; // (the haze's floor)
-  gl_FragColor = vec4(col, a);
+  // solid: nothing shows through it, ever (its life is in its colour and its billowing top)
+  gl_FragColor = vec4(col, 1.0);
 }`;
 // a stream of fog: a sheet along the fog's path (aS: how far along it, aV:
 // the same 0..1, aU: across, in world units) with streaks flowing down it,

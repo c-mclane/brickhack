@@ -181,6 +181,14 @@ export class World {
     return !!c.lintel && y >= DOOR_H;
   }
 
+  // a square of the haze over the unexplored (LEGO dungeon levels; render.js
+  // draws it there): nothing known, or rock nobody has seen
+  isHaze(x, z) {
+    if (this.dream || x < 0 || z < 0 || x >= this.w || z >= this.h) return false;
+    const c = this.classAt(x, z);
+    return !c || (c.type === 'none' && c.cmap !== CM.air) || (c.type === 'rock' && !c.known);
+  }
+
   // open air (Dreamland's sky levels): no ground at all
   isSky(x, z) {
     const c = this.classAt(x, z);
