@@ -28,12 +28,13 @@ def main():
             ward = wardrobe.load_wardrobe()
             parts = {str(k): str(v) for k, v in (req.get('parts') or {}).items()}
             spec = wardrobe.empty_handed(wardrobe.customize(wardrobe.recipe(base), parts, ward))
-            wear = str(req.get('wear') or '')   # a worn helm (items.json), by its name
+            wear = [w for w in str(req.get('wear') or '').split(',') if w]   # worn things (items.json), by name: a helm, a shield
             if wear:
                 items = json.load(open(os.path.join(wardrobe.LEGO, 'items.json')))
-                if wear not in items:
-                    raise ValueError(f'no item {wear!r}')
-                spec = wardrobe.wearing(spec, items[wear])
+                for w in wear:
+                    if w not in items:
+                        raise ValueError(f'no item {w!r}')
+                    spec = wardrobe.wearing(spec, items[w])
             ldr = minifig.build(spec, wardrobe.FIGS)
             key = hashlib.sha1(ldr.encode()).hexdigest()[:16]
             glb = os.path.join(OUT, key + '.glb')

@@ -66,6 +66,12 @@ HELD = {
     '3847': {'center': (0, 12, 0), 'up': (0, -1, 0), 'face': (1, 0, 0)},   # shortsword: blade out of the top of the fist
     '3846': {'center': (0, 9, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # triangular shield: front is -Z
     '3876': {'center': (0, 9, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # round shield: same handle as 3846
+    '2586': {'center': (0, 0, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},     # ovoid shield: by its handle behind, front -Z
+    '10049': {'center': (0, 0, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},    # broad spiked shield (the Uruk-hai's): likewise
+    '18836': {'center': (0, 0, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},    # long triangular shield: likewise
+    '75902': {'center': (0, 0, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},    # bowed round shield: likewise
+    '61856': {'center': (0, 0, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},    # octagonal shield: likewise
+    '92747': {'center': (0, 0, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},    # oval shield: likewise
     '2530': {'center': (0, 0, 0), 'up': (0, -1, 0)},                        # cutlass: blade out of the top of the fist
     '3841': {'center': (0, 28, 0), 'up': (0, -1, 0)},                       # pick-axe: held low on the haft, head up
     '61975': {'center': (0, 8, 0), 'up': (0, -1, 0), 'face': (0, 0, -1)},   # coiled whip: by its handle, the coil flat to the front

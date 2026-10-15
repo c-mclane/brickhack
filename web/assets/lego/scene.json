@@ -3,7 +3,7 @@
   "pos": [
    0,
    5.5,
-   34
+   40
   ],
   "target": [
    0,
@@ -24,125 +24,218 @@
   {
    "fig": "knight",
    "set": {
-    "hat": "4503",
-    "hatColor": 71,
-    "plume": {
-     "part": "87694",
-     "color": 4
-    },
-    "hair": null,
-    "neck": null,
     "right": null,
-    "left": null
+    "left": {
+     "part": "3876",
+     "color": 70,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
    },
    "pos": [
-    -270,
+    -315,
     -72,
     0
    ],
-   "rotY": -20,
-   "label": "helmet"
+   "rotY": -25,
+   "label": "small shield"
   },
   {
    "fig": "knight",
    "set": {
-    "hat": "6122",
-    "hatColor": 383,
-    "hair": null,
-    "neck": null,
     "right": null,
-    "left": null
+    "left": {
+     "part": "2586p4b",
+     "color": 15,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
    },
    "pos": [
-    -180,
+    -225,
     -72,
     0
    ],
-   "rotY": -20,
-   "label": "helm of brilliance"
+   "rotY": -25,
+   "label": "elven shield"
   },
   {
    "fig": "knight",
    "set": {
-    "hat": "10054",
-    "hatColor": 0,
-    "hair": null,
-    "neck": null,
     "right": null,
-    "left": null
+    "left": {
+     "part": "10049p01",
+     "color": 0,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
    },
    "pos": [
-    -90,
+    -135,
     -72,
     0
    ],
-   "rotY": -20,
-   "label": "helm of opposite alignment"
+   "rotY": -25,
+   "label": "Uruk-hai shield"
   },
   {
    "fig": "knight",
    "set": {
-    "hat": "3842a",
-    "hatColor": 71,
-    "extras": [
-     {
-      "part": "2447b",
-      "color": 43,
-      "pos": [
-       0,
-       -24,
-       0
-      ]
-     }
-    ],
-    "hair": null,
-    "neck": null,
     "right": null,
-    "left": null
+    "left": {
+     "part": "3846pm0",
+     "color": 72,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
    },
    "pos": [
-    0,
+    -45,
     -72,
     0
    ],
-   "rotY": -20,
-   "label": "helm of telepathy"
+   "rotY": -25,
+   "label": "orcish shield"
   },
   {
    "fig": "knight",
    "set": {
-    "hat": "17349",
-    "hatColor": 15,
-    "hair": null,
-    "neck": null,
     "right": null,
-    "left": null
+    "left": {
+     "part": "18836p41",
+     "color": 320,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
    },
    "pos": [
-    90,
+    45,
     -72,
     0
    ],
-   "rotY": -20,
-   "label": "Mitre of Holiness"
+   "rotY": -25,
+   "label": "large shield"
   },
   {
    "fig": "knight",
    "set": {
-    "hat": "71015",
-    "hatColor": 334,
-    "hair": null,
-    "neck": null,
     "right": null,
-    "left": null
+    "left": {
+     "part": "75902p06",
+     "color": 308,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
    },
    "pos": [
-    180,
+    135,
     -72,
     0
    ],
-   "rotY": -20,
-   "label": "Crown of Saint Edward"
+   "rotY": -25,
+   "label": "dwarvish roundshield"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "right": null,
+    "left": {
+     "part": "2586",
+     "color": 383,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
+   },
+   "pos": [
+    225,
+    -72,
+    0
+   ],
+   "rotY": -25,
+   "label": "shield of reflection"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "right": null,
+    "left": {
+     "part": "3876",
+     "color": 383,
+     "face": [
+      0,
+      0,
+      -1
+     ],
+     "aim": [
+      0,
+      -1,
+      0
+     ]
+    }
+   },
+   "pos": [
+    315,
+    -72,
+    0
+   ],
+   "rotY": -25,
+   "label": "Mirrorbright"
   }
  ]
 }

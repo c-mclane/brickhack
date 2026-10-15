@@ -1206,15 +1206,17 @@ async function loadHeroFigure(name, who) {
 }
 let heroView = null;
 
-// The helm you wear (the item's name, if it's made in LEGO to be worn:
-// items.json "wear"), or ''
+// What you wear that shows on your minifig (items made in LEGO to be worn:
+// items.json "wear"): their names, comma-separated (your helm, your shield), or ''
 function wornHelm() {
-  const h = game.inv.find((i) => i.w === 'helm');
-  const l = h && legoItemForTile(h.t);
-  return l && l.wear ? l.name : '';
+  return ['helm', 'shield'].map((slot) => {
+    const h = game.inv.find((i) => i.w === slot);
+    const l = h && legoItemForTile(h.t);
+    return l && l.wear ? l.name : '';
+  }).filter(Boolean).join(',');
 }
-// put on (or take off) a helm: your minifig, rebuilt by the server wearing
-// it (hair off, its own hat off: tools/wardrobe.py wearing), swapped in
+// put on (or take off) a helm or a shield: your minifig, rebuilt by the server
+// wearing them (a helm: hair and its own hat off: tools/wardrobe.py wearing), swapped in
 async function redressHero() {
   if (!hero3d.fig) return;
   const wear = wornHelm();

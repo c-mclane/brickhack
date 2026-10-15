@@ -42,12 +42,14 @@ def empty_handed(spec):
 
 def wearing(spec, item):
     """A recipe with a worn item on (items.json "wear": recipe keys, as a
-    helm's hat, hatColor, plume, extras). A helm takes the hair off (it
+    helm's hat, hatColor, plume, extras; a shield's left). A helm takes the hair off (it
     would poke through) and whatever hat, plume or tiara the figure had; its
     extras go on beside the figure's own (an angel keeps its wings)."""
     wear = item.get('wear')
     if not wear:
         return spec
+    if 'left' in wear:   # a shield, in the left hand
+        return dict(spec, left=wear['left'])
     spec = {k: v for k, v in spec.items() if k not in ('hair', 'hat', 'hatColor', 'hatDecal', 'plume')}
     extras = [x for x in spec.get('extras', []) if not x['part'].startswith(CROWNS)]
     spec.update({k: v for k, v in wear.items() if k != 'extras' and v is not None})
