@@ -232,5 +232,144 @@
     ]
    }
   ]
+ },
+ "orcish dagger": {
+  "lego": "Curved knife with cross-hatched grip",
+  "parts": [
+   {
+    "part": "37341b",
+    "color": 72
+   }
+  ]
+ },
+ "dagger": {
+  "lego": "Knife (the classic Pirates dagger)",
+  "parts": [
+   {
+    "part": "44658",
+    "color": 179
+   }
+  ]
+ },
+ "athame": {
+  "lego": "Curved dagger, pearl gold hilt, printed blade",
+  "parts": [
+   {
+    "part": "88288p01",
+    "color": 297
+   }
+  ]
+ },
+ "silver dagger": {
+  "lego": "Knife, chrome",
+  "parts": [
+   {
+    "part": "44658",
+    "color": 383
+   }
+  ]
+ },
+ "elven dagger": {
+  "lego": "Kunai (Ninjago short spear), pearl gold",
+  "parts": [
+   {
+    "part": "98338",
+    "color": 142
+   }
+  ]
+ },
+ "dark elven dagger": {
+  "lego": "Kunai (Ninjago short spear), black",
+  "parts": [
+   {
+    "part": "98338",
+    "color": 0
+   }
+  ]
+ },
+ "wooden stake": {
+  "lego": "Bar 3L with a spear tip (a pointed stake)",
+  "parts": [
+   {
+    "part": "87994",
+    "color": 70
+   },
+   {
+    "part": "27257",
+    "color": 70
+   }
+  ]
+ },
+ "great dagger": {
+  "lego": "Lightsaber hilt with a faceted blade",
+  "parts": [
+   {
+    "part": "64567a",
+    "color": 72
+   },
+   {
+    "part": "23860",
+    "color": 71,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   }
+  ]
+ },
+ "worm tooth": {
+  "lego": "Cow horn (a curved fang)",
+  "parts": [
+   {
+    "part": "13564",
+    "color": 15
+   }
+  ]
+ },
+ "knife": {
+  "lego": "Curved knife with cross-hatched grip",
+  "parts": [
+   {
+    "part": "37341b",
+    "color": 179
+   }
+  ]
+ },
+ "stiletto": {
+  "lego": "Small sword with angular guard",
+  "parts": [
+   {
+    "part": "95053",
+    "color": 179
+   }
+  ]
+ },
+ "scalpel": {
+  "lego": "Screwdriver, chrome (a slim blade on a handle)",
+  "parts": [
+   {
+    "part": "55298",
+    "color": 383
+   }
+  ]
+ },
+ "crysknife": {
+  "lego": "Dune crysknife (part 5685, 2024; modelled in ldraw-extra)",
+  "parts": [
+   {
+    "part": "5685",
+    "color": 148
+   }
+  ]
+ },
+ "lance": {
+  "lego": "Lance (the classic Castle lance)",
+  "parts": [
+   {
+    "part": "3849",
+    "color": 179
+   }
+  ]
  }
 }

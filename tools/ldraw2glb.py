@@ -16,6 +16,9 @@ import hashlib, json, os, struct, sys
 import numpy as np
 
 LDRAW = os.path.join(os.path.dirname(__file__), '..', 'vendor', 'ldraw', 'ldraw')
+# our own parts, for pieces too new for the LDraw library (ldraw-extra/parts,
+# made by tools/parts/*.py); the official library's own come first
+EXTRA = os.path.join(os.path.dirname(__file__), '..', 'ldraw-extra')
 SCALE = 1.0 / 20.0
 
 
@@ -190,6 +193,11 @@ class Library:
             if os.path.isdir(full):
                 for f in os.listdir(full):
                     self.index[(d, f.lower())] = os.path.join(full, f)
+        for d in ['parts', 'parts/s']:
+            full = os.path.join(EXTRA, d)
+            if os.path.isdir(full):
+                for f in os.listdir(full):
+                    self.index.setdefault((d, f.lower()), os.path.join(full, f))
 
     def find(self, name):
         if os.path.isfile(name):

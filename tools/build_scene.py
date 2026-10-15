@@ -25,7 +25,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import ldraw2glb, minifig
+import build_items, ldraw2glb, minifig
 
 WEB = os.path.join(HERE, '..', 'web')
 LEGO = os.path.join(WEB, 'assets', 'lego')
@@ -34,15 +34,20 @@ CACHE = os.path.join(LEGO, 'cache')
 
 def item_ldr(lib, item):
     """An item's LEGO parts (items.json) as an LDraw model, laid flat as if
-    dropped: turned onto its side (its length, LDraw's Y, along X; the flat of
-    a blade facing up), centred, its lowest point resting on the stud tops."""
+    dropped, as the game lays it (brickworld.js setItems): as held
+    (build_items.held_ldr: its length along Y), turned onto its side (its
+    length along X; the flat of a blade facing up), centred, its lowest point
+    resting on the stud tops."""
     R = np.array([[0.0, -1, 0], [1, 0, 0], [0, 0, 1]])   # a quarter turn about Z
     lines, pts = [], []
-    for p in item['parts']:
-        pos = R @ np.array(p.get('pos', [0, 0, 0]), float)
-        lines.append((p.get('color', 16), pos, R, p['part']))
-        for _, _, arr, _ in lib.parse(p['part'] + '.dat'):
-            pts.append(arr.reshape(-1, 3) @ R.T + pos)
+    for l in build_items.held_ldr(item).splitlines():
+        t = l.split()
+        pos = R @ np.array([float(v) for v in t[2:5]])
+        mat = R @ np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+        part = ' '.join(t[14:])[:-4]
+        lines.append((t[1], pos, mat, part))
+        for _, _, arr, _ in lib.parse(part + '.dat'):
+            pts.append(arr.reshape(-1, 3) @ mat.T + pos)
     pts = np.concatenate(pts)
     lo, hi = pts.min(0), pts.max(0)
     shift = np.array([-(lo[0] + hi[0]) / 2, -4 - hi[1], -(lo[2] + hi[2]) / 2])   # (studs are 4 LDU tall)

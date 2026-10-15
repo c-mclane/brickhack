@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   8,
-   16
+   42,
+   26
   ],
   "target": [
    0,
-   3,
-   0
+   0,
+   1
   ]
  },
  "objects": [
@@ -22,22 +22,242 @@
    ]
   },
   {
-   "fig": "knight",
+   "tile": "lance",
    "pos": [
-    -40,
-    -72,
-    0
-   ],
-   "label": "Dragon Knight"
+    -425,
+    -4,
+    -300
+   ]
   },
   {
-   "fig": "samurai-m",
+   "item": "lance",
    "pos": [
-    40,
-    -72,
-    0
+    -285,
+    0,
+    -300
    ],
-   "label": "Samurai"
+   "label": "lance"
+  },
+  {
+   "tile": "orcish dagger",
+   "pos": [
+    -95,
+    -4,
+    -300
+   ]
+  },
+  {
+   "item": "orcish dagger",
+   "pos": [
+    45,
+    0,
+    -300
+   ],
+   "label": "orcish dagger"
+  },
+  {
+   "tile": "dagger",
+   "pos": [
+    235,
+    -4,
+    -300
+   ]
+  },
+  {
+   "item": "dagger",
+   "pos": [
+    375,
+    0,
+    -300
+   ],
+   "label": "dagger"
+  },
+  {
+   "tile": "athame",
+   "pos": [
+    -425,
+    -4,
+    -160
+   ]
+  },
+  {
+   "item": "athame",
+   "pos": [
+    -285,
+    0,
+    -160
+   ],
+   "label": "athame"
+  },
+  {
+   "tile": "silver dagger",
+   "pos": [
+    -95,
+    -4,
+    -160
+   ]
+  },
+  {
+   "item": "silver dagger",
+   "pos": [
+    45,
+    0,
+    -160
+   ],
+   "label": "silver dagger"
+  },
+  {
+   "tile": "elven dagger",
+   "pos": [
+    235,
+    -4,
+    -160
+   ]
+  },
+  {
+   "item": "elven dagger",
+   "pos": [
+    375,
+    0,
+    -160
+   ],
+   "label": "elven dagger"
+  },
+  {
+   "tile": "dark elven dagger",
+   "pos": [
+    -425,
+    -4,
+    -20
+   ]
+  },
+  {
+   "item": "dark elven dagger",
+   "pos": [
+    -285,
+    0,
+    -20
+   ],
+   "label": "dark elven dagger"
+  },
+  {
+   "tile": "wooden stake",
+   "pos": [
+    -95,
+    -4,
+    -20
+   ]
+  },
+  {
+   "item": "wooden stake",
+   "pos": [
+    45,
+    0,
+    -20
+   ],
+   "label": "wooden stake"
+  },
+  {
+   "tile": "great dagger",
+   "pos": [
+    235,
+    -4,
+    -20
+   ]
+  },
+  {
+   "item": "great dagger",
+   "pos": [
+    375,
+    0,
+    -20
+   ],
+   "label": "great dagger"
+  },
+  {
+   "tile": "worm tooth",
+   "pos": [
+    -425,
+    -4,
+    120
+   ]
+  },
+  {
+   "item": "worm tooth",
+   "pos": [
+    -285,
+    0,
+    120
+   ],
+   "label": "worm tooth"
+  },
+  {
+   "tile": "knife",
+   "pos": [
+    -95,
+    -4,
+    120
+   ]
+  },
+  {
+   "item": "knife",
+   "pos": [
+    45,
+    0,
+    120
+   ],
+   "label": "knife"
+  },
+  {
+   "tile": "stiletto",
+   "pos": [
+    235,
+    -4,
+    120
+   ]
+  },
+  {
+   "item": "stiletto",
+   "pos": [
+    375,
+    0,
+    120
+   ],
+   "label": "stiletto"
+  },
+  {
+   "tile": "scalpel",
+   "pos": [
+    -425,
+    -4,
+    260
+   ]
+  },
+  {
+   "item": "scalpel",
+   "pos": [
+    -285,
+    0,
+    260
+   ],
+   "label": "scalpel"
+  },
+  {
+   "tile": "crysknife",
+   "pos": [
+    -95,
+    -4,
+    260
+   ]
+  },
+  {
+   "item": "crysknife",
+   "pos": [
+    45,
+    0,
+    260
+   ],
+   "label": "crysknife"
   }
  ]
 }

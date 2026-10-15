@@ -81,6 +81,20 @@ HELD = {
     '37341b': {'center': (0, 4, 0), 'up': (0, -1, 0)},                      # knife: blade up out of the fist
     '13790': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # club: by its handle, the thick end up
     '4006': {'center': (0, 6, 0), 'up': (0, -1, 0)},                        # spanner: by the middle, the jaws up
+    '3849': {'center': (0, 0, 14), 'up': (0, 0, -1)},                       # lance: behind its guard, the point forward (it lies along -Z)
+    '13564': {'center': (4, 0, 0), 'up': (-1, 0, 0)},                       # cow horn (a worm tooth): by its root, the point out (along -X)
+    '87994': {'center': (0, 40, 0), 'up': (0, -1, 0)},                      # bar 3L (a stake's shaft): low down, its top up
+    '23860': {'center': (0, -4, 0), 'up': (0, -1, 0)},                      # faceted blade: by its bar, the blade up
+    '27257': {'center': (0, -2, 0), 'up': (0, -1, 0)},                      # spear tip (a leaf-bladed dagger): by its bar, point up
+    '36752a': {'center': (0, -2, 0), 'up': (0, -1, 0)},                     # wand (a stiletto): by its end, the needle up
+    '55298': {'center': (0, 6, 0), 'up': (0, -1, 0)},                       # screwdriver (a scalpel): by the handle, the shaft up
+    '44658': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # knife: by the handle, blade up
+    '88288': {'center': (0, 6, 0), 'up': (0, -1, 0)},                       # curved dagger (an athame): by its grip, blade up
+    '98338': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # kunai: by its ribbed grip, blade up
+    '95054': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # Ninjago knife: by its grip
+    '5685': {'center': (0, 11, 0), 'up': (0, -1, 0), 'face': (1, 0, 0)},     # Dune crysknife (ldraw-extra): by its ribbed grip, blade up, its flat out
+    '95053': {'center': (0, 5, 0), 'up': (0, -1, 0)},                       # small sword, angular guard (a stiletto)
+    '64567': {'center': (0, 18, 0), 'up': (0, -1, 0)},                      # lightsaber hilt (a great dagger's): by the hilt, the top up
     '55295': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # hammer: by the handle, head up
 }
 
@@ -207,13 +221,14 @@ def decal_line(item, pos, mat, base_dir):
 # with some colours swapped, e.g. a face's black eyes made red, an elf-hair's
 # printed ears in the wearer's skin colour.  Written once, referenced by path.
 LDRAW = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'vendor', 'ldraw', 'ldraw')
+EXTRA = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ldraw-extra')   # our own parts (ldraw2glb.EXTRA)
 DERIVED = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'lego', 'cache', 'derived')
 
 
 def _ldraw_file(name):
     name = name.replace('\\', '/')
-    for d in ('parts', 'p'):
-        f = os.path.join(LDRAW, d, name if name.endswith('.dat') else name + '.dat')
+    for root, d in ((LDRAW, 'parts'), (LDRAW, 'p'), (EXTRA, 'parts')):
+        f = os.path.join(root, d, name if name.endswith('.dat') else name + '.dat')
         if os.path.isfile(f):
             return f, d == 'p'
     return None, False
