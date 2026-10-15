@@ -24,7 +24,8 @@ OUT = os.path.join(LEGO, 'items')
 def held_ldr(item):
     """The item as held: its main (first) part's grip (minifig.HELD) centred
     on the origin, the end that leaves the top of a fist up (-Y), the flat of
-    a blade (its 'face') toward +X; the other parts placed with it."""
+    a blade (its 'face') toward +X; the other parts placed with it (each
+    turned by its own "rot", if given, as a figure's extras are)."""
     info = minifig.held_info(item['parts'][0]['part'])
     R = minifig.frame(info['up']).T   # the item's 'up' onto -Y
     if 'face' in info:   # ...and turned about Y to bring its face round to +X
@@ -32,8 +33,13 @@ def held_ldr(item):
         a = np.arctan2(f[2], f[0])
         R = minifig.rot_axis((0, 1, 0), a) @ R
     c = np.array(info['center'], float)
-    return ''.join(minifig.line(p.get('color', 16), R @ (np.array(p.get('pos', [0, 0, 0]), float) - c), R, p['part']) + '\n'
-                   for p in item['parts'])
+    out = ''
+    for p in item['parts']:
+        M = np.eye(3)
+        for r in p.get('rot', []):   # turns, in order: {"axis": [x, y, z], "deg": d}
+            M = minifig.rot_axis(r['axis'], np.radians(r['deg'])) @ M
+        out += minifig.line(p.get('color', 16), R @ (np.array(p.get('pos', [0, 0, 0]), float) - c), R @ M, p['part']) + '\n'
+    return out
 
 
 def main():
@@ -51,6 +57,8 @@ def main():
             print(f'  {name}: {ldraw2glb.to_glb(lib.parse(src), colors, 71, glb)} tris')
             open(keyfile, 'w').write(key)
         built[name] = {'url': f'assets/lego/items/{slug}.glb?v={key}', 'lego': item.get('lego', '')}
+        if 'vtile' in item:   # an artifact with a look of its own (the game sends it as this tile: winweb.c web_obj_tile)
+            built[name]['vtile'] = item['vtile']
     json.dump(built, open(os.path.join(LEGO, 'items.built.json'), 'w'), indent=1)
     print(f'items: {len(built)}')
 

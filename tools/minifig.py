@@ -31,6 +31,10 @@ a hair's "recolor" does the same for the hair (an elf-hair's printed ears in the
 "neck" can be one part or a list (e.g. a cape and an armour plate); a neck
 item's "turn" (degrees about the vertical) swings it round, e.g. a quiver onto the back.
 
+"skeleton": true builds a LEGO skeleton: "torso" should be 6260 (its pelvis
+built in), the arms are bones (6265, claws and all; no hands) hanging from
+its shoulder balls, the legs bones (6266) clipped to its hip axle.
+
 Held and neck items can carry "decal": {"image": "../decals/x.png"} (path
 relative to the recipe; optional "center", "size" in LDU and "side":
 "front"/"back") to print a picture on them; DECAL_SPOTS has the defaults.
@@ -272,6 +276,28 @@ def line(color, pos, mat, part):
     return f'1 {color} {p} {m} {part}.dat'
 
 
+# A skeleton (torso 6260): its shoulder balls and hip axle, and how far its
+# bone arms (6265: modelled reaching forward, -Z, the claw at (0, 0, -30))
+# hang down from straight out in front.
+SKEL_SHOULDER = (21.2, 6.8, 0)
+SKEL_HIP = 44.8
+SKEL_HANG = 70
+SKEL_CLAW = (0, 0, -30)   # the middle of a bone arm's claw (6265.dat's !HELP)
+
+
+def skeleton_arm(out, G, spec, side):
+    """Write a skeleton's arm (its own joint, armR/armL) and return its rig."""
+    x = SKEL_SHOULDER[0] * (-1 if side == 'right' else 1)
+    pivot = np.array([x, SKEL_SHOULDER[1], SKEL_SHOULDER[2]])
+    m = rot_axis((1, 0, 0), np.radians(SKEL_HANG))
+    G('arm' + side[0].upper())
+    out.append(line(spec.get('armColor', 15), pivot, m, spec.get('arm' + side[0].upper(), '6265')))
+    # a held item: in the claw, its blade (held -Y) along the bone's -Y, out
+    # forward over the claw; its flat (+X) to the side
+    grip = {'pos': [float(v) for v in pivot + m @ np.array(SKEL_CLAW)], 'mat': [float(v) for v in m.flatten()]}
+    return {'pivot': [float(v) for v in pivot], 'axis': [1.0, 0.0, 0.0], 'swing': 0.0, 'grip': grip}
+
+
 def build(spec, base_dir='.'):
     """base_dir: where relative decal image paths are resolved from."""
     if spec.get('base'):   # another recipe (in base_dir), with this one's changes on top
@@ -291,8 +317,12 @@ def build(spec, base_dir='.'):
         out.append(decal_line({'part': spec.get('torso', '973'), 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
     out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, recolored(spec.get('torso', '973'), spec.get('torsoRecolor'))))
     sides, rig = {}, {}
+    skel = spec.get('skeleton')
     for side, arm, hand, part in (('right', ARM_R, HAND_R, spec.get('armR', '3818')),
                                   ('left', ARM_L, HAND_L, spec.get('armL', '3819'))):
+        if skel:   # a skeleton's arm: one bone, claw and all, on a ball at the shoulder (skeleton_arm)
+            rig['arm' + side[0].upper()] = skeleton_arm(out, G, spec, side)
+            continue
         item = spec.get(side) or {}
         if 'aim' in item:
             swing, roll = solve_pose(arm, hand, item['aim'])
@@ -335,6 +365,12 @@ def build(spec, base_dir='.'):
         # a sloped brick's top studs, turned round so its slope is at the back
         R180 = np.diag([-1.0, 1, -1])
         out.append(line(spec['dress'].get('color', 16), (0, 32, 0), R180, spec['dress'].get('part', '3678b')))
+    elif skel:
+        # a skeleton: its torso has its pelvis built in; the bone legs clip onto its axle
+        for g, x in (('legR', -10), ('legL', 10)):
+            G(g)
+            out.append(line(spec.get('legColor', 15), (x, SKEL_HIP, 0), I, spec.get(g, '6266')))
+        rig['legs'] = {'pivot': [0.0, SKEL_HIP, 0.0], 'axis': [1.0, 0.0, 0.0]}
     elif spec.get('shortLegs'):
         # short legs (a dwarf, a child): hips and legs in one piece
         out.append(line(spec['shortLegs'].get('color', 16), (0, 32, 0), I, spec['shortLegs'].get('part', '16709')))
@@ -364,6 +400,12 @@ def build(spec, base_dir='.'):
     if spec.get('dress'):
         # the dress brick (48 LDU) is 8 taller than hips and legs (40): lift everything so she still stands on the floor
         dy = -(48 - 40)
+    elif skel:
+        # a skeleton: its torso has its pelvis built in; the bone legs clip onto its axle
+        for g, x in (('legR', -10), ('legL', 10)):
+            G(g)
+            out.append(line(spec.get('legColor', 15), (x, SKEL_HIP, 0), I, spec.get(g, '6266')))
+        rig['legs'] = {'pivot': [0.0, SKEL_HIP, 0.0], 'axis': [1.0, 0.0, 0.0]}
     elif spec.get('shortLegs'):
         # short legs end 16 LDU higher than legs: lower everything so the feet are on the floor
         dy = 16

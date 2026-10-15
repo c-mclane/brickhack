@@ -75,7 +75,7 @@ def main(scene_path):
             built.append({'tile': tile_index(obj['tile']), 'pos': obj.get('pos', [0, 0, 0]), 'label': obj.get('label')})
             continue
         if 'item' in obj:
-            text = item_ldr(lib, items[obj['item']])
+            text = item_ldr(lib, {'parts': obj['parts']} if 'parts' in obj else items[obj['item']])   # (or its own parts: a variant)
             key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text)).encode()).hexdigest()[:10]
             src, color = os.path.join(CACHE, key + '.ldr'), 16
             if not os.path.exists(src):

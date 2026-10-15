@@ -86,7 +86,10 @@ function startGame(sid, opts) {
   }
 
   const start = () => {
-    const proc = spawn(path.join(V.dir, V.bin), ['-u', name], {
+    // LEGOHACK_WIZARD=1 npm start: every game in debug (wizard) mode, for testing
+    // (^V level teleport, ^G make a monster, ^W wish; saves go under the name "wizard")
+    const args = process.env.LEGOHACK_WIZARD === '1' ? ['-D', '-u', name] : ['-u', name];
+    const proc = spawn(path.join(V.dir, V.bin), args, {
       cwd: V.dir,
       env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir },
       stdio: ['pipe', 'pipe', 'pipe', 'pipe'],

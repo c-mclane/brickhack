@@ -1,0 +1,19 @@
+{
+ "label": "King Skelly III",
+ "name": "King Skelly III",
+ "skeleton": true,
+ "torso": "6260",
+ "torsoColor": 15,
+ "armColor": 15,
+ "legColor": 15,
+ "head": "3626bpaq",
+ "headColor": 15,
+ "hat": "71015",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "86038c01",
+   "color": 0
+  }
+ ]
+}

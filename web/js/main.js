@@ -599,6 +599,7 @@ async function init() {
   buildScreens();
   // the items made in LEGO (legoitems.js): their models for the floor, their pictures for the slots
   loadLegoItems().then(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
+  loadLegoMonsters();
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
   requestAnimationFrame(frame);
   // music can only start after the first click or key press (browser autoplay rules)
@@ -649,6 +650,7 @@ function handle(m) {
     case 'vis': world.setVis(m.v, m.w, m.h); break;
     case 'piles': world.applyPiles(m.p); break;
     case 'level':
+      world.castle = m.castle || null; // the Castle: [x0, y0, x1, y1], where its stone walls stand (render.js raises them)
       ui.showTitle(`Level ${m.depth}`, m.dname);
       cam.snap = true;
       break;
@@ -1245,6 +1247,43 @@ function heroPose(dt, now) {
   const hold = hero3d.hold || {};
   return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround),
     holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two });
+}
+
+// ---- monsters made in LEGO (web/assets/lego/monsters.json, built by
+// tools/build_roster.py): drawn as their minifig in place of their sprite,
+// alive as the hero is (breathing, looking about, walking, swinging what
+// they hold when they lunge at you), always facing you
+const legoMons = new Map(); // tile -> {url, hold (an item's url), prims, anim, lungeT0, last}
+async function loadLegoMonsters() {
+  const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+  const [mons, tiles, items] = await Promise.all([get('assets/lego/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/lego/items.built.json')]);
+  (tiles.names || []).forEach((n, i) => {
+    const m = mons[n];
+    if (!m) return;
+    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, anim: null, lungeT0: null, last: null };
+    legoMons.set(i, e);
+    renderer.lego.model(m.url).then((p) => { e.prims = p; e.anim = p && p.rig ? new FigureAnimator(p.rig) : null; if (e.anim) e.anim.spawn(); })
+      .catch((err) => console.warn('LEGO monster:', n, err));
+  });
+}
+// take the LEGO monsters' sprites out of the list; their figures, for renderer.legoFigures
+function legoMonFigures(sprites, dt, now) {
+  if (!legoMons.size) return [];
+  const out = [];
+  const [hx, hz] = motion.heroPos(now);
+  for (let i = sprites.length - 1; i >= 0; i--) {
+    const s = sprites[i], e = s.mon && legoMons.get(s.tile);
+    if (!e || !e.prims) continue;
+    sprites.splice(i, 1);
+    const f = s.mob && fx.mobFX && fx.mobFX.get(s.mob.id);
+    if (e.anim && f && f.kind === 'lunge' && f.t0 !== e.lungeT0) { e.lungeT0 = f.t0; e.anim.attack(); }
+    const moving = !!e.last && Math.hypot(s.x - e.last[0], s.z - e.last[1]) > 0.002 && !(f && f.kind === 'lunge');
+    e.last = [s.x, s.z];
+    const pose = e.anim ? e.anim.update(dt, { moving, holdsR: !!e.hold }) : null;
+    const yaw = Math.atan2(hx - s.x, -(hz - s.z)); // (the game's yaw: 0 looks north, -Z)
+    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(s.x + 0.5, s.lift || 0, s.z + 0.5, yaw), shade: s.shade, pose, hold: { R: e.hold } });
+  }
+  return out;
 }
 
 // ---- the hero's walk cycle and facing (used to turn the minifig)
@@ -2064,6 +2103,7 @@ function frame(t) {
         // (for the block levels' renderer, lego.js; the LEGO dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL }) : [])];
     } else renderer.legoFigures = [];
+    renderer.legoFigures.push(...legoMonFigures(sprites, dt, t)); // (King Skelly...)
     // first person: your own LEGO arm, and what it holds, in the corner of the
     // view; fighting with two weapons, your left one too, in the other corner
     const fpOn = !!pose && !!rig && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);

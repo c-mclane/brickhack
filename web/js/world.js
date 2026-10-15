@@ -149,7 +149,7 @@ export class World {
               const an = mobAnim(mob, now, this.camYaw || 0); // waddle, hop, flap...
               lift += this.standHeight(mob.tx, mob.tz); // up on a tower or a pillar
               out.push({ x: mx, z: mz, tile: c.t, size: h, lift: lift + an.dy, shade: sh, mon: true,
-                tilt: an.tilt, sx: an.sx, sy: an.sy, flip: an.flip });
+                tilt: an.tilt, sx: an.sx, sy: an.sy, flip: an.flip, mob });
             } else {
               out.push({ x, z: y, tile: c.t, size: c.k === 'i' ? 1 : 2, shade, mon: true });
             }

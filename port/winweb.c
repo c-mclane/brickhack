@@ -434,6 +434,206 @@ web_star_rod(struct obj *obj)
     return 1;
 }
 
+/* ------------------------------------------------------------------ */
+/* King Skelly III and the Realm Daggers (tools/patch_engine.py
+   WEB_HOOK_SKELLY). The king of the underworld climbed out of Gehennom with
+   the three Realm Daggers and took the Castle. Together the daggers open a
+   portal to any realm you've reached; apart, each has a power of its own. */
+
+static const int realm_arts[3] = { ART_DAGGER_OF_CREATION, ART_DAGGER_OF_PROTECTION,
+                                   ART_DAGGER_OF_DESTRUCTION };
+
+/* 0..2: which Realm Dagger (Creation, Protection, Destruction); -1: none */
+static int
+web_realm_which(struct obj *o)
+{
+    int i;
+    for (i = 0; o && i < 3; i++)
+        if (o->oartifact == realm_arts[i])
+            return i;
+    return -1;
+}
+
+/* how many of the three a chain of objects holds */
+static int
+web_realm_count(struct obj *chain)
+{
+    int seen = 0, k;
+    for (; chain; chain = chain->nobj)
+        if ((k = web_realm_which(chain)) >= 0)
+            seen |= 1 << k;
+    return !!(seen & 1) + !!(seen & 2) + !!(seen & 4);
+}
+
+/* the client's id for an object's look: its tile, or for a Realm Dagger
+   REALM_TILE + which (they share the great dagger's tile, but each has its
+   own LEGO model: web/assets/lego/items.json "vtile") */
+#define REALM_TILE 90000
+static int tile_of(int glyph);
+static int
+web_obj_tile(struct obj *o, int glyph)
+{
+    int k = web_realm_which(o);
+    return k >= 0 && !Hallucination ? REALM_TILE + k : tile_of(glyph);
+}
+
+/* artifact.c arti_invoke: 1 = the hero holds all three (the invoke opens a portal) */
+int
+web_realm_set(void)
+{
+    return web_realm_count(invent) == 3;
+}
+
+/* artifact.c arti_invoke: a Realm Dagger's own power, invoked alone */
+void
+web_realm_power(struct obj *obj)
+{
+    switch (web_realm_which(obj)) {
+    case 0: { /* Creation: a creature takes shape, and serves you */
+        struct permonst *pm = rndmonst();
+        struct monst *mtmp = 0;
+        coord cc;
+        if (pm && enexto(&cc, u.ux, u.uy, pm))
+            mtmp = makemon(pm, cc.x, cc.y, NO_MM_FLAGS);
+        if (!mtmp) {
+            pline_The("blade glows blue, but nothing takes shape.");
+            break;
+        }
+        pline_The("blade glows blue, and %s takes shape beside you!", a_monnam(mtmp));
+        (void) tamedog(mtmp, (struct obj *) 0);
+        break;
+    }
+    case 1: /* Protection: a shield about you, as the spell gives */
+        u.uspellprot = min(u.uspellprot + 5, 20);
+        u.uspmtime = 20;
+        if (!u.usptime)
+            u.usptime = u.uspmtime;
+        find_ac();
+        flags.botl = 1;
+        You("are surrounded by a shimmering green shield.");
+        break;
+    case 2: /* Destruction: a torrent of fire, where you point it */
+        if (!getdir((char *) 0) || (!u.dx && !u.dy)) {
+            pline_The("blade flickers red.");
+            break;
+        }
+        pline("A torrent of fire pours from the blade!");
+        buzz(ZT_SPELL(ZT_FIRE), 8, u.ux, u.uy, u.dx, u.dy);
+        break;
+    }
+}
+
+/* makemon.c: King Skelly comes with the three daggers (once a game: they're
+   artifacts); he wields one (monsters take an artifact over anything) */
+void
+web_monster_gear(struct monst *mtmp)
+{
+    int i;
+    if (mtmp->data != &mons[PM_KING_SKELLY_III])
+        return;
+    discard_minvent(mtmp); /* (not a common skeleton's gear: only his cape and crown, and the daggers) */
+    for (i = 0; i < 3; i++) {
+        struct obj *otmp;
+        if (exist_artifact(GREAT_DAGGER, artiname(realm_arts[i])))
+            continue;
+        otmp = mksobj(GREAT_DAGGER, FALSE, FALSE);
+        otmp = oname(otmp, artiname(realm_arts[i]));
+        otmp->spe = 2;
+        (void) mpickobj(mtmp, otmp);
+    }
+}
+
+extern int n_dgns; /* dungeon.c */
+
+/* where King Skelly flees: a realm the hero has reached, other than this
+   one, never back to Gehennom (he's done with it), Sokoban, the quests or
+   the end; 0 = nowhere to go */
+static int
+web_realm_refuge(d_level *dest)
+{
+    int pick[MAXDUNGEON], n = 0, i;
+    d_level tmp;
+    for (i = 0; i < n_dgns && n < MAXDUNGEON; i++) {
+        if (i == u.uz.dnum || !dungeons[i].dunlev_ureached)
+            continue;
+        tmp.dnum = i;
+        tmp.dlevel = 1;
+        if (In_hell(&tmp) || In_endgame(&tmp) || In_sokoban(&tmp) || In_quest(&tmp)
+            || In_V_tower(&tmp) || strstri(dungeons[i].dname, "Quest"))
+            continue;
+        pick[n++] = i;
+    }
+    if (n) { /* as deep as you've been in it */
+        dest->dnum = pick[rn2(n)];
+        dest->dlevel = dungeons[dest->dnum].dunlev_ureached;
+        return 1;
+    }
+    if (dunlev(&u.uz) <= 1) /* nowhere else: somewhere above, in this dungeon */
+        return 0;
+    dest->dnum = u.uz.dnum;
+    dest->dlevel = rnd(dunlev(&u.uz) - 1);
+    return 1;
+}
+
+/* monmove.c dochug, each turn of King Skelly's: he greets you when he first
+   sees you; beaten down to a third of his life with all three daggers in
+   hand, he tears a portal open and flees through it, a dagger knocked loose
+   as he goes, the portal left open behind him (one way: do.c). 1 = he's
+   gone */
+int
+web_realm_turn(struct monst *mtmp)
+{
+    struct obj *o, *drop = 0;
+    d_level dest;
+    int x, y, px = 0, py = 0, n = 0, k = 0;
+
+    if (mtmp->data != &mons[PM_KING_SKELLY_III])
+        return 0;
+    if ((mtmp->mstrategy & STRAT_WAITFORU) && (m_canseeu(mtmp) || mtmp->mhp < mtmp->mhpmax)) {
+        verbalize("I climbed every throne in Gehennom, mortal, and found them all dull.");
+        verbalize("Now every realm is mine to rule!");
+    }
+    if (mtmp->mhp >= mtmp->mhpmax / 3 || mtmp->mtame || mtmp->mpeaceful || !mtmp->mcanmove
+        || mtmp->msleeping || web_realm_count(mtmp->minvent) < 3 || !web_realm_refuge(&dest))
+        return 0;
+    /* the portal: where he stands, or else beside him (never on another trap) */
+    if (!t_at(mtmp->mx, mtmp->my))
+        px = mtmp->mx, py = mtmp->my;
+    else
+        for (x = mtmp->mx - 1; x <= mtmp->mx + 1; x++)
+            for (y = mtmp->my - 1; y <= mtmp->my + 1; y++)
+                if (isok(x, y) && ACCESSIBLE(levl[x][y].typ) && !t_at(x, y)
+                    && !(x == u.ux && y == u.uy) && !rn2(++n))
+                    px = x, py = y;
+    if (!px)
+        return 0;
+    /* the dagger knocked loose: one he isn't wielding */
+    for (o = mtmp->minvent; o; o = o->nobj)
+        if (web_realm_which(o) >= 0 && o != MON_WEP(mtmp) && !rn2(++k))
+            drop = o;
+    if (canseemon(mtmp))
+        pline("%s slashes at the air, and a portal tears open!", Monnam(mtmp));
+    else
+        You_hear("something tear through the very air.");
+    if (drop) {
+        if (canseemon(mtmp))
+            pline("%s is knocked loose and clatters to the %s!", The(xname(drop)), surface(mtmp->mx, mtmp->my));
+        obj_extract_self(drop); /* (never the one he wields: nothing to unwield) */
+        place_object(drop, mtmp->mx, mtmp->my);
+        stackobj(drop);
+        newsym(mtmp->mx, mtmp->my);
+    }
+    mkportal(px, py, dest.dnum, dest.dlevel);
+    if (cansee(px, py)) {
+        seetrap(t_at(px, py));
+        pline("%s flees through it, into %s!", canseemon(mtmp) ? Monnam(mtmp) : "Someone", dungeons[dest.dnum].dname);
+        pline_The("portal hangs open behind him.");
+    }
+    mtmp->mhp = max(mtmp->mhp, mtmp->mhpmax * 2 / 3); /* he gets his breath back, over there */
+    migrate_to_level(mtmp, ledger_no(&dest), MIGR_RANDOM, (coord *) 0);
+    return 1;
+}
+
 /* ...and where its portal opens, once the trial is over */
 static int
 web_portal5_open(void)
@@ -846,7 +1046,7 @@ flush_piles(void)
             if (!cansee(x, y) && !(x == u.ux && y == u.uy))
                 continue;
             for (o = level.objects[x][y]; o && k < PILE_MAX; o = o->nexthere) {
-                tiles[k] = tile_of(obj_to_glyph(o));
+                tiles[k] = web_obj_tile(o, obj_to_glyph(o));
                 sig = sig * 1000003UL + (unsigned long) (tiles[k] + 7);
                 k++;
             }
@@ -951,7 +1151,7 @@ build_inventory(void)
     for (o = invent; o; o = o->nobj) {
         fputs(n++ ? "," : "", out);
         fprintf(out, "{\"l\":\"%c\",\"t\":%d,\"q\":%ld,\"c\":\"%c\",\"n\":",
-                o->invlet, tile_of(OBJ_GLYPH(o)), o->quan, OC_SYM(o->oclass));
+                o->invlet, web_obj_tile(o, OBJ_GLYPH(o)), o->quan, OC_SYM(o->oclass));
         jstr(doname(o));
         fputs(",\"w\":", out);
         jstr(worn_slot(o));
@@ -1130,6 +1330,16 @@ sync_all(void)
             fprintf(out, "{\"t\":\"level\",\"depth\":%d,\"dname\":",
                     depth(&u.uz));
             jstr(web_dname());
+            if (Is_stronghold(&u.uz)) { /* the Castle: where its walls stand, so the client can raise them into a real castle */
+                /* (dat/castle.des: its map is 63x17, the drawbridge's span at (5,8), its walls from (1,1) to (61,15)) */
+                int x, y;
+                for (y = 0; y < ROWNO; y++)
+                    for (x = 1; x < COLNO; x++)
+                        if (levl[x][y].typ == DRAWBRIDGE_UP || levl[x][y].typ == DRAWBRIDGE_DOWN) {
+                            fprintf(out, ",\"castle\":[%d,%d,%d,%d]", x - 4, y - 7, x + 56, y + 7);
+                            x = COLNO, y = ROWNO;
+                        }
+            }
             endmsg();
         }
         flush_vis();

@@ -299,4 +299,106 @@ edit("src/zap.c", [
      "	{ extern int FDECL(web_star_rod, (struct obj *)); if (web_star_rod(obj)) return; } /* WEB_HOOK_STARROD */\n"
      "	if (otyp >= SPE_MAGIC_MISSILE && otyp <= SPE_ACID_STREAM)\n		skilldmg = spell_damage_bonus(obj->otyp);"),
 ], "WEB_HOOK_STARROD")
+# ---- King Skelly III and the Realm Daggers. The king of the underworld
+# climbed out of Gehennom with the three Realm Daggers and took the Castle,
+# the fortress over hell's gate: he sits on its throne, his undead holding
+# its walls. Together the daggers open a portal to any realm you've reached
+# (as the Eye of the Aethiopica does); apart, each has a power of its own.
+# Beaten down, he tears a portal open and flees through it to another realm,
+# a dagger knocked loose as he goes. (The game side is in winweb.c:
+# web_realm_*; King Skelly himself is mods/monsters/king-skelly-iii.json.)
+edit("include/artifact.h", [
+    ("#define OBJ_DETECTION	(LAST_PROP+16)\n",
+     "#define OBJ_DETECTION	(LAST_PROP+16)\n#define REALM_DAGGER	(LAST_PROP+17)	/* WEB_HOOK_SKELLY */\n"),
+], "WEB_HOOK_SKELLY")
+edit("include/artilist.h", [
+    ("A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )",
+     "/* WEB_HOOK_SKELLY: the Realm Daggers, King Skelly III's */\n"
+     "A(\"The Dagger of Creation\",	GREAT_DAGGER,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_INTEL|SPFX_ATTK|SPFX_REGEN), 0, 0,\n"
+     "	COLD(5,8),	NO_DFNS,	NO_CARY,\n"
+     "	REALM_DAGGER,	A_NONE, NON_PM, NON_PM, 6000L ),\n\n"
+     "A(\"The Dagger of Protection\",	GREAT_DAGGER,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_INTEL|SPFX_REFLECT|SPFX_HPHDAM), 0, 0,\n"
+     "	PHYS(5,4),	DFNS(AD_DRLI),	NO_CARY,\n"
+     "	REALM_DAGGER,	A_NONE, NON_PM, NON_PM, 6000L ),\n\n"
+     "A(\"The Dagger of Destruction\",	GREAT_DAGGER,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR|SPFX_INTEL|SPFX_ATTK), 0, 0,\n"
+     "	FIRE(5,12),	NO_DFNS,	NO_CARY,\n"
+     "	REALM_DAGGER,	A_NONE, NON_PM, NON_PM, 6000L ),\n\n"
+     "A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )"),
+], "WEB_HOOK_SKELLY")
+edit("src/artifact.c", [
+    ("#include \"hack.h\"\n",
+     "#include \"hack.h\"\nextern int NDECL(web_realm_set); /* WEB_HOOK_SKELLY */\nextern void FDECL(web_realm_power, (struct obj *));\n"),
+    ("	case CREATE_PORTAL: {\n",
+     "	case REALM_DAGGER: /* WEB_HOOK_SKELLY: apart, each its own power... */\n"
+     "	    if (!web_realm_set()) {\n"
+     "		web_realm_power(obj);\n"
+     "		break;\n"
+     "	    }\n"
+     "	    pline_The(\"three Realm Daggers blaze blue, green and red as one!\");\n"
+     "	    /* ...together, a portal to any realm you've reached: */\n"
+     "	    /* FALLTHRU */\n"
+     "	case CREATE_PORTAL: {\n"),
+], "WEB_HOOK_SKELLY")
+edit("src/makemon.c", [
+    ("#include \"hack.h\"\n", "#include \"hack.h\"\nextern void FDECL(web_monster_gear, (struct monst *)); /* WEB_HOOK_SKELLY */\n"),
+    ("	    m_initinv(mtmp);  /* add on a few special items incl. more armor */\n",
+     "	    m_initinv(mtmp);  /* add on a few special items incl. more armor */\n"
+     "	    web_monster_gear(mtmp); /* WEB_HOOK_SKELLY: King Skelly's daggers */\n"),
+], "WEB_HOOK_SKELLY")
+edit("src/monmove.c", [
+    ("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int FDECL(web_realm_turn, (struct monst *)); /* WEB_HOOK_SKELLY */\n"),
+    ("	/* check for waitmask status change */\n	if ((mtmp->mstrategy & STRAT_WAITFORU) &&",
+     "	if (web_realm_turn(mtmp)) /* WEB_HOOK_SKELLY: King Skelly fled through a portal */\n"
+     "	    return 1;\n\n"
+     "	/* check for waitmask status change */\n	if ((mtmp->mstrategy & STRAT_WAITFORU) &&"),
+], "WEB_HOOK_SKELLY")
+# (his portal is one-way: arriving through a portal with none on the far
+# side, you land anywhere on the level, as a level teleport would put you)
+edit("src/do.c", [
+    ("	    if (!ttrap) panic(\"goto_level: no corresponding portal!\");\n"
+     "	    seetrap(ttrap);\n"
+     "	    u_on_newpos(ttrap->tx, ttrap->ty);\n",
+     "	    if (!ttrap) /* WEB_HOOK_SKELLY: a one-way portal (King Skelly's) */\n"
+     "		place_lregion(dndest.lx, dndest.ly, dndest.hx, dndest.hy,\n"
+     "			      dndest.nlx, dndest.nly, dndest.nhx, dndest.nhy,\n"
+     "			      LR_DOWNTELE, (d_level *) 0);\n"
+     "	    else {\n"
+     "		seetrap(ttrap);\n"
+     "		u_on_newpos(ttrap->tx, ttrap->ty);\n"
+     "	    }\n"),
+], "WEB_HOOK_SKELLY")
+# the Castle, his: skeletons on the walls, the barracks crypts, and in the
+# throne room the king on his throne, four loyal skeletons about it, an
+# arch-lich and a master lich at court (instead of a court of random monsters).
+# (castle.des holds only these changes: start from SLASH'EM's own each build)
+_sp.run(["git", "-C", src, "checkout", "--", "dat/castle.des"], check=True)
+_castle = f"{src}/dat/castle.des"
+_s = open(_castle, encoding="latin-1").read()
+for _a, _b in (
+    ("MONSTER:'@',\"lieutenant\",(09,08)", "MONSTER:'V',\"vampire lord\",(09,08)"),
+    ("REGION:(16,05,25,06),lit,\"barracks\"", "REGION:(16,05,25,06),lit,\"morgue\""),
+    ("REGION:(16,10,25,11),lit,\"barracks\"", "REGION:(16,10,25,11),lit,\"morgue\""),
+    ("# The throne room and the court monsters\n",
+     "# The throne room and the court monsters (WEB_HOOK_SKELLY: King Skelly III's)\n"
+     "MONSTER:'Z',\"King Skelly III\",(36,08),hostile\n"
+     "MONSTER:'Z',\"skeleton\",(35,07),hostile\n"
+     "MONSTER:'Z',\"skeleton\",(35,09),hostile\n"
+     "MONSTER:'Z',\"skeleton\",(37,07),hostile\n"
+     "MONSTER:'Z',\"skeleton\",(37,09),hostile\n"
+     "MONSTER:'L',\"arch-lich\",(32,06),hostile\n"
+     "MONSTER:'L',\"master lich\",(32,10),hostile\n"),
+):
+    if _a not in _s:
+        sys.exit(f"patch_engine: anchor not found in dat/castle.des: {_a[:60]}")
+    _s = _s.replace(_a, _b, 1)
+_s, _n = re.subn(r"MONSTER:'@',\"soldier\",", "MONSTER:'Z',\"skeleton\",", _s)
+if _n != 16:
+    sys.exit(f"patch_engine: expected 16 soldiers in dat/castle.des, found {_n}")
+_s, _n = re.subn(r"MONSTER:monster\[\d\],random,\(\d+,\d+\)\n", "", _s)   # (the random court)
+if _n != 27:
+    sys.exit(f"patch_engine: expected 27 court monsters in dat/castle.des, found {_n}")
+open(_castle, "w", encoding="latin-1").write(_s)
 print("engine hooks applied:", src)

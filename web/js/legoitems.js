@@ -28,6 +28,8 @@ export function loadLegoItems() {
         const real = n.split(' / ').pop();
         if (items[real]) byTile.set(i, { name: real, ...items[real] });
       });
+      // artifacts with a look of their own: the game sends their own tile number (winweb.c web_obj_tile)
+      for (const [name, it] of Object.entries(items)) if (it.vtile != null) byTile.set(it.vtile, { name, ...it });
       await drawIcons();
     }).catch((e) => console.warn('LEGO items:', e));
   return readyP;

@@ -1,19 +1,19 @@
 {
  "camera": {
   "pos": [
-   0,
-   42,
-   26
+   -3,
+   5,
+   11
   ],
   "target": [
-   0,
-   0,
-   1
+   -4,
+   1.5,
+   0
   ]
  },
  "objects": [
   {
-   "part": "4186",
+   "part": "3811",
    "color": 2,
    "pos": [
     0,
@@ -22,242 +22,143 @@
    ]
   },
   {
-   "tile": "lance",
+   "item": "great dagger",
    "pos": [
-    -425,
-    -4,
-    -300
-   ]
-  },
-  {
-   "item": "lance",
-   "pos": [
-    -285,
     0,
-    -300
-   ],
-   "label": "lance"
-  },
-  {
-   "tile": "orcish dagger",
-   "pos": [
-    -95,
-    -4,
-    -300
-   ]
-  },
-  {
-   "item": "orcish dagger",
-   "pos": [
-    45,
     0,
-    -300
+    -60
    ],
-   "label": "orcish dagger"
-  },
-  {
-   "tile": "dagger",
-   "pos": [
-    235,
-    -4,
-    -300
-   ]
-  },
-  {
-   "item": "dagger",
-   "pos": [
-    375,
-    0,
-    -300
-   ],
-   "label": "dagger"
-  },
-  {
-   "tile": "athame",
-   "pos": [
-    -425,
-    -4,
-    -160
-   ]
-  },
-  {
-   "item": "athame",
-   "pos": [
-    -285,
-    0,
-    -160
-   ],
-   "label": "athame"
-  },
-  {
-   "tile": "silver dagger",
-   "pos": [
-    -95,
-    -4,
-    -160
-   ]
-  },
-  {
-   "item": "silver dagger",
-   "pos": [
-    45,
-    0,
-    -160
-   ],
-   "label": "silver dagger"
-  },
-  {
-   "tile": "elven dagger",
-   "pos": [
-    235,
-    -4,
-    -160
-   ]
-  },
-  {
-   "item": "elven dagger",
-   "pos": [
-    375,
-    0,
-    -160
-   ],
-   "label": "elven dagger"
-  },
-  {
-   "tile": "dark elven dagger",
-   "pos": [
-    -425,
-    -4,
-    -20
-   ]
-  },
-  {
-   "item": "dark elven dagger",
-   "pos": [
-    -285,
-    0,
-    -20
-   ],
-   "label": "dark elven dagger"
-  },
-  {
-   "tile": "wooden stake",
-   "pos": [
-    -95,
-    -4,
-    -20
-   ]
-  },
-  {
-   "item": "wooden stake",
-   "pos": [
-    45,
-    0,
-    -20
-   ],
-   "label": "wooden stake"
-  },
-  {
-   "tile": "great dagger",
-   "pos": [
-    235,
-    -4,
-    -20
+   "label": "turquoise blade, medium blue gem",
+   "parts": [
+    {
+     "part": "64567a",
+     "color": 297
+    },
+    {
+     "part": "64727",
+     "color": 3,
+     "pos": [
+      0,
+      -4,
+      0
+     ]
+    },
+    {
+     "part": "30153",
+     "color": 41,
+     "pos": [
+      0,
+      36,
+      0
+     ],
+     "rot": [
+      {
+       "axis": [
+        1,
+        0,
+        0
+       ],
+       "deg": 180
+      }
+     ]
+    }
    ]
   },
   {
    "item": "great dagger",
    "pos": [
-    375,
     0,
-    -20
+    0,
+    0
    ],
-   "label": "great dagger"
-  },
-  {
-   "tile": "worm tooth",
-   "pos": [
-    -425,
-    -4,
-    120
+   "label": "green blade, green gem",
+   "parts": [
+    {
+     "part": "64567a",
+     "color": 297
+    },
+    {
+     "part": "64727",
+     "color": 2,
+     "pos": [
+      0,
+      -4,
+      0
+     ]
+    },
+    {
+     "part": "30153",
+     "color": 34,
+     "pos": [
+      0,
+      36,
+      0
+     ],
+     "rot": [
+      {
+       "axis": [
+        1,
+        0,
+        0
+       ],
+       "deg": 180
+      }
+     ]
+    }
    ]
   },
   {
-   "item": "worm tooth",
+   "item": "great dagger",
    "pos": [
-    -285,
     0,
-    120
+    0,
+    60
    ],
-   "label": "worm tooth"
-  },
-  {
-   "tile": "knife",
-   "pos": [
-    -95,
-    -4,
-    120
+   "label": "red blade, red gem",
+   "parts": [
+    {
+     "part": "64567a",
+     "color": 297
+    },
+    {
+     "part": "64727",
+     "color": 4,
+     "pos": [
+      0,
+      -4,
+      0
+     ]
+    },
+    {
+     "part": "30153",
+     "color": 36,
+     "pos": [
+      0,
+      36,
+      0
+     ],
+     "rot": [
+      {
+       "axis": [
+        1,
+        0,
+        0
+       ],
+       "deg": 180
+      }
+     ]
+    }
    ]
   },
   {
-   "item": "knife",
+   "fig": "king-skelly-iii",
    "pos": [
-    45,
-    0,
-    120
+    -150,
+    -73,
+    0
    ],
-   "label": "knife"
-  },
-  {
-   "tile": "stiletto",
-   "pos": [
-    235,
-    -4,
-    120
-   ]
-  },
-  {
-   "item": "stiletto",
-   "pos": [
-    375,
-    0,
-    120
-   ],
-   "label": "stiletto"
-  },
-  {
-   "tile": "scalpel",
-   "pos": [
-    -425,
-    -4,
-    260
-   ]
-  },
-  {
-   "item": "scalpel",
-   "pos": [
-    -285,
-    0,
-    260
-   ],
-   "label": "scalpel"
-  },
-  {
-   "tile": "crysknife",
-   "pos": [
-    -95,
-    -4,
-    260
-   ]
-  },
-  {
-   "item": "crysknife",
-   "pos": [
-    45,
-    0,
-    260
-   ],
-   "label": "crysknife"
+   "rotY": 0,
+   "label": "King Skelly III"
   }
  ]
 }

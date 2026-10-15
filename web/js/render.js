@@ -742,6 +742,22 @@ export class Renderer {
     // a doorway's wall runs north-south when it has wall north or south of it
     const doorAlongZ = (x, y, c) => (c.cmap === CM.vcdoor || c.cmap === CM.vodoor ? true
       : c.cmap === CM.hcdoor || c.cmap === CM.hodoor ? false : wallAt(x, y - 1) || wallAt(x, y + 1));
+    // the Castle (King Skelly's): its outer walls, the ones on the moat, rise
+    // high with battlements, and its four corner towers higher still (rise 1,
+    // 2: brickworld.js); the walls inside stay as they are
+    const castle = lego && world.castle;
+    const castleRise = (x, y) => {
+      if (!castle) return 0;
+      const [x0, y0, x1, y1] = castle;
+      if (x < x0 || x > x1 || y < y0 || y > y1) return 0;
+      if ((x - x0 <= 6 || x1 - x <= 6) && (y - y0 <= 3 || y1 - y <= 3)) return 2;
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const n = cls[(y + dy) * W + x + dx];
+          if (n && n.type === 'liquid') return 1;
+        }
+      return 0;
+    };
     // plain floors get a studded plate; any other floor tile (stairs, an altar's square...) a smooth one, printed
     const plainFloor = new Set([CM.room, CM.darkroom, CM.corr, CM.litcorr, CM.ndoor].map(cmapTile));
 
@@ -768,7 +784,7 @@ export class Renderer {
         const doorTop = world.dream ? DOOR_H : WALL_H;
         switch (c.type) {
           case 'wall':
-            if (lego) bricks.walls.push({ x, z: y, shade });
+            if (lego) bricks.walls.push({ x, z: y, shade, rise: castleRise(x, y) });
             else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
           case 'rock': // known rock is wall; rock nobody has seen yet is fog

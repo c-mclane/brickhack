@@ -429,6 +429,7 @@ ettin zombie
 ghast
 giant zombie
 skeleton
+King Skelly III
 ghoul queen
 gug
 straw golem

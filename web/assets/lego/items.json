@@ -380,5 +380,119 @@
     "color": 179
    }
   ]
+ },
+ "Dagger of Creation": {
+  "lego": "Realm Dagger: pearl gold hilt, dark turquoise blade, a blue gem in the pommel",
+  "vtile": 90000,
+  "parts": [
+   {
+    "part": "64567a",
+    "color": 297
+   },
+   {
+    "part": "64727",
+    "color": 3,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   },
+   {
+    "part": "30153",
+    "color": 41,
+    "pos": [
+     0,
+     36,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "Dagger of Protection": {
+  "lego": "Realm Dagger: pearl gold hilt, green blade, a green gem in the pommel",
+  "vtile": 90001,
+  "parts": [
+   {
+    "part": "64567a",
+    "color": 297
+   },
+   {
+    "part": "64727",
+    "color": 2,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   },
+   {
+    "part": "30153",
+    "color": 34,
+    "pos": [
+     0,
+     36,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "Dagger of Destruction": {
+  "lego": "Realm Dagger: pearl gold hilt, red blade, a red gem in the pommel",
+  "vtile": 90002,
+  "parts": [
+   {
+    "part": "64567a",
+    "color": 297
+   },
+   {
+    "part": "64727",
+    "color": 4,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   },
+   {
+    "part": "30153",
+    "color": 36,
+    "pos": [
+     0,
+     36,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
  }
 }

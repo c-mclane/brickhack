@@ -19,6 +19,8 @@ const PIECES = {
   brick: 'assets/lego/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
 };
 const WALL_GREY = 0xa0a5a9, GROUND_GREEN = 0x00852b;
+// how many courses higher the Castle's walls rise: [none, its outer walls, its corner towers]
+const RISE_COURSES = [0, 9, 16];
 
 export class BrickWorld {
   constructor(canvas, gl) {
@@ -115,7 +117,7 @@ export class BrickWorld {
   }
 
   // The dungeon, from the game's terrain builder:
-  // {w, h, floors: [{x, z, shade, studs}], walls: [{x, z, shade, studs}], doors: [{url, matrix, shade}]}
+  // {w, h, floors: [{x, z, shade, studs}], walls: [{x, z, shade, studs, rise}], doors: [{url, matrix, shade}]}
   setTerrain(data) {
     this.data = data;
     const M = () => new THREE.Matrix4();
@@ -125,11 +127,14 @@ export class BrickWorld {
       if (f.studs) plates.push([M().makeTranslation(f.x + 0.5, 0, f.z + 0.5).scale(new THREE.Vector3(S, S, S)), f.shade]);
       else smooth.push([M().makeTranslation(f.x, -PLATE_H, f.z).scale(new THREE.Vector3(1, PLATE_H, 1)), f.shade]); // a printed tile goes on top
     }
-    const TOP = 6 * BRICK_H;
     for (const w of data.walls) {
       // under the wall, the floor's plate; then five courses of two 2x4 bricks, crossing each course
+      // (the Castle's: its outer walls RISE_COURSES[1] more, its towers [2], every other
+      // square a course higher again: the battlements)
+      const n = 5 + (w.rise ? RISE_COURSES[w.rise] + ((w.x + w.z) % 2 === 0 ? 1 : 0) : 0);
+      const TOP = (n + 1) * BRICK_H;
       courses.push([M().makeTranslation(w.x, -PLATE_H, w.z).scale(new THREE.Vector3(1, PLATE_H, 1)), w.shade]);
-      for (let l = 0; l < 5; l++)
+      for (let l = 0; l < n; l++)
         for (const half of [0, 0.5])
           courses.push([l % 2 === 0
             ? M().makeTranslation(w.x, l * BRICK_H, w.z + half).scale(new THREE.Vector3(1, BRICK_H, 0.5))

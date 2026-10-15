@@ -8,6 +8,10 @@ recipe in web/assets/lego/figs/, and writes:
   web/assets/lego/roster/<name>.glb   the figure (rebuilt only when it changed)
   web/assets/lego/roster.built.json   [{id, label, url}] for the client
 and the dungeon's LEGO pieces (DUNGEON_PARTS) as web/assets/lego/parts/<name>.glb.
+
+Monsters made in LEGO (web/assets/lego/monsters.json: {"<NetHack name>":
+{"fig": recipe, "hold": an item of items.json in its right hand}}) are built
+the same way, listed in web/assets/lego/monsters.built.json for the client.
 """
 import hashlib, json, os, sys
 
@@ -46,7 +50,9 @@ def main():
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
     figs = os.path.join(LEGO, 'figs')
     built = []
-    for name in json.load(open(os.path.join(LEGO, 'roster.json'))):
+
+    def figure(name):
+        """Build a recipe (when it changed): (its spec, its url)."""
         spec = json.load(open(os.path.join(figs, name + '.json')))
         ldr = minifig.build(spec, figs)
         # decal images count too: a changed picture rebuilds the figure
@@ -57,11 +63,20 @@ def main():
             open(ldr_path, 'w').write(ldr)
             print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.figure_geom(lib, ldr_path, ldr), colors, 71, glb, ldraw2glb.figure_extras(ldr))} tris')
             open(keyfile, 'w').write(key)
-        built.append({'id': name, 'label': spec.get('label', name), 'url': f'assets/lego/roster/{name}.glb?v={key}',
+        return spec, f'assets/lego/roster/{name}.glb?v={key}'
+
+    for name in json.load(open(os.path.join(LEGO, 'roster.json'))):
+        spec, url = figure(name)
+        built.append({'id': name, 'label': spec.get('label', name), 'url': url,
                       'role': spec.get('role', 'knight'), 'gender': spec.get('gender', 'male'),
                       'race': spec.get('race', 'human')})
     json.dump(built, open(os.path.join(LEGO, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
+    mons = {}
+    for mon, m in json.load(open(os.path.join(LEGO, 'monsters.json'))).items():
+        mons[mon] = {'url': figure(m['fig'])[1], 'hold': m.get('hold')}
+    json.dump(mons, open(os.path.join(LEGO, 'monsters.built.json'), 'w'), indent=1)
+    print(f'monsters in LEGO: {len(mons)}')
     os.makedirs(PARTS, exist_ok=True)
     for name, ldr in DUNGEON_PARTS.items():
         glb, src, keyfile = (os.path.join(PARTS, name + ext) for ext in ('.glb', '.ldr', '.key'))
