@@ -72,8 +72,9 @@ export const SLASH_CUT = 0.62; // how far into the slash (0..1) the blade reache
 // turns it to its right)
 const SLASH = [
   { t: 0, swing: null, out: 0, twist: 0 }, // (from wherever the arm was)
-  { t: 0.36, swing: -172, out: 52, twist: 0.46 }, // wound up: right up overhead and out to the right, turned well back
-  { t: SLASH_CUT, swing: -12, out: -62, twist: -0.55 }, // the cut: a big swoop down and across to the left, following through
+  { t: 0.36, swing: -145, out: 72, twist: 0.42 }, // wound up: high and well out to the right (clear of the head), turned back
+  { t: 0.5, swing: -62, out: 58, twist: 0.05 }, // coming down beside you (still out to the side: the blade never crosses your face)...
+  { t: SLASH_CUT, swing: -12, out: -62, twist: -0.55 }, // ...then the cut: low and across to the left, following through
   { t: 1, swing: null, out: 0, twist: 0 }, // and back to where it was
 ];
 function slashAt(k, rest) {
@@ -161,9 +162,11 @@ export class FigureAnimator {
       if (side === 'R' && slash) { a = slash.swing; out = slash.out; }
       else if (slashL) { a = slashL.swing; out = slashL.out; }
       else this.arm[side] = a;
-      // (the arm thrown out sideways: about the figure's forward axis, through the shoulder;
-      // the right arm is on the figure's -X side, so out to the right is a turn about -Z)
-      const M = mul(B, mul(turnAbout(j.pivot, [0, 0, side === 'R' ? -1 : 1], out * DEG), turnAbout(j.pivot, j.axis, (a - j.swing) * DEG)));
+      // (as a shoulder does it: the arm first thrown out sideways (about the figure's
+      // forward axis, through the shoulder; the right arm is on the figure's -X side,
+      // so out is a turn about -Z), then swung up about the shoulder; the other way
+      // round, an arm raised overhead and then turned "out" would sweep across the head)
+      const M = mul(B, mul(turnAbout(j.pivot, j.axis, (a - j.swing) * DEG), turnAbout(j.pivot, [0, 0, side === 'R' ? -1 : 1], out * DEG)));
       P['arm' + side] = M;
       P['hand' + side] = M; // (the hand, and what it holds, turn with the arm; first person also turns the wrist)
       P['item' + side] = M;

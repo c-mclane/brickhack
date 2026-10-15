@@ -18,7 +18,7 @@ html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px syst
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura } from './js/mist.js';
-import { FigureAnimator, figureJoints, poseJoints } from './js/minifig-anim.js';
+import { FigureAnimator, figureJoints, poseJoints, ATTACK_TIME } from './js/minifig-anim.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const r = new THREE.WebGLRenderer({ antialias: true });
@@ -60,8 +60,9 @@ function model(url) {
 
 const root = new THREE.Group(); scene.add(root);
 // the figures come alive (minifig-anim.js): each breathes and looks about;
-// W: everyone walks (on the spot), Space: everyone attacks, R: stretch again
-let animated = [], walking = false;
+// W: everyone walks (on the spot), Space: everyone attacks, R: stretch again,
+// 1-9: hold everyone's slash at 10%-90% of the way through (to look at it), 0: let go
+let animated = [], walking = false, freeze = null;
 const status = document.getElementById('status');
 let version = null, camKey = null;
 
@@ -181,12 +182,16 @@ addEventListener('keydown', e => {
   if (e.key === 'w' || e.key === 'W') walking = !walking;
   if (e.key === ' ') { animated.forEach(x => x.a.attack()); e.preventDefault(); }
   if (e.key === 'r' || e.key === 'R') animated.forEach(x => x.a.spawn());
+  if (/^[0-9]$/.test(e.key)) freeze = e.key === '0' ? null : +e.key / 10;
 });
 let last = performance.now();
 (function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, ((now || last) - last) / 1000); last = now || last;
-  for (const x of animated) poseJoints(x.j, x.a.update(dt, { moving: walking }));
+  for (const x of animated) {
+    if (freeze != null) x.a.attackT0 = x.a.t - freeze * ATTACK_TIME;
+    poseJoints(x.j, x.a.update(dt, { moving: walking }));
+  }
   ctl.update(); r.render(scene, cam); placeTags();
 })();
 addEventListener('resize', () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); });
