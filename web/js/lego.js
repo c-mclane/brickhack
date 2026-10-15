@@ -314,8 +314,8 @@ export class Lego {
   }
 
   // Draw the instanced bricks and studs, then any models: [{prims, matrix, shade,
-  // pose, only}] (prims: the resolved result of model(url); pose: a matrix per
-  // joint, minifig-anim.js; only: draw just these joints). figuresOnly: skip the bricks.
+  // pose, only, skip}] (prims: the resolved result of model(url); pose: a matrix per
+  // joint, minifig-anim.js; only: draw just these joints; skip: not these). figuresOnly: skip the bricks.
   draw(proj, view, figures = [], figuresOnly = false) {
     const gl = this.gl, u = this.u;
     gl.useProgram(this.prog);
@@ -351,6 +351,7 @@ export class Lego {
         for (const p of f.prims) {
           if ((p.color[3] < 1) !== glow) continue;
           if (f.only && !f.only.includes(p.group)) continue;
+          if (f.skip && f.skip.includes(p.group)) continue; // (a joint hidden: e.g. the hand's own item, something else held instead)
           if (posed && p.group !== current) {
             current = p.group;
             if (!(current in posed)) posed[current] = f.pose[current] ? mul4(f.matrix, f.pose[current]) : f.matrix;

@@ -16,8 +16,8 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, firstPersonMatrix } from './minifig-anim.js';
-import { loadLegoItems } from './legoitems.js';
+import { FigureAnimator, firstPersonMatrix, firstPersonGrip, mul as mul4 } from './minifig-anim.js';
+import { loadLegoItems, legoItemForTile } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -1182,6 +1182,37 @@ let heroView = null;
 // the minifig stands in for the doll and the hero's sprite on LEGO levels
 const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
 
+// What the hero has in each hand, as LEGO: {R, L}, each an item's url;
+// null: nothing in that hand; undefined: something not made in LEGO yet (the
+// figure keeps what it was built holding). The left hand only while fighting
+// with two weapons (the "alt" weapon); otherwise it's left as built (a shield...).
+const heldPrims = new Map(); // url -> the item's prims for lego.js (loading: null)
+function heroHold() {
+  const wep = game.inv.find((i) => i.w === 'weapon');
+  const two = !!(ui.stat && ui.stat.twoweap);
+  const alt = two ? game.inv.find((i) => i.w === 'alt') : null;
+  const as = (it) => { const l = legoItemForTile(it.t); return l ? l.url : undefined; };
+  const hold = { R: wep ? as(wep) : null, L: alt ? as(alt) : undefined, two };
+  for (const url of [hold.R, hold.L])
+    if (url && !heldPrims.has(url)) {
+      heldPrims.set(url, null);
+      renderer.lego.model(url).then((p) => heldPrims.set(url, p)).catch(() => {});
+    }
+  return hold;
+}
+// lego.js entries for what's held, on a figure drawn at `matrix` with joint
+// matrices `arms` ({R, L}); grips: how each sits in its hand (default: the rig's grip)
+function heldEntries(hold, rig, matrix, arms, grips = {}) {
+  const out = [];
+  for (const side of ['R', 'L']) {
+    const url = hold[side], prims = url && heldPrims.get(url), j = rig['arm' + side];
+    const grip = grips[side] || (j && j.grip && new Float32Array(j.grip));
+    if (prims && grip && arms[side]) out.push({ prims, matrix: mul4(matrix, mul4(arms[side], grip)), shade: 1 });
+  }
+  return out;
+}
+const skipped = (hold) => ['R', 'L'].filter((s) => hold[s] !== undefined).map((s) => 'item' + s);
+
 // the hero minifig's joints this frame: walking when moving (or falling),
 // swinging what's in the right hand on each attack (fx.attack)
 function heroPose(dt, now) {
@@ -1191,7 +1222,9 @@ function heroPose(dt, now) {
     if (hero3d.jabT0 !== -1) a.attack();
     hero3d.jabT0 = fx.jabT0;
   }
-  return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround) });
+  const hold = hero3d.hold || {};
+  return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround),
+    holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two });
 }
 
 // ---- the hero's walk cycle and facing (used to turn the minifig)
@@ -2001,16 +2034,30 @@ function frame(t) {
       const [hx, hz] = motion.heroPos(t);
       drops.update(dt, t, world, [hx + 0.5, world.heroLift ?? phys.y, hz + 0.5], pickUpBlock);
     }
+    const hold = (hero3d.hold = hero3d.prims && game.playing ? heroHold() : {});
     const pose = hero3d.prims ? heroPose(dt, t) : null;
+    const rig = hero3d.prims && hero3d.prims.rig;
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
-      renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw), shade: 1, pose }];
+      const m = figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
+      renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
+        // (for the block levels' renderer, lego.js; the LEGO dungeon's hangs them on the hands itself)
+        ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.armR, L: pose.armL }) : [])];
     } else renderer.legoFigures = [];
-    // first person: your own LEGO arm, and what it holds, in the corner of the view
-    const fpOn = !!pose && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
-    const vc = $('#view');
-    renderer.fpArm = fpOn ? { prims: hero3d.prims, matrix: firstPersonMatrix(hero3d.prims.rig, vc.clientWidth / Math.max(1, vc.clientHeight)),
-      pose: pose.fpArmR ? { armR: pose.fpArmR, itemR: pose.fpArmR } : pose, only: ['armR', 'itemR'], shade: 1 } : null;
+    // first person: your own LEGO arm, and what it holds, in the corner of the
+    // view; fighting with two weapons, your left one too, in the other corner
+    const fpOn = !!pose && !!rig && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
+    const vc = $('#view'), aspect = vc.clientWidth / Math.max(1, vc.clientHeight);
+    if (fpOn) {
+      const arms = [];
+      for (const side of hold.two ? ['R', 'L'] : ['R']) {
+        const fm = firstPersonMatrix(rig, aspect, side), ap = pose['fpArm' + side];
+        if (!fm || !ap) continue;
+        arms.push({ prims: hero3d.prims, matrix: fm, pose: { ['arm' + side]: ap, ['item' + side]: ap }, only: ['arm' + side, 'item' + side], skip: skipped(hold), shade: 1 },
+          ...heldEntries({ [side]: hold[side] }, rig, fm, { [side]: ap }, { [side]: firstPersonGrip(rig, fm, side) }));
+      }
+      renderer.fpArm = arms;
+    } else renderer.fpArm = null;
     hero3d.fpArm = fpOn;
     { const [fx, fz] = motion.heroPos(t); renderer.focus = [fx + 0.5, 0, fz + 0.5]; } // (the BrickWorld's shadows follow you)
     renderer.buildSprites(sprites, cam.vyaw, (out) => {

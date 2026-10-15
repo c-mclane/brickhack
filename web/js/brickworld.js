@@ -352,7 +352,32 @@ export class BrickWorld {
       g.matrix.fromArray(f.matrix);
       g.matrixWorldNeedsUpdate = true;
       poseJoints(g.userData.joints, f.pose);
+      if (g.userData.joints) this.holdItems(g, f.hold || {});
     });
+  }
+
+  // What the figure has in its hands (hold: {R, L}, each a LEGO item's url;
+  // null: nothing, the hand empty; undefined: as the figure was built). A
+  // held item hangs on its arm's joint at the hand's grip (the rig's grip,
+  // tools/minifig.py grip_frame), the figure's own item in that hand hidden.
+  holdItems(g, hold) {
+    const j = g.userData.joints;
+    const held = (g.userData.held = g.userData.held || {});
+    for (const side of ['R', 'L']) {
+      const want = hold[side], baked = j.joints['item' + side], arm = j.joints['arm' + side];
+      if (baked) baked.visible = want === undefined;
+      const cur = held[side];
+      if (cur && cur.url === want) continue;
+      if (cur) { cur.obj.parent && cur.obj.parent.remove(cur.obj); delete held[side]; }
+      const grip = j.rig['arm' + side] && j.rig['arm' + side].grip;
+      if (!want || !arm || !grip) continue;
+      const obj = new THREE.Group();
+      obj.matrixAutoUpdate = false;
+      obj.matrix.fromArray(grip);
+      arm.add(obj);
+      held[side] = { url: want, obj };
+      this.model(want).then((m) => { if (held[side] && held[side].obj === obj) obj.add(m.clone()); });
+    }
   }
 
   // draw, with the game's camera (column-major projection and view matrices), the

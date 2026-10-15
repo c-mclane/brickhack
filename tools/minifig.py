@@ -170,6 +170,23 @@ def grip(hand, part, face=None):
     return hp + hm @ pos_h, hm @ rot
 
 
+def grip_frame(hand, face=(1, 0, 0)):
+    """Where a held item goes, for an item built in the standard held frame
+    (tools/build_items.py: its grip's centre at the origin, its 'up' -Y): the
+    placement (pos, 3x3) in the figure's frame, the item turned about its
+    grip so its +X (a blade's flat) faces `face`."""
+    hp, hm = np.array(hand[0], float), np.array(hand[1], float).reshape(3, 3)
+    rot = frame(GRIP_AXIS) @ frame((0, -1, 0)).T
+    best = None
+    for deg in range(0, 360, 2):
+        r = rot_axis(GRIP_AXIS, np.radians(deg)) @ rot
+        score = (hm @ r @ np.array([1.0, 0, 0])) @ unit(face)
+        if best is None or score > best[0]:
+            best = (score, r)
+    rot = best[1]
+    return hp + hm @ GRIP_CENTER, hm @ rot
+
+
 def decal_line(item, pos, mat, base_dir):
     """An LDraw !TEXMAP line that prints item['decal'] (an image) on the item.
     The image's top-left, top-right and bottom-left corners map to p1, p2, p3,
@@ -268,8 +285,10 @@ def build(spec, base_dir='.'):
             swing, roll = item.get('swing', 0), item.get('roll', 0)
         a, h = pose_arm(arm, hand, swing, roll)
         sides[side] = h
+        gp, gm = grip_frame(h)
         # the shoulder: the arm swings about its own X axis through its origin (pose_arm)
-        rig['arm' + side[0].upper()] = {'pivot': list(map(float, arm[0])), 'axis': list(map(float, np.array(arm[1], float).reshape(3, 3)[:, 0])), 'swing': float(swing)}
+        rig['arm' + side[0].upper()] = {'pivot': list(map(float, arm[0])), 'axis': list(map(float, np.array(arm[1], float).reshape(3, 3)[:, 0])), 'swing': float(swing),
+                                        'grip': {'pos': [float(v) for v in gp], 'mat': [float(v) for v in gm.flatten()]}}   # (where a held item goes: grip_frame)
         G('arm' + side[0].upper())
         out.append(line(spec.get('armColor', 15), a[0], a[1], part))
         out.append(line(spec.get('handColor', 14), h[0], h[1], '3820'))
@@ -336,6 +355,8 @@ def build(spec, base_dir='.'):
     rig['waist'] = {'pivot': [0.0, 32.0, 0.0]}   # (breathing: the body swells from the waist)
     for j in rig.values():
         j['pivot'][1] += dy
+        if 'grip' in j:
+            j['grip']['pos'][1] += dy
     out.insert(1, '0 !LEGOHACK RIG ' + json.dumps(rig, separators=(',', ':')))
     if spec.get('marble'):   # a statue: every part marble, its prints carved in one faint colour
         m = spec['marble']

@@ -122,6 +122,14 @@ def figure_rig(ldr_text):
         j['pivot'] = (np.array(j['pivot']) * SCALE * flip).round(5).tolist()
         if 'axis' in j:
             j['axis'] = (np.array(j['axis']) * flip).round(5).tolist()
+        if 'grip' in j:
+            # a held item's placement, as a 4x4 matrix (column-major) in the model's units and axes
+            F = np.diag(flip.astype(float))
+            m = F @ np.array(j['grip']['mat']).reshape(3, 3) @ F
+            p = np.array(j['grip']['pos']) * SCALE * flip
+            M = np.eye(4)
+            M[:3, :3], M[:3, 3] = m, p
+            j['grip'] = M.T.flatten().round(5).tolist()
     return rig
 
 

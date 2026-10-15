@@ -3,9 +3,10 @@
 
   build_items.py
 
-Each item's parts, as they'd be held: in the item's own frame, its grip at the
-origin, a blade pointing up (LDraw: -Y), so the same model serves for an item
-in a hand and, laid down by the game, on the floor (brickworld.js). Writes
+Each item's parts, as they'd be held (held_ldr): its grip at the origin, a
+blade pointing up (LDraw: -Y), its flat toward +X, so the same model serves
+for an item in a hand (a figure's rig has each hand's grip: minifig.grip_frame)
+and, laid down by the game, on the floor (brickworld.js). Writes
   web/assets/lego/items/<name>.glb      (rebuilt only when it changed)
   web/assets/lego/items.built.json      {name: {url, lego}}
 """
@@ -20,13 +21,28 @@ LEGO = os.path.join(HERE, '..', 'web', 'assets', 'lego')
 OUT = os.path.join(LEGO, 'items')
 
 
+def held_ldr(item):
+    """The item as held: its main (first) part's grip (minifig.HELD) centred
+    on the origin, the end that leaves the top of a fist up (-Y), the flat of
+    a blade (its 'face') toward +X; the other parts placed with it."""
+    info = minifig.held_info(item['parts'][0]['part'])
+    R = minifig.frame(info['up']).T   # the item's 'up' onto -Y
+    if 'face' in info:   # ...and turned about Y to bring its face round to +X
+        f = R @ minifig.unit(info['face'])
+        a = np.arctan2(f[2], f[0])
+        R = minifig.rot_axis((0, 1, 0), a) @ R
+    c = np.array(info['center'], float)
+    return ''.join(minifig.line(p.get('color', 16), R @ (np.array(p.get('pos', [0, 0, 0]), float) - c), R, p['part']) + '\n'
+                   for p in item['parts'])
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     colors = ldraw2glb.load_colors(ldraw2glb.LDRAW)
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
     built = {}
     for name, item in json.load(open(os.path.join(LEGO, 'items.json'))).items():
-        ldr = ''.join(minifig.line(p.get('color', 16), p.get('pos', [0, 0, 0]), np.eye(3), p['part']) + '\n' for p in item['parts'])
+        ldr = held_ldr(item)
         key = hashlib.sha1(ldr.encode()).hexdigest()[:12]
         slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
         glb, src, keyfile = (os.path.join(OUT, slug + ext) for ext in ('.glb', '.ldr', '.key'))

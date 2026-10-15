@@ -424,7 +424,7 @@ export class Renderer {
     this.brick = new BrickWorld(canvas, gl); // the LEGO dungeon and minifigs, drawn by three.js like the scene viewer
     this.brickOn = false; // drawing a LEGO level (the dungeon), not a block one (Ascend)
     this.legoFigures = []; // [{prims, matrix, shade}] drawn this frame (the hero)
-    this.fpArm = null; // {prims, matrix, pose, only}: first person, the hero's arm in view space
+    this.fpArm = null; // [{prims, matrix, pose, only, skip}]: first person, the hero's arms (and what they hold) in view space
     this.legoItems = []; // [{x, z, url}]: items lying on the floor as LEGO models (the LEGO dungeon)
     this.fog = [0.04, 0.04, 0.06];
     this.fov = 75;
@@ -1129,13 +1129,13 @@ export class Renderer {
     }
     // first person: the hero's own right arm and what it holds, last of all
     // and in front of everything (its own depth), in the corner of the view
-    if (this.fpArm && this.fpArm.prims) {
+    if (this.fpArm && this.fpArm.length) {
       gl.clear(gl.DEPTH_BUFFER_BIT);
       gl.disable(gl.CULL_FACE);
       this.lego.fog = this.fog;
       this.lego.fogRange = [1e4, 2e4];
       const fp = mat4Perspective((70 * Math.PI) / 180, w / h, 0.01, 10);
-      this.lego.draw(fp, FP_VIEW, [this.fpArm], true);
+      this.lego.draw(fp, FP_VIEW, this.fpArm, true);
     }
     gl.bindVertexArray(null);
   }

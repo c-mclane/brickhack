@@ -1070,6 +1070,8 @@ build_status(void)
     jstr(flags.female && urole.name.f ? urole.name.f : urole.name.m);
     /* the hero's gender and the role's own name (as the creation screen lists it),
        so the client can show the right LEGO figure for a random gender or role */
+    /* twoweap: fighting with two weapons (the "alt" one in the left hand) */
+    fprintf(out, ",\"twoweap\":%d", u.twoweap ? 1 : 0);
     fprintf(out, ",\"female\":%d,\"baserole\":", flags.female ? 1 : 0);
     jstr(urole.name.m);
     fputs(",\"race\":", out);
