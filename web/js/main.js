@@ -1237,7 +1237,7 @@ let heroView = null;
 // worn: items.json "wear"), in its slot. (A designed shield is put back in
 // hand while you wear the one you started with: "design:shield", the roster's
 // figures being built empty-handed.)
-const WORN_SLOTS = ['cloak', 'helm', 'shield']; // (a cloak first: a helm takes its hood off)
+const WORN_SLOTS = ['shirt', 'suit', 'cloak', 'helm', 'shield']; // (in the order they go on: a suit over a shirt; a helm takes a cloak's hood off)
 function startGear() { // {items: {letter: slot} you started wearing, claimed: the slots they stood in} (kept with the character)
   if (hero3d.start) return hero3d.start;
   const key = FIG_KEY(game.charName) + '.start', kept = localGet(key);
@@ -1266,7 +1266,7 @@ function wornHelm() {
     return l && l.wear ? l.name : '';
   }).filter(Boolean).join(',');
 }
-// put on (or take off) a helm or a shield: your minifig, rebuilt by the server
+// put on (or take off) armour, a cloak, a helm or a shield: your minifig, rebuilt by the server
 // wearing them (a helm: hair and its own hat off: tools/wardrobe.py wearing), swapped in
 async function redressHero() {
   if (!hero3d.fig) return;

@@ -158,6 +158,9 @@ DECAL_SPOTS = {
     '2587': {'center': (0, 12, -22), 'size': (18, 18), 'side': 'front'},   # classic armour plate: the chest
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
     '973': {'center': (0, 15, -10), 'size': (17, 17), 'side': 'front'},     # torso: the chest
+    '15423': {'center': (0, 13, -15), 'size': (31, 23), 'side': 'front'},  # body armour vest: its front
+    '85961': {'center': (0, 13, -16), 'size': (36, 28), 'side': 'front'},  # body armour vest with back stud: its front
+    '22402': {'center': (0, 14, -16), 'size': (38, 35), 'side': 'front'},  # large breastplate with shoulder pads: its front
 }
 
 

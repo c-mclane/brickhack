@@ -25,7 +25,8 @@ def held_ldr(item):
     """The item as held: its main (first) part's grip (minifig.HELD) centred
     on the origin, the end that leaves the top of a fist up (-Y), the flat of
     a blade (its 'face') toward +X; the other parts placed with it (each
-    turned by its own "mat" and/or "rot", if given, as a figure's extras are)."""
+    turned by its own "mat" and/or "rot", if given, as a figure's extras are;
+    a "decal" printed on it, as on a figure's neck items)."""
     info = minifig.held_info(item['parts'][0]['part'])
     R = minifig.frame(info['up']).T   # the item's 'up' onto -Y
     if 'face' in info:   # ...and turned about Y to bring its face round to +X
@@ -38,7 +39,10 @@ def held_ldr(item):
         M = np.array(p['mat'], float).reshape(3, 3) if 'mat' in p else np.eye(3)   # a whole turn, as LDraw writes one (rows)
         for r in p.get('rot', []):   # turns, in order: {"axis": [x, y, z], "deg": d}
             M = minifig.rot_axis(r['axis'], np.radians(r['deg'])) @ M
-        out += minifig.line(p.get('color', 16), R @ (np.array(p.get('pos', [0, 0, 0]), float) - c), R @ M, p['part']) + '\n'
+        pos = R @ (np.array(p.get('pos', [0, 0, 0]), float) - c)
+        if p.get('decal'):   # a print on it (a mail shirt's rings: decals/, paths from the items folder)
+            out += minifig.decal_line(p, pos, R @ M, OUT) + '\n'
+        out += minifig.line(p.get('color', 16), pos, R @ M, p['part']) + '\n'
     return out
 
 

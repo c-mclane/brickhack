@@ -29,10 +29,23 @@ KEYS = {
 CAPES = ('50231', '20551', '42450', '38301', '56630', '99464', '86038', '65384', 'u9490')   # neck items that are capes
 HOODS = ('4505a', '24073')   # a cloak's hood or wrap (extras on the head): a helm takes them off
 CROWNS = ('33322', '96491')   # tiaras (extras) go with the hat
+# neck items that are body armour (breastplates, vests, shoulder pads): a suit put on takes their place
+ARMOUR = ('2587', '22402', '78643', '93565', '15423', '85961', '3840', '30174', '89917', '30121', '15086', '11097',
+          '11438', '12618', '15437', '15490', '35635', '37614', '41202', '7549', '86123', '88295')
+TORSO = ('torso', 'torsoColor', 'torsoDecal', 'torsoRecolor', 'armColor')   # what a shirt or a printed suit replaces
 
 
 def is_cape(item):
     return item['part'].startswith(CAPES)
+
+
+def is_armour(item):
+    return item['part'].startswith(ARMOUR)
+
+
+def necklist(spec):
+    neck = spec.get('neck') or []
+    return list(neck if isinstance(neck, list) else [neck])
 
 
 def empty_handed(spec):
@@ -44,14 +57,27 @@ def empty_handed(spec):
 def wearing(spec, item):
     """A recipe with a worn item on (items.json "wear": recipe keys, as a
     helm's hat, hatColor, plume, extras; a shield's left; a cloak's neck,
-    extras, dress). A helm takes the hair off (it
-    would poke through) and whatever hat, plume or tiara the figure had; its
-    extras go on beside the figure's own (an angel keeps its wings)."""
+    extras, dress; body armour's or a shirt's torso keys and neck armour). A
+    helm takes the hair off (it would poke through) and whatever hat, plume
+    or tiara the figure had; its extras go on beside the figure's own (an
+    angel keeps its wings)."""
     wear = item.get('wear')
     if not wear:
         return spec
     if 'left' in wear:   # a shield, in the left hand
         return dict(spec, left=wear['left'])
+    if item.get('slot') in ('suit', 'shirt'):   # body armour, or a shirt (items.json "slot")
+        # a print on the torso (a shirt, mail, a robe's top) in place of the figure's own;
+        # a suit's attachment on the neck (a breastplate, shoulder pads) in place of the
+        # figure's armour (its cape, a beard, a quiver stay)
+        if any(k in wear for k in TORSO):
+            spec = {k: v for k, v in spec.items() if k not in TORSO}
+            spec.update({k: wear[k] for k in TORSO if k in wear})
+        if 'neck' in wear:
+            spec['neck'] = [n for n in necklist(spec) if not is_armour(n)] + list(wear['neck'])
+        if wear.get('dress'):   # a robe
+            spec['dress'] = wear['dress']
+        return spec
     if 'hat' not in wear:   # a cloak: its cape in place of the figure's (armour on the neck stays), a hood, an apron, a robe
         neck = spec.get('neck') or []
         neck = [n for n in (neck if isinstance(neck, list) else [neck]) if not is_cape(n)]
@@ -72,7 +98,8 @@ def wearing(spec, item):
 def stripped(spec, slot):
     """A recipe with its designed piece in a slot taken off (the starting gear
     that piece stood for, taken off): 'helm' its hat (the hair under it stays),
-    'cloak' its cape (armour on the neck stays), 'shield' its shield."""
+    'cloak' its cape (armour on the neck stays), 'shield' its shield, 'suit'
+    its armour on the neck."""
     if slot == 'helm':
         spec = {k: v for k, v in spec.items() if k not in ('hat', 'hatColor', 'hatDecal', 'plume')}
         return dict(spec, extras=[x for x in spec.get('extras', []) if not x['part'].startswith(CROWNS + HOODS)])
@@ -81,6 +108,8 @@ def stripped(spec, slot):
         return dict(spec, neck=[n for n in (neck if isinstance(neck, list) else [neck]) if not is_cape(n)])
     if slot == 'shield':
         return {k: v for k, v in spec.items() if k != 'left'}
+    if slot == 'suit':   # its armour (the torso's print is the figure itself: it stays)
+        return dict(spec, neck=[n for n in necklist(spec) if not is_armour(n)])
     return spec
 
 

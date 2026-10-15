@@ -3926,14 +3926,18 @@
   }
  },
  "robe": {
-  "lego": "A long dark red robe (the minifig dress)",
+  "lego": "A long dark red robe (the minifig dress) (a red robe)",
   "parts": [
    {
     "part": "3678b",
     "color": 320
    }
   ],
+  "slot": "suit",
   "wear": {
+   "torso": "973",
+   "torsoColor": 320,
+   "armColor": 320,
    "neck": [],
    "dress": {
     "part": "3678b",
@@ -4062,6 +4066,1055 @@
     {
      "part": "56630c01",
      "color": 9001
+    }
+   ]
+  }
+ },
+ "Hawaiian shirt": {
+  "lego": "A magenta torso printed with flowers",
+  "parts": [
+   {
+    "part": "973p5l",
+    "color": 26
+   }
+  ],
+  "slot": "shirt",
+  "wear": {
+   "torso": "973p5l",
+   "torsoColor": 26,
+   "armColor": 26
+  }
+ },
+ "T-shirt": {
+  "lego": "A plain white torso",
+  "parts": [
+   {
+    "part": "973",
+    "color": 15
+   }
+  ],
+  "slot": "shirt",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 15,
+   "armColor": 15
+  }
+ },
+ "chain mail": {
+  "lego": "A grey torso printed with chain mail (a 4-in-1 weave of rings)",
+  "parts": [
+   {
+    "part": "973",
+    "color": 71,
+    "decal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 71,
+   "armColor": 71,
+   "torsoDecal": {
+    "image": "../decals/chain.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": []
+  }
+ },
+ "orcish chain mail": {
+  "lego": "Dark chain mail with black six-spiked shoulder pads (crude chain mail)",
+  "parts": [
+   {
+    "part": "973",
+    "color": 72,
+    "decal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   },
+   {
+    "part": "12618",
+    "color": 0
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 72,
+   "armColor": 0,
+   "torsoDecal": {
+    "image": "../decals/chain.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": [
+    {
+     "part": "12618",
+     "color": 0
+    }
+   ]
+  }
+ },
+ "ring mail": {
+  "lego": "A dark grey torso printed with rings sewn in rows",
+  "parts": [
+   {
+    "part": "973",
+    "color": 72,
+    "decal": {
+     "image": "../decals/rings.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 72,
+   "armColor": 72,
+   "torsoDecal": {
+    "image": "../decals/rings.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": []
+  }
+ },
+ "orcish ring mail": {
+  "lego": "Rings on dark brown, with grey four-spiked shoulder pads (crude ring mail)",
+  "parts": [
+   {
+    "part": "973",
+    "color": 308,
+    "decal": {
+     "image": "../decals/rings.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   },
+   {
+    "part": "15490",
+    "color": 72
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 308,
+   "armColor": 0,
+   "torsoDecal": {
+    "image": "../decals/rings.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": [
+    {
+     "part": "15490",
+     "color": 72
+    }
+   ]
+  }
+ },
+ "dwarvish mithril-coat": {
+  "lego": "Pearl silver chain mail with square shoulder pads",
+  "parts": [
+   {
+    "part": "973",
+    "color": 179,
+    "decal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   },
+   {
+    "part": "15437",
+    "color": 179
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 179,
+   "armColor": 179,
+   "torsoDecal": {
+    "image": "../decals/chain.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": [
+    {
+     "part": "15437",
+     "color": 179
+    }
+   ]
+  }
+ },
+ "elven mithril-coat": {
+  "lego": "Pearl white chain mail with sweeping double-flap shoulder pads",
+  "parts": [
+   {
+    "part": "973",
+    "color": 183,
+    "decal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   },
+   {
+    "part": "7549",
+    "color": 183
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 183,
+   "armColor": 183,
+   "torsoDecal": {
+    "image": "../decals/chain.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": [
+    {
+     "part": "7549",
+     "color": 183
+    }
+   ]
+  }
+ },
+ "dark elven mithril-coat": {
+  "lego": "Pearl dark grey chain mail with snake-headed shoulder pads",
+  "parts": [
+   {
+    "part": "973",
+    "color": 148,
+    "decal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    }
+   },
+   {
+    "part": "41202",
+    "color": 148
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 148,
+   "armColor": 0,
+   "torsoDecal": {
+    "image": "../decals/chain.png",
+    "center": [
+     0,
+     16,
+     -10
+    ],
+    "size": [
+     26,
+     32
+    ]
+   },
+   "neck": [
+    {
+     "part": "41202",
+     "color": 148
+    }
+   ]
+  }
+ },
+ "leather jacket": {
+  "lego": "A black torso printed with a leather jacket",
+  "parts": [
+   {
+    "part": "973p28",
+    "color": 0
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973p28",
+   "torsoColor": 0,
+   "armColor": 0,
+   "neck": []
+  }
+ },
+ "plate mail": {
+  "lego": "The classic castle armour plate, metallic silver",
+  "parts": [
+   {
+    "part": "2587",
+    "color": 80
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "2587",
+     "color": 80
+    }
+   ]
+  }
+ },
+ "crystal plate mail": {
+  "lego": "A finned breastplate in transparent light blue",
+  "parts": [
+   {
+    "part": "89917",
+    "color": 43
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "89917",
+     "color": 43
+    }
+   ]
+  }
+ },
+ "bronze plate mail": {
+  "lego": "A copper breastplate with round shoulder pads",
+  "parts": [
+   {
+    "part": "78643",
+    "color": 134
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "78643",
+     "color": 134
+    }
+   ]
+  }
+ },
+ "splint mail": {
+  "lego": "Smooth body and shoulder armour, dark grey",
+  "parts": [
+   {
+    "part": "93565",
+    "color": 72
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "93565",
+     "color": 72
+    }
+   ]
+  }
+ },
+ "banded mail": {
+  "lego": "Samurai armour of lacquered bands, dark grey",
+  "parts": [
+   {
+    "part": "30174",
+    "color": 72
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "30174",
+     "color": 72
+    }
+   ]
+  }
+ },
+ "scale mail": {
+  "lego": "A grey body armour vest printed with scales",
+  "parts": [
+   {
+    "part": "15423",
+    "color": 71,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "15423",
+     "color": 71,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "leather armor": {
+  "lego": "The classic vest in brown leather",
+  "parts": [
+   {
+    "part": "3840",
+    "color": 70
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "3840",
+     "color": 70
+    }
+   ]
+  }
+ },
+ "studded leather armor": {
+  "lego": "A brown body armour vest printed with silver studs",
+  "parts": [
+   {
+    "part": "85961",
+    "color": 70,
+    "decal": {
+     "image": "../decals/studs.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "85961",
+     "color": 70,
+     "decal": {
+      "image": "../decals/studs.png"
+     }
+    }
+   ]
+  }
+ },
+ "robe of protection": {
+  "lego": "A long blue robe (the minifig dress)",
+  "parts": [
+   {
+    "part": "3678b",
+    "color": 1
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 1,
+   "armColor": 1,
+   "neck": [],
+   "dress": {
+    "part": "3678b",
+    "color": 1
+   }
+  }
+ },
+ "robe of power": {
+  "lego": "A long orange robe (the minifig dress)",
+  "parts": [
+   {
+    "part": "3678b",
+    "color": 25
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 25,
+   "armColor": 25,
+   "neck": [],
+   "dress": {
+    "part": "3678b",
+    "color": 25
+   }
+  }
+ },
+ "robe of weakness": {
+  "lego": "A long green robe (the minifig dress)",
+  "parts": [
+   {
+    "part": "3678b",
+    "color": 2
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "torso": "973",
+   "torsoColor": 2,
+   "armColor": 2,
+   "neck": [],
+   "dress": {
+    "part": "3678b",
+    "color": 2
+   }
+  }
+ },
+ "gray dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, grey",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 72,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 72,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "gray dragon scales": {
+  "lego": "Shoulder pads with tiered fins, grey",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 72
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 72
+    }
+   ]
+  }
+ },
+ "silver dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, chrome silver",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 383,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 383,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "silver dragon scales": {
+  "lego": "Shoulder pads with tiered fins, chrome silver",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 383
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 383
+    }
+   ]
+  }
+ },
+ "shimmering dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, azure",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 322,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 322,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "shimmering dragon scales": {
+  "lego": "Shoulder pads with tiered fins, azure",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 322
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 322
+    }
+   ]
+  }
+ },
+ "deep dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, purple",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 22,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 22,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "deep dragon scales": {
+  "lego": "Shoulder pads with tiered fins, purple",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 22
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 22
+    }
+   ]
+  }
+ },
+ "red dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, red",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 4,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 4,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "red dragon scales": {
+  "lego": "Shoulder pads with tiered fins, red",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 4
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 4
+    }
+   ]
+  }
+ },
+ "white dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, white",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 15,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 15,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "white dragon scales": {
+  "lego": "Shoulder pads with tiered fins, white",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 15
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 15
+    }
+   ]
+  }
+ },
+ "orange dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, orange",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 25,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 25,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "orange dragon scales": {
+  "lego": "Shoulder pads with tiered fins, orange",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 25
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 25
+    }
+   ]
+  }
+ },
+ "black dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, black",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 0,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 0,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "black dragon scales": {
+  "lego": "Shoulder pads with tiered fins, black",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 0
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 0
+    }
+   ]
+  }
+ },
+ "blue dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, blue",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 1,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 1,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "blue dragon scales": {
+  "lego": "Shoulder pads with tiered fins, blue",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 1
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 1
+    }
+   ]
+  }
+ },
+ "green dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, green",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 2,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 2,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "green dragon scales": {
+  "lego": "Shoulder pads with tiered fins, green",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 2
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 2
+    }
+   ]
+  }
+ },
+ "yellow dragon scale mail": {
+  "lego": "A large breastplate with shoulder pads, printed with scales, yellow",
+  "parts": [
+   {
+    "part": "22402",
+    "color": 14,
+    "decal": {
+     "image": "../decals/scales.png"
+    }
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "22402",
+     "color": 14,
+     "decal": {
+      "image": "../decals/scales.png"
+     }
+    }
+   ]
+  }
+ },
+ "yellow dragon scales": {
+  "lego": "Shoulder pads with tiered fins, yellow",
+  "parts": [
+   {
+    "part": "86123",
+    "color": 14
+   }
+  ],
+  "slot": "suit",
+  "wear": {
+   "neck": [
+    {
+     "part": "86123",
+     "color": 14
     }
    ]
   }

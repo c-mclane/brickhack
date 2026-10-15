@@ -79,7 +79,8 @@ def main():
                       'slots': {'helm': bool(full.get('hat')),
                                 'cloak': any(wardrobe.is_cape(n) for n in (full.get('neck') or []) if isinstance(n, dict))
                                          or (isinstance(full.get('neck'), dict) and wardrobe.is_cape(full['neck'])),
-                                'shield': bool(full.get('left'))}})
+                                'shield': bool(full.get('left')),
+                                'suit': any(wardrobe.is_armour(n) for n in wardrobe.necklist(full))}})
     json.dump(built, open(os.path.join(LEGO, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
     mons = {}

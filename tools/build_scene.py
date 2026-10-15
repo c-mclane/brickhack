@@ -45,6 +45,8 @@ def item_ldr(lib, item, stand=False):
     R = np.eye(3) if stand else np.array([[0.0, -1, 0], [1, 0, 0], [0, 0, 1]])   # (a quarter turn about Z)
     lines, pts = [], []
     for l in build_items.held_ldr(item).splitlines():
+        if l.startswith('0 '):   # (a print: not shown here)
+            continue
         t = l.split()
         pos = R @ np.array([float(v) for v in t[2:5]])
         mat = R @ np.array([float(v) for v in t[5:14]]).reshape(3, 3)
@@ -72,6 +74,8 @@ def hold_item(ldr_text, item):
     gp, gm = np.array(rig['armR']['grip']['pos']), np.array(rig['armR']['grip']['mat']).reshape(3, 3)
     lines.append('0 !LEGOHACK GROUP itemR')
     for l in build_items.held_ldr(item).splitlines():
+        if l.startswith('0 '):   # (a print: not shown here)
+            continue
         t = l.split()
         pos, mat = np.array([float(v) for v in t[2:5]]), np.array([float(v) for v in t[5:14]]).reshape(3, 3)
         lines.append(minifig.line(t[1], gp + gm @ pos, gm @ mat, ' '.join(t[14:])[:-4]))

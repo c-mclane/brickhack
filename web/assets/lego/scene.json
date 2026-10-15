@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   5.5,
-   40
+   24,
+   50
   ],
   "target": [
    0,
-   3.2,
-   0
+   0,
+   3
   ]
  },
  "objects": [
@@ -24,175 +24,308 @@
   {
    "fig": "knight",
    "set": {
-    "neck": [
-     {
-      "part": "86038c01",
-      "color": 15
-     }
-    ],
-    "extras": [
-     {
-      "part": "24073",
-      "color": 15,
-      "pos": [
-       0,
-       -24,
-       0
-      ]
-     }
-    ],
+    "torso": "973p5l",
+    "torsoColor": 26,
+    "armColor": 26,
+    "neck": [],
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    -315,
+    -400,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "mummy wrapping"
+   "rotY": 345,
+   "label": "Hawaiian shirt"
   },
   {
    "fig": "knight",
    "set": {
-    "neck": [
-     {
-      "part": "99464c01",
-      "color": 308
-     }
-    ],
+    "torso": "973",
+    "torsoColor": 15,
+    "armColor": 15,
+    "neck": [],
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    -225,
+    -320,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "orcish cloak"
+   "rotY": 345,
+   "label": "T-shirt"
   },
   {
    "fig": "knight",
    "set": {
-    "neck": [
-     {
-      "part": "50231c01",
-      "color": 70
-     }
-    ],
-    "extras": [
-     {
-      "part": "4505a",
-      "color": 70,
-      "pos": [
-       0,
-       -24,
-       0
-      ]
-     }
-    ],
+    "torso": "973",
+    "torsoColor": 71,
+    "armColor": 71,
+    "neck": [],
+    "torsoDecal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    -135,
+    -240,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "dwarvish cloak"
+   "rotY": 345,
+   "label": "chain mail"
   },
   {
    "fig": "knight",
    "set": {
+    "torso": "973",
+    "torsoColor": 72,
+    "armColor": 0,
     "neck": [
      {
-      "part": "50231c01",
-      "color": 272
+      "part": "12618",
+      "color": 0
      }
     ],
+    "torsoDecal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    -45,
+    -160,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "oilskin cloak"
+   "rotY": 345,
+   "label": "orcish chain mail"
   },
   {
    "fig": "knight",
    "set": {
-    "neck": [
-     {
-      "part": "65384c01",
-      "color": 378
-     }
-    ],
+    "torso": "973",
+    "torsoColor": 72,
+    "armColor": 72,
+    "neck": [],
+    "torsoDecal": {
+     "image": "../decals/rings.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    45,
+    -80,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "elven cloak"
+   "rotY": 345,
+   "label": "ring mail"
   },
   {
    "fig": "knight",
    "set": {
+    "torso": "973",
+    "torsoColor": 308,
+    "armColor": 0,
     "neck": [
      {
-      "part": "50231c01",
-      "color": 15
+      "part": "15490",
+      "color": 72
      }
     ],
+    "torsoDecal": {
+     "image": "../decals/rings.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    135,
+    0,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "lab coat"
+   "rotY": 345,
+   "label": "orcish ring mail"
   },
   {
    "fig": "knight",
    "set": {
+    "torso": "973",
+    "torsoColor": 179,
+    "armColor": 179,
     "neck": [
      {
-      "part": "50231c01",
-      "color": 70
+      "part": "15437",
+      "color": 179
      }
     ],
+    "torsoDecal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
     "right": null,
     "left": null,
     "hat": null
    },
    "pos": [
-    225,
+    80,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
-   "label": "leather cloak"
+   "rotY": 345,
+   "label": "dwarvish mithril-coat"
   },
   {
    "fig": "knight",
    "set": {
+    "torso": "973",
+    "torsoColor": 183,
+    "armColor": 183,
+    "neck": [
+     {
+      "part": "7549",
+      "color": 183
+     }
+    ],
+    "torsoDecal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    160,
+    -72,
+    -270
+   ],
+   "rotY": 345,
+   "label": "elven mithril-coat"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "torso": "973",
+    "torsoColor": 148,
+    "armColor": 0,
+    "neck": [
+     {
+      "part": "41202",
+      "color": 148
+     }
+    ],
+    "torsoDecal": {
+     "image": "../decals/chain.png",
+     "center": [
+      0,
+      16,
+      -10
+     ],
+     "size": [
+      26,
+      32
+     ]
+    },
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    240,
+    -72,
+    -270
+   ],
+   "rotY": 345,
+   "label": "dark elven mithril-coat"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "torso": "973p28",
+    "torsoColor": 0,
+    "armColor": 0,
+    "neck": [],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    320,
+    -72,
+    -270
+   ],
+   "rotY": 345,
+   "label": "leather jacket"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "torso": "973",
+    "torsoColor": 320,
+    "armColor": 320,
     "neck": [],
     "dress": {
      "part": "3678b",
@@ -203,12 +336,750 @@
     "hat": null
    },
    "pos": [
-    315,
+    400,
     -72,
-    0
+    -270
    ],
-   "rotY": 160,
+   "rotY": 345,
    "label": "robe"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "2587",
+      "color": 80
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -400,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "plate mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "89917",
+      "color": 43
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -320,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "crystal plate mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "78643",
+      "color": 134
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -240,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "bronze plate mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "93565",
+      "color": 72
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -160,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "splint mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "30174",
+      "color": 72
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -80,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "banded mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "15423",
+      "color": 71,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    0,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "3840",
+      "color": 70
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    80,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "leather armor"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "85961",
+      "color": 70,
+      "decal": {
+       "image": "../decals/studs.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    160,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "studded leather armor"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "torso": "973",
+    "torsoColor": 1,
+    "armColor": 1,
+    "neck": [],
+    "dress": {
+     "part": "3678b",
+     "color": 1
+    },
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    240,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "robe of protection"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "torso": "973",
+    "torsoColor": 25,
+    "armColor": 25,
+    "neck": [],
+    "dress": {
+     "part": "3678b",
+     "color": 25
+    },
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    320,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "robe of power"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "torso": "973",
+    "torsoColor": 2,
+    "armColor": 2,
+    "neck": [],
+    "dress": {
+     "part": "3678b",
+     "color": 2
+    },
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    400,
+    -72,
+    -90
+   ],
+   "rotY": 345,
+   "label": "robe of weakness"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 72,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -400,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "gray dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 383,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -320,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "silver dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 322,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -240,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "shimmering dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 22,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -160,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "deep dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 4,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -80,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "red dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 15,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    0,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "white dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 25,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    80,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "orange dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 0,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    160,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "black dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 1,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    240,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "blue dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 2,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    320,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "green dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "22402",
+      "color": 14,
+      "decal": {
+       "image": "../decals/scales.png"
+      }
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    400,
+    -72,
+    90
+   ],
+   "rotY": 345,
+   "label": "yellow dragon scale mail"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 72
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -400,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "gray dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 383
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -320,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "silver dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 322
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -240,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "shimmering dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 22
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -160,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "deep dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 4
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    -80,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "red dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 15
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    0,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "white dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 25
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    80,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "orange dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 0
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    160,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "black dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 1
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    240,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "blue dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 2
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    320,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "green dragon scales"
+  },
+  {
+   "fig": "knight",
+   "set": {
+    "neck": [
+     {
+      "part": "86123",
+      "color": 14
+     }
+    ],
+    "right": null,
+    "left": null,
+    "hat": null
+   },
+   "pos": [
+    400,
+    -72,
+    270
+   ],
+   "rotY": 345,
+   "label": "yellow dragon scales"
   }
  ]
 }
