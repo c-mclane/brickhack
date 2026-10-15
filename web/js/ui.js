@@ -142,7 +142,7 @@ export class UI {
     }
     const EQ = [['helm', 'Helm'], ['amulet', 'Amulet'], ['cloak', 'Cloak'], ['eyes', 'Eyes'], ['suit', 'Armor'], ['weapon', 'Weapon'],
       ['shirt', 'Shirt'], ['alt', 'Alt'], ['gloves', 'Gloves'], ['quiver', 'Quiver'], ['boots', 'Boots'], ['ringl', 'L Ring'],
-      ['shield', 'Shield'], ['ringr', 'R Ring']];
+      ['shield', 'Shield'], ['ringr', 'R Ring'], ['offhand', 'Off-hand']];
     const eq = $('#equip');
     for (const [k, label] of EQ) {
       const s = el('div', 'slot');
@@ -320,9 +320,14 @@ export class UI {
       s.classList.toggle('want', !!(this.selectMode && it && this.selectMode.letters.has(it.l)));
       s.classList.toggle('dim', !!(this.selectMode && it && !this.selectMode.letters.has(it.l)));
     }
+    const two = !!(this.stat && this.stat.twoweap);
     for (const s of $('#equip').children) {
       if (!s.dataset.equipLabel) s.dataset.equipLabel = s.querySelector('.lbl')?.textContent || '';
-      const it = Object.values(inv).find((i) => i.w === s.dataset.equip);
+      // fighting with two weapons, your alternate weapon is in your off hand (the Off-hand
+      // slot shows it, greyed out if you can't ever fight with two: your role, your form)
+      const slot = s.dataset.equip === 'offhand' ? (two ? 'alt' : '') : s.dataset.equip === 'alt' && two ? '' : s.dataset.equip;
+      const it = slot ? Object.values(inv).find((i) => i.w === slot) : undefined;
+      if (s.dataset.equip === 'offhand') s.classList.toggle('dim', !!(this.stat && !this.stat.cantwo));
       this.fillSlot(s, it, false);
       if (it) s.querySelector('.lbl')?.remove();
     }
@@ -415,6 +420,7 @@ export class UI {
     if (s.dataset.letter) return inv[s.dataset.letter];
     if (s.dataset.hot != null) return this.g.hotbarItem(this.g.hotbar[+s.dataset.hot]);
     if (s.dataset.block) return this.g.hotbarItem('block:' + s.dataset.block);
+    if (s.dataset.equip === 'offhand') return this.stat && this.stat.twoweap ? Object.values(inv).find((i) => i.w === 'alt') : undefined;
     if (s.dataset.equip) return Object.values(inv).find((i) => i.w === s.dataset.equip);
     return null;
   }

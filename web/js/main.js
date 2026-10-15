@@ -176,7 +176,25 @@ const game = {
       if (armorSlots.includes(slot)) { if (it.a === slot) this.itemCmd('wear', it); else ui.chat(`That doesn't go there.`, 'q'); return; }
       if (slot === 'weapon') return this.itemCmd('wield', it);
       if (slot === 'quiver') return this.itemCmd('quiver', it);
-      if (slot === 'alt') { this.pending.push({ key: it.l }); closeInventory(); this.sendKeys('w'); this.afterReady = () => this.sendKeys('x'); return; }
+      // your alternate weapon (and, in the Off-hand, your second weapon, fighting with two):
+      // your main weapon swapped aside, this one wielded, then swapped back, so your main
+      // weapon stays in hand and this one is your alternate
+      const makeAlt = (then) => {
+        if (it.w === 'weapon') { ui.chat(`That's your main weapon.`, 'q'); return; }
+        closeInventory();
+        if (it.w === 'alt') { if (then) then(); return; }
+        this.sendKeys('x');
+        this.afterReady = () => {
+          this.pending.push({ key: it.l });
+          this.sendKeys('w');
+          this.afterReady = () => { this.afterReady = then || null; this.sendKeys('x'); };
+        };
+      };
+      if (slot === 'alt') return makeAlt();
+      if (slot === 'offhand') {
+        if (!(ui.stat && ui.stat.cantwo)) { ui.chat(`You can't fight with two weapons.`, 'q'); return; }
+        return makeAlt(() => { if (!(ui.stat && ui.stat.twoweap)) { this.pendingExt = 'twoweapon'; this.sendKeys('#'); } });
+      }
       if (slot === 'ringl' || slot === 'ringr') {
         if (it.c !== '=') return;
         this.pending.push({ key: it.l }, { key: slot === 'ringl' ? 'l' : 'r', re: /ring-finger/ });
@@ -192,6 +210,7 @@ const game = {
       if (s === 'weapon') return this.itemCmd('unwield', it);
       if (s === 'quiver') { this.pending.push({ key: '-' }); closeInventory(); return this.sendKeys('Q'); }
       if (s === 'alt') { closeInventory(); return this.sendKeys('x'); }
+      if (s === 'offhand') { closeInventory(); this.pendingExt = 'twoweapon'; return this.sendKeys('#'); } // (back to one weapon)
       if (['ringl', 'ringr', 'amulet', 'eyes'].includes(s)) return this.itemCmd('remove', it);
       return this.itemCmd('takeoff', it);
     }
@@ -1034,6 +1053,7 @@ function buildScreens() {
     if (figPicker.current()) {
       localSet(FIG_KEY(nameIn.value), figPicker.current().id);
       localSet(FIG_KEY(nameIn.value) + '.parts', JSON.stringify(figPicker.parts()));
+      localSet(FIG_KEY(nameIn.value) + '.start', 'new'); // (a new character: what it first wears is its starting gear: startGear)
     }
     const o = { name: nameIn.value };
     for (const k of ['role', 'race', 'gender', 'align']) {
@@ -1222,12 +1242,13 @@ function startGear() { // {items: {letter: slot} you started wearing, claimed: t
   if (hero3d.start) return hero3d.start;
   const key = FIG_KEY(game.charName) + '.start', kept = localGet(key);
   let st = null;
-  try { st = kept && JSON.parse(kept); } catch {}
+  try { st = kept && kept !== 'new' && JSON.parse(kept); } catch {}
   if (st && st.items) hero3d.start = st;
-  else if (ui.stat && game.inv.length) { // (once the game has said what turn it is, and what you have)
-    // a new game: what's on now is your starting gear; a game from before this: none
+  else if (game.inv.length) { // (once the game has said what you have)
+    // a character just made (the creator marks it 'new'): what it wears now is its starting
+    // gear; a game from before this was kept: none
     const items = {};
-    if (ui.stat.turn <= 1) for (const i of game.inv) if (WORN_SLOTS.includes(i.w)) items[i.l] = i.w;
+    if (kept === 'new') for (const i of game.inv) if (WORN_SLOTS.includes(i.w)) items[i.l] = i.w;
     hero3d.start = { items, claimed: [...new Set(Object.values(items))] };
     localSet(key, JSON.stringify(hero3d.start));
   }

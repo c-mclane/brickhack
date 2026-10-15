@@ -1315,6 +1315,8 @@ build_status(void)
        so the client can show the right LEGO figure for a random gender or role */
     /* twoweap: fighting with two weapons (the "alt" one in the left hand) */
     fprintf(out, ",\"twoweap\":%d", u.twoweap ? 1 : 0);
+    /* cantwo: whether you could ever fight with two weapons (your role, your form) */
+    fprintf(out, ",\"cantwo\":%d", could_twoweap(youmonst.data) && !cantwield(youmonst.data) ? 1 : 0);
     fprintf(out, ",\"female\":%d,\"baserole\":", flags.female ? 1 : 0);
     jstr(urole.name.m);
     fputs(",\"race\":", out);
