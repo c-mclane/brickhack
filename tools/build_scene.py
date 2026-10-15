@@ -14,7 +14,8 @@ brick's height, 8 = a plate's; -Y is up, -Z is toward the default camera's far s
 "part" is any LDraw part; "fig" names a minifig recipe in
 web/assets/lego/figs/<name>.json (see tools/minifig.py); "item" names a
 NetHack item in web/assets/lego/items.json, built from its LEGO parts and
-laid on its side on the studs, as if dropped (pos: where on the baseplate);
+laid on its side on the studs, as if dropped (pos: where on the baseplate;
+"stand": true stands it upright instead);
 "tile" names a NetHack item whose game sprite (assets/slashem/tiles.png) the
 viewer lays flat beside it. Any object can have a "label". Models are
 converted to .glb only when their source changed. The result,
@@ -32,13 +33,14 @@ LEGO = os.path.join(WEB, 'assets', 'lego')
 CACHE = os.path.join(LEGO, 'cache')
 
 
-def item_ldr(lib, item):
+def item_ldr(lib, item, stand=False):
     """An item's LEGO parts (items.json) as an LDraw model, laid flat as if
     dropped, as the game lays it (brickworld.js setItems): as held
     (build_items.held_ldr: its length along Y), turned onto its side (its
     length along X; the flat of a blade facing up), centred, its lowest point
-    resting on the stud tops."""
-    R = np.array([[0.0, -1, 0], [1, 0, 0], [0, 0, 1]])   # a quarter turn about Z
+    resting on the stud tops. stand: upright instead, as held (to see a
+    polearm's side blades), its foot on the stud tops."""
+    R = np.eye(3) if stand else np.array([[0.0, -1, 0], [1, 0, 0], [0, 0, 1]])   # (a quarter turn about Z)
     lines, pts = [], []
     for l in build_items.held_ldr(item).splitlines():
         t = l.split()
@@ -75,7 +77,7 @@ def main(scene_path):
             built.append({'tile': tile_index(obj['tile']), 'pos': obj.get('pos', [0, 0, 0]), 'label': obj.get('label')})
             continue
         if 'item' in obj:
-            text = item_ldr(lib, {'parts': obj['parts']} if 'parts' in obj else items[obj['item']])   # (or its own parts: a variant)
+            text = item_ldr(lib, {'parts': obj['parts']} if 'parts' in obj else items[obj['item']], obj.get('stand', False))   # (or its own parts: a variant)
             key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text)).encode()).hexdigest()[:10]
             src, color = os.path.join(CACHE, key + '.ldr'), 16
             if not os.path.exists(src):

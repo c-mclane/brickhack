@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   46,
-   36
+   22,
+   50
   ],
   "target": [
    0,
-   0,
-   3
+   5,
+   0
   ]
  },
  "objects": [
@@ -22,259 +22,124 @@
    ]
   },
   {
-   "tile": "axe",
+   "item": "halberd",
+   "stand": true,
    "pos": [
-    -450,
-    -4,
-    -330
-   ]
-  },
-  {
-   "item": "axe",
-   "pos": [
-    -325,
+    -320,
     0,
-    -330
+    -120
    ],
-   "label": "axe"
+   "label": "halberd"
   },
   {
-   "tile": "battle-axe",
+   "item": "spetum",
+   "stand": true,
    "pos": [
-    -200,
-    -4,
-    -330
-   ]
-  },
-  {
-   "item": "battle-axe",
-   "pos": [
-    -75,
+    -160,
     0,
-    -330
+    -120
    ],
-   "label": "battle-axe"
+   "label": "spetum"
   },
   {
-   "tile": "pick-axe",
+   "item": "glaive",
+   "stand": true,
    "pos": [
-    50,
-    -4,
-    -330
-   ]
-  },
-  {
-   "item": "pick-axe",
-   "pos": [
-    175,
     0,
-    -330
-   ],
-   "label": "pick-axe"
-  },
-  {
-   "tile": "dwarvish mattock",
-   "pos": [
-    300,
-    -4,
-    -330
-   ]
-  },
-  {
-   "item": "dwarvish mattock",
-   "pos": [
-    425,
     0,
-    -330
+    -120
    ],
-   "label": "dwarvish mattock"
+   "label": "glaive"
   },
   {
-   "tile": "club",
+   "item": "partisan",
+   "stand": true,
    "pos": [
-    -450,
-    -4,
-    -110
-   ]
-  },
-  {
-   "item": "club",
-   "pos": [
-    -325,
+    160,
     0,
-    -110
+    -120
    ],
-   "label": "club"
+   "label": "partisan"
   },
   {
-   "tile": "aklys",
+   "item": "ranseur",
+   "stand": true,
    "pos": [
-    -200,
-    -4,
-    -110
-   ]
-  },
-  {
-   "item": "aklys",
-   "pos": [
-    -75,
+    320,
     0,
-    -110
+    -120
    ],
-   "label": "aklys"
+   "label": "ranseur"
   },
   {
-   "tile": "baseball bat",
+   "item": "bardiche",
+   "stand": true,
    "pos": [
-    50,
-    -4,
-    -110
-   ]
-  },
-  {
-   "item": "baseball bat",
-   "pos": [
-    175,
+    480,
     0,
-    -110
+    -120
    ],
-   "label": "baseball bat"
+   "label": "bardiche"
   },
   {
-   "tile": "mace",
+   "item": "voulge",
+   "stand": true,
    "pos": [
-    300,
-    -4,
-    -110
-   ]
-  },
-  {
-   "item": "mace",
-   "pos": [
-    425,
+    -400,
     0,
-    -110
+    120
    ],
-   "label": "mace"
+   "label": "voulge"
   },
   {
-   "tile": "silver mace",
+   "item": "lucern hammer",
+   "stand": true,
    "pos": [
-    -450,
-    -4,
-    110
-   ]
-  },
-  {
-   "item": "silver mace",
-   "pos": [
-    -325,
+    -240,
     0,
-    110
+    120
    ],
-   "label": "silver mace"
+   "label": "lucern hammer"
   },
   {
-   "tile": "morning star",
+   "item": "fauchard",
+   "stand": true,
    "pos": [
-    -200,
-    -4,
-    110
-   ]
-  },
-  {
-   "item": "morning star",
-   "pos": [
-    -75,
+    -80,
     0,
-    110
+    120
    ],
-   "label": "morning star"
+   "label": "fauchard"
   },
   {
-   "tile": "flail",
+   "item": "guisarme",
+   "stand": true,
    "pos": [
-    50,
-    -4,
-    110
-   ]
-  },
-  {
-   "item": "flail",
-   "pos": [
-    175,
+    80,
     0,
-    110
+    120
    ],
-   "label": "flail"
+   "label": "guisarme"
   },
   {
-   "tile": "war hammer",
+   "item": "bill-guisarme",
+   "stand": true,
    "pos": [
-    300,
-    -4,
-    110
-   ]
-  },
-  {
-   "item": "war hammer",
-   "pos": [
-    425,
+    240,
     0,
-    110
+    120
    ],
-   "label": "war hammer"
+   "label": "bill-guisarme"
   },
   {
-   "tile": "heavy hammer",
+   "item": "bec de corbin",
+   "stand": true,
    "pos": [
-    -450,
-    -4,
-    330
-   ]
-  },
-  {
-   "item": "heavy hammer",
-   "pos": [
-    -325,
+    400,
     0,
-    330
+    120
    ],
-   "label": "heavy hammer"
-  },
-  {
-   "tile": "quarterstaff",
-   "pos": [
-    -200,
-    -4,
-    330
-   ]
-  },
-  {
-   "item": "quarterstaff",
-   "pos": [
-    -75,
-    0,
-    330
-   ],
-   "label": "quarterstaff"
-  },
-  {
-   "tile": "fly swatter",
-   "pos": [
-    50,
-    -4,
-    330
-   ]
-  },
-  {
-   "item": "fly swatter",
-   "pos": [
-    175,
-    0,
-    330
-   ],
-   "label": "fly swatter"
+   "label": "bec de corbin"
   }
  ]
 }

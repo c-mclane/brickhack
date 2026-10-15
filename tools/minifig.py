@@ -100,7 +100,12 @@ HELD = {
     '95053': {'center': (0, 5, 0), 'up': (0, -1, 0)},                       # small sword, angular guard (a stiletto)
     '64567': {'center': (0, 18, 0), 'up': (0, -1, 0)},                      # lightsaber hilt (a great dagger's): by the hilt, the top up
     '55295': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # hammer: by the handle, head up
-    '30374': {'center': (0, 58, 0), 'up': (0, -1, 0)},                      # bar 4L (a battle-axe's haft): low down, its top up
+    '30374': {'center': (0, 58, 0), 'up': (0, -1, 0)},
+    '6123': {'center': (0, 30, 0), 'up': (0, -1, 0)},                       # halberd: below the middle, head up
+    '43899': {'center': (0, 150, 0), 'up': (0, -1, 0)},                     # spear with four side blades: low on the shaft, blades up
+    '55237': {'center': (0, -15, 0), 'up': (0, -1, 0)},                     # bars with weapon heads (a polearm each): low down, head up
+    '98137': {'center': (0, -20, 0), 'up': (0, -1, 0)},                     # long curved blade on a bar: by the bar, blade up
+    '4095': {'center': (0, -20, 0), 'up': (0, -1, 0)},                      # bar 6.6L with stop (a polearm's shaft): low down, its top up                      # bar 4L (a battle-axe's haft): low down, its top up
     '3848': {'center': (0, 45, 0), 'up': (0, -1, 0)},                       # battleaxe: low on the long haft, head up
     '39802': {'center': (0, 22, 0), 'up': (0, -1, 0)},                      # axe with a pick end (a mattock): low on the haft, head up
     '88001': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # spiked club: by the handle, the spikes up
