@@ -1996,7 +1996,8 @@ function frame(t) {
     // first person: your own LEGO arm, and what it holds, in the corner of the view
     const fpOn = !!pose && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
     const vc = $('#view');
-    renderer.fpArm = fpOn ? { prims: hero3d.prims, matrix: firstPersonMatrix(hero3d.prims.rig, vc.clientWidth / Math.max(1, vc.clientHeight)), pose, only: ['armR', 'itemR'], shade: 1 } : null;
+    renderer.fpArm = fpOn ? { prims: hero3d.prims, matrix: firstPersonMatrix(hero3d.prims.rig, vc.clientWidth / Math.max(1, vc.clientHeight)),
+      pose: pose.fpArmR ? { armR: pose.fpArmR, itemR: pose.fpArmR } : pose, only: ['armR', 'itemR'], shade: 1 } : null;
     hero3d.fpArm = fpOn;
     { const [fx, fz] = motion.heroPos(t); renderer.focus = [fx + 0.5, 0, fz + 0.5]; } // (the BrickWorld's shadows follow you)
     renderer.buildSprites(sprites, cam.vyaw, (out) => {

@@ -706,11 +706,27 @@ export class Renderer {
     };
     const shade0 = 1;
     // dungeon levels are a LEGO maze out in the open: green studded floors on a
-    // green baseplate, grey brick walls (the rock round the corridors too, so
-    // they are walled lanes), wooden LEGO doors
+    // green baseplate, grey brick walls, wooden LEGO doors, and fog over
+    // everything not yet explored (the rock round the corridors too: a path
+    // you haven't followed yet fades into cloud, it doesn't end in a wall)
     const lego = !world.dream;
-    // what the BrickWorld builds: floor plates, walls, doors
-    const bricks = { w: W, h: H, floors: [], walls: [], doors: [] };
+    // what the BrickWorld builds: floor plates, walls, doors, fog
+    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [] };
+    // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
+    const passable = (xx, yy) => {
+      const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
+      return !!n && n.type !== 'none' && n.type !== 'wall' && n.type !== 'rock';
+    };
+    const known = (xx, yy) => {
+      const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
+      return !!n && n.type !== 'none' && n.type !== 'rock';
+    };
+    const fogAt = (x, y) => {
+      const into = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => passable(x + dx, y + dy));
+      let near = into.length > 0;
+      for (let dy = -1; dy <= 1 && !near; dy++) for (let dx = -1; dx <= 1 && !near; dx++) near = known(x + dx, y + dy);
+      bricks.fog.push({ x, z: y, into, near });
+    };
     // a door piece in its square, across the wall it stands in
     const doorPiece = (x, y, name, alongZ, shade) =>
       bricks.doors.push({ url: PARTS[name], matrix: partMatrix(x + 0.5, DOOR_TOP, y + 0.5, alongZ ? Math.PI / 2 : 0), shade });
@@ -724,6 +740,7 @@ export class Renderer {
     for (let y = 0; y < H; y++)
       for (let x = 0; x < W; x++) {
         const c = cls[y * W + x];
+        if (lego && (!c || (c.type === 'none' && c.cmap !== CM.air))) { fogAt(x, y); continue; }
         if (!c || c.type === 'none') continue;
         const d = Math.hypot(x - hx, y - hy);
         let shade = c.seen || world.dream ? 1.0 : lego ? 0.62 : 0.42; // (Ascend is mapped and in daylight)
@@ -747,7 +764,7 @@ export class Renderer {
             else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
           case 'rock':
-            if (lego) bricks.walls.push({ x, z: y, shade });
+            if (lego) fogAt(x, y);
             else column(0, T.stone ?? WALL_TILE, 0.45);
             break;
           case 'door': // closed door: a two-block door with wall above (LEGO: a 1x4x6 door, shut)

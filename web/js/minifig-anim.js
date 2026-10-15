@@ -160,6 +160,27 @@ export class FigureAnimator {
       P['item' + side] = M;
     }
 
+    // first person: the right arm as you see it in the corner of the view
+    // (firstPersonMatrix): held up before you, bobbing a little as you walk,
+    // and the slash as a cut across the view: up and out to the right, then
+    // down and across to the left
+    {
+      const j = rig.armR;
+      if (j) {
+        let sw = swing * 4 + Math.sin(t * 1.7) * 1.2, out = 0;
+        if (slashing) {
+          const k = atk;
+          const keys = [[0, 0, 0], [0.34, -14, 10], [0.58, 14, -40], [1, 0, 0]];
+          let i = 0;
+          while (i < keys.length - 2 && k > keys[i + 1][0]) i++;
+          const a = keys[i], b = keys[i + 1], u = ease((k - a[0]) / (b[0] - a[0]));
+          sw += a[1] + (b[1] - a[1]) * u;
+          out = a[2] + (b[2] - a[2]) * u;
+        }
+        P.fpArmR = mul(turnAbout(j.pivot, [0, 0, 1], out * DEG), turnAbout(j.pivot, j.axis, sw * DEG));
+      }
+    }
+
     // the legs: stride, opposite each other
     if (rig.legs) {
       const a = swing * 32 * DEG;
@@ -198,8 +219,9 @@ export function poseJoints(j, poses) {
 // First person: where to put the figure so that its right arm (and what it
 // holds) reaches into the lower right of the view, as if it were your own.
 // A view-space model matrix: the figure turned to face where you look, its
-// right shoulder just below and right of the eye and tipped so the arm comes
-// up toward you: a big fist and its blade close in the corner, Minecraft style.
+// right shoulder just below and right of the eye, and turned so the arm (as it
+// hangs, unposed) is held up before you: a big fist and its blade close in the
+// corner, Minecraft style. Pose the arm with FigureAnimator's fpArmR.
 export function firstPersonMatrix(rig, aspect = 16 / 9) {
   const j = rig && rig.armR;
   if (!j) return null;
@@ -209,7 +231,7 @@ export function firstPersonMatrix(rig, aspect = 16 / 9) {
   const toPivot = ident(); toPivot[12] = -j.pivot[0]; toPivot[13] = -j.pivot[1]; toPivot[14] = -j.pivot[2];
   const S = ident(); S[0] = S[5] = S[10] = s;
   const back = turnAbout([0, 0, 0], [0, 1, 0], Math.PI);
-  const tip = turnAbout([0, 0, 0], [1, 0, 0], -0.95);
+  const tip = turnAbout([0, 0, 0], [1, 0, 0], 1.93); // (the arm held up: as in the arrival stretch)
   const T = ident(); T[12] = shoulder[0]; T[13] = shoulder[1]; T[14] = shoulder[2];
   return mul(T, mul(tip, mul(back, mul(S, toPivot))));
 }
