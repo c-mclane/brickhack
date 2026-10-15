@@ -15,7 +15,6 @@ export const ACTION_GROUPS = [
     { label: 'Throw', keys: 't', tip: 'Throw an item (t)' },
     { label: 'Open door', keys: 'o', tip: 'Open a door (o)' },
     { label: 'Close door', keys: 'c', tip: 'Close a door (c)' },
-    { label: 'Jump', fn: 'jump', tip: 'Minecraft jump (Space)' },
     { label: 'Game jump', ext: 'jump', tip: 'NetHack #jump (needs boots or knight)' },
     { label: 'Travel', keys: '_', tip: 'Travel to a spot you click (_)' },
     { label: 'Go up', keys: '<', tip: 'Climb stairs or a ladder (<)' },

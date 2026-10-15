@@ -222,7 +222,6 @@ const game = {
     closeInventory();
     if (a.fn === 'history') { ui.toggleHistory(true); return; }
     relock();
-    if (a.fn === 'jump') return jump();
     if (a.fn === 'loot') return beginLoot({ kind: 'view' });
     if (a.fn === 'chestAt') return openChest(a.target);
     if (a.fn === 'allcmds') {
@@ -393,20 +392,13 @@ const blocks = new BlockWorld((line) => post(line));
 world.blocks = blocks;
 let texUrl = {}; // block texture name -> data URL (for inventory icons)
 
-// ---- hero physics: jumping, gravity, falling (x/z still follow NetHack's squares)
-const JUMP_V = 9; // blocks/s, peak ~1.27 blocks
+// ---- hero physics: gravity, falling, climbing (x/z still follow NetHack's squares).
+// (No jumping in BrickHack: a minifig steps up onto a block, as up a ladder.)
 const GRAVITY = 32; // blocks/s^2
 const phys = { y: 0, vy: 0, onGround: true, peak: 0, reportedZ: 0, climb: null };
 const CLIMB_V = 4.5; // blocks/s up or down a ladder
 let fallSent = 0; // when we asked to be put back on the platform
 const onRoof = () => phys.y >= WALL_H - 0.5;
-
-function jump() {
-  if (!phys.onGround) return;
-  phys.vy = JUMP_V;
-  phys.onGround = false;
-  phys.peak = phys.y;
-}
 
 function updatePhysics(dt, now) {
   const [rx, rz] = motion.heroPos(now);
@@ -1739,7 +1731,11 @@ window.addEventListener('keydown', (e) => {
     case 'i': releaseLock(); ui.openInventory(null, 'actions'); return;
     case 'e': releaseLock(); ui.openInventory(); return;
     case 'q': if (it) game.itemCmd('drop', it, e.shiftKey || it.q === 1 ? 0 : 1); return;
-    case ' ': jump(); return;
+    case ' ': { // the stairs (or ladder) you're on; anywhere else, search
+      const cl = world.classAt(world.hero.x, world.hero.y), c = cl && cl.cmap;
+      game.sendKeys(c === CM.upstair || c === CM.upladder ? '<' : c === CM.dnstair || c === CM.dnladder ? '>' : 's');
+      return;
+    }
     case '<': case '>': game.sendKeys(k); return;
     case 'g': game.sendKeys(','); return;
     case 'n': music.next(); return;
@@ -1807,7 +1803,7 @@ function processMovement(now) {
     const onLadder = world.ladderTop(world.hero.x, world.hero.y) > 0;
     if (world.ladderTop(tx, tz) && land > phys.y + 0.05) phys.climb = land; // climb up the ladder
     else if (onLadder && land < phys.y - 1.05) phys.climb = land; // climb down it
-    else if (land > phys.y + 0.05) jump();
+    else if (land > phys.y + 0.05) phys.climb = land; // step up onto it
     shift = false;
   }
   lastMove = now;
