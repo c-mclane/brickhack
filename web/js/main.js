@@ -16,7 +16,7 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT } from './minifig-anim.js';
+import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadLegoItems, legoItemForTile } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
@@ -264,6 +264,10 @@ const music = new Music({
 });
 const motion = new Motion();
 const fx = new CombatFX();
+{ // every attack (however it's made) holds the engine's replies until the blow lands (holdReplies)
+  const attack = fx.attack.bind(fx);
+  fx.attack = (x, y, now) => { attack(x, y, now); holdReplies(performance.now() + ATTACK_TIME * SLASH_CUT * 1000); };
+}
 
 // ---- Ascend: SLASH'EM's overland start level (the "dreamland" option).
 // The engine has the plain, the woods and the stairs; the client builds the
@@ -612,8 +616,25 @@ function connect() {
   es.onmessage = (e) => {
     let m;
     try { m = JSON.parse(e.data); } catch { return; }
+    if (heldReplies.length || performance.now() < holdUntil) { heldReplies.push(m); return; } // (an attack's outcome waits for the blade)
     handle(m);
   };
+}
+
+// When you attack, the engine settles it at once; but what happens (a hit, a
+// miss, a kill, the monster gone) is shown as the blade comes down: the
+// replies are held until the slash reaches the bottom of its cut, then all
+// handled, in order, together.
+let holdUntil = 0, holdTimer = null;
+const heldReplies = [];
+function holdReplies(until) {
+  holdUntil = Math.max(holdUntil, until);
+  clearTimeout(holdTimer);
+  holdTimer = setTimeout(releaseReplies, Math.max(0, holdUntil - performance.now()));
+}
+function releaseReplies() {
+  holdTimer = null;
+  while (heldReplies.length) handle(heldReplies.shift());
 }
 
 function handle(m) {

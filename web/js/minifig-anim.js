@@ -65,6 +65,7 @@ const STRETCH_TIME = 2.2; // s
 export const FP_TILT = 1.93; // first person: how far the arm is turned up (radians)
 export const FP_HOLD_TILT = 1.0; // ...holding something: lower, so the wrist can stand the blade straight up beside the view
 export const ATTACK_TIME = 0.55; // s
+export const SLASH_CUT = 0.62; // how far into the slash (0..1) the blade reaches the bottom of its cut: where a blow lands
 // the slash, as keyframes over 0..1: shoulder swing (degrees, negative is up
 // in front), the arm thrown out sideways (degrees about the figure's forward
 // axis, positive out to its right), and the body's twist (radians, positive
@@ -72,7 +73,7 @@ export const ATTACK_TIME = 0.55; // s
 const SLASH = [
   { t: 0, swing: null, out: 0, twist: 0 }, // (from wherever the arm was)
   { t: 0.36, swing: -172, out: 52, twist: 0.46 }, // wound up: right up overhead and out to the right, turned well back
-  { t: 0.62, swing: -12, out: -62, twist: -0.55 }, // the cut: a big swoop down and across to the left, following through
+  { t: SLASH_CUT, swing: -12, out: -62, twist: -0.55 }, // the cut: a big swoop down and across to the left, following through
   { t: 1, swing: null, out: 0, twist: 0 }, // and back to where it was
 ];
 function slashAt(k, rest) {
@@ -182,7 +183,7 @@ export class FigureAnimator {
         // middle, out + carries the fist in toward the middle) a wind-up back and
         // out, then a swoop down and across: the blade's tip from the top right,
         // through the middle, down to the left
-        const keys = [[0, 0, 0], [0.36, -20, -15], [0.62, 65, 60], [1, 0, 0]];
+        const keys = [[0, 0, 0], [0.36, -20, -15], [SLASH_CUT, 65, 60], [1, 0, 0]];
         let i = 0;
         while (i < keys.length - 2 && k > keys[i + 1][0]) i++;
         const a = keys[i], b = keys[i + 1], u = ease((k - a[0]) / (b[0] - a[0]));
