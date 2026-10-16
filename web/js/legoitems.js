@@ -39,9 +39,22 @@ export const legoItemForTile = (t) => {
   return byTile.get(t) || null;
 };
 export const legoIconForTile = (t) => {
-  if (isStart(t)) { const p = pieces.get(startSlot(t)); return (p && p.icon) || icons.get(startBase(t)) || null; }
-  return icons.get(t) || null;
+  if (isStart(t)) { const p = pieces.get(startSlot(t)); return (p && p.icon) || legoIconForTile(startBase(t)); }
+  const icon = icons.get(t);
+  if (!icon && byTile.has(t)) wanted.add(t); // (not drawn yet: it's on screen, so it's drawn next)
+  return icon || null;
 };
+// The pictures are drawn one by one when the page loads; what's on screen is drawn
+// first (asked for and not there: wanted), and whoever shows them is told when it is
+// (onIcons: the inventory and hotbar redraw), so a new game's gear isn't sprites for long
+const wanted = new Set();
+let iconsChanged = null, redrawSoon = false;
+export function onIcons(fn) { iconsChanged = fn; }
+function iconReady() {
+  if (redrawSoon || !iconsChanged) return;
+  redrawSoon = true;
+  requestAnimationFrame(() => { redrawSoon = false; iconsChanged(); });
+}
 // the game's own tile for a look (an artifact's: its base item's, for its sprite; starting armour's: its own)
 export const gameTile = (t) => (isStart(t) ? startBase(t) : artBase.get(t) ?? t);
 
@@ -142,12 +155,26 @@ async function renderIcon(url) {
 async function drawIcons() {
   if (!byTile.size) return;
   const done = new Map(); // url -> data URL (one picture per model)
-  for (const [t, item] of byTile) {
+  const draw = async (t) => {
+    const item = byTile.get(t);
     if (!done.has(item.url)) {
       const png = await renderIcon(item.url);
-      if (!png) continue;
+      if (!png) return;
       done.set(item.url, png);
     }
     icons.set(t, done.get(item.url));
+  };
+  // first, what's on screen: a redraw asks for its pictures (wanted), a frame before drawing starts
+  iconReady();
+  await new Promise((res) => { requestAnimationFrame(res); setTimeout(res, 60); }); // (a hidden tab has no frames)
+  for (const t of byTile.keys()) {
+    // whatever's been asked for meanwhile (on screen), first
+    while (wanted.size) {
+      const w = wanted.values().next().value;
+      wanted.delete(w);
+      if (!icons.has(w)) { await draw(w); iconReady(); }
+    }
+    if (!icons.has(t)) await draw(t);
   }
+  wanted.clear();
 }

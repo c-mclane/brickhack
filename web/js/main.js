@@ -17,7 +17,7 @@ import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
-import { loadLegoItems, legoItemForTile, gameTile, setStartPieces, isStartTile } from './legoitems.js';
+import { loadLegoItems, legoItemForTile, gameTile, setStartPieces, isStartTile, onIcons } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -617,6 +617,8 @@ async function init() {
   document.documentElement.style.setProperty('--bgtile', `url(${legoPlateTile()})`);
   buildScreens();
   // the items made in LEGO (legoitems.js): their models for the floor, their pictures for the slots
+  // (the items' pictures are drawn as the page loads, what's on screen first: redraw as they come)
+  onIcons(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
   loadLegoItems().then(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
   loadLegoMonsters();
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
