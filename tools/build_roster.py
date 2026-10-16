@@ -77,6 +77,8 @@ def main():
                       'race': spec.get('race', 'human'),
                       # more it starts the game with than its role's own kit ("holy wafer:4,..."): winweb.c web_kit_item
                       **({'kit': spec['kit']} if spec.get('kit') else {}),
+                      # its own deity ("Jesus": winweb's LEGOHACK_GOD, role.c) and gifts ("chalice": winweb.c web_fill_glasses)
+                      **({k: spec[k] for k in ('god', 'perks') if spec.get(k)}),
                       # the slots its design fills: starting gear shows only where it takes the place of something
                       'slots': {'helm': bool(full.get('hat')),
                                 'cloak': any(wardrobe.is_cape(n) for n in (full.get('neck') or []) if isinstance(n, dict))

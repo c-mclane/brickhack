@@ -27,5 +27,7 @@
   "part": "12893",
   "color": 70
  },
- "name": "Cistercian Monk"
+ "name": "Cistercian Monk",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

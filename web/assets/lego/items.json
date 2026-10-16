@@ -6869,5 +6869,15 @@
    "scale": 0.6,
    "layers": 1
   }
+ },
+ "wine glass": {
+  "lego": "The minifig goblet in clear (a wine glass)",
+  "parts": [
+   {
+    "part": "2343",
+    "color": 47
+   }
+  ],
+  "upright": true
  }
 }

@@ -48,5 +48,7 @@
    }
   }
  ],
- "label": "Knight Hospitaller"
+ "label": "Knight Hospitaller",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

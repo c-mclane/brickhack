@@ -514,6 +514,133 @@ web_kit_item(int i, int *quan)
     return 0;
 }
 
+/* a wine glass filled: holy wine again (in place: where it lies, or in the pack) */
+static void
+web_fill(struct obj *o)
+{
+    o->otyp = POT_HOLY_WINE;
+    o->oclass = POTION_CLASS;
+    o->blessed = 1;
+    o->cursed = 0;
+    o->owt = weight(o);
+}
+
+/* potion.c peffects, holy wine: a glass soon after another (within 100
+   turns) goes to your head. Reckoned before the wine's cures (which clear
+   confusion), so the drunkenness you had stays and grows */
+static long web_wine_last = -1000L, web_wine_drunk = 0L;
+
+void
+web_holy_wine_sip(void)
+{
+    web_wine_drunk = moves - web_wine_last < 100 ? (HConfusion & TIMEOUT) + d(10, 40) : 0L;
+    web_wine_last = moves;
+}
+
+/* ...and after them: really drunk (confused for hundreds of turns, unsteady
+   for a few, out cold past 400), and a follower of the figure's own deity
+   (the server's LEGOHACK_GOD: Jesus, the lawful god) at peace with him */
+void
+web_holy_wine(void)
+{
+    const char *g = getenv("LEGOHACK_GOD");
+
+    if (g && *g && u.ualign.type == A_LAWFUL && u.ugangr) {
+        u.ugangr = 0;
+        You_feel("that %s is no longer angry with you.", u_gname());
+        flags.botl = 1;
+    }
+    if (web_wine_drunk) {
+        pline("Whoa!  That went straight to your head.");
+        You_feel("%s drunk.", web_wine_drunk > 250 ? "very" : "really");
+        make_confused(web_wine_drunk, FALSE);
+        make_stunned((HStun & TIMEOUT) + d(3, 6), FALSE);
+        if (web_wine_drunk > 400) {
+            You("pass out.");
+            multi = -rnd(15);
+            nomovemsg = "You awake with a pounding headache.";
+        }
+        web_wine_drunk = 0L;
+    }
+}
+
+/* questpgr.c: a line of the intro story, told to a follower of the figure's
+   own deity (the server's LEGOHACK_GOD: Jesus), in Christian canon: written in
+   the Bible, the cruel god is Satan, the Creator Jesus, and the Amulet's
+   hunt is to take back what Satan stole. A line at a time (128 chars at most:
+   questpgr.c out_line); a phrase swapped where it's found */
+static void
+web_swap(char *line, const char *from, const char *to)
+{
+    char buf[128], *p;
+
+    while ((p = strstri(line, from)) != 0) {
+        size_t head = p - line;
+        if (head + strlen(to) + strlen(p + strlen(from)) >= sizeof buf)
+            return;
+        (void) strncpy(buf, line, head);
+        buf[head] = 0;
+        Strcat(buf, to);
+        Strcat(buf, p + strlen(from));
+        Strcpy(line, buf);
+    }
+}
+
+void
+web_intro_line(char *line)
+{
+    const char *g = getenv("LEGOHACK_GOD");
+
+    if (!g || !*g)
+        return;
+    if (strstri(line, "It is written in the Book of")) {
+        Strcpy(line, "It is written in the Bible:");
+        return;
+    }
+    web_swap(line, "Moloch", "Satan");
+    web_swap(line, "Marduk", g);                    /* the Creator */
+    if (strstri(line, "seeks to possess the Amulet")) {
+        Sprintf(line, "Your god %s seeks to possess the Amulet and revoke", g);
+        return;
+    }
+    if (strstri(line, "to gain deserved ascendance"))
+        Sprintf(line, "Satan's undeserved ascendance over the other gods.");
+}
+
+/* pray.c prayer_done: a prayer fills wine glasses with holy wine again: those
+   on the altar you pray at (any altar), and for a Catholic priest (the
+   server's LEGOHACK_PERKS: "chalice", from his design) those he carries,
+   wherever he prays */
+void
+web_fill_glasses(void)
+{
+    const char *perks = getenv("LEGOHACK_PERKS");
+    struct obj *o, *next;
+    long n = 0;
+
+    if (IS_ALTAR(levl[u.ux][u.uy].typ)) {   /* (pray.c's on_altar) */
+        for (o = level.objects[u.ux][u.uy]; o; o = next) {
+            next = o->nexthere;
+            if (o->otyp == WINE_GLASS) { n += o->quan; web_fill(o); }
+        }
+        if (n) {
+            pline("The glass%s on the altar fill%s with wine.", n > 1 ? "es" : "", n > 1 ? "" : "s");
+            newsym(u.ux, u.uy);
+        }
+    }
+    if (perks && strstri(perks, "chalice")) {
+        n = 0;
+        for (o = invent; o; o = next) {
+            next = o->nobj;
+            if (o->otyp == WINE_GLASS) { n += o->quan; web_fill(o); }
+        }
+        if (n) {
+            pline("The glass%s in your pack fill%s with wine.", n > 1 ? "es" : "", n > 1 ? "" : "s");
+            update_inventory();
+        }
+    }
+}
+
 /* artifact.c arti_invoke: 1 = the hero holds all three (the invoke opens a portal) */
 int
 web_realm_set(void)

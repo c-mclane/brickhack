@@ -13,5 +13,7 @@
  "legColor": 0,
  "hat": "4505a",
  "hatColor": 0,
- "name": "Benedictine Monk"
+ "name": "Benedictine Monk",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

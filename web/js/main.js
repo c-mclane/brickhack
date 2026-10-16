@@ -882,7 +882,6 @@ const CYCLES = {
   race: ['Race', RACES.slashem],
   gender: ['Gender', ['random', 'male', 'female']],
   align: ['Alignment', ['random', 'lawful', 'neutral', 'chaotic']],
-  legacy: ['Intro story', ['off', 'on']],
 };
 const SPLASHES = ['Now in 3D!', 'Elbereth!', 'Now with studs!', 'The DevTeam thinks of everything!', 'Do not eat the cockatrice!',
   'You hear the footsteps of a guard on patrol.', '100% tiles!', 'Ascend!', 'Mind your bare feet!', 'Watch out for soldier ants!'];
@@ -940,10 +939,12 @@ function buildScreens() {
 
   // BrickHack starts you as a human male Knight (role 7, race 1, gender 1); the
   // alignment always starts random (the game picks one that fits)
-  const choice = { role: 7, race: 1, gender: 1, legacy: 0, ...safeJSON(localGet('bh.create')), align: 0 };
+  const choice = { role: 7, race: 1, gender: 1, ...safeJSON(localGet('bh.create')), align: 0 };
+  delete choice.legacy; // (a choice no more: every new game opens with its story)
   const nameIn = $('#cname');
   nameIn.value = localGet('nh3d.name') || '';
   let syncPicker = () => {}; // the minifig picker follows the role and gender
+  let sworn = null; // a figure with a deity of its own (its design's "god": Jesus) is held to its alignment: lawful
   const draws = [];
   // Role, race, gender and alignment open a menu of their options; an option
   // that can't go with the other choices (by the game's own rules) is greyed
@@ -961,6 +962,7 @@ function buildScreens() {
   const closeMenu = () => { const m = $('#choice-menu'); if (m) m.remove(); };
   const openMenu = (b, k) => {
     closeMenu();
+    if (k === 'align' && sworn) return; // (fixed by the figure's faith)
     const menu = document.createElement('div');
     menu.id = 'choice-menu';
     menu.className = 'choice-menu';
@@ -988,8 +990,12 @@ function buildScreens() {
     const k = b.dataset.key;
     const draw = () => {
       choice[k] %= CYCLES[k][1].length;
-      b.textContent = `${CYCLES[k][0]}: ${cap(CYCLES[k][1][choice[k]])}`;
+      b.textContent = `${CYCLES[k][0]}: ${cap(CYCLES[k][1][choice[k]])}` + (k === 'align' && sworn ? ` (${sworn})` : '');
       b.classList.toggle('conflict', RULED.includes(k) && conflicts(rules, pick(), k, pick()[k]).length > 0);
+      if (k === 'align') {
+        b.classList.toggle('sworn', !!sworn);
+        b.title = sworn ? `A follower of ${sworn} is lawful` : '';
+      }
     };
     b.onclick = (e) => {
       if (!RULED.includes(k)) { choice[k] = (choice[k] + 1) % CYCLES[k][1].length; refresh(); return; }
@@ -1022,7 +1028,7 @@ function buildScreens() {
   $('#create [data-act=roll]').onclick = () => {
     const any = (k) => CYCLES[k][1].map((v, i) => i).filter((i) => CYCLES[k][1][i] !== 'random');
     const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
-    const free = RULED.filter((k) => !locked.has(k));
+    const free = RULED.filter((k) => !locked.has(k) && !(k === 'align' && sworn));
     for (const k of free) choice[k] = 0;
     for (const k of free) {
       const ok = any(k).filter((i) => !conflicts(rules, pick(), k, CYCLES[k][1][i]).length);
@@ -1040,12 +1046,21 @@ function buildScreens() {
   };
   // your character is named for the figure you pick, unless you have typed a name of your own
   const figNames = new Set();
+  // a figure sworn to a deity of its own (Jesus) is lawful, whatever else was chosen; another frees it
+  const swear = (fig) => {
+    const god = (fig && fig.god) || null;
+    if (god) choice.align = CYCLES.align[1].indexOf('lawful');
+    else if (sworn) choice.align = 0;
+    sworn = god;
+    refresh();
+  };
   figPicker = setupFigurePicker($('#figpick'), () => !$('#create').classList.contains('hidden'), (fig) => {
     if (!nameIn.value || nameIn.value === 'Steve' || figNames.has(nameIn.value)) nameIn.value = fig.label;
     figNames.add(fig.label);
+    swear(fig);
   });
   loadRoster().then((r) => r.forEach((f) => figNames.add(f.label)));
-  syncPicker = () => figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender], CYCLES.race[1][choice.race]);
+  syncPicker = () => { figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender], CYCLES.race[1][choice.race]); swear(figPicker.current()); };
   syncPicker();
   $('#create [data-act=go]').onclick = () => {
     localSet('bh.create', JSON.stringify(choice));
@@ -1061,8 +1076,8 @@ function buildScreens() {
       // roles go by their 3-letter file code (handles "Flame Mage" etc), races by full name
       o[k] = v === 'random' ? 'random' : k === 'race' ? v : v.slice(0, 3);
     }
-    if (figPicker.current() && figPicker.current().kit) o.kit = figPicker.current().kit; // (what its design starts it with besides)
-    o.legacy = choice.legacy === 1;
+    const fig = figPicker.current();
+    if (fig) for (const k of ['kit', 'god', 'perks']) if (fig[k]) o[k] = fig[k]; // (what its design starts it with besides, its deity, its gifts)
     o.dreamland = !!game.createDream;
     o.variant = game.variant;
     startGame(o);
@@ -1145,7 +1160,12 @@ async function openWorlds() {
     const av = loadSkinURL(n);
     if (av) d.querySelector('.avatar').style.backgroundImage = `url(${av})`;
     else d.querySelector('.avatar').style.visibility = 'hidden';
-    d.onclick = () => startGame({ name: n, variant: game.variant });
+    d.onclick = async () => { // (its figure's deity and gifts, again: the engine sets them up on every restore)
+      const fig = (await loadRoster()).find((f) => f.id === localGet(FIG_KEY(n)));
+      const o = { name: n, variant: game.variant };
+      if (fig) for (const k of ['god', 'perks']) if (fig[k]) o[k] = fig[k];
+      startGame(o);
+    };
     list.appendChild(d);
   }
 }

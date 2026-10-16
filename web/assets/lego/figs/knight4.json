@@ -52,5 +52,7 @@
   "part": "87694",
   "color": 14
  },
- "label": "Teutonic Knight"
+ "label": "Teutonic Knight",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

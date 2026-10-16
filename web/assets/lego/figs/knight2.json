@@ -48,5 +48,7 @@
    }
   }
  ],
- "label": "Knight of St. Lazarus"
+ "label": "Knight of St. Lazarus",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

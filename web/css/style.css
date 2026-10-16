@@ -376,6 +376,7 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 #create .lock-btn { position: absolute; left: 100%; top: 0; margin-left: 6px; min-width: 0; width: 42px; padding: 0; font-size: 18px; opacity: .55; }
 #create .lock-btn.on { opacity: 1; }
 #create .cycle.conflict { color: #ff7a7a; }
+#create .cycle.sworn { color: #ffd76a; cursor: default; } /* (held to its alignment by the figure's deity) */
 #create [data-act=go]:disabled { opacity: .45; cursor: not-allowed; }
 
 /* an item made in LEGO: a rendered picture of its model (legoitems.js), drawn smooth */

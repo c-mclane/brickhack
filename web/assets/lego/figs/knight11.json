@@ -48,5 +48,7 @@
    }
   }
  ],
- "label": "Knight of St. Thomas"
+ "label": "Knight of St. Thomas",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

@@ -188,6 +188,73 @@ edit("src/potion.c", [("	case POT_FULL_HEALING:\n		You_feel(\"completely healed.
 edit("win/share/objects.txt", [("# tile 368 (LEP GEX VEN ZEA / create monster)\n",
 """# tile 384 (golden goblet / holy wine)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMAAAAAAAAAAMMM\n  MMMAHHHHHHHHAMMM\n  MMMAHDDDDDDHAMMM\n  MMMAHNDDDDDHAMMM\n  MMMMAHDDDDHCAMMM\n  MMMMMAHHHHCAMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMAHHHHCAMMMM\n  MMMMAAAAAAAAMMMM\n  MMMMMMMMMMMMMMMM\n}\n# tile 368 (LEP GEX VEN ZEA / create monster)\n""")],
      "golden goblet / holy wine")
+# ...and drunk glass after glass it goes to your head: another within 100
+# turns makes you really drunk, for hundreds of turns (winweb.c
+# web_holy_wine_sip, before the wine's cures, and web_holy_wine, after them)
+edit("src/potion.c", [("	case POT_HOLY_WINE: /* WEB_HOOK_HOLYWINE: the chalice: whole in body and soul */\n",
+                       "	case POT_HOLY_WINE: /* WEB_HOOK_HOLYWINE: the chalice: whole in body and soul */\n"
+                       "		{ extern void NDECL(web_holy_wine_sip); web_holy_wine_sip(); } /* WEB_HOOK_DRUNK */\n")],
+     "WEB_HOOK_DRUNK")
+# BrickHack: the wine glass, plain and clear (a tool, never made at random):
+# what's left when holy wine is drunk; prayer fills it again (winweb.c
+# web_fill_glasses: on an altar, or anywhere for a Catholic priest)
+edit("src/objects.c", [("		TOOL_CLASS, 0, 0,10, 5000, 0, 0, 0, 0, 50, HI_SILVER),\n#undef TOOL\n",
+                        "		TOOL_CLASS, 0, 0,10, 5000, 0, 0, 0, 0, 50, HI_SILVER),\n"
+                        "TOOL(\"wine glass\", (char *)0,   1, 1, 0, 0,   0,   3,   5, GLASS, HI_GLASS), /* WEB_HOOK_GLASS */\n"
+                        "#undef TOOL\n")],
+     "WEB_HOOK_GLASS")
+edit("win/share/objects.txt", [("# tile 298 (tripe ration)\n",
+"""# tile 298 (wine glass)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMBBBBBBMMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMMBNPPPBMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMBBBBBBBBMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n}\n# tile 298 (tripe ration)\n""")],
+     "(wine glass)")
+edit("src/potion.c", [("		exercise(A_WIS, TRUE);\n		exercise(A_CON, TRUE);\n		break;\n	case POT_FULL_HEALING:\n",
+                       "		exercise(A_WIS, TRUE);\n		exercise(A_CON, TRUE);\n"
+                       "		{ extern void NDECL(web_holy_wine); web_holy_wine(); } /* WEB_HOOK_GLASS: drunk; peace with the figure's own god */\n"
+                       "		{ /* WEB_HOOK_GLASS: the wine drunk, its glass stays */\n"
+                       "		    struct obj *glass = mksobj(WINE_GLASS, FALSE, FALSE);\n"
+                       "		    glass->blessed = otmp->blessed;\n"
+                       "		    glass->cursed = otmp->cursed;\n"
+                       "		    (void) hold_another_object(glass, \"You set the empty glass down.\",\n"
+                       "					       (const char *)0, (const char *)0);\n"
+                       "		}\n"
+                       "		break;\n	case POT_FULL_HEALING:\n")],
+     "WEB_HOOK_GLASS")
+edit("src/pray.c", [("	pleased(alignment); /* nice */\n    }\n    return(1);\n}\n",
+                     "	pleased(alignment); /* nice */\n    }\n"
+                     "    { extern void NDECL(web_fill_glasses); web_fill_glasses(); } /* WEB_HOOK_GLASS */\n"
+                     "    return(1);\n}\n")],
+     "WEB_HOOK_GLASS")
+# BrickHack: a figure's own deity (the server's LEGOHACK_GOD, from its design:
+# Jesus, for the Catholic priest, the monastic orders and the crusading
+# knights), the lawful god (its followers are lawful: the server sets
+# align:lawful); set again on every restore
+edit("src/role.c", [("	    urole.cgod = roles[flags.pantheon].cgod;\n	}\n",
+                     "	    urole.cgod = roles[flags.pantheon].cgod;\n	}\n"
+                     "	{ /* WEB_HOOK_GOD */\n"
+                     "	    static char web_god[64];\n"
+                     "	    const char *g = getenv(\"LEGOHACK_GOD\");\n"
+                     "	    if (g && *g) {\n"
+                     "		(void) strncpy(web_god, g, sizeof web_god - 1);\n"
+                     "		urole.lgod = web_god;\n"
+                     "	    }\n"
+                     "	}\n")],
+     "WEB_HOOK_GOD")
+# BrickHack: the intro story (com_pager 1) told to a follower of the figure's
+# own deity (Jesus): the cruel god who stole the Amulet is Satan (winweb.c
+# web_intro_line); Moloch stays Moloch everywhere else
+edit("src/questpgr.c", [("STATIC_OVL void\ndeliver_by_window(qt_msg, how)\n",
+                         "static int web_intro = 0; /* WEB_HOOK_INTRO: telling the intro story */\n"
+                         "STATIC_OVL void\ndeliver_by_window(qt_msg, how)\n"),
+                        ("	    convert_line();\n	    putstr(datawin, 0, out_line);\n",
+                         "	    convert_line();\n"
+                         "	    if (web_intro) { extern void FDECL(web_intro_line, (char *)); web_intro_line(out_line); }\n"
+                         "	    putstr(datawin, 0, out_line);\n"),
+                        ("	else if (msgnum == 1) deliver_by_window(qt_msg, NHW_MENU);\n",
+                         "	else if (msgnum == 1) {\n"
+                         "	    web_intro = 1;\n"
+                         "	    deliver_by_window(qt_msg, NHW_MENU);\n"
+                         "	    web_intro = 0;\n"
+                         "	}\n")],
+     "WEB_HOOK_INTRO")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

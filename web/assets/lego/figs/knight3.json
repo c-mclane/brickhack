@@ -48,5 +48,7 @@
    }
   }
  ],
- "label": "Knight Templar"
+ "label": "Knight Templar",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

@@ -19,9 +19,9 @@ const ART_DIRS = ['sky', 'skins', 'monsters', 'dreamland', 'blocks'];
 const IMAGE_EXT = /\.(png|gif|webp)$/i;
 const WORLDS = path.join(ROOT, 'worlds'); // local only: placed blocks + block inventory per character
 // the game engine, built by tools/build-slashem.sh
-// autopickup with no pickup_types = collect everything (Minecraft-style);
+// no autopickup: you pick things up yourself (,);
 // menustyle:partial makes chests list their contents straight away
-const COMMON_OPTS = ['autopickup', 'time', 'showexp', '!cmdassist', 'menustyle:partial'];
+const COMMON_OPTS = ['!autopickup', 'time', 'showexp', '!cmdassist', 'menustyle:partial'];
 // the Windows package (tools/package-windows.sh) carries its engine in game\
 const WINDOWS = process.platform === 'win32';
 const VARIANTS = {
@@ -74,10 +74,10 @@ function startGame(sid, opts) {
   const V = VARIANTS[variant];
   const o = [...V.opts];
   for (const k of ['role', 'race', 'gender', 'align']) {
-    const v = cleanOpt(opts[k]);
+    const v = k === 'align' && opts.god ? 'law' : cleanOpt(opts[k]); // (a follower of the figure's own deity, Jesus, is lawful)
     if (v && v !== 'random') o.push(`${k}:${v}`);
   }
-  if (!opts.legacy) o.push('!legacy');
+  // (the intro story: every new game opens with it, NetHack's legacy option, on by default)
   if (opts.dreamland) o.push('dreamland'); // start on the Dreamland overland level
   const name = cleanName(opts.name);
   // a brand-new character (no save to restore) starts a fresh block world
@@ -87,6 +87,9 @@ function startGame(sid, opts) {
     try { fs.unlinkSync(worldFile(variant, name)); } catch {}
   }
   const kit = fresh ? String(opts.kit || '').replace(/[^a-z0-9 ,:'-]/gi, '').slice(0, 200) : '';
+  // its deity ("Jesus": role.c, set again on every restore) and gifts ("chalice": winweb.c web_fill_glasses)
+  const god = String(opts.god || '').replace(/[^a-z '-]/gi, '').slice(0, 60);
+  const perks = String(opts.perks || '').replace(/[^a-z ,-]/gi, '').slice(0, 100);
 
   const start = () => {
     // LEGOHACK_WIZARD=1 npm start: every game in debug (wizard) mode, for testing
@@ -94,7 +97,7 @@ function startGame(sid, opts) {
     const args = process.env.LEGOHACK_WIZARD === '1' ? ['-D', '-u', name] : ['-u', name];
     const proc = spawn(path.join(V.dir, V.bin), args, {
       cwd: V.dir,
-      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, LEGOHACK_KIT: kit },
+      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, LEGOHACK_KIT: kit, LEGOHACK_GOD: god, LEGOHACK_PERKS: perks },
       stdio: ['pipe', 'pipe', 'pipe', 'pipe'],
     });
     sess.proc = proc;

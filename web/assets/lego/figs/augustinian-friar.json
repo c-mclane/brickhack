@@ -27,5 +27,7 @@
   "part": "12893",
   "color": 0
  },
- "name": "Augustinian Friar"
+ "name": "Augustinian Friar",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

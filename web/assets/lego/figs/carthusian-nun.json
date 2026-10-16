@@ -13,5 +13,7 @@
  "hips": "3815",
  "hipColor": 15,
  "legColor": 15,
- "name": "Carthusian Nun"
+ "name": "Carthusian Nun",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

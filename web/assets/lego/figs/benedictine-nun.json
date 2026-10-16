@@ -13,5 +13,7 @@
  "hips": "3815",
  "hipColor": 0,
  "legColor": 0,
- "name": "Benedictine Nun"
+ "name": "Benedictine Nun",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

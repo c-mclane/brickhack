@@ -52,5 +52,7 @@
   "part": "87694",
   "color": 4
  },
- "label": "Knight of Santiago"
+ "label": "Knight of Santiago",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

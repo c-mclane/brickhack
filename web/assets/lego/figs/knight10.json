@@ -48,5 +48,7 @@
    }
   }
  ],
- "label": "Knight of the Red Star"
+ "label": "Knight of the Red Star",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

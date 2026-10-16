@@ -29,5 +29,7 @@
   "part": "50231c01",
   "color": 15
  },
- "name": "Carmelite Nun"
+ "name": "Carmelite Nun",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

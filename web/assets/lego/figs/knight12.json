@@ -52,5 +52,7 @@
   "part": "64647",
   "color": 2
  },
- "label": "Conquistador of Alc\u00e1ntara"
+ "label": "Conquistador of Alc\u00e1ntara",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

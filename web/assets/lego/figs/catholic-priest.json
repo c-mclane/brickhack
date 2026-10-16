@@ -28,5 +28,7 @@
  "hips": "3815",
  "hipColor": 0,
  "legColor": 0,
- "kit": "holy wafer:4,holy wine:1"
+ "kit": "holy wafer:10,holy wine:1",
+ "god": "Jesus",
+ "perks": "chalice"
 }

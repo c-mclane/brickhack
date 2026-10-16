@@ -41,5 +41,7 @@
    }
   }
  ],
- "label": "Knight of the Holy Sepulchre"
+ "label": "Knight of the Holy Sepulchre",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

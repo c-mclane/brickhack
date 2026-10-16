@@ -31,5 +31,7 @@
   "part": "50231c01",
   "color": 0
  },
- "name": "Dominican Friar"
+ "name": "Dominican Friar",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

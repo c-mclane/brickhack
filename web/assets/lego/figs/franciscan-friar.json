@@ -27,5 +27,7 @@
   "part": "12893",
   "color": 71
  },
- "name": "Franciscan Friar"
+ "name": "Franciscan Friar",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

@@ -13,5 +13,7 @@
  "legColor": 15,
  "hat": "4505a",
  "hatColor": 15,
- "name": "Carthusian Monk"
+ "name": "Carthusian Monk",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }

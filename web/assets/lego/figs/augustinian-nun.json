@@ -25,5 +25,7 @@
    32
   ]
  },
- "name": "Augustinian Nun"
+ "name": "Augustinian Nun",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
 }
