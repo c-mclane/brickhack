@@ -2,12 +2,12 @@
  "camera": {
   "pos": [
    0,
-   1.6,
-   24
+   3,
+   20
   ],
   "target": [
    0,
-   1.2,
+   1.5,
    0
   ]
  },
@@ -24,366 +24,119 @@
   {
    "fig": "knight",
    "set": {
-    "boots": {
-     "bands": [
-      [
-       20,
-       70
-      ],
-      [
-       26.5,
-       0
-      ]
-     ]
-    },
-    "legColor": 1,
+    "handColor": 28,
     "right": null,
     "left": null,
-    "hat": null,
-    "neck": []
+    "hat": null
    },
    "pos": [
-    -360,
+    -160,
     -72,
     0
    ],
-   "rotY": 330,
-   "label": "low boots (walking shoes)"
+   "rotY": 345,
+   "label": "leather gloves (old gloves)"
   },
   {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       19,
-       72
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
+   "item": "leather gloves",
    "pos": [
-    -280,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "iron shoes (hard shoes)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       2,
-       0
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    -200,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "high boots (jackboots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       12,
-       0
-      ],
-      [
-       26.5,
-       72
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    -120,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "speed boots (combat boots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       10,
-       330
-      ],
-      [
-       26.5,
-       308
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    -40,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "water walking boots (jungle boots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       14,
-       84
-      ],
-      [
-       16,
-       70
-      ],
-      [
-       26.5,
-       0
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    40,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "jumping boots (hiking boots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       6,
-       288
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    120,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "elven boots (mud boots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       8,
-       179
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    200,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "kicking boots (steel boots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       0,
-       70
-      ],
-      [
-       3,
-       308
-      ]
-     ]
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    280,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "fumble boots (riding boots)"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "boots": {
-     "bands": [
-      [
-       10,
-       15
-      ],
-      [
-       13,
-       19
-      ]
-     ],
-     "feet": {
-      "part": "30284",
-      "color": 15,
-      "pos": [
-       -10,
-       72,
-       0
-      ]
-     }
-    },
-    "legColor": 1,
-    "right": null,
-    "left": null,
-    "hat": null,
-    "neck": []
-   },
-   "pos": [
-    360,
-    -72,
-    0
-   ],
-   "rotY": 330,
-   "label": "levitation boots (snow boots)"
-  },
-  {
-   "item": "low boots",
-   "pos": [
-    -360,
+    -160,
     0,
     -60
    ]
   },
   {
-   "item": "iron shoes",
+   "fig": "knight",
+   "set": {
+    "handColor": 71,
+    "right": null,
+    "left": null,
+    "hat": null
+   },
    "pos": [
-    -280,
+    -80,
+    -72,
+    0
+   ],
+   "rotY": 345,
+   "label": "gauntlets of fumbling (padded gloves)"
+  },
+  {
+   "item": "gauntlets of fumbling",
+   "pos": [
+    -80,
     0,
     -60
    ]
   },
   {
-   "item": "high boots",
+   "fig": "knight",
+   "set": {
+    "handColor": 70,
+    "right": null,
+    "left": null,
+    "hat": null
+   },
    "pos": [
-    -200,
+    0,
+    -72,
+    0
+   ],
+   "rotY": 345,
+   "label": "gauntlets of power (riding gloves)"
+  },
+  {
+   "item": "gauntlets of power",
+   "pos": [
+    0,
     0,
     -60
    ]
   },
   {
-   "item": "speed boots",
+   "fig": "knight",
+   "set": {
+    "handColor": 0,
+    "right": null,
+    "left": null,
+    "hat": null
+   },
    "pos": [
-    -120,
+    80,
+    -72,
+    0
+   ],
+   "rotY": 345,
+   "label": "gauntlets of swimming (black gloves)"
+  },
+  {
+   "item": "gauntlets of swimming",
+   "pos": [
+    80,
     0,
     -60
    ]
   },
   {
-   "item": "water walking boots",
+   "fig": "knight",
+   "set": {
+    "handColor": 15,
+    "right": null,
+    "left": null,
+    "hat": null
+   },
    "pos": [
-    -40,
-    0,
-    -60
-   ]
+    160,
+    -72,
+    0
+   ],
+   "rotY": 345,
+   "label": "gauntlets of dexterity (fencing gloves)"
   },
   {
-   "item": "jumping boots",
+   "item": "gauntlets of dexterity",
    "pos": [
-    40,
-    0,
-    -60
-   ]
-  },
-  {
-   "item": "elven boots",
-   "pos": [
-    120,
-    0,
-    -60
-   ]
-  },
-  {
-   "item": "kicking boots",
-   "pos": [
-    200,
-    0,
-    -60
-   ]
-  },
-  {
-   "item": "fumble boots",
-   "pos": [
-    280,
-    0,
-    -60
-   ]
-  },
-  {
-   "item": "levitation boots",
-   "pos": [
-    360,
+    160,
     0,
     -60
    ]

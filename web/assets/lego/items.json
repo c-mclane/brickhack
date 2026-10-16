@@ -5295,5 +5295,190 @@
     }
    }
   }
+ },
+ "leather gloves": {
+  "lego": "Hands in faded dark tan (old gloves)",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 28,
+    "pos": [
+     -8,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 28,
+    "pos": [
+     8,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "slot": "gloves",
+  "wear": {
+   "handColor": 28
+  }
+ },
+ "gauntlets of fumbling": {
+  "lego": "Hands in light grey, padded (padded gloves)",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 71,
+    "pos": [
+     -8,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 71,
+    "pos": [
+     8,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "slot": "gloves",
+  "wear": {
+   "handColor": 71
+  }
+ },
+ "gauntlets of power": {
+  "lego": "Hands in brown leather (riding gloves)",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 70,
+    "pos": [
+     -8,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 70,
+    "pos": [
+     8,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "slot": "gloves",
+  "wear": {
+   "handColor": 70
+  }
+ },
+ "gauntlets of swimming": {
+  "lego": "Black hands (black gloves)",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 0,
+    "pos": [
+     -8,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 0,
+    "pos": [
+     8,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "slot": "gloves",
+  "wear": {
+   "handColor": 0
+  }
+ },
+ "gauntlets of dexterity": {
+  "lego": "White hands (fencing gloves)",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 15,
+    "pos": [
+     -8,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 15,
+    "pos": [
+     8,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "slot": "gloves",
+  "wear": {
+   "handColor": 15
+  }
  }
 }

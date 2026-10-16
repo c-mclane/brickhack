@@ -58,7 +58,7 @@ def wearing(spec, item):
     """A recipe with a worn item on (items.json "wear": recipe keys, as a
     helm's hat, hatColor, plume, extras; a shield's left; a cloak's neck,
     extras, dress; body armour's or a shirt's torso keys and neck armour;
-    boots' bands). A helm takes the hair off (it would poke through) and
+    boots' bands; gloves' handColor). A helm takes the hair off (it would poke through) and
     whatever hat, plume or tiara the figure had; its extras go on beside the
     figure's own (an angel keeps its wings)."""
     wear = item.get('wear')
@@ -66,6 +66,8 @@ def wearing(spec, item):
         return spec
     if 'left' in wear:   # a shield, in the left hand
         return dict(spec, left=wear['left'])
+    if item.get('slot') == 'gloves':   # the hands in the gloves' colour
+        return dict(spec, **wear)
     if item.get('slot') == 'boots':   # the legs moulded with boots (minifig.booted), snowshoes under them
         return dict(spec, boots=wear['boots'])
     if item.get('slot') in ('suit', 'shirt'):   # body armour, or a shirt (items.json "slot")

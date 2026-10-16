@@ -1237,7 +1237,7 @@ let heroView = null;
 // worn: items.json "wear"), in its slot. (A designed shield is put back in
 // hand while you wear the one you started with: "design:shield", the roster's
 // figures being built empty-handed.)
-const WORN_SLOTS = ['shirt', 'suit', 'cloak', 'helm', 'shield', 'boots']; // (in the order they go on: a suit over a shirt; a helm takes a cloak's hood off)
+const WORN_SLOTS = ['shirt', 'suit', 'cloak', 'helm', 'shield', 'boots', 'gloves']; // (in the order they go on: a suit over a shirt; a helm takes a cloak's hood off)
 function startGear() { // {items: {letter: slot} you started wearing, claimed: the slots they stood in} (kept with the character)
   if (hero3d.start) return hero3d.start;
   const key = FIG_KEY(game.charName) + '.start', kept = localGet(key);
