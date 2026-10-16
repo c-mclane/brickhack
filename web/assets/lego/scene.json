@@ -2,8 +2,8 @@
  "camera": {
   "pos": [
    0,
-   14,
-   22
+   10,
+   16
   ],
   "target": [
    0,
@@ -22,355 +22,355 @@
    ]
   },
   {
-   "item": "tripe ration",
+   "item": "dilithium crystal",
    "pos": [
     -270,
     0,
     -120
    ],
-   "label": "tripe ration"
+   "label": "dilithium crystal"
   },
   {
-   "item": "egg",
+   "item": "diamond",
    "pos": [
     -210,
     0,
     -120
    ],
-   "label": "egg"
+   "label": "diamond"
   },
   {
-   "item": "meatball",
+   "item": "ruby",
    "pos": [
     -150,
     0,
     -120
    ],
-   "label": "meatball"
+   "label": "ruby"
   },
   {
-   "item": "meat stick",
+   "item": "jacinth",
    "pos": [
     -90,
     0,
     -120
    ],
-   "label": "meat stick"
+   "label": "jacinth"
   },
   {
-   "item": "huge chunk of meat",
+   "item": "sapphire",
    "pos": [
     -30,
     0,
     -120
    ],
-   "label": "huge chunk of meat"
+   "label": "sapphire"
   },
   {
-   "item": "eyeball",
+   "item": "black opal",
    "pos": [
     30,
     0,
     -120
    ],
-   "label": "eyeball"
+   "label": "black opal"
   },
   {
-   "item": "severed hand",
+   "item": "emerald",
    "pos": [
     90,
     0,
     -120
    ],
-   "label": "severed hand"
+   "label": "emerald"
   },
   {
-   "item": "kelp frond",
+   "item": "turquoise",
    "pos": [
     150,
     0,
     -120
    ],
-   "label": "kelp frond"
+   "label": "turquoise"
   },
   {
-   "item": "eucalyptus leaf",
+   "item": "citrine",
    "pos": [
     210,
     0,
     -120
    ],
-   "label": "eucalyptus leaf"
+   "label": "citrine"
   },
   {
-   "item": "clove of garlic",
+   "item": "aquamarine",
    "pos": [
     270,
     0,
     -120
    ],
-   "label": "clove of garlic"
+   "label": "aquamarine"
   },
   {
-   "item": "sprig of wolfsbane",
+   "item": "amber",
    "pos": [
     -270,
     0,
     -60
    ],
-   "label": "sprig of wolfsbane"
+   "label": "amber"
   },
   {
-   "item": "apple",
+   "item": "topaz",
    "pos": [
     -210,
     0,
     -60
    ],
-   "label": "apple"
+   "label": "topaz"
   },
   {
-   "item": "carrot",
+   "item": "jet",
    "pos": [
     -150,
     0,
     -60
    ],
-   "label": "carrot"
+   "label": "jet"
   },
   {
-   "item": "pear",
+   "item": "opal",
    "pos": [
     -90,
     0,
     -60
    ],
-   "label": "pear"
+   "label": "opal"
   },
   {
-   "item": "asian pear",
+   "item": "chrysoberyl",
    "pos": [
     -30,
     0,
     -60
    ],
-   "label": "asian pear"
+   "label": "chrysoberyl"
   },
   {
-   "item": "banana",
+   "item": "garnet",
    "pos": [
     30,
     0,
     -60
    ],
-   "label": "banana"
+   "label": "garnet"
   },
   {
-   "item": "orange",
+   "item": "amethyst",
    "pos": [
     90,
     0,
     -60
    ],
-   "label": "orange"
+   "label": "amethyst"
   },
   {
-   "item": "mushroom",
+   "item": "jasper",
    "pos": [
     150,
     0,
     -60
    ],
-   "label": "mushroom"
+   "label": "jasper"
   },
   {
-   "item": "melon",
+   "item": "fluorite",
    "pos": [
     210,
     0,
     -60
    ],
-   "label": "melon"
+   "label": "fluorite"
   },
   {
-   "item": "slime mold",
+   "item": "obsidian",
    "pos": [
     270,
     0,
     -60
    ],
-   "label": "slime mold"
+   "label": "obsidian"
   },
   {
-   "item": "lump of royal jelly",
+   "item": "agate",
    "pos": [
     -270,
     0,
     0
    ],
-   "label": "lump of royal jelly"
+   "label": "agate"
   },
   {
-   "item": "cream pie",
+   "item": "jade",
    "pos": [
     -210,
     0,
     0
    ],
-   "label": "cream pie"
+   "label": "jade"
   },
   {
-   "item": "sandwich",
+   "item": "worthless piece of white glass",
    "pos": [
     -150,
     0,
     0
    ],
-   "label": "sandwich"
+   "label": "worthless piece of white glass"
   },
   {
-   "item": "candy bar",
+   "item": "worthless piece of blue glass",
    "pos": [
     -90,
     0,
     0
    ],
-   "label": "candy bar"
+   "label": "worthless piece of blue glass"
   },
   {
-   "item": "fortune cookie",
+   "item": "worthless piece of red glass",
    "pos": [
     -30,
     0,
     0
    ],
-   "label": "fortune cookie"
+   "label": "worthless piece of red glass"
   },
   {
-   "item": "pancake",
+   "item": "worthless piece of yellowish brown glass",
    "pos": [
     30,
     0,
     0
    ],
-   "label": "pancake"
+   "label": "worthless piece of yellowish brown glass"
   },
   {
-   "item": "tortilla",
+   "item": "worthless piece of orange glass",
    "pos": [
     90,
     0,
     0
    ],
-   "label": "tortilla"
+   "label": "worthless piece of orange glass"
   },
   {
-   "item": "cheese",
+   "item": "worthless piece of yellow glass",
    "pos": [
     150,
     0,
     0
    ],
-   "label": "cheese"
+   "label": "worthless piece of yellow glass"
   },
   {
-   "item": "holy wafer",
+   "item": "worthless piece of black glass",
    "pos": [
     210,
     0,
     0
    ],
-   "label": "holy wafer"
+   "label": "worthless piece of black glass"
   },
   {
-   "item": "lembas wafer",
+   "item": "worthless piece of green glass",
    "pos": [
     270,
     0,
     0
    ],
-   "label": "lembas wafer"
+   "label": "worthless piece of green glass"
   },
   {
-   "item": "cram ration",
+   "item": "worthless piece of violet glass",
    "pos": [
     -270,
     0,
     60
    ],
-   "label": "cram ration"
+   "label": "worthless piece of violet glass"
   },
   {
-   "item": "food ration",
+   "item": "luckstone",
    "pos": [
     -210,
     0,
     60
    ],
-   "label": "food ration"
+   "label": "luckstone"
   },
   {
-   "item": "K-ration",
+   "item": "healthstone",
    "pos": [
     -150,
     0,
     60
    ],
-   "label": "K-ration"
+   "label": "healthstone"
   },
   {
-   "item": "C-ration",
+   "item": "loadstone",
    "pos": [
     -90,
     0,
     60
    ],
-   "label": "C-ration"
+   "label": "loadstone"
   },
   {
-   "item": "tin",
+   "item": "touchstone",
    "pos": [
     -30,
     0,
     60
    ],
-   "label": "tin"
+   "label": "touchstone"
   },
   {
-   "item": "water",
+   "item": "whetstone",
    "pos": [
     30,
     0,
     60
    ],
-   "label": "water"
+   "label": "whetstone"
   },
   {
-   "item": "holy water",
+   "item": "flint",
    "pos": [
     90,
     0,
     60
    ],
-   "label": "holy water"
+   "label": "flint"
   },
   {
-   "item": "unholy water",
+   "item": "rock",
    "pos": [
     150,
     0,
     60
    ],
-   "label": "unholy water"
+   "label": "rock"
   },
   {
-   "item": "pill",
+   "item": "gold piece",
    "pos": [
     210,
     0,
     60
    ],
-   "label": "pill"
+   "label": "gold piece"
   }
  ]
 }

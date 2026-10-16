@@ -6079,5 +6079,422 @@
     0.08
    ]
   }
+ },
+ "dilithium crystal": {
+  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 362
+   }
+  ],
+  "upright": true
+ },
+ "diamond": {
+  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 362
+   }
+  ],
+  "upright": true
+ },
+ "ruby": {
+  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 36
+   }
+  ],
+  "upright": true
+ },
+ "jacinth": {
+  "lego": "The faceted LEGO jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 57
+   }
+  ],
+  "upright": true
+ },
+ "sapphire": {
+  "lego": "The faceted LEGO jewel in transparent blue (a blue gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 10366
+   }
+  ],
+  "upright": true
+ },
+ "black opal": {
+  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 32
+   }
+  ],
+  "upright": true
+ },
+ "emerald": {
+  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "turquoise": {
+  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "citrine": {
+  "lego": "The LEGO 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 46
+   }
+  ],
+  "upright": true
+ },
+ "aquamarine": {
+  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "amber": {
+  "lego": "The faceted LEGO jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 11019
+   }
+  ],
+  "upright": true
+ },
+ "topaz": {
+  "lego": "The faceted LEGO jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 11019
+   }
+  ],
+  "upright": true
+ },
+ "jet": {
+  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 32
+   }
+  ],
+  "upright": true
+ },
+ "opal": {
+  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 362
+   }
+  ],
+  "upright": true
+ },
+ "chrysoberyl": {
+  "lego": "The LEGO 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 46
+   }
+  ],
+  "upright": true
+ },
+ "garnet": {
+  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 36
+   }
+  ],
+  "upright": true
+ },
+ "amethyst": {
+  "lego": "The LEGO 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 365
+   }
+  ],
+  "upright": true
+ },
+ "jasper": {
+  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 36
+   }
+  ],
+  "upright": true
+ },
+ "fluorite": {
+  "lego": "The LEGO 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 365
+   }
+  ],
+  "upright": true
+ },
+ "obsidian": {
+  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 32
+   }
+  ],
+  "upright": true
+ },
+ "agate": {
+  "lego": "The faceted LEGO jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 57
+   }
+  ],
+  "upright": true
+ },
+ "jade": {
+  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of white glass": {
+  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 362
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of blue glass": {
+  "lego": "The faceted LEGO jewel in transparent blue (a blue gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 10366
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of red glass": {
+  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 36
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of yellowish brown glass": {
+  "lego": "The faceted LEGO jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 11019
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of orange glass": {
+  "lego": "The faceted LEGO jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 57
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of yellow glass": {
+  "lego": "The LEGO 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "11127",
+    "color": 46
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of black glass": {
+  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30153",
+    "color": 32
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of green glass": {
+  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "worthless piece of violet glass": {
+  "lego": "The LEGO 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
+  "parts": [
+   {
+    "part": "30385",
+    "color": 365
+   }
+  ],
+  "upright": true
+ },
+ "luckstone": {
+  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "parts": [
+   {
+    "part": "33176",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "healthstone": {
+  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "parts": [
+   {
+    "part": "33176",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "loadstone": {
+  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "parts": [
+   {
+    "part": "33176",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "touchstone": {
+  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "parts": [
+   {
+    "part": "33176",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "whetstone": {
+  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "parts": [
+   {
+    "part": "33176",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "flint": {
+  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "parts": [
+   {
+    "part": "33176",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "rock": {
+  "lego": "The LEGO rock nugget in dark grey",
+  "parts": [
+   {
+    "part": "35646",
+    "color": 72
+   }
+  ],
+  "upright": true
+ },
+ "gold piece": {
+  "lego": "A little pile of LEGO coins in metallic gold",
+  "parts": [
+   {
+    "part": "96904",
+    "color": 82
+   },
+   {
+    "part": "96904",
+    "color": 82,
+    "pos": [
+     6,
+     -4,
+     3
+    ]
+   },
+   {
+    "part": "96904",
+    "color": 82,
+    "pos": [
+     -3,
+     -8,
+     5
+    ]
+   },
+   {
+    "part": "96904",
+    "color": 82,
+    "pos": [
+     -14,
+     0,
+     8
+    ]
+   }
+  ],
+  "upright": true
  }
 }

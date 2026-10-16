@@ -479,6 +479,7 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
             mat = {'name': cname, 'doubleSided': True, 'pbrMetallicRoughness': pbr}
             if alpha < 1:
                 mat['alphaMode'] = 'BLEND'
+                pbr['roughnessFactor'] = 0.08   # transparent plastic is glossy: a jewel's, a bottle's shine
             materials.append(mat)
             meshes_prims.append({'attributes': attrs, 'material': len(materials) - 1, 'extras': {'ldrawColor': code}})
         return n
