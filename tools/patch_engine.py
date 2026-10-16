@@ -134,6 +134,18 @@ edit("src/u_init.c", [("            ini_inv(Pickaxe);\n    }\n",
                        "        }\n"
                        "    }\n")],
      "WEB_HOOK_KIT")
+# ...and the kit is just what the design names: none of the role's swaps by
+# race or alignment (a chaotic priest's holy wafers turned lembas)
+edit("src/u_init.c", [("STATIC_DCL void FDECL(ini_inv, (struct trobj *));\n",
+                       "STATIC_DCL void FDECL(ini_inv, (struct trobj *));\n"
+                       "static int web_kit_exact = 0; /* WEB_HOOK_KITEXACT: giving the design's kit (no swaps) */\n"),
+                      ("			if (urace.malenum != PM_HUMAN) {\n			    /* substitute specific items for generic ones */\n",
+                       "			if (!web_kit_exact && urace.malenum != PM_HUMAN) {\n			    /* substitute specific items for generic ones */\n"),
+                      ("			for (i = 0; inv_asubs[i].align != A_NONE; ++i)\n",
+                       "			if (!web_kit_exact) for (i = 0; inv_asubs[i].align != A_NONE; ++i)\n"),
+                      ("            ini_inv(kit);\n",
+                       "            web_kit_exact = 1;\n            ini_inv(kit);\n            web_kit_exact = 0;\n")],
+     "WEB_HOOK_KITEXACT")
 # BrickHack: holy wine, the Catholic priest's chalice (with his hosts: the
 # figure's kit, LEGOHACK_KIT): a potion in a golden goblet, never made at random
 # (only his, or set in a level), always known, its look never shuffled (it
