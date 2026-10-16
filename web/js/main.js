@@ -903,14 +903,12 @@ const SPLASHES = ['Now in 3D!', 'Elbereth!', 'Now with studs!', 'The DevTeam thi
 const CONTROLS = [
   ['Mouse', 'Look around'], ['W A S D', 'Move (relative to camera, 8 directions)'], ['Shift + WASD', 'Rush in a direction'],
   ['Left click', 'Attack / fight in the direction you look'], ['Right click', 'Use held item · open/close doors · travel to clicked spot'],
-  ['Middle click', 'Look at what is under the crosshair'], ['1-9 / wheel', 'Select hotbar slot'], ['E', 'Inventory'],
-  ['Q / Shift+Q', 'Drop one / drop stack of held item'], ['Space', 'Use stairs (on stairs) · otherwise search'],
-  ['G or ,', 'Pick up'], ['R', 'Search / rest'], ['F', 'Fire quiver'], ['Z', 'Cast a spell'], ['X', 'Swap weapons'],
-  ['K', 'Kick'], ['O', 'Open'], ['L', "Look here (:)"], ['C', 'Character attributes'], ['P', 'Pray'],
-  ['T or Enter', 'Command bar (extended commands, e.g. "pray", "loot", "chat")'], ['/', 'Command bar'],
-  ['Tab', 'Message history'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['M', 'Overhead map view on/off'], ['F1', 'Hide HUD'],
-  ['F3', 'Debug info'], ['N', 'Next music track'], ['I', 'Actions menu (every command as a button)'],
-  ['↑ (up arrow)', 'Do the first Recommended action'], ['Shift+1', 'Pick up'], ['Shift+2..4', 'Do a Recommended action (shown above the hotbar)'], ['V', 'Invoke an artifact (the held one, or choose)'], ['Other keys', "NetHack's own: capitals (W/T/P/R/Q/E/D...), symbols, H J Y U B, Ctrl/Alt commands"], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
+  ['Middle click', 'Look at what is under the crosshair'], ['1-9 / wheel', 'Select hotbar slot'], ['I', 'Inventory (and its Actions tab: every command as a button)'],
+  ['Delete / Shift+Delete', 'Drop one / drop stack of held item'], ['Space', 'Use stairs (on stairs) · otherwise search'],
+  ['Shift+1', 'Pick up'], ['↑ (up arrow)', 'Do the first Recommended action'], ['Enter', 'Command bar (extended commands, "give <item>"...)'],
+  ['Every other key', "NetHack's own, as ever: e eat, q quaff, r read, z zap, t throw, f fire, , pick up, # extended command, P put on, Alt+I invoke, Ctrl+D kick..."],
+  ['Tab', 'Message history'], ['F2', 'Overhead map view on/off'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['F1', 'Hide HUD'],
+  ['F3', 'Debug info'], ['`', 'Raw NetHack keys on/off (W A S D too)'], ['Esc', 'Cancel prompt / game menu'],
 ];
 
 function buildScreens() {
@@ -1888,14 +1886,14 @@ function rawKey(e) {
 
 window.addEventListener('keydown', (e) => {
   if (!game.playing) return;
-  if (['F1', 'F3', 'F5', 'Tab'].includes(e.key) || (e.key === ' ' && !modalOpen())) e.preventDefault();
+  if (['F1', 'F2', 'F3', 'F5', 'Tab'].includes(e.key) || (e.key === ' ' && !modalOpen())) e.preventDefault();
   if (!$('#pause').classList.contains('hidden')) { if (e.key === 'Escape') resume(); return; }
   if (anyScreen()) return;
   const k = e.key;
 
   // view toggles always work
   if (k === 'F5') { opts.camera = opts.camera >= 2 ? 0 : opts.camera + 1; saveOpts(); return; }
-  if ((k === 'm' || k === 'M') && !game.mode && !ui.inventoryOpen && !game.raw) {
+  if (k === 'F2' && !game.mode && !ui.inventoryOpen && !game.raw) { // (m is NetHack's)
     if (opts.camera === 3) opts.camera = game.prevCamera ?? 0;
     else { game.prevCamera = opts.camera; opts.camera = 3; }
     return;
@@ -1909,7 +1907,7 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   if (ui.inventoryOpen) {
-    if (k === 'Escape' || k === 'e' || k === 'E') {
+    if (k === 'Escape' || (game.mode !== 'select' && (k === 'i' || k === 'e' || k === 'E'))) {
       e.preventDefault();
       if (game.mode === 'select') game.answerSelect('\x1b');
       else { closeInventory(); relock(); }
@@ -1951,52 +1949,31 @@ window.addEventListener('keydown', (e) => {
   const lower = k.length === 1 ? k.toLowerCase() : k;
   if ('wasd'.includes(lower) && k.length === 1) { held.add(lower); return; }
   if (/^[1-9]$/.test(k)) { ui.selectHotbar(+k - 1); return; }
-  // Shift+1: pick up, always; Shift+2..4: the Recommended actions in those rows
+  // Shift+1: pick up, always
   if (e.shiftKey && e.code === 'Digit1') { e.preventDefault(); game.sendKeys(','); return; }
-  if (e.shiftKey && /^Digit[2-4]$/.test(e.code)) {
-    const r = game.recs && game.recs[+e.code.slice(5) - 1];
-    if (r) { e.preventDefault(); game.runAction(r); }
-    return;
-  }
   // Ctrl and Alt (M-) commands are NetHack's, as ever (Ctrl+D kick, Alt+I invoke...); not the browser's own Ctrl keys
   if ((e.ctrlKey || e.altKey) && k.length === 1 && /[a-z]/i.test(k)) {
     if (e.ctrlKey && /^[rwnt]$/i.test(k)) return;
     e.preventDefault(); game.sendKeys(rawKey(e)); return;
   }
   const it = ui.selectedItem();
-  switch (k) { // (capitals aren't these: they're NetHack's, below)
-    case 'i': releaseLock(); ui.openInventory(null, 'actions'); return;
-    case 'e': releaseLock(); ui.openInventory(); return;
-    case 'q': case 'Q': if (it) game.itemCmd('drop', it, e.shiftKey || it.q === 1 ? 0 : 1); return;
+  switch (k) { // every other key is NetHack's own (below)
+    case 'i': releaseLock(); ui.openInventory(); return; // (NetHack's inventory: ours, with its Actions tab)
+    case 'Delete': if (it) game.itemCmd('drop', it, e.shiftKey || it.q === 1 ? 0 : 1); return; // drop the held item (Shift: the stack)
     case ' ': { // the stairs (or ladder) you're on; anywhere else, search
       const cl = world.classAt(world.hero.x, world.hero.y), c = cl && cl.cmap;
       game.sendKeys(c === CM.upstair || c === CM.upladder ? '<' : c === CM.dnstair || c === CM.dnladder ? '>' : 's');
       return;
     }
-    case '<': case '>': game.sendKeys(k); return;
-    case 'g': case ',': game.sendKeys(','); return; // (pick up: there's no autopickup)
     case 'ArrowUp': { // the first Recommended action (shown above the hotbar)
       e.preventDefault();
       const r = game.recs && game.recs[0];
       if (r) game.runAction(r);
       return;
     }
-    case 'n': music.next(); return;
-    case 'r': game.sendKeys('s'); return;
-    case 'f': game.sendKeys('f'); return;
-    case 'z': game.sendKeys('Z'); return;
-    case 'x': game.sendKeys('x'); return;
-    case 'k': game.sendKeys('\x04'); return;
-    case 'o': game.sendKeys('o'); return;
-    case 'l': game.sendKeys(':'); return;
-    case 'c': game.sendKeys('\x18'); return;
-    case 'p': game.pendingExt = 'pray'; game.sendKeys('#'); return;
-    case 'v': // invoke: the held item, if it has a power; else the game asks which
-      if (it && it.iv) game.itemCmd('invoke', it); else game.sendKeys('\xe9');
-      return;
     case 'tab': case 'Tab': ui.toggleHistory(); if (ui.history) releaseLock(); else relock(); return;
     case 'Escape': if (ui.history) { ui.toggleHistory(false); return; } show('pause'); return;
-    case 't': case 'Enter': case '/':
+    case 'Enter':
       e.preventDefault();
       releaseLock();
       ui.askLine('Command (extended command, "give <item>", "dev cheese", "tp <level>", or "keys <raw game keys>")', { list: game.ext, initial: k === '/' ? '' : '' }, (v) => {
@@ -2016,10 +1993,10 @@ window.addEventListener('keydown', (e) => {
         game.sendKeys('#');
       });
       return;
-    default: { // anything else is NetHack's own key, as ever: capitals (Put on, Remove, Take off,
-      // Engrave, Quiver... as P, R, T, E, Q), symbols (: ; \\ + ? $ ^ _ ...), the vi keys left over (h j y u b)
+    default: { // anything else is NetHack's own key, as ever (all but w a s d: walking): e eat, q quaff,
+      // r read, z zap, t throw, # an extended command, P put on, : look here, h j k l y u b n...
       const r = k.length === 1 && rawKey(e);
-      if (r && (!/^[a-z]$/.test(k) || /^[hjyub]$/.test(k))) { e.preventDefault(); game.sendKeys(r); }
+      if (r) { e.preventDefault(); game.sendKeys(r); }
     }
   }
 });

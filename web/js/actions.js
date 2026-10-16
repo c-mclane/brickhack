@@ -46,7 +46,7 @@ export const ACTION_GROUPS = [
     { label: 'Cast spell', keys: 'Z', tip: 'Cast a spell (Z)' },
     { label: 'Pray', ext: 'pray', tip: 'Pray to your god (#pray)' },
     { label: 'Offer', ext: 'offer', tip: 'Sacrifice at an altar (#offer)' },
-    { label: 'Invoke', keys: '\xe9', tip: 'Call on an artifact\'s power (v, Alt+I or #invoke)' },
+    { label: 'Invoke', keys: '\xe9', tip: 'Call on an artifact\'s power (Alt+I, or #invoke)' },
     // the rites of a follower of Jesus (a Catholic figure: engine winweb.c), at his altar;
     // faith: shown only to his followers (no one else knows them: the engine refuses them too)
     { label: 'Celebrate Mass', ext: 'mass', faith: true, tip: 'A priest offers the Mass: a holy wafer and holy wine (#mass)' },
