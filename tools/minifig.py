@@ -293,6 +293,10 @@ def decal_line(item, pos, mat, base_dir):
 LDRAW = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'vendor', 'ldraw', 'ldraw')
 EXTRA = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ldraw-extra')   # our own parts (ldraw2glb.EXTRA)
 DERIVED = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'brick', 'cache', 'derived')
+# (a derived part names its sub-parts by full path: where the project is goes
+# into its key, so a moved project makes its own, rather than reuse ones whose
+# paths lead back to where it was)
+_HERE = os.path.realpath(DERIVED)
 
 
 def _ldraw_file(name):
@@ -313,7 +317,7 @@ def recolored(part, cmap):
     src, primitive = _ldraw_file(part)
     if not src or primitive:
         return part
-    key = hashlib.sha1((part + json.dumps(cmap, sort_keys=True)).encode()).hexdigest()[:10]
+    key = hashlib.sha1((part + json.dumps(cmap, sort_keys=True) + _HERE).encode()).hexdigest()[:10]
     out = os.path.join(DERIVED, os.path.basename(part.replace('\\', '/')).replace('.dat', '') + '_' + key)
     if not os.path.exists(out + '.dat'):
         os.makedirs(DERIVED, exist_ok=True)
@@ -345,7 +349,7 @@ def booted(part, bands, upper=True):
     one lies on the floor). The leg is cut flat at each height."""
     import ldraw2glb   # (only here: the geometry, flattened)
     bands = sorted((float(y), str(c)) for y, c in bands)
-    key = hashlib.sha1((part + json.dumps(bands) + ('' if upper else 'boot')).encode()).hexdigest()[:10]
+    key = hashlib.sha1((part + json.dumps(bands) + ('' if upper else 'boot') + _HERE).encode()).hexdigest()[:10]
     out = os.path.join(DERIVED, os.path.basename(part) + '_boot_' + key)
     if os.path.exists(out + '.dat'):
         return out
@@ -410,7 +414,7 @@ def striped(part, color, count, width=0.35, wave=10.0, top=None, bottom=None, sl
     `wave` degrees to and fro as it goes up (cut in `slabs` bands, each turned
     a little). The part is cut flat along each stripe's edges."""
     import ldraw2glb   # (only here: the geometry, flattened)
-    key = hashlib.sha1(json.dumps([part, color, count, width, wave, top, bottom, slabs]).encode()).hexdigest()[:10]
+    key = hashlib.sha1(json.dumps([part, color, count, width, wave, top, bottom, slabs, _HERE]).encode()).hexdigest()[:10]
     out = os.path.join(DERIVED, os.path.basename(part) + '_stripes_' + key)
     if os.path.exists(out + '.dat'):
         return out
