@@ -17,7 +17,7 @@ import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './lego.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
-import { loadLegoItems, legoItemForTile, gameTile } from './legoitems.js';
+import { loadLegoItems, legoItemForTile, gameTile, setStartPieces, isStartTile } from './legoitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -1235,6 +1235,8 @@ async function loadHeroFigure(name, who) {
   hero3d.fig = fig;
   hero3d.parts = parts;
   hero3d.start = null; // (this character's starting gear: startGear)
+  // the armour it started with is its design's own: each slot's piece, for the inventory and the floor
+  setStartPieces(fig.id, parts).then(() => { ui.renderInventory(); ui.renderHotbar(); redressHero(); });
   hero3d.wear = wornHelm(); // (a helm on already: a restored game)
   const url = (await customFigureUrl(fig.id, parts, hero3d.wear)) || fig.url;
   hero3d.id = fig.id;
@@ -1281,6 +1283,11 @@ function wornHelm() {
     if (!game.inv.some((i) => i.l === l && i.w === slot)) { delete start.items[l]; localSet(FIG_KEY(game.charName) + '.start', JSON.stringify(start)); }
   return WORN_SLOTS.map((slot) => {
     const h = game.inv.find((i) => i.w === slot);
+    if (h && isStartTile(h.t)) { // armour it started with: its design's own piece shows (where the design has one; else as ever)
+      const l = legoItemForTile(h.t);
+      if (l && l.start) return slot === 'shield' && slots.shield ? 'design:shield' : '';
+      return l && l.wear ? l.name : '';
+    }
     if (h && start.items[h.l]) return slot === 'shield' && slots.shield ? 'design:shield' : ''; // as designed
     if (!h) return start.claimed.includes(slot) && slots[slot] ? 'strip:' + slot : ''; // its starting piece taken off
     const l = legoItemForTile(h.t);

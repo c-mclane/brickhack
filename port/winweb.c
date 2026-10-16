@@ -470,9 +470,12 @@ web_realm_count(struct obj *chain)
    LEGO model of its own: tools/build_items.py lists them for the client,
    which falls back to the base item's look for one without); and for a
    variant with a look of its own, VARIANT_TILE + its number: water you know
-   is holy (0) or unholy (1) (items.json "variant") */
+   is holy (0) or unholy (1) (items.json "variant"); and armour the hero
+   started with, START_TILE + its category x 10000 + its own tile (the client
+   shows its figure's design's piece for that slot, or else as ever) */
 #define ART_TILE 90000
 #define VARIANT_TILE 92000
+#define START_TILE 100000   /* + its armour category (oc_armcat) x 10000 + its own tile: armour the hero started with */
 static int tile_of(int glyph);
 static int
 web_obj_tile(struct obj *o, int glyph)
@@ -483,6 +486,8 @@ web_obj_tile(struct obj *o, int glyph)
         return ART_TILE + o->oartifact;
     if (o->otyp == POT_WATER && o->bknown && (o->blessed || o->cursed))
         return VARIANT_TILE + (o->blessed ? 0 : 1);
+    if (o->webstart && o->oclass == ARMOR_CLASS)   /* the design's own piece, in its slot */
+        return START_TILE + objects[o->otyp].oc_armcat * 10000 + tile_of(glyph);
     return tile_of(glyph);
 }
 

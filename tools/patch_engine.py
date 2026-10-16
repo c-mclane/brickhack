@@ -334,6 +334,22 @@ edit("src/pray.c", [("	if(on_altar())\n	    (void) water_prayer(TRUE);\n	pleased
                      "	if(on_altar())\n	    (void) water_prayer(TRUE);\n	pleased(alignment); /* nice */\n"
                      "	if (on_altar()) { extern void NDECL(web_altar_wafer); web_altar_wafer(); } /* WEB_HOOK_WAFER */\n")],
      "WEB_HOOK_WAFER")
+# BrickHack: the armour a character starts with is its design's own (the
+# monk's robe his habit, his gloves his hands): marked (saved with it), never
+# merged with any other, and sent as a look of its own (winweb.c
+# web_obj_tile: START_TILE), which the client shows as the design's piece
+edit("include/obj.h", [("	Bitfield(was_thrown,1); /* thrown by the hero since last picked up */\n",
+                        "	Bitfield(was_thrown,1); /* thrown by the hero since last picked up */\n"
+                        "	Bitfield(webstart,1);	/* WEB_HOOK_STARTGEAR: armour the hero started with (its design's piece) */\n")],
+     "WEB_HOOK_STARTGEAR")
+edit("src/u_init.c", [("	/* make sure you can carry all you have - especially for Tourists */\n",
+                       "	{ struct obj *o; for (o = invent; o; o = o->nobj) if (o->oclass == ARMOR_CLASS) o->webstart = 1; } /* WEB_HOOK_STARTGEAR */\n"
+                       "	/* make sure you can carry all you have - especially for Tourists */\n")],
+     "WEB_HOOK_STARTGEAR")
+edit("src/invent.c", [("	if (obj->otyp != otmp->otyp) return FALSE;\n",
+                       "	if (obj->otyp != otmp->otyp) return FALSE;\n"
+                       "	if (obj->webstart != otmp->webstart) return FALSE; /* WEB_HOOK_STARTGEAR */\n")],
+     "WEB_HOOK_STARTGEAR")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

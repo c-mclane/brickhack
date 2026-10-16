@@ -171,11 +171,11 @@ function figureWorker() {
   proc.on('error', fail);
   return proc;
 }
-function buildFigure(base, parts, wear = '') {
+function buildFigure(base, parts, wear = '', piece = '') {
   return new Promise((resolve) => {
     const id = figs.next++;
     figs.waiting.set(id, resolve);
-    try { figureWorker().stdin.write(JSON.stringify({ id, base, parts, wear }) + '\n'); }
+    try { figureWorker().stdin.write(JSON.stringify({ id, base, parts, wear, ...(piece ? { piece } : {}) }) + '\n'); }
     catch (e) { figs.waiting.delete(id); resolve({ error: String(e) }); }
   });
 }
@@ -358,6 +358,21 @@ const server = http.createServer(async (req, res) => {
     const wear = (url.searchParams.get('wear') || '').replace(/[^a-z ,':-]/gi, '').slice(0, 160);
     const r = await buildFigure(base, clean, wear);
     res.writeHead(r.url ? 200 : 400, { 'Content-Type': 'application/json' }).end(JSON.stringify(r.url ? { url: r.url } : { error: r.error || 'failed' }));
+    return;
+  }
+  // one piece of a figure's design (the armour it starts with in that slot looks like it):
+  // ?base=<figure id>&parts=<as /api/figure>&slot=suit|shirt|gloves|helm|cloak|shield|boots
+  if (url.pathname === '/api/piece') {
+    const base = (url.searchParams.get('base') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 60);
+    const slot = (url.searchParams.get('slot') || '').replace(/[^a-z]/g, '').slice(0, 10);
+    let parts = {};
+    try { parts = JSON.parse(url.searchParams.get('parts') || '{}'); } catch {}
+    const clean = {};
+    for (const [k, v] of Object.entries(parts || {}).slice(0, 20))
+      clean[String(k).replace(/[^a-z]/g, '').slice(0, 20)] = String(v).replace(/[^a-z0-9-]/gi, '').slice(0, 40);
+    const r = await buildFigure(base, clean, '', slot);
+    res.writeHead(r.url || r.none ? 200 : 400, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(r.url ? { url: r.url } : r.none ? { none: true } : { error: r.error || 'failed' }));
     return;
   }
   if (url.pathname === '/api/variants') {

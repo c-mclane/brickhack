@@ -625,6 +625,79 @@ def build(spec, base_dir='.'):
     return '\n'.join(out) + '\n'
 
 
+def piece(spec, slot, base_dir='.'):
+    """One piece of a figure's design, alone, as LDraw: what the armour its
+    hero starts with in that slot looks like (the game sends that armour as a
+    look of its own: winweb.c START_TILE). slot: 'suit' (the torso, its print,
+    armour on the neck, a robe's skirt), 'shirt' (the torso), 'gloves' (the
+    hands), 'helm' (the hat), 'cloak' (the cape, a hood), 'shield', 'boots'
+    (the legs, booted if the design is). None where the design has none."""
+    I = np.eye(3)
+    R180 = np.diag([-1.0, 1, -1])
+    import wardrobe   # (its capes and hoods)
+    capes, hoods = wardrobe.CAPES, wardrobe.HOODS
+    neck = spec.get('neck') or []
+    neck = list(neck if isinstance(neck, list) else [neck])
+    out = [f"0 {spec.get('name', 'Minifig')}: {slot}"]
+
+    def with_decal(item, pos, mat):
+        if item.get('decal'):
+            out.append(decal_line(item, np.array(pos, float), mat, base_dir))
+        out.append(line(item.get('color', 16), pos, mat, item['part']))
+
+    if slot in ('suit', 'shirt'):
+        torso = spec.get('torso', '973')
+        if spec.get('torsoDecal'):
+            out.append(decal_line({'part': torso, 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
+        out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, recolored(torso, spec.get('torsoRecolor'))))
+        if slot == 'suit':
+            for n in neck:
+                if not n['part'].startswith(capes) and n['part'] not in ('6132',):   # (armour: not a cape, not a beard)
+                    with_decal(n, (0, 0, 0), rot_axis((0, 1, 0), np.radians(n.get('turn', 0))))
+            if spec.get('dress'):
+                d = spec['dress']
+                if d.get('decal'):
+                    out.append(decal_line(dict(part=d.get('part', '3678b'), decal=dict({'center': (0, 24, 10), 'size': (10, 46), 'side': 'back'}, **d['decal'])),
+                                          np.array([0.0, 32, 0]), R180, base_dir))
+                out.append(line(d.get('color', 16), (0, 32, 0), R180, d.get('part', '3678b')))
+    elif slot == 'gloves':
+        c = spec.get('handColor', 14)
+        out.append(line(c, (-8, 0, 0), I, '3820'))
+        out.append(line(c, (8, 0, 0), rot_axis((0, 1, 0), np.pi), '3820'))
+    elif slot == 'helm':
+        if not spec.get('hat'):
+            return None
+        if spec.get('hatDecal'):
+            out.append(decal_line({'part': spec['hat'], 'decal': spec['hatDecal']}, np.zeros(3), I, base_dir))
+        out.append(line(spec.get('hatColor', 16), (0, 0, 0), I, spec['hat']))
+        plume = spec.get('plume')
+        if plume:
+            socket = next((v for k, v in PLUME_SOCKETS.items() if spec['hat'].startswith(k)), (0, -15, 0))
+            out.append(line(plume.get('color', 4), socket, I, plume.get('part', '87694')))
+    elif slot == 'cloak':
+        cape = [n for n in neck if n['part'].startswith(capes)]
+        hood = [x for x in spec.get('extras', []) if x['part'].startswith(hoods)]
+        if not cape and not hood:
+            return None
+        for n in cape:
+            with_decal(n, (0, 0, 0), I)
+        for x in hood:
+            out.append(line(x.get('color', 16), x['pos'], I, x['part']))
+    elif slot == 'shield':
+        if not spec.get('left'):
+            return None
+        with_decal(spec['left'], (0, 0, 0), I)
+    elif slot == 'boots':
+        if spec.get('dress') or spec.get('shortLegs') or spec.get('skeleton'):
+            return None
+        bands = (spec.get('boots') or {}).get('bands')
+        for leg in (spec.get('legR', '3816'), spec.get('legL', '3817')):
+            out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 0, 0), I, booted(leg, bands) if bands else leg))
+    else:
+        return None
+    return '\n'.join(out) + '\n'
+
+
 def shift(l, dy):
     """An LDraw line moved dy in Y (part lines and !TEXMAP lines; others as they are)."""
     t = l.split(' ')

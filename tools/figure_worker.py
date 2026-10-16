@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Builds customized minifigs for the game server (server/server.js), one per
 line of JSON on stdin: {"id": n, "base": "<roster figure>", "parts": {category:
-option id}}. Answers a line of JSON: {"id": n, "url": ...} or {"id": n, "error": ...}.
+option id}} (and "piece": a slot, for one piece of its design: minifig.piece).
+Answers a line of JSON: {"id": n, "url": ...}, {"id": n, "none": true} (no such
+piece) or {"id": n, "error": ...}.
 Figures go to web/assets/lego/custom/<key>.glb (kept, so a repeat is instant).
 Stays running so the parts library stays loaded."""
 import hashlib, json, os, sys, traceback
@@ -27,6 +29,21 @@ def main():
                 raise ValueError(f'no figure {base!r}')
             ward = wardrobe.load_wardrobe()
             parts = {str(k): str(v) for k, v in (req.get('parts') or {}).items()}
+            if req.get('piece'):   # one piece of its design: what the armour it starts with in that slot looks like
+                ldr = minifig.piece(wardrobe.customize(wardrobe.recipe(base), parts, ward), str(req['piece']), wardrobe.FIGS)
+                if ldr is None:
+                    out = {'id': req.get('id'), 'none': True}   # (its design has none there)
+                else:
+                    key = 'piece-' + hashlib.sha1(ldr.encode()).hexdigest()[:16]
+                    glb = os.path.join(OUT, key + '.glb')
+                    if not os.path.exists(glb):
+                        ldr_path = os.path.join(OUT, key + '.ldr')
+                        open(ldr_path, 'w').write(ldr)
+                        ldraw2glb.to_glb(lib.parse(ldr_path), colors, 71, glb)
+                    out = {'id': req.get('id'), 'url': f'assets/lego/custom/{key}.glb'}
+                sys.stdout.write(json.dumps(out) + '\n')
+                sys.stdout.flush()
+                continue
             spec = wardrobe.empty_handed(wardrobe.customize(wardrobe.recipe(base), parts, ward))
             # worn things (items.json), by name: a cloak, a helm, a shield; and what the
             # figure's own design shows of the gear it started with: "strip:<slot>" (that
