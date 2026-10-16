@@ -237,10 +237,10 @@ export class UI {
     c.appendChild(line);
     this.chatLines.push(line);
     if (this.chatLines.length > 200) this.chatLines.shift().remove();
-    // only the latest ~10 lines stay on screen; each fades after 10s
-    setTimeout(() => line.classList.add('fade'), 10000);
+    // only the latest ~14 lines stay on screen; each fades after 20s
+    setTimeout(() => line.classList.add('fade'), 20000);
     const visible = this.chatLines.filter((l) => !l.classList.contains('fade'));
-    if (!this.history) visible.slice(0, -10).forEach((l) => l.classList.add('fade'));
+    if (!this.history) visible.slice(0, -14).forEach((l) => l.classList.add('fade'));
     if (this.history) c.scrollTop = c.scrollHeight;
   }
 
@@ -526,8 +526,8 @@ export class UI {
     list.textContent = '';
     recs.slice(0, 4).forEach((r, i) => {
       const row = el('div', 'rec');
-      // its key: the first, the up arrow; picking up is always Shift+1
-      const keys = [i === 0 ? '\u2191' : '', r.label === 'Pick up' ? '\u21e71' : ''].filter(Boolean).join(' ');
+      // its key: Shift and its row's number (the first: the up arrow too)
+      const keys = [i === 0 ? '\u2191' : '', `\u21e7${i + 1}`].filter(Boolean).join(' ');
       row.appendChild(el('span', 'k', keys));
       row.appendChild(el('span', 'l', r.label));
       if (r.why) row.appendChild(el('span', 'why', r.why));

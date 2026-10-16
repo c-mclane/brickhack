@@ -79,7 +79,8 @@ export class BrickWorld {
           if (isMist(o.material)) { mistify(o); return; }
           if (quantumPart(o.material) !== null) strobify(o);
           // translucent brick (flames, ice) glows
-          if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
+          if (o.material.transparent && o.material.map) o.castShadow = false; // (printed see-through plastic: solid ink, its own alpha)
+          else if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
         });
         addAura(THREE, g.scene); // an angel's glow
         addLightning(THREE, g.scene); // Mjollnir's crackle

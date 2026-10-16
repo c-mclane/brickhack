@@ -7234,5 +7234,2186 @@
    }
   ],
   "upright": true
+ },
+ "spellbook of force bolt": {
+  "brick": "A closed minifig book, red (its cover) (a red spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 4,
+    "decal": {
+     "image": "../decals/book-pat-title-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of create monster": {
+  "brick": "A closed minifig book, turquoise (its cover) (a turquoise spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 3,
+    "decal": {
+     "image": "../decals/book-pat-corners-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of drain life": {
+  "brick": "A closed minifig book, velvet (its cover) (a velvet spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 320,
+    "decal": {
+     "image": "../decals/book-pat-rings-silver.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of command undead": {
+  "brick": "A closed minifig book, dark, printed in gold with John Dee's Monas Hieroglyphica inside a ruled border (a dark spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 8,
+    "decal": {
+     "image": "../decals/book-monad.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of summon undead": {
+  "brick": "A closed minifig book, black (its cover) (a black spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 0,
+    "decal": {
+     "image": "../decals/book-pat-corners-silver.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of stone to flesh": {
+  "brick": "A big hinged book: the cover thick, its pages behind (a thick spellbook: a tome)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 15,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 288,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-pat-diamond-silver.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of healing": {
+  "brick": "A closed minifig book, white (its cover) (a white spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 15,
+    "decal": {
+     "image": "../decals/book-pat-moon-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of cure blindness": {
+  "brick": "A big hinged book: a transparent cover printed with a question mark in a gold sunburst and gold corners, over pearl gold pages (a yellow spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 297,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 46,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-sunburst-question.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of cure sickness": {
+  "brick": "A closed minifig book, indigo (its cover) (a indigo spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 23,
+    "decal": {
+     "image": "../decals/book-pat-bands-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of extra healing": {
+  "brick": "A closed minifig book, plaid (printed plaid) (a plaid spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 4,
+    "decal": {
+     "image": "../decals/book-plaid.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of restore ability": {
+  "brick": "A closed minifig book, light brown (its cover) (a light brown spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 92,
+    "decal": {
+     "image": "../decals/book-pat-lattice-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of create familiar": {
+  "brick": "A green minifig book printed as the old potions book: red bottles and flasks with gold sparkles, a test tube on the spine (a glittering spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009k01",
+    "color": 10,
+    "decal": {
+     "image": "../decals/book-green-spine.png",
+     "center": [
+      0,
+      0,
+      -3.1
+     ],
+     "size": [
+      10,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k02",
+    "color": 10,
+    "pos": [
+     6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-green-right.png",
+     "center": [
+      17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k03",
+    "color": 10,
+    "pos": [
+     -6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-green-left.png",
+     "center": [
+      -17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k04",
+    "color": 10,
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "33009k04",
+    "color": 10
+   }
+  ]
+ },
+ "spellbook of light": {
+  "brick": "A closed minifig book, cloth (its cover) (a cloth spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 379,
+    "decal": {
+     "image": "../decals/book-pat-bands-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of detect monsters": {
+  "brick": "A big hinged book: the reddish brown cover printed with a snarling monster face and gold corners, its pages behind (a leather spellbook)",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 19,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 70,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-monster.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of detect food": {
+  "brick": "A closed minifig book, cyan (its cover) (a cyan spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 322,
+    "decal": {
+     "image": "../decals/book-pat-title-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of clairvoyance": {
+  "brick": "A big hinged book: a transparent cover printed with a staring eye in a gold sunburst and gold corners, over pearl gold pages (a dark blue spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 297,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 33,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-sunburst-eye.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of detect unseen": {
+  "brick": "A closed minifig book, violet (its cover) (a violet spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 110,
+    "decal": {
+     "image": "../decals/book-pat-moon-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of identify": {
+  "brick": "A closed minifig book, bronze (its cover) (a bronze spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 60,
+    "decal": {
+     "image": "../decals/book-pat-rune-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of detect treasure": {
+  "brick": "A closed minifig book, gray (its cover) (a gray spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 71,
+    "decal": {
+     "image": "../decals/book-pat-star-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of magic mapping": {
+  "brick": "A closed minifig book printed with a red spider hanging from its web on a dark panel (a dusty spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 71,
+    "decal": {
+     "image": "../decals/book-spider.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ]
+ },
+ "spellbook of confuse monster": {
+  "brick": "A big hinged book: a transparent cover printed with a spiral in a gold sunburst and gold corners, over pearl gold pages (a orange spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 297,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 57,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-sunburst-sun.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of slow monster": {
+  "brick": "A big hinged book: a transparent cover printed with claw marks in a gold sunburst and gold corners, over pearl gold pages (a light green spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 297,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 34,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-sunburst-claws.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of cause fear": {
+  "brick": "A blue minifig book printed as the old flying book: a broom before three hoops, a winged golden ball, diamonds on the spine (a light blue spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009k01",
+    "color": 321,
+    "decal": {
+     "image": "../decals/book-blue-spine.png",
+     "center": [
+      0,
+      0,
+      -3.1
+     ],
+     "size": [
+      10,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k02",
+    "color": 321,
+    "pos": [
+     6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-blue-right.png",
+     "center": [
+      17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k03",
+    "color": 321,
+    "pos": [
+     -6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-blue-left.png",
+     "center": [
+      -17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k04",
+    "color": 321,
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "33009k04",
+    "color": 321
+   }
+  ]
+ },
+ "spellbook of charm monster": {
+  "brick": "A closed minifig book printed with butterflies on a yellow swirl and a silver heart lock (a magenta spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 26,
+    "decal": {
+     "image": "../decals/book-butterflies.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ]
+ },
+ "spellbook of enchant weapon": {
+  "brick": "A closed minifig book, dull (its cover) (a dull spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 378,
+    "decal": {
+     "image": "../decals/book-pat-diamond-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of enchant armor": {
+  "brick": "A closed minifig book, thin (its cover) (a thin spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 115,
+    "decal": {
+     "image": "../decals/book-pat-lattice-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of protection": {
+  "brick": "A big hinged book: the cover wide, its pages behind (a wide spellbook: a tome)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 15,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 216,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-pat-rune-gold.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of resist poison": {
+  "brick": "A big hinged book: the cover big, its pages behind (a big spellbook: a tome)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 15,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 272,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-pat-rings-gold.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of resist sleep": {
+  "brick": "A closed minifig book printed with grey fuzz inside a jagged black edge with pink gums (a fuzzy spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 19,
+    "decal": {
+     "image": "../decals/book-fuzzy.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ]
+ },
+ "spellbook of endure cold": {
+  "brick": "A big hinged book: the cover deep, its pages behind (a deep spellbook: a tome)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 15,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 321,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-pat-frame-gold.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of endure heat": {
+  "brick": "A red minifig book printed as the old mushroom book: a white-capped mushroom, a test tube on the spine, a snapping plant on a thorny vine (a spotted spellbook)",
+  "parts": [
+   {
+    "part": "33009k01",
+    "color": 4,
+    "decal": {
+     "image": "../decals/book-red-spine.png",
+     "center": [
+      0,
+      0,
+      -3.1
+     ],
+     "size": [
+      10,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k02",
+    "color": 4,
+    "pos": [
+     6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-red-left.png",
+     "center": [
+      17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k03",
+    "color": 4,
+    "pos": [
+     -6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-red-right.png",
+     "center": [
+      -17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k04",
+    "color": 4,
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "33009k04",
+    "color": 4
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of insulate": {
+  "brick": "A big hinged book: the cover long, its pages behind (a long spellbook: a tome)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 15,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 85,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-pat-rings-gold.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of remove curse": {
+  "brick": "An open minifig book lying flat, wrinkled (a wrinkled spellbook: worn, falling open)",
+  "parts": [
+   {
+    "part": "33009-f2",
+    "color": 19,
+    "decal": {
+     "image": "../decals/book-pages.png",
+     "center": [
+      0,
+      -9.1,
+      0
+     ],
+     "size": [
+      84,
+      54
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "upright": true,
+  "oc": "spellbook"
+ },
+ "spellbook of turn undead": {
+  "brick": "A closed minifig book, copper (its cover) (a copper spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 134,
+    "decal": {
+     "image": "../decals/book-pat-bands-gold.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of jumping": {
+  "brick": "An open minifig book lying flat, torn (a torn spellbook: worn, falling open)",
+  "parts": [
+   {
+    "part": "33009-f2",
+    "color": 503,
+    "decal": {
+     "image": "../decals/book-pages.png",
+     "center": [
+      0,
+      -9.1,
+      0
+     ],
+     "size": [
+      84,
+      54
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "upright": true,
+  "oc": "spellbook"
+ },
+ "spellbook of haste self": {
+  "brick": "A big hinged book: a transparent cover printed with a shield V in a gold sunburst and gold corners, over pearl gold pages (a purple spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 297,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 52,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-sunburst-shield.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
+ },
+ "spellbook of enlighten": {
+  "brick": "A closed minifig book, faded (its cover) (a faded spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 220,
+    "decal": {
+     "image": "../decals/book-pat-corners-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of invisibility": {
+  "brick": "A closed minifig book, dark brown (its cover) (a dark brown spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 308,
+    "decal": {
+     "image": "../decals/book-pat-lattice-silver.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of levitation": {
+  "brick": "A closed minifig book, tan (its cover) (a tan spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 19,
+    "decal": {
+     "image": "../decals/book-pat-corners-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of teleport away": {
+  "brick": "A closed minifig book printed with a dark red panel framed in bones round a coiled ring (a gold spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 297,
+    "decal": {
+     "image": "../decals/book-bones.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ]
+ },
+ "spellbook of passwall": {
+  "brick": "A closed minifig book, ochre (its cover) (a ochre spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 180,
+    "decal": {
+     "image": "../decals/book-pat-star-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of polymorph": {
+  "brick": "A closed minifig book, silver (its cover) (a silver spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 383,
+    "decal": {
+     "image": "../decals/book-pat-moon-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of knock": {
+  "brick": "A closed minifig book, pink (its cover) (a pink spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 13,
+    "decal": {
+     "image": "../decals/book-pat-diamond-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of flame sphere": {
+  "brick": "A closed minifig book, canvas (its cover) (a canvas spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 78,
+    "decal": {
+     "image": "../decals/book-pat-bands-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of freeze sphere": {
+  "brick": "A big hinged book: the cover hardcover, its pages behind (a hardcover spellbook: a tome)",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 15,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 72,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-pat-star-gold.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of wizard lock": {
+  "brick": "A closed minifig book, dark green, printed with a green dragon and a spider, after the old printed books (a dark green spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 288,
+    "decal": {
+     "image": "../decals/book-pat-title-silver.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of dig": {
+  "brick": "A closed minifig book, parchment (its cover) (a parchment spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 68,
+    "decal": {
+     "image": "../decals/book-pat-rune-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of cancellation": {
+  "brick": "A closed minifig book, shining (its cover) (a shining spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 183,
+    "decal": {
+     "image": "../decals/book-pat-frame-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of magic missile": {
+  "brick": "A closed minifig book, vellum (its cover) (a vellum spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 226,
+    "decal": {
+     "image": "../decals/book-pat-title-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of fireball": {
+  "brick": "An open minifig book lying flat, ragged (a ragged spellbook: worn, falling open)",
+  "parts": [
+   {
+    "part": "33009-f2",
+    "color": 84,
+    "decal": {
+     "image": "../decals/book-pages.png",
+     "center": [
+      0,
+      -9.1,
+      0
+     ],
+     "size": [
+      84,
+      54
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "upright": true,
+  "oc": "spellbook"
+ },
+ "spellbook of cone of cold": {
+  "brick": "An open minifig book lying flat, dog eared (a dog eared spellbook: worn, falling open)",
+  "parts": [
+   {
+    "part": "33009-f2",
+    "color": 18,
+    "decal": {
+     "image": "../decals/book-pages.png",
+     "center": [
+      0,
+      -9.1,
+      0
+     ],
+     "size": [
+      84,
+      54
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "upright": true,
+  "oc": "spellbook"
+ },
+ "spellbook of sleep": {
+  "brick": "A closed minifig book, mottled (printed mottled) (a mottled spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 84,
+    "decal": {
+     "image": "../decals/book-mottled.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of finger of death": {
+  "brick": "A nougat minifig book printed as the old locked book: light-blue hinge straps, an ink-splattered hand and a keyhole, diamonds on the spine (a stained spellbook)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "33009k01",
+    "color": 84,
+    "decal": {
+     "image": "../decals/book-brown-spine.png",
+     "center": [
+      0,
+      0,
+      -3.1
+     ],
+     "size": [
+      10,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k02",
+    "color": 84,
+    "pos": [
+     6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-brown-right.png",
+     "center": [
+      17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k03",
+    "color": 84,
+    "pos": [
+     -6,
+     0,
+     1
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0
+    ],
+    "decal": {
+     "image": "../decals/book-brown-left.png",
+     "center": [
+      -17,
+      0,
+      -1.1
+     ],
+     "size": [
+      34,
+      54
+     ],
+     "side": "front"
+    }
+   },
+   {
+    "part": "33009k04",
+    "color": 84,
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "33009k04",
+    "color": 84
+   }
+  ]
+ },
+ "spellbook of lightning": {
+  "brick": "A closed minifig book, rainbow (printed rainbow) (a rainbow spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 15,
+    "decal": {
+     "image": "../decals/book-rainbow.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of poison blast": {
+  "brick": "An open minifig book lying flat, tattered (a tattered spellbook: worn, falling open)",
+  "parts": [
+   {
+    "part": "33009-f2",
+    "color": 28,
+    "decal": {
+     "image": "../decals/book-pages.png",
+     "center": [
+      0,
+      -9.1,
+      0
+     ],
+     "size": [
+      84,
+      54
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "upright": true,
+  "oc": "spellbook"
+ },
+ "spellbook of acid stream": {
+  "brick": "A closed minifig book, colorful (printed colorful) (a colorful spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 15,
+    "decal": {
+     "image": "../decals/book-colorful.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of tartan": {
+  "brick": "A closed minifig book, tartan (printed tartan) (a tartan spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 288,
+    "decal": {
+     "image": "../decals/book-tartan.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of stylish": {
+  "brick": "A closed minifig book, stylish (its cover) (a stylish spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 295,
+    "decal": {
+     "image": "../decals/book-pat-frame-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of psychedelic": {
+  "brick": "A closed minifig book, psychedelic (printed psychedelic) (a psychedelic spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 15,
+    "decal": {
+     "image": "../decals/book-psychedelic.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of spiral-bound": {
+  "brick": "A closed minifig book, spiral-bound (printed spiral) (a spiral-bound spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 1,
+    "decal": {
+     "image": "../decals/book-spiral.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of left-handed": {
+  "brick": "A closed minifig book, left-handed (its cover) (a left-handed spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 31,
+    "decal": {
+     "image": "../decals/book-pat-frame-ink.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of stapled": {
+  "brick": "A closed minifig book, stapled (printed stapled) (a stapled spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 151,
+    "decal": {
+     "image": "../decals/book-stapled.png",
+     "center": [
+      7.1,
+      0,
+      16
+     ],
+     "size": [
+      38,
+      54
+     ],
+     "side": "right"
+    }
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "spellbook of blank paper": {
+  "brick": "A closed minifig book, plain (its cover) (a plain spellbook)",
+  "parts": [
+   {
+    "part": "33009-f1",
+    "color": 15
+   }
+  ],
+  "oc": "spellbook"
+ },
+ "Book of the Dead": {
+  "brick": "A big hinged book: a smoky transparent cover printed with a skull in a gold sunburst, over pearl gold pages (the Book of the Dead)",
+  "oc": "spellbook",
+  "parts": [
+   {
+    "part": "24324",
+    "color": 297,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   },
+   {
+    "part": "24093",
+    "color": 40,
+    "pos": [
+     -11,
+     0,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "decal": {
+     "image": "../decals/book-sunburst-skull.png",
+     "center": [
+      -4.1,
+      0,
+      19
+     ],
+     "size": [
+      30,
+      48
+     ],
+     "side": "left"
+    }
+   }
+  ]
  }
 }

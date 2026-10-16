@@ -71,7 +71,7 @@ Besides SLASH'EM's own races, BrickHack adds two:
 | I | inventory, with its Actions tab |
 | Delete / Shift+Delete | drop one / drop the stack of the held item |
 | Space | stairs if you're on them, else search |
-| Shift+1 | pick up |
+| Shift+1..4 | the Recommended actions, row 1 to 4 |
 | Up arrow | the first Recommended action |
 | Enter | command bar (extended commands, dev commands) |
 | Every other key | NetHack's own, as ever: `e` eat, `q` quaff, `r` read, `z` zap, `t` throw, `,` pick up, `#` extended command, `P` put on, Alt+I invoke, Ctrl+D kick... |

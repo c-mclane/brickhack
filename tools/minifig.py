@@ -280,6 +280,10 @@ def decal_line(item, pos, mat, base_dir):
     if side == 'top':   # seen from above, the picture's top toward the part's back (+Z); facing up, so
         # its top faces are the ones printed (ldraw2glb prints what nothing covers, looking out along it)
         local = np.array([(cx - w / 2, cy, cz + h / 2), (cx + w / 2, cy, cz + h / 2), (cx - w / 2, cy, cz - h / 2)])
+    elif side in ('left', 'right'):   # on a side (a book's cover): the picture's top up (-Y); seen from
+        # the part's left (-X) its right is toward the part's front (-Z), seen from its right, toward the back
+        k = -1 if side == 'left' else 1
+        local = np.array([(cx, cy - h / 2, cz + k * w / 2), (cx, cy - h / 2, cz - k * w / 2), (cx, cy + h / 2, cz + k * w / 2)])
     else:
         local = np.array([(cx - w / 2, cy - h / 2, cz), (cx + w / 2, cy - h / 2, cz), (cx - w / 2, cy + h / 2, cz)])
     pts = (np.asarray(mat) @ local.T).T + pos

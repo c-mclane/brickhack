@@ -769,7 +769,7 @@ const CONTROLS = [
   ['Left click', 'Attack / fight in the direction you look'], ['Right click', 'Use held item · open/close doors · travel to clicked spot'],
   ['Middle click', 'Look at what is under the crosshair'], ['1-9 / wheel', 'Select hotbar slot'], ['I', 'Inventory (and its Actions tab: every command as a button)'],
   ['Delete / Shift+Delete', 'Drop one / drop stack of held item'], ['Space', 'Use stairs (on stairs) · otherwise search'],
-  ['Shift+1', 'Pick up'], ['↑ (up arrow)', 'Do the first Recommended action'], ['Enter', 'Command bar (extended commands, "give <item>"...)'],
+  ['Shift+1..4', 'Do a Recommended action: row 1, 2, 3, 4'], ['↑ (up arrow)', 'Do the first Recommended action'], ['Enter', 'Command bar (extended commands, "give <item>"...)'],
   ['Every other key', "NetHack's own, as ever: e eat, q quaff, r read, z zap, t throw, f fire, , pick up, # extended command, P put on, Alt+I invoke, Ctrl+D kick..."],
   ['Tab', 'Message history'], ['F2', 'Overhead map view on/off'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['F1', 'Hide HUD'],
   ['F3', 'Debug info'], ['`', 'Raw NetHack keys on/off (W A S D too)'], ['Esc', 'Cancel prompt / game menu'],
@@ -1782,8 +1782,12 @@ window.addEventListener('keydown', (e) => {
   const lower = k.length === 1 ? k.toLowerCase() : k;
   if ('wasd'.includes(lower) && k.length === 1) { held.add(lower); return; }
   if (/^[1-9]$/.test(k)) { ui.selectHotbar(+k - 1); return; }
-  // Shift+1: pick up, always
-  if (e.shiftKey && e.code === 'Digit1') { e.preventDefault(); game.sendKeys(','); return; }
+  // Shift+1..4: the Recommended actions, down the list (row 1, row 2...)
+  if (e.shiftKey && /^Digit[1-4]$/.test(e.code)) {
+    const r = game.recs && game.recs[+e.code.slice(5) - 1];
+    if (r) { e.preventDefault(); game.runAction(r); }
+    return;
+  }
   // Ctrl and Alt (M-) commands are NetHack's, as ever (Ctrl+D kick, Alt+I invoke...); not the browser's own Ctrl keys
   if ((e.ctrlKey || e.altKey) && k.length === 1 && /[a-z]/i.test(k)) {
     if (e.ctrlKey && /^[rwnt]$/i.test(k)) return;

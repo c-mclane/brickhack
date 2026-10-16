@@ -408,16 +408,18 @@ def srgb_to_linear(c):
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
 
-def decal_png(image, rgb, pad=2):
+def decal_png(image, rgb, pad=2, alpha=1.0):
     """The decal image laid over the part's own colour, as PNG bytes, with a
-    border of plain part colour so clamped edges outside the image stay plain."""
+    border of plain part colour so clamped edges outside the image stay plain.
+    On see-through plastic (alpha < 1) the ink is solid and the bare plastic
+    round it keeps its own see-through-ness (an RGBA picture)."""
     from io import BytesIO
     from PIL import Image
     im = Image.open(image).convert('RGBA')
-    bg = Image.new('RGBA', (im.width + 2 * pad, im.height + 2 * pad), tuple(int(c * 255) for c in rgb) + (255,))
+    bg = Image.new('RGBA', (im.width + 2 * pad, im.height + 2 * pad), tuple(int(c * 255) for c in rgb) + (round(alpha * 255),))
     bg.alpha_composite(im, (pad, pad))
     out = BytesIO()
-    bg.convert('RGB').save(out, 'PNG')
+    (bg if alpha < 1 else bg.convert('RGB')).save(out, 'PNG')
     return out.getvalue(), im.size
 
 
@@ -471,7 +473,7 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
             if cname.startswith('Chrome_'):   # chrome: a mirror of what's round it (the renderers give metal an environment: envmap.js)
                 pbr.update(metallicFactor=1.0, roughnessFactor=0.12)
             if tex:
-                png, (w, h) = decal_png(tex, rgb)
+                png, (w, h) = decal_png(tex, rgb, alpha=alpha)
                 pad = 2
                 st = uv[keep].reshape(-1, 2)
                 st = np.stack([(st[:, 0] * w + pad) / (w + 2 * pad), (st[:, 1] * h + pad) / (h + 2 * pad)], -1)
@@ -479,7 +481,7 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
                 images.append({'bufferView': put(png, None), 'mimeType': 'image/png', 'name': os.path.basename(tex)})
                 textures.append({'source': len(images) - 1, 'sampler': 0})
                 pbr['baseColorTexture'] = {'index': len(textures) - 1}
-                pbr['baseColorFactor'] = [1, 1, 1, alpha]
+                pbr['baseColorFactor'] = [1, 1, 1, 1]   # (see-through plastic: its alpha is in the picture)
                 cname += ' + ' + os.path.basename(tex)
             mat = {'name': cname, 'doubleSided': True, 'pbrMetallicRoughness': pbr}
             if alpha < 1:

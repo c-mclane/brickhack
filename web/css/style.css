@@ -42,10 +42,10 @@ button { font-family: inherit; }
 #title-text .big { font-size: 72px; text-shadow: 4px 4px 0 #3f3f3f; }
 #title-text .sub { font-size: 30px; color: #ddd; }
 
-#chat { position: absolute; left: 6px; bottom: 150px; width: min(640px, 70vw); display: flex; flex-direction: column; justify-content: flex-end; }
-#chat .line { background: rgba(0,0,0,.45); padding: 0 6px; line-height: 22px; transition: opacity 1s; }
+#chat { position: absolute; left: 6px; bottom: 150px; width: min(920px, 80vw); font-size: 24px; display: flex; flex-direction: column; justify-content: flex-end; }
+#chat .line { background: rgba(0,0,0,.5); padding: 1px 8px; line-height: 28px; transition: opacity 1s; }
 #chat .line.fade { opacity: 0; }
-#chat.history { pointer-events: auto; max-height: 60vh; overflow-y: auto; justify-content: flex-start; }
+#chat.history { pointer-events: auto; max-height: 72vh; overflow-y: auto; justify-content: flex-start; }
 #chat.history .line { opacity: 1 !important; }
 #chat .q { color: #ffff55; }
 
@@ -267,11 +267,11 @@ body.brick3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick
 
 /* on-screen Actions button and the context-aware Recommended pane */
 #actions-btn { position: absolute; right: 12px; bottom: 8px; pointer-events: auto; cursor: pointer;
-  font: inherit; font-size: 20px; color: #e0e0e0; padding: 4px 12px; text-shadow: var(--text-shadow);
+  font: inherit; font-size: 28px; color: #e0e0e0; padding: 8px 22px; text-shadow: var(--text-shadow);
   background: linear-gradient(#8a8a8a, #6e6e6e); border: 2px solid #000; box-shadow: inset 2px 2px 0 #aaa, inset -2px -4px 0 #555; }
 #actions-btn:hover { background: linear-gradient(#8a93c8, #6873b0); color: #ffffa0; }
-#actions-btn span { color: #ccc; font-size: 17px; }
-#recommend { position: absolute; right: 12px; bottom: 50px; min-width: 210px; pointer-events: auto;
+#actions-btn span { color: #ccc; font-size: 22px; }
+#recommend { position: absolute; right: 12px; bottom: 70px; min-width: 210px; pointer-events: auto;
   background: rgba(16, 0, 32, 0.72); border: 2px solid #2a0a5e; outline: 2px solid #100010; padding: 4px 6px 6px; }
 #recommend .rec-title { color: #c9a7ff; font-size: 18px; margin-bottom: 2px; }
 #recommend .rec { display: flex; gap: 8px; align-items: baseline; cursor: pointer; padding: 1px 4px; font-size: 20px; }
