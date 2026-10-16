@@ -31,6 +31,7 @@ __declspec(dllimport) void __stdcall Sleep(unsigned long); /* (not all of window
 #endif
 
 extern short glyph2tile[];
+extern int FDECL(web_invokable, (struct obj *)); /* artifact.c: tools/patch_engine.py WEB_HOOK_INVOKE */
 
 /* ------------------------------------------------------------------ */
 /* compatibility: NetHack 3.6 vs 3.4.3-based engines (SLASH'EM)        */
@@ -647,6 +648,15 @@ web_his_name(void)
 {
     const char *g = getenv("LEGOHACK_GOD");
     return g && *g ? g : 0;
+}
+
+/* his rites (#mass, #communion, #alms, #confess): only his followers know
+   them; to anyone else they aren't commands at all */
+static int
+web_rite(const char *cmd)
+{
+    return !web_his_name() && (!strcmpi(cmd, "mass") || !strcmpi(cmd, "communion")
+                               || !strcmpi(cmd, "alms") || !strcmpi(cmd, "confess"));
 }
 
 static int
@@ -1622,6 +1632,8 @@ build_inventory(void)
         fputs(",\"a\":", out);
         jstr(armor_cat(o));
         fprintf(out, ",\"cu\":%d", o->bknown ? (o->blessed ? 1 : o->cursed ? -1 : 0) : 2);
+        if (web_invokable(o)) /* (an artifact with a power: tools/patch_engine.py WEB_HOOK_INVOKE) */
+            fputs(",\"iv\":1", out);
         fputc('}', out);
     }
     fputs("]", out);
@@ -2018,6 +2030,8 @@ web_init_nhwindows(int *argcp, char **argv)
             if (extcmdlist[i].flags & CMD_NOT_AVAILABLE)
                 continue;
 #endif
+            if (web_rite(extcmdlist[i].ef_txt))
+                continue;
             fputs(n++ ? "," : "", out);
             fputc('[', out);
             jstr(extcmdlist[i].ef_txt);
@@ -2613,7 +2627,7 @@ web_get_ext_cmd(void)
             break;
     }
     for (i = 0; extcmdlist[i].ef_txt; i++)
-        if (!strcmpi(extcmdlist[i].ef_txt, inbuf + 1))
+        if (!strcmpi(extcmdlist[i].ef_txt, inbuf + 1) && !web_rite(inbuf + 1))
             return i;
     pline("%s: unknown extended command.", inbuf + 1);
     return -1;

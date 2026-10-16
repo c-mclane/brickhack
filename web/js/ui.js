@@ -102,6 +102,7 @@ export function itemActions(it) {
     case '`': case '0': a.push('throw'); break;
     default: a.push('apply');
   }
+  if (it.iv) a.splice(1, 0, 'invoke'); // an artifact with a power (the engine marks it)
   if (!a.includes('throw') && it.c !== '$') a.push('throw');
   a.push('drop');
   return a.map((k) => ({ key: k, label: ACTIONS[k][0], cmd: ACTIONS[k][1], arg: ACTIONS[k][2] }));

@@ -225,7 +225,9 @@ const game = {
 
   // ---- the Actions tab ----------------------------------------------------
   actionGroups() {
-    return [{ title: 'Recommended', here: true, items: this.recommendations() }, ...ACTION_GROUPS];
+    const faith = !!(ui.stat && ui.stat.faith); // (his rites: for his followers only)
+    const groups = ACTION_GROUPS.map((g) => ({ ...g, items: g.items.filter((a) => faith || !a.faith) }));
+    return [{ title: 'Recommended', here: true, items: this.recommendations() }, ...groups];
   },
   recommendations() {
     if (!this.playing || !ui.stat) return [];
@@ -908,7 +910,7 @@ const CONTROLS = [
   ['T or Enter', 'Command bar (extended commands, e.g. "pray", "loot", "chat")'], ['/', 'Command bar'],
   ['Tab', 'Message history'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['M', 'Overhead map view on/off'], ['F1', 'Hide HUD'],
   ['F3', 'Debug info'], ['N', 'Next music track'], ['I', 'Actions menu (every command as a button)'],
-  ['↑ (up arrow)', 'Do the first Recommended action'], ['Shift+1', 'Pick up'], ['Shift+2..4', 'Do a Recommended action (shown above the hotbar)'], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
+  ['↑ (up arrow)', 'Do the first Recommended action'], ['Shift+1', 'Pick up'], ['Shift+2..4', 'Do a Recommended action (shown above the hotbar)'], ['V', 'Invoke an artifact (the held one, or choose)'], ['Other keys', "NetHack's own: capitals (W/T/P/R/Q/E/D...), symbols, H J Y U B, Ctrl/Alt commands"], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
 ];
 
 function buildScreens() {
@@ -1956,11 +1958,16 @@ window.addEventListener('keydown', (e) => {
     if (r) { e.preventDefault(); game.runAction(r); }
     return;
   }
+  // Ctrl and Alt (M-) commands are NetHack's, as ever (Ctrl+D kick, Alt+I invoke...); not the browser's own Ctrl keys
+  if ((e.ctrlKey || e.altKey) && k.length === 1 && /[a-z]/i.test(k)) {
+    if (e.ctrlKey && /^[rwnt]$/i.test(k)) return;
+    e.preventDefault(); game.sendKeys(rawKey(e)); return;
+  }
   const it = ui.selectedItem();
-  switch (lower) {
+  switch (k) { // (capitals aren't these: they're NetHack's, below)
     case 'i': releaseLock(); ui.openInventory(null, 'actions'); return;
     case 'e': releaseLock(); ui.openInventory(); return;
-    case 'q': if (it) game.itemCmd('drop', it, e.shiftKey || it.q === 1 ? 0 : 1); return;
+    case 'q': case 'Q': if (it) game.itemCmd('drop', it, e.shiftKey || it.q === 1 ? 0 : 1); return;
     case ' ': { // the stairs (or ladder) you're on; anywhere else, search
       const cl = world.classAt(world.hero.x, world.hero.y), c = cl && cl.cmap;
       game.sendKeys(c === CM.upstair || c === CM.upladder ? '<' : c === CM.dnstair || c === CM.dnladder ? '>' : 's');
@@ -1984,6 +1991,9 @@ window.addEventListener('keydown', (e) => {
     case 'l': game.sendKeys(':'); return;
     case 'c': game.sendKeys('\x18'); return;
     case 'p': game.pendingExt = 'pray'; game.sendKeys('#'); return;
+    case 'v': // invoke: the held item, if it has a power; else the game asks which
+      if (it && it.iv) game.itemCmd('invoke', it); else game.sendKeys('\xe9');
+      return;
     case 'tab': case 'Tab': ui.toggleHistory(); if (ui.history) releaseLock(); else relock(); return;
     case 'Escape': if (ui.history) { ui.toggleHistory(false); return; } show('pause'); return;
     case 't': case 'Enter': case '/':
@@ -2006,6 +2016,11 @@ window.addEventListener('keydown', (e) => {
         game.sendKeys('#');
       });
       return;
+    default: { // anything else is NetHack's own key, as ever: capitals (Put on, Remove, Take off,
+      // Engrave, Quiver... as P, R, T, E, Q), symbols (: ; \\ + ? $ ^ _ ...), the vi keys left over (h j y u b)
+      const r = k.length === 1 && rawKey(e);
+      if (r && (!/^[a-z]$/.test(k) || /^[hjyub]$/.test(k))) { e.preventDefault(); game.sendKeys(r); }
+    }
   }
 });
 window.addEventListener('keyup', (e) => held.delete(e.key.toLowerCase()));

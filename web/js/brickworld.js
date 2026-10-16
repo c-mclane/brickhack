@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura, addLightning } from './mist.js';
+import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects } from './mist.js';
 import { figureJoints, poseJoints } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './lego.js';
 import { ThrowFX } from './throwfx.js';
@@ -83,6 +83,7 @@ export class BrickWorld {
         });
         addAura(THREE, g.scene); // an angel's glow
         addLightning(THREE, g.scene); // Mjollnir's crackle
+        addEffects(THREE, g.scene); // an artifact's element: fire, meteors, frost
         res(g.scene);
       }, undefined, rej)));
     return this.models.get(url);

@@ -254,3 +254,84 @@ export function addLightning(THREE, root) {
   root.add(mesh);
   startTicking();
 }
+
+// three.js: an artifact's element, in particles over it (userData.fx, from its
+// item's "fx": ldraw2glb.figure_extras): 'fire' (flames rising off it: the Sword
+// of Fire), 'meteors' (little meteors flaring and gone round it: the Scythe of
+// Quakes), 'frost' (icy glints drifting down and twinkling: the Shurikens of
+// Ice). Each particle sits on a point of the model and lives its own short life
+// over and over, in the shader (no work per frame but the clock).
+const FX = {
+  fire: { n: 140, size: 0.09, color: 'mix(vec3(1.0, 0.95, 0.5), vec3(0.9, 0.18, 0.02), t)', alpha: '(1.0 - t) * 0.9',
+    move: 'p += up * t * h * 0.45 + side * sin(t * 9.0 + ph * 6.3) * h * 0.03;', speed: '0.9 + ph * 0.8' },
+  meteors: { n: 40, size: 0.15, color: 'mix(vec3(1.0, 0.98, 0.8), vec3(1.0, 0.45, 0.1), t)', alpha: 'sin(t * 3.1416) * step(0.55, fract(ph * 7.3 + floor(uMistTime * 0.7 + ph) * 0.37))',
+    move: 'p += away * h * 0.25 + (away * 0.6 - up) * t * h * 0.35;', speed: '1.6 + ph * 1.2' },
+  frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
+    move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
+};
+export function addEffects(THREE, root) {
+  let host = null;
+  root.traverse((o) => { if (!host && o.userData && FX[o.userData.fx]) host = o; });
+  if (!host) return;
+  const fx = FX[host.userData.fx];
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const pts = [], v = new THREE.Vector3();
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), a = o.geometry.attributes.position;
+    for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m); pts.push(v.clone()); }
+  });
+  if (!pts.length) return;
+  const box = new THREE.Box3().setFromPoints(pts), center = box.getCenter(new THREE.Vector3());
+  const h = box.getSize(new THREE.Vector3()).length();
+  const pos = [], out = [], ph = [];
+  for (let i = 0; i < fx.n; i++) {
+    const p = pts[(Math.random() * pts.length) | 0];
+    pos.push(p.x, p.y, p.z);
+    const o = p.clone().sub(center).normalize();
+    out.push(o.x || 0, o.y || 0, o.z || 0);
+    ph.push(Math.random());
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('aOut', new THREE.Float32BufferAttribute(out, 3));
+  g.setAttribute('aPh', new THREE.Float32BufferAttribute(ph, 1));
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uMistTime: uTime, uH: { value: h }, uVH: { value: 600 } },
+    vertexShader: `attribute vec3 aOut; attribute float aPh; uniform float uMistTime, uH, uVH; varying float vT, vPh;
+      void main() {
+        float ph = aPh, h = uH;
+        float t = fract(uMistTime * (${fx.speed}) * 0.6 + ph);
+        // the world's up and a sideways, in the model's own frame (so flames rise however it lies)
+        vec3 up = normalize(transpose(mat3(modelMatrix)) * vec3(0.0, 1.0, 0.0));
+        vec3 side = normalize(cross(up, vec3(0.3, 0.1, 0.9)));
+        vec3 away = aOut, p = position;
+        ${fx.move}
+        vT = t; vPh = ph;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        // (a true size in the world: the model's own scale, the lens and the screen's height, as any
+        // mesh would be drawn; so the same in the dungeon as on the baseplate)
+        float scale = length(modelMatrix[0].xyz);
+        gl_PointSize = ${fx.size.toFixed(3)} * uH * scale * projectionMatrix[1][1] * 0.5 * uVH / -mv.z * (1.2 - t * 0.6);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `uniform float uMistTime; varying float vT, vPh;
+      void main() {
+        float t = vT, ph = vPh;
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+        float a = (${fx.alpha}) * smoothstep(0.5, 0.1, d);
+        if (a < 0.01) discard;
+        gl_FragColor = vec4(${fx.color}, a);
+      }`,
+    transparent: true, depthWrite: false, // (not additive: fire stays orange and frost white over green grass)
+  });
+  const points = new THREE.Points(g, mat);
+  points.renderOrder = 3;
+  points.frustumCulled = false;
+  const vp = new THREE.Vector2(); // (the height drawn to, in pixels, for the size above: on the material, shared by every copy)
+  mat.onBeforeRender = (r) => { const t = r.getRenderTarget(); mat.uniforms.uVH.value = t ? t.height : r.getDrawingBufferSize(vp).y; };
+  root.add(points);
+  startTicking();
+}

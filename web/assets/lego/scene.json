@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   2.6,
-   4.6
+   5,
+   21
   ],
   "target": [
    0,
-   0.3,
-   0.6
+   2.5,
+   0
   ]
  },
  "objects": [
@@ -22,94 +22,44 @@
    ]
   },
   {
-   "item": "Excalibur",
-   "pos": [
-    -160,
-    0,
-    -40
-   ],
-   "label": "Excalibur"
-  },
-  {
-   "item": "Snickersnee",
-   "pos": [
-    -80,
-    0,
-    -40
-   ],
-   "label": "Snickersnee"
-  },
-  {
-   "item": "Trollsbane",
-   "pos": [
-    0,
-    0,
-    -40
-   ],
-   "label": "Trollsbane"
-  },
-  {
    "item": "Scythe of Quakes",
+   "stand": true,
    "pos": [
-    80,
+    -120,
     0,
-    -40
+    0
    ],
    "label": "Scythe of Quakes"
   },
   {
    "item": "Nunchucks of Lightning",
+   "stand": true,
    "pos": [
-    160,
+    -40,
     0,
-    -40
+    0
    ],
    "label": "Nunchucks of Lightning"
   },
   {
    "item": "Shurikens of Ice",
+   "stand": true,
    "pos": [
-    -160,
+    40,
     0,
-    40
+    0
    ],
    "label": "Shurikens of Ice"
   },
   {
    "item": "Sword of Fire",
+   "stand": true,
    "pos": [
-    -80,
+    120,
     0,
-    40
+    0
    ],
    "label": "Sword of Fire"
-  },
-  {
-   "item": "chalice",
-   "pos": [
-    0,
-    0,
-    40
-   ],
-   "label": "chalice"
-  },
-  {
-   "item": "holy wine",
-   "pos": [
-    80,
-    0,
-    40
-   ],
-   "label": "holy wine"
-  },
-  {
-   "item": "One Ring",
-   "pos": [
-    160,
-    0,
-    40
-   ],
-   "label": "The One Ring"
   }
  ]
 }

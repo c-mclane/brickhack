@@ -67,6 +67,9 @@ def figure_extras(ldr_text):
         ex['aura'] = json.loads(rest) if rest else True
     if '0 !LEGOHACK LIGHTNING' in ldr_text:   # lightning crackling over it (mist.js addLightning)
         ex['lightning'] = True
+    fx = next((l.split()[3] for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK FX ')), None)
+    if fx:   # its element in particles: fire, meteors, frost (mist.js addEffects)
+        ex['fx'] = fx
     rig = figure_rig(ldr_text)
     if rig:
         ex['rig'] = rig

@@ -4,7 +4,8 @@
 
 const C = (k) => String.fromCharCode(k.charCodeAt(0) & 31); // Ctrl+key
 
-// keys: raw keys to send; ext: extended command name; fn: client-side action
+// keys: raw keys to send; ext: extended command name; fn: client-side action;
+// faith: for a follower of Jesus only
 export const ACTION_GROUPS = [
   { title: 'Move & fight', items: [
     { label: 'Search', keys: 's', tip: 'Look for hidden doors and traps (s)' },
@@ -45,11 +46,13 @@ export const ACTION_GROUPS = [
     { label: 'Cast spell', keys: 'Z', tip: 'Cast a spell (Z)' },
     { label: 'Pray', ext: 'pray', tip: 'Pray to your god (#pray)' },
     { label: 'Offer', ext: 'offer', tip: 'Sacrifice at an altar (#offer)' },
-    // the rites of a follower of Jesus (a Catholic figure: engine winweb.c), at his altar
-    { label: 'Celebrate Mass', ext: 'mass', tip: 'A priest offers the Mass: a holy wafer and holy wine (#mass)' },
-    { label: 'Receive Communion', ext: 'communion', tip: 'Receive a holy wafer at the altar (#communion)' },
-    { label: 'Give alms', ext: 'alms', tip: 'Give gold to the poor at the altar (#alms)' },
-    { label: 'Confess', ext: 'confess', tip: 'Confess your sins at the altar; penance follows (#confess)' },
+    { label: 'Invoke', keys: '\xe9', tip: 'Call on an artifact\'s power (v, Alt+I or #invoke)' },
+    // the rites of a follower of Jesus (a Catholic figure: engine winweb.c), at his altar;
+    // faith: shown only to his followers (no one else knows them: the engine refuses them too)
+    { label: 'Celebrate Mass', ext: 'mass', faith: true, tip: 'A priest offers the Mass: a holy wafer and holy wine (#mass)' },
+    { label: 'Receive Communion', ext: 'communion', faith: true, tip: 'Receive a holy wafer at the altar (#communion)' },
+    { label: 'Give alms', ext: 'alms', faith: true, tip: 'Give gold to the poor at the altar (#alms)' },
+    { label: 'Confess', ext: 'confess', faith: true, tip: 'Confess your sins at the altar; penance follows (#confess)' },
     { label: 'Turn undead', ext: 'turn', tip: 'Turn undead (#turn)' },
     { label: 'Enhance skills', ext: 'enhance', tip: 'Advance weapon/spell skills (#enhance)' },
     { label: 'Monster power', ext: 'monster', tip: 'Use a polymorphed form\'s power (#monster)' },

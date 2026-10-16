@@ -750,6 +750,15 @@ edit("src/artifact.c", [
      "	    break;\n"
      "	case REALM_DAGGER: /* WEB_HOOK_SKELLY: apart, each its own power... */\n"),
 ], "WEB_HOOK_SPINJITZU")
+# BrickHack: which of your things #invoke does something (an artifact with a
+# power): the inventory marks them (winweb.c build_inventory), so the client
+# offers Invoke on them
+edit("src/artifact.c", [
+    ("int\ndoinvoke()\n",
+     "int\nweb_invokable(obj) /* WEB_HOOK_INVOKE */\nstruct obj *obj;\n{\n"
+     "    return get_artifact(obj) && get_artifact(obj)->inv_prop;\n}\n\n"
+     "int\ndoinvoke()\n"),
+], "WEB_HOOK_INVOKE")
 # ---- Tiles follow appearances: SLASH'EM reshuffles its tile table to match
 # each game's shuffled appearances (o_init.c shuffle_tiles) only for its own
 # tile front ends (USE_TILES); without it the web port sends every potion,

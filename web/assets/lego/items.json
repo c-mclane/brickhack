@@ -3295,7 +3295,8 @@
     "part": "37341d",
     "color": 334
    }
-  ]
+  ],
+  "fx": "meteors"
  },
  "Nunchucks of Lightning": {
   "lego": "Golden weapon of Spinjitzu: the nunchaku, pearl gold",
@@ -3304,7 +3305,8 @@
     "part": "67100-f1",
     "color": 334
    }
-  ]
+  ],
+  "lightning": true
  },
  "Shurikens of Ice": {
   "lego": "Golden weapon of Spinjitzu: a pair of throwing stars, pearl gold",
@@ -3322,7 +3324,8 @@
      36
     ]
    }
-  ]
+  ],
+  "fx": "frost"
  },
  "Sword of Fire": {
   "lego": "Golden weapon of Spinjitzu: the katana with a dragon guard, pearl gold",
@@ -3331,7 +3334,8 @@
     "part": "93055",
     "color": 334
    }
-  ]
+  ],
+  "fx": "fire"
  },
  "elven leather helm": {
   "lego": "Forestman cap (a leather hat)",
