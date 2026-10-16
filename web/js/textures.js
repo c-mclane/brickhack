@@ -8,23 +8,12 @@ const S = 16;
 const KEY = [71, 108, 108]; // atlas key colour = transparent on keyed quads
 
 export const TEX_NAMES = ['wallBrick', 'stone', 'dirt', 'cobble', 'brick', 'chestSide', 'chestFront', 'chestTop', 'puff',
-  // Dreamland (Peanut Plains style) blocks
-  'grassTop', 'grassSide', 'sand', 'starBlock', 'bombBlock', 'logSide', 'logTop', 'leaves',
-  // castle stone and ladders; the little house: planks, roof shingles, a fire
-  'stoneBricks', 'ladder', 'planks', 'gateWood', 'roof', 'fire0', 'fire1', 'fire2', 'fire3',
-  // the magic portal on top of the tower
-  'portal0', 'portal1', 'portal2', 'portal3',
-  // Dreamland level 3: peach pillars, checkered towers, sky platforms, pink bricks
-  'peach', 'peachTop', 'checker', 'skyPlat', 'skyTop', 'pinkBrick',
-  // Dreamland level 4: the marble palace and its gardens
-  'marble', 'quartz', 'glass', 'hedge', 'flower0', 'flower1', 'flower2',
-  // Ascend level 1: fallen logs' bark (running along them), the house's windows
-  'logBark', 'windowGlass', 'weeds', 'weedsTop', 'weedsTuft', 'leaves1', 'leaves2', 'fallLeaf0', 'fallLeaf1',
-  // Dreamland level 5, the Fountain of Dreams: lavender tower domes, the
-  // island's arched wall, the Star Rod (two frames: it flashes)
-  'scales', 'archWall', 'starRod0', 'starRod1',
-  // ...its gushers' rainbow sparkles, little cone trees, pink clouds
-  'spark0', 'spark1', 'spark2', 'spark3', 'coneGreen', 'coneRed', 'pinkCloud',
+  // building blocks: grass, logs and leaves
+  'grassTop', 'grassSide', 'logSide', 'logTop', 'leaves',
+  // stone bricks and ladders; planks, gates, roof shingles
+  'stoneBricks', 'ladder', 'planks', 'gateWood', 'roof',
+  // hedge (the weeds' top), logs' bark (running along them), windows, weeds, more leaves
+  'hedge', 'logBark', 'windowGlass', 'weeds', 'weedsTop', 'weedsTuft', 'leaves1', 'leaves2',
   'crack0', 'crack1', 'crack2', 'crack3', 'crack4', 'crack5', 'crack6', 'crack7', 'crack8', 'crack9'];
 
 // deterministic little PRNG so textures look the same every load
@@ -201,165 +190,11 @@ function roof() {
   });
 }
 
-// a flickering fire, frame k of 4: hot yellow core, orange then red at the tips
-function fire(k) {
-  const r = rng(80 + k);
-  const noise = Array.from({ length: S * S }, () => r());
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const h = (S - y) / S; // 0 at the bottom, 1 at the top
-        const cx = 7.5 + Math.sin(y * 0.7 + k * 1.6) * 1.2; // the flame sways
-        const width = 6.5 * (1 - h) ** 0.8 + 0.5;
-        const d = Math.abs(x - cx) / width + noise[y * S + x] * 0.35 - 0.1;
-        if (d > 1 || y < 1) { set(x, y, KEY); continue; }
-        set(x, y, d < 0.35 && h < 0.6 ? [255, 244, 160] : d < 0.65 ? [255, 176, 40] : [226, 72, 24]);
-      }
-  });
-}
-
-// Kirby-style peach pillar: soft peach, a white shine down one side, a few
-// tiny stars
-function peach() {
-  const r = rng(101);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const shine = x === 3 || x === 4 ? 1.22 : x === 2 ? 1.1 : x >= 13 ? 0.86 : 1;
-        set(x, y, shade(nudge([244, 166, 136], r, 0.05), shine));
-      }
-    for (const [sx, sy] of [[9, 3], [7, 11]]) { // little stars
-      set(sx, sy, [255, 236, 214]); set(sx - 1, sy, [255, 222, 196]); set(sx + 1, sy, [255, 222, 196]);
-      set(sx, sy - 1, [255, 222, 196]); set(sx, sy + 1, [255, 222, 196]);
-    }
-  });
-}
-
-// the top of a peach pillar: rounded corners (see-through), a highlight
-function peachTop() {
-  const base = peach();
-  const px = base.getContext('2d').getImageData(0, 0, S, S).data;
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const cx = Math.max(0, Math.abs(x - 7.5) - 3.5), cy = Math.max(0, 7.5 - y - 1.5);
-        if (y < 8 && Math.hypot(cx, cy) > 4.2) { set(x, y, KEY); continue; } // the rounded top
-        const i = (y * S + x) * 4;
-        set(x, y, shade([px[i], px[i + 1], px[i + 2]], y < 3 ? 1.12 : 1));
-      }
-  });
-}
-
-// pink and green checks (Kirby's checkered towers)
-function checker() {
-  const r = rng(103);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const pink = ((x >> 2) + (y >> 2)) % 2 === 0;
-        set(x, y, nudge(pink ? [236, 118, 150] : [86, 168, 92], r, 0.06));
-      }
-  });
-}
-
-// a floating sky platform: light blue with a white frosting along the top
-function skyPlat() {
-  const r = rng(105);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++)
-        set(x, y, y < 4 ? nudge([248, 252, 255], r, 0.03) : shade(nudge([124, 170, 236], r, 0.05), 1 - (y - 4) * 0.02));
-  });
-}
-function skyTop() {
-  const r = rng(107);
-  return paint((set) => {
-    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) set(x, y, nudge(x === 0 || y === 0 ? [214, 232, 255] : [244, 250, 255], r, 0.03));
-  });
-}
-
-// pink bricks (the ledges on the pillars)
-function pinkBrick() {
-  const r = rng(109);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const course = y >> 2, off = course % 2 ? 4 : 0;
-        const mortar = y % 4 === 3 || (x + off) % 8 === 7;
-        set(x, y, mortar ? [196, 120, 132] : nudge([236, 160, 170], r, 0.07));
-      }
-  });
-}
-
-// white marble with soft grey veins
-function marble() {
-  const r = rng(121);
-  const veins = Array.from({ length: 3 }, () => [r() * S, r() * 2 - 1, r() * 6.3]);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const v = veins.some(([x0, k, p]) => Math.abs(x - (x0 + k * y + Math.sin(y * 0.6 + p) * 1.5)) < 0.55);
-        set(x, y, v ? [196, 196, 204] : nudge([238, 238, 242], r, 0.025));
-      }
-  });
-}
-
-// a fluted quartz pillar: pale, with vertical grooves
-function quartz() {
-  const r = rng(123);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) set(x, y, shade(nudge([234, 228, 222], r, 0.02), x % 4 === 0 ? 0.82 : x % 4 === 1 ? 1.06 : 1));
-  });
-}
-
-// stained glass: leaded panes in jewel colours
-function glass() {
-  const r = rng(125);
-  const jewels = [[186, 40, 60], [40, 92, 196], [232, 180, 40], [56, 150, 84], [140, 60, 170]];
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const lead = x % 5 === 0 || y % 5 === 0 || (x + y) % 9 === 0;
-        set(x, y, lead ? [46, 40, 48] : shade(jewels[(((x / 5) | 0) * 3 + ((y / 5) | 0) * 2) % jewels.length], 1.05 + (r() - 0.5) * 0.12));
-      }
-  });
-}
-
 // a clipped hedge: dense dark leaves
 function hedge() {
   const r = rng(127);
   return paint((set) => {
     for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) set(x, y, shade([48, 112, 52], 0.7 + r() * 0.5));
-  });
-}
-
-// a little flower on a stem (a sprite): pink, yellow or white, k = 0..2
-function flower(k) {
-  const petal = [[244, 128, 176], [250, 214, 60], [250, 250, 250]][k];
-  return paint((set) => {
-    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) set(x, y, KEY);
-    for (let y = 8; y < S; y++) set(7, y, [70, 150, 60]); // stem
-    set(6, 12, [80, 170, 70]); set(5, 11, [80, 170, 70]); set(8, 13, [80, 170, 70]); set(9, 12, [80, 170, 70]); // leaves
-    for (const [dx, dy] of [[0, -2], [0, 2], [-2, 0], [2, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]]) set(7 + dx, 6 + dy, petal);
-    set(7, 6, [250, 190, 40]); // the middle
-  });
-}
-
-// a swirling magic portal, frame k of 4: a pink and purple whirl in an oval,
-// with a few sparkles
-function portal(k) {
-  const r = rng(90 + k);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const dx = (x - 7.5) / 6.5, dy = (y - 7.5) / 7.5, d = Math.hypot(dx, dy);
-        if (d > 1) { set(x, y, KEY); continue; }
-        const a = Math.atan2(dy, dx) + d * 5 - k * (Math.PI / 2); // the swirl turns frame by frame
-        const band = 0.5 + 0.5 * Math.sin(a * 3);
-        const c = d > 0.86 ? [120, 40, 170] : band > 0.55 ? [236, 120, 230] : [150, 70, 220];
-        set(x, y, r() < 0.04 ? [255, 250, 210] : shade(c, 1.2 - d * 0.35));
-      }
   });
 }
 
@@ -408,7 +243,6 @@ function puff() {
   });
 }
 
-// ---- Dreamland blocks: bright, round, Kirby-ish -------------------------------
 function grassTop() {
   const r = rng(61);
   return paint((set) => {
@@ -430,44 +264,6 @@ function grassSide() {
       for (let y = 0; y < drip; y++) set(x, y, nudge([104, 196, 74], r, 0.12));
       set(x, drip, [74, 150, 54]);
     }
-  });
-}
-
-function sand() {
-  const r = rng(71);
-  return paint((set) => {
-    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) set(x, y, nudge([240, 214, 150], r, 0.08));
-    for (let i = 0; i < 10; i++) set(Math.floor(r() * S), Math.floor(r() * S), [214, 180, 112]);
-  });
-}
-
-function starBlock() {
-  return paint((set) => {
-    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-      const edge = x === 0 || y === 0 || x === S - 1 || y === S - 1;
-      const hi = x === 1 || y === 1, lo = x === S - 2 || y === S - 2;
-      set(x, y, edge ? [150, 90, 20] : hi ? [255, 214, 120] : lo ? [200, 120, 30] : [238, 160, 48]);
-    }
-    // a fat yellow five-point star in the middle
-    for (let y = 2; y < S - 2; y++) for (let x = 2; x < S - 2; x++) {
-      const px = x - 7.5, py = y - 8, rr = Math.hypot(px, py), a = Math.atan2(py, px) + Math.PI / 2;
-      const edge = 5.6 * (0.55 + 0.45 * Math.pow(Math.abs(Math.cos(2.5 * a)), 2));
-      if (rr < edge) set(x, y, rr < edge * 0.45 ? [255, 255, 210] : [255, 232, 60]);
-    }
-  });
-}
-
-function bombBlock() {
-  return paint((set) => {
-    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-      const edge = x === 0 || y === 0 || x === S - 1 || y === S - 1;
-      set(x, y, edge ? [40, 40, 70] : (x + y) % 2 ? [110, 110, 150] : [100, 100, 140]);
-    }
-    for (let y = 3; y < 14; y++) for (let x = 3; x < 14; x++) { // the bomb
-      const d = Math.hypot(x - 8, y - 9);
-      if (d < 4.6) set(x, y, d < 1.6 && x < 8 && y < 9 ? [200, 200, 230] : [24, 24, 32]);
-    }
-    set(10, 4, [24, 24, 32]); set(11, 3, [140, 100, 60]); set(12, 2, [255, 200, 60]); set(12, 1, [255, 90, 40]); // fuse + spark
   });
 }
 
@@ -524,138 +320,6 @@ function weedsTuft() {
   const r = rng(143);
   return paint((set) => {
     for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) set(x, y, r() < 0.3 ? nudge([86, 156, 56], r, 0.3) : KEY);
-  });
-}
-
-// the lavender scales of the Fountain of Dreams' tower domes, with gold dots
-function scales() {
-  const r = rng(147);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const row = Math.floor(y / 4), sx = (x + (row % 2) * 2) % 4, sy = y % 4;
-        const d = Math.hypot(sx - 1.5, sy - 0.5);
-        const rim = d > 1.9;
-        let c = rim ? [118, 86, 168] : shade([176, 146, 220], 1.1 - sy * 0.07);
-        if (!rim && sx === 1 && sy === 1 && (x * 5 + y * 3) % 7 === 0) c = [250, 220, 90]; // gold dots
-        set(x, y, nudge(c, r, 0.06));
-      }
-  });
-}
-
-// the island's wall below the Fountain: pale lavender stone with an arched
-// window, dark blue behind gold lattice
-function archWall() {
-  const r = rng(149);
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const inArch = x >= 4 && x <= 11 && y >= 3 && (y >= 7 || Math.hypot(x - 7.5, y - 7) <= 4);
-        const edge = !inArch && x >= 3 && x <= 12 && y >= 2 && (y >= 7 ? x === 3 || x === 12 : Math.hypot(x - 7.5, y - 7) <= 5);
-        let c;
-        if (inArch) c = (x + y) % 4 === 0 || (x - y + 16) % 4 === 0 ? [222, 186, 92] : [28, 30, 78];
-        else if (edge) c = [168, 156, 196];
-        else c = y % 8 === 0 || (x + (Math.floor(y / 8) % 2) * 4) % 8 === 0 ? [176, 168, 204] : nudge([226, 220, 240], r, 0.05);
-        set(x, y, c);
-      }
-  });
-}
-
-// the Star Rod (a sprite): a pink and white striped staff with a yellow star
-// on top; lit: the star flashing white
-function starRod(lit) {
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const dx = x - 7.5, dy = y - 4.5, a = Math.atan2(dy, dx) + Math.PI / 2;
-        const rad = 4.4 * (0.6 + 0.4 * Math.cos(5 * a)) ** 1.6 + 1.2; // a five-point star
-        const d = Math.hypot(dx, dy);
-        if (d <= rad) set(x, y, lit ? (d > rad - 1 ? [255, 236, 150] : [255, 255, 236]) : d > rad - 1 ? [214, 150, 30] : [252, 222, 70]);
-        else if ((x === 7 || x === 8) && y >= 8) set(x, y, (y + x) % 3 === 0 ? [236, 96, 150] : [250, 246, 250]);
-        else if (lit && d <= rad + 1.5 && (x + y) % 2 === 0) set(x, y, [255, 250, 200]); // the flash
-        else set(x, y, KEY);
-      }
-  });
-}
-
-// a sparkle of spray (a sprite): a little four-point twinkle, k = 0..3 a
-// colour of the rainbow (pink, gold, aqua, lilac)
-function spark(k) {
-  const c = [[255, 150, 200], [255, 226, 110], [130, 236, 255], [200, 160, 255]][k];
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const dx = Math.abs(x - 7.5), dy = Math.abs(y - 7.5);
-        const core = dx + dy < 3.2, ray = (dx < 1 && dy < 7) || (dy < 1 && dx < 7);
-        set(x, y, core ? [255, 255, 255] : ray ? c : KEY);
-      }
-  });
-}
-
-// a little cone tree (a sprite), green or red, with gold baubles and a star
-function coneTree(red) {
-  const r = rng(red ? 151 : 153);
-  const body = red ? [214, 52, 64] : [52, 160, 72], dark = red ? [150, 28, 44] : [28, 104, 48];
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const half = (y - 1) * 0.45; // the cone widens downwards
-        const inCone = y >= 2 && y <= 13 && Math.abs(x - 7.5) <= half;
-        if (y <= 1 && Math.abs(x - 7.5) < 1) set(x, y, [255, 230, 90]); // the star on top
-        else if (inCone) {
-          const band = (y + Math.floor(Math.abs(x - 7.5))) % 4 === 0;
-          set(x, y, r() < 0.1 ? [250, 214, 80] : band ? dark : nudge(body, r, 0.12));
-        } else if (y >= 14 && Math.abs(x - 7.5) < 1.5) set(x, y, [112, 74, 44]); // the trunk
-        else set(x, y, KEY);
-      }
-  });
-}
-
-// a fluffy pink cloud (a sprite): pixelated round puffs, paler on top
-function pinkCloud() {
-  const puffs = [[5, 9, 4], [10, 8, 4.5], [8, 6, 3.5], [3, 11, 2.8], [13, 11, 2.6]];
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const d = Math.min(...puffs.map(([px, py, pr]) => Math.hypot(x - px, y - py) - pr));
-        if (d > 0 || y > 13) { set(x, y, KEY); continue; }
-        const top = puffs.some(([px, py, pr]) => Math.hypot(x - px, y - 1 - py) > pr && Math.hypot(x - px, y - py) <= pr);
-        set(x, y, top ? [255, 236, 246] : d > -1 ? [222, 128, 178] : y > 10 ? [238, 160, 202] : [250, 190, 222]);
-      }
-  });
-}
-
-// a falling leaf (a sprite), after the user's pixel art: 0, a golden one with
-// its stem; 1, a red-orange one
-function fallLeaf(k) {
-  const pal = k === 0
-    ? { a: [221, 145, 38], b: [203, 125, 22], c: [182, 115, 26], d: [138, 84, 12], e: [150, 96, 22] }
-    : { a: [186, 80, 40], b: [170, 64, 28], c: [157, 54, 20], d: [178, 72, 34] };
-  const rows = k === 0 ? [
-    '.......a........',
-    '......abaa......',
-    '.....abbb.......',
-    '....abbbbc......',
-    '....abbbcc......',
-    '.....dccc.......',
-    '......e.........',
-    '......ed........',
-  ] : [
-    '.........cc.....',
-    '.......bcc......',
-    '......abbcc.....',
-    '.....abdddbc....',
-    '.....adddbbc....',
-    '......addbaa....',
-    '.......aa.......',
-    '.......a........',
-  ];
-  return paint((set) => {
-    for (let y = 0; y < S; y++)
-      for (let x = 0; x < S; x++) {
-        const ch = rows[y - 8] && rows[y - 8][x]; // (in the bottom half: a sprite stands on its feet)
-        set(x, y, ch && ch !== '.' ? pal[ch] : KEY);
-      }
   });
 }
 
@@ -749,17 +413,10 @@ export function buildTextures(renderer, meta, wallTileCanvas) {
     wallBrick: wallBrick(at(0, 8), at(0, 9), at(3, 9)),
     stone: stone(), dirt: dirt(), cobble: cobble(), brick: brick(),
     chestSide: chestSide(), chestFront: chestFront(), chestTop: chestTop(), puff: puff(),
-    grassTop: grassTop(), grassSide: grassSide(), sand: sand(), starBlock: starBlock(), bombBlock: bombBlock(),
-    logSide: logSide(), logTop: logTop(), leaves: leaves(),
+    grassTop: grassTop(), grassSide: grassSide(), logSide: logSide(), logTop: logTop(), leaves: leaves(),
     stoneBricks: stoneBricks(), ladder: ladder(), planks: plankBlock(), gateWood: gateWood(), roof: roof(),
-    fire0: fire(0), fire1: fire(1), fire2: fire(2), fire3: fire(3),
-    portal0: portal(0), portal1: portal(1), portal2: portal(2), portal3: portal(3),
-    peach: peach(), peachTop: peachTop(), checker: checker(), skyPlat: skyPlat(), skyTop: skyTop(), pinkBrick: pinkBrick(),
-    marble: marble(), quartz: quartz(), glass: glass(), hedge: hedge(), flower0: flower(0), flower1: flower(1), flower2: flower(2),
-    logBark: logBark(), windowGlass: windowGlass(), leaves1: leaves(1), leaves2: leaves(2), fallLeaf0: fallLeaf(0), fallLeaf1: fallLeaf(1), weeds: weeds(false), weedsTop: weeds(true), weedsTuft: weedsTuft(),
-    scales: scales(), archWall: archWall(), starRod0: starRod(false), starRod1: starRod(true),
-    spark0: spark(0), spark1: spark(1), spark2: spark(2), spark3: spark(3),
-    coneGreen: coneTree(false), coneRed: coneTree(true), pinkCloud: pinkCloud(),
+    hedge: hedge(), logBark: logBark(), windowGlass: windowGlass(), leaves1: leaves(1), leaves2: leaves(2),
+    weeds: weeds(false), weedsTop: weeds(true), weedsTuft: weedsTuft(),
   };
   cracks().forEach((c, i) => (canvases['crack' + i] = c));
   const slot = {}, url = {};

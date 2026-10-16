@@ -2,14 +2,12 @@
 import { Renderer } from './render.js';
 import { World } from './world.js';
 import { UI, setAtlas, itemActions, SLOT_LETTERS, tileIcon } from './ui.js';
-import { createChess, pieceName } from './chess.js';
-import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H, setBlockHeights } from './terrain.js';
+import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H } from './terrain.js';
 import { Motion } from './motion.js';
 import { BlockWorld, BLOCKS, BUILD_LIMIT, breakTime, minedAs } from './blocks.js';
 import { buildTextures } from './textures.js';
 import { ACTION_GROUPS, recommend } from './actions.js';
 import { CombatFX } from './combat.js';
-import { DL, buildDreamscape, buildLevel2, buildLevel3, buildLevel4, palaceExtras, buildGlade, gladeExtras, dreamPath, dreamFire, dreamOaks, dreamIndoors, dreamPortal, dreamPortal3, dreamFlowers, dreamShrubs, buildLevel5 } from './dreamscape.js';
 import { NameTags, nameTagEntries } from './nametags.js';
 import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
@@ -290,118 +288,15 @@ const fx = new CombatFX();
   fx.attack = (x, y, now) => { attack(x, y, now); holdReplies(performance.now() + ATTACK_TIME * SLASH_CUT * 1000); };
 }
 
-// ---- Ascend: SLASH'EM's overland start level (the "dreamland" option).
-// The engine has the plain, the woods and the stairs; the client builds the
-// house, the paddock, the stone tower and the dirt path from the same layout
-// (web/assets/dreamland.json).
-const DREAM_FOG = [0.62, 0.80, 1.0]; // bright daytime haze instead of dungeon dark
+// ---- Ascend (the engine's "dreamland" option): a blank baseplate, drawn as
+// any brick level is (render.js): its floor, green plates, and nothing on it
+const SKY_FOG = [0.62, 0.80, 1.0]; // bright daytime haze
 const DUNGEON_FOG = [0.04, 0.04, 0.06];
-const NIGHT_FOG = [0.05, 0.03, 0.11]; // the Fountain of Dreams, out among the stars
-let dreamLayout = null, dreamBuilding = null;
-async function ensureDreamscape() {
-  const key = blocks.levelKey;
-  if (!world.dream || !key || blocks.base || dreamBuilding === key) return;
-  dreamBuilding = key;
-  try {
-    if (!dreamLayout) dreamLayout = await (await fetch('/assets/dreamland.json')).json();
-    if (blocks.levelKey !== key || !world.dream) return;
-    clearDreamscape();
-    if (world.dreamLevel === 1) {
-      // engine squares = layout squares + (1, 1): the des-file map sits inside SLASH'EM's border column/row
-      const off = [1, 1];
-      world.path = dreamPath(dreamLayout, off);
-      world.hearth = dreamFire(dreamLayout, off);
-      world.oaks = dreamOaks(dreamLayout, off); // the woods are blocks...
-      world.shrubs = dreamShrubs(dreamLayout, off); // ...the shrubs, little tree tiles
-      world.indoors = dreamIndoors(dreamLayout, off);
-      world.portal = dreamPortal(dreamLayout, off);
-      world.decor = dreamFlowers(dreamLayout, off).map((f) => ({ x: f.x, z: f.z, tile: renderer.slots['flower' + f.k], size: 0.55, shade: 1 }));
-      blocks.setBase(buildDreamscape(dreamLayout, off));
-    } else if (world.dreamLevel === DL.glade) {
-      // the forest glade: woods everywhere, a path through to the standing stones
-      const ex = gladeExtras(dreamLayout, [1, 1]);
-      world.path = ex.path;
-      world.portal = ex.portal;
-      world.oaks = { has: () => true }; // no flat tree tiles anywhere: the woods are blocks (or under the canopy)
-      world.decor = dreamFlowers(dreamLayout, [1, 1], 'glade').map((f) => ({ x: f.x, z: f.z, tile: renderer.slots['flower' + f.k], size: 0.55, shade: 1 }));
-      blocks.setBase(buildGlade(dreamLayout, [1, 1]));
-    } else if (world.dreamLevel === DL.sky) {
-      world.floating = true; // a platform floating in the sky
-      const dp = ui.stat && ui.stat.dportal; // its portal, if the Waddle Dees are already gone
-      world.portal = dp ? { x: dp[0], z: dp[1], y: 0 } : null;
-      blocks.setBase(buildLevel2(dreamLayout, [1, 1]));
-    } else if (world.dreamLevel === DL.kirby) {
-      world.portal = dreamPortal3(dreamLayout, [1, 1]); // hidden in a checkered tower
-      world.oaks = dreamOaks(dreamLayout, [1, 1], 'kirby');
-      world.decor = dreamFlowers(dreamLayout, [1, 1], 'kirby').map((f) => ({ x: f.x, z: f.z, tile: renderer.slots['flower' + f.k], size: 0.55, shade: 1 }));
-      blocks.setBase(buildLevel3(dreamLayout, [1, 1]));
-    } else if (world.dreamLevel === DL.palace || world.dreamLevel === DL.battle) {
-      // (the battle is the same palace and gardens, at night)
-      const ex = palaceExtras(dreamLayout, [1, 1]);
-      world.oaks = dreamOaks(dreamLayout, [1, 1], 'palace'); // the weeds round the gardens (no flat tree tiles)
-      world.paved = ex.paved; // marble walks and floors
-      world.decor = ex.flowers.map((f) => ({ x: f.x, z: f.z, tile: renderer.slots['flower' + f.k], size: 0.55, shade: 1 }));
-      world.hearth = { fires: ex.fires, smoke: null }; // the braziers either side of the altar
-      const dp = ui.stat && ui.stat.dportal; // opened by an offering on the altar, in a hedge maze
-      world.portal = dp ? { x: dp[0], z: dp[1], y: 0 } : null;
-      blocks.setBase(buildLevel4(dreamLayout, [1, 1]));
-    } else if (world.dreamLevel === DL.fountain) {
-      // the Fountain of Dreams: an island floating among the stars
-      const L5 = buildLevel5(dreamLayout, [1, 1]);
-      world.floating = 'fountain';
-      world.falls = L5.falls;
-      world.starRod = L5.rod;
-      world.gushers = L5.gushers;
-      world.cloudRing = L5.center; // pink clouds swirl round the island
-      world.decor = L5.cones.map((c) => ({ x: c.x, z: c.z, tile: renderer.slots[c.red ? 'coneRed' : 'coneGreen'], size: 1.9, shade: 1 }));
-      blocks.setBase(L5.blocks);
-    } else {
-      blocks.setBase([]); // Dreamland's higher levels: nothing built yet
-    }
-    loadHorizon();
-    world.dirty = true;
-  } finally {
-    dreamBuilding = null;
-  }
-}
-// art/sky/dreamland-horizon.(png|webp|gif): a picture wrapped round Dreamland's
-// horizon.  Loaded once, as soon as the page starts, so it's there from the
-// first frame of Dreamland.
-let horizonLoad = null;
-function loadHorizon() {
-  horizonLoad = horizonLoad || (async () => {
-    try {
-      const files = await (await fetch('/api/art?dir=sky')).json();
-      const f = files.find((n) => /^dreamland-horizon\./i.test(n));
-      if (f) renderer.setPanorama(await loadImage('/art/sky/' + encodeURIComponent(f)));
-    } catch {}
-  })();
-  return horizonLoad;
-}
-// level 1's scenery extras (the path, the fire, the trees, the floors, the portal)
-function clearDreamscape() {
-  world.path = world.hearth = world.oaks = world.shrubs = world.indoors = world.portal = world.paved = null;
-  world.decor = [];
-  world.floating = false;
-  world.falls = world.starRod = world.gushers = world.cloudRing = null;
-}
-function setDream(on) {
-  if (world.dream === on) return;
-  world.dream = on;
-  setBlockHeights(on);
-  if (!on) clearDreamscape();
-  setSky();
-  world.dirty = true;
-}
-// BrickHack's dungeon is a brick maze out in the open, under a blue sky, and
-// Dreamland is in daylight too, until the Fountain of Dreams: night from
-// there on, the stars all round, above and below
+// BrickHack's dungeon is a brick maze out in the open, under a blue sky
 function setSky() {
-  const night = world.dream && world.dreamLevel >= DL.fountain;
-  renderer.daySky = !night;
-  renderer.spaceBelow = night;
-  renderer.iridescent = world.dream && world.dreamLevel === DL.fountain;
-  renderer.fog = night ? NIGHT_FOG : DREAM_FOG;
+  renderer.daySky = true;
+  renderer.spaceBelow = false;
+  renderer.fog = SKY_FOG;
 }
 const nameTags = new NameTags($('#nametags'));
 let figPicker = null; // the character select's minifig picker (figpick.js)
@@ -423,7 +318,6 @@ let texUrl = {}; // block texture name -> data URL (for inventory icons)
 const GRAVITY = 32; // blocks/s^2
 const phys = { y: 0, vy: 0, onGround: true, peak: 0, reportedZ: 0, climb: null };
 const CLIMB_V = 4.5; // blocks/s up or down a ladder
-let fallSent = 0; // when we asked to be put back on the platform
 const onRoof = () => phys.y >= WALL_H - 0.5;
 
 function updatePhysics(dt, now) {
@@ -451,10 +345,8 @@ function updatePhysics(dt, now) {
       phys.y = ground;
       phys.vy = 0;
       phys.onGround = true;
-      // Minecraft fall damage: 1 point per block beyond 3, scaled to your max HP
-      // (but not when Dreamland drops you back onto a platform)
-      if (fall > 3.2 && ui.stat && !phys.soft) post('D ' + Math.max(1, Math.ceil(((fall - 3) * ui.stat.hpmax) / 20)));
-      phys.soft = false;
+      // fall damage: 1 point per block beyond 3, scaled to your max HP
+      if (fall > 3.2 && ui.stat) post('D ' + Math.max(1, Math.ceil(((fall - 3) * ui.stat.hpmax) / 20)));
     }
   }
   // never end up inside a block: step up onto it (like Minecraft's collision push-out)
@@ -466,13 +358,7 @@ function updatePhysics(dt, now) {
   }
   const z = phys.onGround ? Math.round(phys.y) : phys.reportedZ;
   if (z !== phys.reportedZ) { phys.reportedZ = z; post('Z ' + z); }
-  // fallen off a floating platform, far down into the sky: Dreamland puts you back
-  if (world.dream && !phys.onGround && phys.y < -12 && (!fallSent || now - fallSent > 2000)) {
-    fallSent = now;
-    post('F');
-  }
-  // swimming: bob in the water
-  world.heroLift = phys.y + (world.dream && phys.onGround && phys.y < -0.5 ? 0.45 + Math.sin(now / 320) * 0.08 : 0);
+  world.heroLift = phys.y;
 }
 
 function rebuildTextures() {
@@ -615,7 +501,6 @@ async function init() {
   renderer = new Renderer($('#view'), img, meta);
   renderer.setAtlas(img, meta, await loadMonsterArt(meta));
   game.tilesets = await availableTilesets();
-  loadHorizon();
   document.documentElement.style.setProperty('--bgtile', `url(${brickPlateTile()})`);
   buildScreens();
   // the items made in brick (brickitems.js): their models for the floor, their pictures for the slots
@@ -680,20 +565,6 @@ function handle(m) {
     case 'stat':
       if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name, m); }
       world.heroTile = game.skinLoaded && !m.poly ? skinTile() : null;
-      setDream(m.dream > 0);
-      if (world.dreamLevel !== m.dream) { world.dreamLevel = m.dream; clearDreamscape(); setSky(); } // Dreamland level 1, 2... (0: not there)
-      // level 2: a portal opens once both Waddle Dees are gone; level 4: in one
-      // of the hedge mazes, once anything is offered on the altar; level 5:
-      // on the island, once the trial is over (the engine says where)
-      if (world.dreamLevel === DL.sky || world.dreamLevel === DL.palace || world.dreamLevel === DL.fountain) {
-        world.portal = m.dportal ? { x: m.dportal[0], z: m.dportal[1], y: 0 } : null;
-        if (m.dportal && !portal2Open && world.dreamLevel === DL.sky) ui.chat('A shimmering portal opens in the middle of the platform!');
-      }
-      portal2Open = !!m.dportal;
-      // level 5: the Star Rod stands on the fountain until Kirby first falls;
-      // then it pops off (a puff where it stood) and lies on the grass as an item
-      if (world.rodUp && !m.starrod && world.starRod) fx.puff(world.starRod.x, world.starRod.z, performance.now());
-      world.rodUp = !!m.starrod;
       // placed blocks belong to a dungeon level
       if (!blocks.ident) {
         const name = m.name, key = `${m.dnum}:${m.dlev}`;
@@ -704,22 +575,15 @@ function handle(m) {
           game.saveHotbar();
           ui.renderHotbar();
           world.dirty = true;
-          ensureDreamscape();
         });
       } else if (blocks.levelKey && blocks.enterLevel(`${m.dnum}:${m.dlev}`)) {
         Object.assign(phys, { y: 0, vy: 0, onGround: true, climb: null });
         drops.clear(); // (whatever was left lying stays behind)
         world.dirty = true;
       }
-      if (blocks.levelKey) ensureDreamscape();
       ui.heroSkinURL = game.skinLoaded && !m.poly ? game.skinURL : null;
       if (ui.stat && ui.stat.poly === m.poly && ui.stat.depth === m.depth)
         fx.hpChange(ui.stat.hp, m.hp, m.hpmax, motion, world.hero, performance.now());
-      if (fallSent && (m.ux !== world.hero.x || m.uy !== world.hero.y)) {
-        fallSent = 0;
-        Object.assign(phys, { y: 4, vy: 0, onGround: false, peak: 4, soft: true });
-        cam.snap = true;
-      }
       world.setHero(m.ux, m.uy);
       motion.moveHero(m.ux, m.uy, performance.now(), cam.snap);
       cam.snap = false;
@@ -878,7 +742,7 @@ function brickPlateTile(size = 128) {
 }
 
 // ------------------------------------------------------------------ screens
-const SCREENS = ['title', 'worlds', 'create', 'pause', 'options', 'controls', 'death', 'loading', 'chess', 'reset'];
+const SCREENS = ['title', 'worlds', 'create', 'pause', 'options', 'controls', 'death', 'loading', 'reset'];
 let returnTo = 'title';
 function show(name) {
   for (const s of SCREENS) $('#' + s).classList.toggle('hidden', s !== name);
@@ -940,8 +804,6 @@ function buildScreens() {
     $('#reset [data-act=reset-yes]').classList.add('hidden');
     $('#reset [data-act=reset-no]').textContent = 'Back';
   };
-  // Chess mode: plain chess with NetHack's monsters, in 3D (chess.js, below)
-  $('#title [data-act=chess]').onclick = enterChess;
   $('#title [data-act=dreamland]').onclick = () => { game.createDream = true; applyVariantLists(); show('create'); };
   $('#title [data-act=controls]').onclick = () => { returnTo = 'title'; show('controls'); };
   $('#title [data-act=options]').onclick = () => { returnTo = 'title'; openOptions(); };
@@ -1184,10 +1046,6 @@ async function openWorlds() {
 
 async function startGame(o) {
   game.lastStart = o;
-  // a new Dreamland game has its daytime sky from the very first frame
-  // (a saved game finds out from the engine which level it's on)
-  world.dreamLevel = o.dreamland ? 1 : 0; // (a saved game hears which level from the engine)
-  setDream(!!o.dreamland);
   setSky();
   music.reshuffle(); // a new game, a new random tune
   show('loading');
@@ -1635,7 +1493,6 @@ function updateMining(now, tgt) {
   if (k >= 1) {
     const type = blocks.remove(mining.x, mining.h, mining.z);
     if (type) drops.spawn(minedAs(type), mining.x, mining.h, mining.z, now); // pops out onto the ground
-    if (type === 'bomb') bombChain(mining.x, mining.h, mining.z, now);
     mining = null;
     world.dirty = true;
     game.ensureBlocksInHotbar();
@@ -1643,30 +1500,6 @@ function updateMining(now, tgt) {
     return null;
   }
   return { boxes: [[mining.x, mining.h, mining.z, mining.x + 1, mining.h + 1, mining.z + 1]], stage: Math.floor(k * 10) };
-}
-
-// Kirby's bomb blocks: break one and every star or bomb block joined to it
-// pops too (each drops to the ground like any mined block)
-function bombChain(x, y, z, now) {
-  const todo = [[x, y, z]], seen = new Set([`${x},${y},${z}`]);
-  let n = 0;
-  while (todo.length) {
-    const [cx, cy, cz] = todo.shift();
-    for (const [dx, dy, dz] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) {
-      const nx = cx + dx, ny = cy + dy, nz = cz + dz, key = `${nx},${ny},${nz}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const t = blocks.get(nx, ny, nz);
-      if (t !== 'star' && t !== 'bomb') continue;
-      blocks.remove(nx, ny, nz);
-      drops.spawn(t, nx, ny, nz, now);
-      fx.puff(nx, nz, now);
-      todo.push([nx, ny, nz]);
-      n++;
-    }
-  }
-  fx.puff(x, z, now);
-  ui.chat(n ? `BOOM! The bomb block blows away ${n} star block${n === 1 ? '' : 's'}!` : 'BOOM!');
 }
 
 function placeBlock(tgt, type) {
@@ -2040,130 +1873,6 @@ function processMovement(now) {
 window.addEventListener('keydown', (e) => (window.__shift = e.shiftKey), true);
 window.addEventListener('keyup', (e) => (window.__shift = e.shiftKey), true);
 
-// the house's fire (four flickering frames) and the smoke puffing out of the chimney
-function hearthSprites(h, now, T) {
-  const out = [];
-  const frame = T['fire' + (Math.floor(now / 110) % 4)];
-  for (const f of h.fires) out.push({ x: f.x, z: f.z, lift: f.y || 0, tile: frame, size: 0.9 + 0.05 * Math.sin(now / 90), shade: 1.6 });
-  const s = h.smoke;
-  for (let i = 0; s && i < 6; i++) {
-    const k = (now / 4200 + i / 6) % 1; // each puff rises, drifts, grows and fades
-    out.push({ x: s.x + Math.sin(k * 5 + i) * 0.35 * k, z: s.z + 0.6 * k, lift: s.y + k * 4, tile: T.puff,
-      size: 0.45 + 1.1 * k, shade: 1.25 - 0.45 * k });
-  }
-  return out;
-}
-
-// the swirling portal on the tower roof, and stepping into it: up to
-// Dreamland's next level (the engine checks you really are in it, up there)
-function portalSprites(p, now, T) {
-  // the swirl glows: brighter than daylight, pulsing; sparkles drift up out of it
-  const out = [{ x: p.x, z: p.z, lift: p.y + 0.05 + 0.06 * Math.sin(now / 300), tile: T['portal' + (Math.floor(now / 140) % 4)],
-    size: 2.8, shade: 1.7 + 0.35 * Math.sin(now / 220) }];
-  for (let i = 0; i < 8; i++) {
-    const k = (now / 2600 + i / 8) % 1, a = i * 2.4 + now / 900;
-    out.push({ x: p.x + Math.cos(a) * 0.9 * (1 - k), z: p.z + Math.sin(a) * 0.4, lift: p.y + 0.4 + k * 3.2,
-      tile: T.puff, size: 0.22 * (1 - k) + 0.06, shade: 2.4 });
-  }
-  return out;
-}
-// the Star Rod on top of the Fountain of Dreams: glowing, and every so often
-// flashing white, with sparkles falling round it
-function starRodSprites(r, now, T) {
-  const k = (now % 1600) / 1600, flash = k < 0.18;
-  const out = [{ x: r.x, z: r.z, lift: r.y + 0.08 * Math.sin(now / 500), tile: T[flash ? 'starRod1' : 'starRod0'],
-    size: 2.2, shade: flash ? 2.6 : 1.4 + 0.2 * Math.sin(now / 260) }];
-  for (let i = 0; i < 6; i++) {
-    const s = (now / 1800 + i / 6) % 1, a = i * 1.05 + now / 1200;
-    out.push({ x: r.x + Math.cos(a) * (0.5 + s), z: r.z + Math.sin(a) * (0.5 + s), lift: r.y + 1.6 - s * 2.2,
-      tile: T.puff, size: 0.18 * (1 - s) + 0.05, shade: 2.6 });
-  }
-  return out;
-}
-// a gusher's spray: rainbow sparkles thrown up and out of the top of its
-// jet, arcing back down into the pool
-function gusherSprites(g, now, T) {
-  const out = [], N = 22, seed = g.x * 7 + g.z * 3;
-  for (let i = 0; i < N; i++) {
-    const k = (now / 1400 + i / N + seed * 0.13) % 1, a = i * 2.4 + seed;
-    out.push({ x: g.x + Math.cos(a) * k * 1.4, z: g.z + Math.sin(a) * k * 1.4, lift: g.top - 0.6 + 2.2 * k - 5.0 * k * k,
-      tile: T['spark' + (i % 4)], size: 0.45 - 0.18 * k, shade: 1.8 });
-  }
-  return out;
-}
-
-// fluffy pink clouds, high and low, swirling slowly round the whole island
-const CLOUDS = Array.from({ length: 16 }, (_, i) => {
-  const h = (n) => ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
-  return { a: (i / 16) * Math.PI * 2 + h(1) * 0.3, r: 16 + h(2) * 7, y: -6 + h(3) * 15, size: 3 + h(4) * 2.5, speed: 0.035 + h(5) * 0.03 };
-});
-function cloudSprites(c, now, T) {
-  const out = [], t = now / 1000;
-  for (const cl of CLOUDS) {
-    const a = cl.a + t * cl.speed;
-    const y = cl.y + Math.sin(t * 0.4 + cl.a * 3) * 0.6;
-    // three puffs side by side along the swirl make each cloud
-    for (const d of [-1, 0, 1]) {
-      const b = a + d * (cl.size * 0.18) / cl.r;
-      out.push({ x: c.x + Math.cos(b) * cl.r - 0.5, z: c.z + Math.sin(b) * cl.r - 0.5, lift: y + (d ? -0.3 : 0.2),
-        tile: T.pinkCloud, size: cl.size * (d ? 0.8 : 1), shade: 1.05 });
-    }
-  }
-  return out;
-}
-// autumn leaves falling from the trees near you: they drift down from the
-// undersides of the canopies, swaying and spinning, settle on the ground and
-// fade after a while
-const LEAVES = { list: [], canopy: [], key: null, next: 0 };
-function leafSprites(now, dt, T) {
-  const key = blocks.version + ':' + blocks.levelKey;
-  if (LEAVES.key !== key) { // the canopies' undersides: leaves with nothing under them
-    LEAVES.key = key;
-    LEAVES.canopy = [...blocks.all()].filter((b) => b.type === 'leaves' && !blocks.get(b.x, b.y - 1, b.z));
-    LEAVES.list = LEAVES.list.filter((l) => l.landed);
-  }
-  const [hx, hz] = motion.heroPos(now);
-  // a new leaf every so often, from a canopy near you
-  if (now > LEAVES.next && LEAVES.canopy.length && LEAVES.list.length < 70) {
-    LEAVES.next = now + 140 + Math.random() * 220;
-    for (let tries = 0; tries < 8; tries++) {
-      const b = LEAVES.canopy[Math.floor(Math.random() * LEAVES.canopy.length)];
-      if (Math.hypot(b.x - hx, b.z - hz) > 24) continue;
-      let ground = 0; // where it will land: the top of whatever is under it
-      for (let y = b.y - 1; y >= 0; y--) if (blocks.get(b.x, y, b.z)) { ground = y + 1; break; }
-      LEAVES.list.push({ x: b.x + Math.random(), y: b.y - 0.05, z: b.z + Math.random(), ground,
-        vy: 0.45 + Math.random() * 0.3, ph: Math.random() * 6.28, k: Math.random() < 0.5 ? 0 : 1, landed: 0 });
-      break;
-    }
-  }
-  const out = [];
-  LEAVES.list = LEAVES.list.filter((l) => {
-    if (!l.landed) {
-      l.y -= l.vy * dt;
-      l.x += Math.cos(now / 600 + l.ph) * 0.35 * dt; // swaying as it falls
-      l.z += Math.sin(now / 750 + l.ph) * 0.25 * dt;
-      if (l.y <= l.ground) { l.y = l.ground; l.landed = now; }
-    } else if (now - l.landed > 5000) return false; // gone after a while on the ground
-    const fade = l.landed ? Math.max(0, 1 - (now - l.landed - 3500) / 1500) : 1;
-    out.push({ x: l.x - 0.5, z: l.z - 0.5, lift: l.y + (l.landed ? 0.02 : 0), tile: T['fallLeaf' + l.k], size: 0.4,
-      tilt: l.landed ? 1.35 : Math.sin(now / 280 + l.ph) * 0.8, shade: Math.min(1, 0.4 + fade) });
-    return fade > 0;
-  });
-  return out;
-}
-let portalSent = false;
-let portal2Open = false; // level 2's portal was open at the last status (to announce it once)
-function checkPortal() {
-  const p = world.portal, h = world.hero;
-  const inside = p && h.x === p.x && h.y === p.z && phys.onGround && phys.y >= p.y - 0.1;
-  if (!inside) { portalSent = false; return; }
-  if (portalSent || !game.ready || game.mode) return;
-  portalSent = true;
-  post('Z ' + Math.round(phys.y)); // (make sure the engine knows you're up on the roof)
-  post('P');
-  game.sendKeys('s'); // a moment's pause, and the portal takes you
-}
-
 // name tags over every creature, and over the hero when the camera is behind
 function updateNameTags(now) {
   if (!game.playing || opts.camera === 3) { nameTags.update([], cam.eye, project); return; }
@@ -2182,7 +1891,6 @@ let lastCracks = '';
 function frame(t) {
   const dt = Math.min(0.1, (t - lastT) / 1000);
   lastT = t;
-  if (renderer && CH.active) { chessFrame(t); requestAnimationFrame(frame); return; }
   if (renderer) {
     renderer.fov = opts.fov;
     if (world.dirty || lastWall !== opts.wallStyle) {
@@ -2193,22 +1901,16 @@ function frame(t) {
       lastWall = opts.wallStyle;
     }
     processMovement(t);
-    if (game.playing) { updatePhysics(dt, t); updateDoll(dt, t); checkPortal(); }
+    if (game.playing) { updatePhysics(dt, t); updateDoll(dt, t); }
     updateCamera(t);
     const fig3d = showFigure();
     const doll3d = showDoll() && !fig3d;
     motion.figHeight = hero3d.prims ? FIG_HEIGHT : null;
-    world.spriteScale = world.dream ? 1 : FIG_HEIGHT / 2.0; // a human-sized monster stands as tall as you
+    world.spriteScale = FIG_HEIGHT / 2.0; // a human-sized monster stands as tall as you
     world.camYaw = cam.vyaw; // creatures face the way they walk, as seen from here
     const sprites = world.sprites(opts.camera !== 0 && !doll3d && !fig3d, motion, t, fx);
     renderer.brickItems = world.brickDrops || [];
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
-    if (world.hearth && renderer.slots) sprites.push(...hearthSprites(world.hearth, t, renderer.slots));
-    if (world.portal && renderer.slots) sprites.push(...portalSprites(world.portal, t, renderer.slots));
-    if (world.starRod && world.rodUp && renderer.slots) sprites.push(...starRodSprites(world.starRod, t, renderer.slots));
-    if (world.gushers && renderer.slots) for (const g of world.gushers) sprites.push(...gusherSprites(g, t, renderer.slots));
-    if (world.cloudRing && renderer.slots) sprites.push(...cloudSprites(world.cloudRing, t, renderer.slots));
-    if (world.dream && renderer.slots && game.playing) sprites.push(...leafSprites(t, dt, renderer.slots));
     if (game.playing) {
       const [hx, hz] = motion.heroPos(t);
       drops.update(dt, t, world, [hx + 0.5, world.heroLift ?? phys.y, hz + 0.5], pickUpBlock);
@@ -2250,7 +1952,7 @@ function frame(t) {
     updateHeld(t);
     fx.updateLabels(t, project);
     updateNameTags(t);
-    renderer.fogRange = !world.dream ? [1e4, 2e4] : opts.camera === 3 ? [30, 60] : [45, 150]; // (no fog on brick levels, as in the viewer)
+    renderer.fogRange = [1e4, 2e4]; // (no fog on brick levels, as in the viewer)
     let outline = null, color = [0, 0, 0, 1], cracks = null;
     if (game.playing) {
       if (game.mode === 'getpos' && game.cursor) {
@@ -2279,135 +1981,5 @@ init().catch((err) => {
   document.body.innerHTML = `<pre style="color:#f88;padding:20px">${String(err && err.stack || err)}</pre>`;
 });
 
-// ------------------------------------------------------------------ chess
-// Chess mode in 3D: a proper dungeon room (stone walls, the dungeon's floor,
-// a brazier burning in each corner) with the board in the middle, its
-// squares stone and dark earth; the pieces are NetHack's monsters standing
-// on it, the ones taken lined up along the sides.  The camera circles the
-// board (drag to look round, scroll to zoom); click a piece, then a square.
-const CH = { active: false, game: null, world: null, dirty: true, yaw: 0, pitch: -0.8, dist: 10.5, eye: [0, 0, 0], drag: null };
-const CH_ROOM = 14, CH_B0 = 3; // the room (walls round its edge), the board's first square
-const CH_SIZE = { p: 1.25, n: 1.5, b: 1.6, r: 1.55, q: 1.8, k: 1.9 };
-const chTile = (name) => meta.names.indexOf(name);
-
-function chessRoom() {
-  const T = renderer.slots, W = CH_ROOM, classes = new Array(W * W);
-  const room = cmapTile(CM.room), wall = wallTile();
-  for (let y = 0; y < W; y++)
-    for (let x = 0; x < W; x++) {
-      const edge = x === 0 || y === 0 || x === W - 1 || y === W - 1;
-      const f = x - CH_B0, r = y - CH_B0, onBoard = f >= 0 && f < 8 && r >= 0 && r < 8;
-      classes[y * W + x] = edge ? { type: 'wall', tile: wall, seen: true, cmap: CM.hwall }
-        : { type: 'floor', seen: true, cmap: CM.room, tile: onBoard ? ((f + r) % 2 ? T.dirt : T.stone) : room };
-    }
-  return { w: W, h: W, classes, cells: [], hero: { x: W / 2, y: W / 2 }, blocks: null, dream: false };
-}
-
-function enterChess() {
-  if (!renderer.slots) rebuildTextures();
-  if (!CH.game)
-    CH.game = createChess($('#chess'), { tileIcon, tileOf: chTile, onBack: leaveChess, log: (text) => ui.chat(text) });
-  else CH.game.redraw();
-  CH.world = chessRoom();
-  CH.dirty = true;
-  CH.active = true;
-  renderer.daySky = renderer.spaceBelow = renderer.iridescent = false;
-  renderer.fog = DUNGEON_FOG;
-  $('#hud').classList.remove('hidden');
-  $('#hud').classList.add('chess-hud'); // just the chat: the moves, in algebraic notation
-  show('chess');
-}
-function leaveChess() {
-  CH.active = false;
-  setSky();
-  renderer.setOutline(null);
-  world.dirty = true;
-  $('#hud').classList.add('hidden');
-  $('#hud').classList.remove('chess-hud');
-  show('title');
-}
-
-function chessSprites(now) {
-  const v = CH.game.view(), T = renderer.slots, out = [];
-  for (let s = 0; s < 64; s++) {
-    const p = v.board[s];
-    if (!p) continue;
-    out.push({ x: CH_B0 + (s & 7), z: CH_B0 + (s >> 3), tile: chTile(pieceName(p)), size: CH_SIZE[p.t],
-      lift: s === v.sel ? 0.18 + 0.08 * Math.sin(now / 180) : 0, // the chosen piece hops
-      shade: s === v.check ? 1.3 + 0.5 * Math.sin(now / 120) : 1 }); // a king in check flashes
-  }
-  for (const s of v.targets) // where it can go: twinkles on the squares
-    out.push({ x: CH_B0 + (s & 7), z: CH_B0 + (s >> 3), tile: T.spark1, size: 0.45 + 0.05 * Math.sin(now / 150), lift: 0.05, shade: 1.6 });
-  // taken pieces line up along the sides: white's on the west, black's on the east
-  let w = 0, b = 0;
-  for (const p of v.taken) {
-    const i = p.c === 'w' ? w++ : b++;
-    out.push({ x: p.c === 'w' ? 1 + Math.floor(i / 12) : CH_ROOM - 2 - Math.floor(i / 12), z: 1 + (i % 12),
-      tile: chTile(pieceName(p)), size: CH_SIZE[p.t] * 0.8, shade: 0.85 });
-  }
-  const corners = [[1, 1], [CH_ROOM - 2, 1], [1, CH_ROOM - 2], [CH_ROOM - 2, CH_ROOM - 2]];
-  out.push(...hearthSprites({ fires: corners.map(([x, z]) => ({ x, z, y: 0 })), smoke: null }, now, T));
-  return out;
-}
-
-function chessFrame(t) {
-  renderer.fov = opts.fov;
-  if (CH.dirty) { renderer.buildTerrain(CH.world, opts); CH.dirty = false; }
-  const c = CH_B0 + 4, cp = Math.cos(CH.pitch);
-  const f = [Math.sin(CH.yaw) * cp, Math.sin(CH.pitch), -Math.cos(CH.yaw) * cp];
-  CH.eye = [c - f[0] * CH.dist, 0.4 - f[1] * CH.dist, c - f[2] * CH.dist];
-  renderer.buildSprites(chessSprites(t), CH.yaw);
-  renderer.fogRange = [22, 50];
-  const v = CH.game.view();
-  renderer.setOutline(v.sel >= 0 ? [CH_B0 + (v.sel & 7), 0, CH_B0 + (v.sel >> 3), CH_B0 + (v.sel & 7) + 1, 0.02, CH_B0 + (v.sel >> 3) + 1] : null);
-  renderer.draw(CH.eye, CH.yaw, CH.pitch, [1, 0.9, 0.3, 1]);
-}
-
-// which square a click is on: a piece standing there (its sprite, nearest
-// the camera first), else the floor under the pointer; -1 off the board
-function chessPick(sx, sy) {
-  const v = CH.game.view();
-  let best = -1, bestY = -Infinity;
-  for (let s = 0; s < 64; s++) {
-    const p = v.board[s];
-    if (!p) continue;
-    const x = CH_B0 + (s & 7) + 0.5, z = CH_B0 + (s >> 3) + 0.5;
-    const foot = project([x, 0, z]), head = project([x, CH_SIZE[p.t], z]);
-    if (!foot || !head) continue;
-    const h = foot[1] - head[1], half = h * 0.35;
-    if (sx >= foot[0] - half && sx <= foot[0] + half && sy >= head[1] && sy <= foot[1] && foot[1] > bestY) { best = s; bestY = foot[1]; }
-  }
-  if (best >= 0) return best;
-  const ray = renderer.screenRay(CH.eye, CH.yaw, CH.pitch, sx, sy);
-  if (ray.d[1] >= 0) return -1;
-  const k = -ray.o[1] / ray.d[1];
-  const f = Math.floor(ray.o[0] + ray.d[0] * k) - CH_B0, r = Math.floor(ray.o[2] + ray.d[2] * k) - CH_B0;
-  return f >= 0 && f < 8 && r >= 0 && r < 8 ? r * 8 + f : -1;
-}
-$('#view').addEventListener('mousedown', (e) => {
-  if (!CH.active) return;
-  CH.drag = { x: e.clientX, y: e.clientY, moved: false };
-});
-window.addEventListener('mousemove', (e) => {
-  if (!CH.active || !CH.drag) return;
-  const dx = e.clientX - CH.drag.x, dy = e.clientY - CH.drag.y;
-  if (!CH.drag.moved && Math.hypot(dx, dy) < 5) return;
-  CH.drag.moved = true;
-  CH.yaw += dx * 0.008;
-  CH.pitch = Math.max(-1.45, Math.min(-0.25, CH.pitch - dy * 0.006));
-  CH.drag.x = e.clientX; CH.drag.y = e.clientY;
-});
-window.addEventListener('mouseup', (e) => {
-  if (!CH.active || !CH.drag) return;
-  const clicked = !CH.drag.moved;
-  CH.drag = null;
-  if (!clicked) return;
-  const r = $('#view').getBoundingClientRect();
-  CH.game.click(chessPick(e.clientX - r.left, e.clientY - r.top));
-});
-$('#view').addEventListener('wheel', (e) => {
-  if (CH.active) CH.dist = Math.max(6, Math.min(20, CH.dist + Math.sign(e.deltaY) * 0.8));
-}, { passive: true });
-
 // debugging handle (used for automated checks in the dev console)
-window.__nh = { cam, opts, world, game, ui, handle, creator, makeSkin, motion, music, blocks, phys, fx, nameTags, crosshairTarget, yawDir, LEAVES, hero3d, loadHeroFigure, get renderer() { return renderer; } };
+window.__nh = { cam, opts, world, game, ui, handle, creator, makeSkin, motion, music, blocks, phys, fx, nameTags, crosshairTarget, yawDir, hero3d, loadHeroFigure, get renderer() { return renderer; } };

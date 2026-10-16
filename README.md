@@ -46,15 +46,9 @@ monster and item is the game's own.
 The title screen has two ways to play:
 
 - **Descend:** classic SLASH'EM, from level 1 of the Dungeons of Doom.
-- **Ascend:** a game that begins above ground, under a blue daytime sky, and
-  climbs up through a dream world of floating platforms, gardens, a marble
-  palace and a starry fountain. Combat, items and everything else are
-  SLASH'EM's own.
-
-## Chess
-
-The third mode: ordinary chess, played with NetHack's monsters in 3D, against
-the computer or a friend, with every rule (`web/js/chess.js`).
+- **Ascend:** a blank green baseplate under a blue sky, with nothing on it
+  yet: a starting point for building levels of your own
+  (`tools/dreamland_gen.py` writes it).
 
 ## Races
 
@@ -108,7 +102,9 @@ npm run monster -- "Name" monkey ~/Downloads/sprite.png
 ```
 
 This writes `mods/monsters/<name>.json` (the definition and a 16x16 tile,
-committed) and the full-size sprite in `art/monsters/` (local only). Rebuild
+committed) and the full-size sprite in `art/monsters/` (local only).
+`mods/monsters/template-monster.json` is a blank example to copy: a monkey
+with an empty tile, never generated. Rebuild
 and restart the server. Add `"nogen": true` to keep it out of random
 generation. Adding or removing a monster changes the save format.
 

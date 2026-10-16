@@ -1,0 +1,24 @@
+{
+  "name": "template monster",
+  "base": "monkey",
+  "about": "A template: how to add a monster of your own. Same stats, attacks and behaviour as a monkey; a blank tile and no sprite; never generated. Copy this file, then give it a name, a base monster, a tile and a sprite (npm run monster).",
+  "tile": [
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM",
+    "MMMMMMMMMMMMMMMM"
+  ],
+  "nogen": true
+}

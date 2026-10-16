@@ -8,8 +8,8 @@
 #   game\               SLASH'EM for Windows (tools/build-windows.sh)
 #
 # usage: tools/package-windows.sh [--private]
-#   --private  also packs your local art/ and music/ (Kirby sprites, the horizon
-#              picture, the Steve skin, the tracker music: third-party files,
+#   --private  also packs your local art/ and music/ (monster sprites, the
+#              skin, the tracker music: third-party files,
 #              for sending to family and friends; never publish that zip)
 set -e
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -60,7 +60,7 @@ MineHack for Windows
 Double-click MineHack.exe to play. The game opens in its own window.
 Close the window to stop: your game is saved.
 
-Ascend (on the title screen) is our own Dreamland adventure; Descend is the
+Ascend (on the title screen) starts on a blank baseplate; Descend is the
 full SLASH'EM game.
 
 Everything stays in this folder: saved games in game\, built blocks in

@@ -7,7 +7,7 @@ import { BrickRenderer, STUD_H, PARTS, DOOR_TOP, partMatrix } from './brick.js';
 import { BrickWorld } from './brickworld.js';
 
 const VS = `#version 300 es
-in vec3 aPos; in vec2 aUV; in vec3 aMisc; // shade, key (2 = water, 3 = a waterfall, 4 = mist), gray (waterfalls: 1 = still, 2 = rising; mist: its thickness)
+in vec3 aPos; in vec2 aUV; in vec3 aMisc; // shade, key (1 = a sprite: its background is see-through), gray
 uniform mat4 uProj, uView;
 out vec2 vUV; out vec3 vMisc; out float vDist; out vec3 vWorld;
 void main() {
@@ -25,55 +25,9 @@ uniform sampler2D uTex;
 uniform vec3 uFog; uniform vec2 uFogRange;
 uniform vec4 uSolid;
 uniform float uTime;
-uniform float uIri; // 1: iridescent water (the Fountain of Dreams)
 out vec4 o;
-float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-vec3 rainbow(float t) { return 0.5 + 0.5 * cos(6.2831853 * (vec3(0.0, 0.33, 0.67) + t)); }
 void main() {
   if (uSolid.a > 0.0) { o = uSolid; return; }
-  if (vMisc.y > 3.5) {
-    // mist round the edge of an Ascend map: soft banks drifting along,
-    // thickest near the ground, thinning away above and below
-    vec2 p = vUV; // (along the sheet, height)
-    float n = 0.5 + 0.28 * sin(p.x * 0.19 + uTime * 0.11 + sin(p.y * 0.31 + uTime * 0.06) * 1.8)
-                  + 0.22 * sin(p.x * 0.47 - uTime * 0.08 + p.y * 0.37);
-    float a = vMisc.z * mix(0.3, 1.0, clamp(n, 0.0, 1.0));
-    a *= smoothstep(-26.0, -8.0, vWorld.y) * (1.0 - smoothstep(10.0, 36.0, vWorld.y));
-    o = vec4(mix(uFog, vec3(1.0), 0.3), a);
-    return;
-  }
-  if (vMisc.y > 2.5) {
-    // iridescent falling water: streaks pouring down in lanes, shimmering
-    // through the rainbow; still (vMisc.z 1): a bowl's surface, rippling;
-    // rising (vMisc.z 2): a gusher's jet, leaping up
-    float still = step(0.5, vMisc.z) * step(vMisc.z, 1.5), rise = step(1.5, vMisc.z);
-    vec2 p = vUV;
-    float lane = floor(p.x * 5.0);
-    float fall = p.y + uTime * (1.4 + h21(vec2(lane, 1.0)) * 0.9) * (1.0 - still) * (1.0 + rise * 1.6) * (1.0 - 2.0 * rise);
-    float streak = 0.5 + 0.5 * sin(p.x * 31.4 + sin(fall * 1.3 + lane) * 1.5);
-    float ripple = still * (0.5 + 0.5 * sin(length(fract(p) - 0.5) * 22.0 - uTime * 3.0));
-    float glint = smoothstep(0.72, 1.0, streak) * (0.5 + 0.5 * sin(fall * 5.0)) * (1.0 - still) + ripple * 0.5;
-    vec3 col = mix(vec3(0.9, 0.96, 1.0), rainbow(p.x * 0.11 + p.y * 0.07 - uTime * 0.15), 0.5) + glint * 0.45;
-    float a = (0.45 + 0.3 * glint) * mix(smoothstep(-17.0, -4.0, vWorld.y), 1.0, still); // fading as it falls away
-    a = mix(a, 0.7 + 0.25 * glint, rise) * (1.0 - rise * smoothstep(3.0, 4.4, vWorld.y)); // a jet: bright, breaking up into spray at the top
-    float f = clamp((vDist - uFogRange.x) / (uFogRange.y - uFogRange.x), 0.0, 1.0);
-    o = vec4(mix(col, uFog, f), a);
-    return;
-  }
-  if (vMisc.y > 1.5) {
-    // cute, clear Kirby water: pixel-snapped ripples, soft bands and twinkles
-    vec2 q = floor(vWorld.xz * 16.0) / 16.0;
-    float w = sin(q.x * 2.7 + uTime * 1.6) + sin(q.y * 3.1 - uTime * 1.2) + sin((q.x + q.y) * 1.7 + uTime * 0.7);
-    vec3 col = mix(vec3(0.38, 0.78, 1.0), vec3(0.62, 0.92, 1.0), smoothstep(-1.0, 2.2, w));
-    col = mix(col, vec3(1.0), step(2.35, w) * 0.6); // bright crests
-    vec2 cell = floor(vWorld.xz * 4.0);
-    float tw = step(0.985, h21(cell + floor(uTime * 2.0)));
-    col += vec3(1.0, 0.95, 0.7) * tw; // sparkles
-    if (uIri > 0.5) col = mix(col, rainbow((q.x + q.y) * 0.05 + w * 0.05 - uTime * 0.1) + 0.2, 0.45); // shimmering through the rainbow
-    float f = clamp((vDist - uFogRange.x) / (uFogRange.y - uFogRange.x), 0.0, 1.0);
-    o = vec4(mix(col, uFog, f), 0.5 + 0.1 * tw);
-    return;
-  }
   vec4 c = texture(uTex, vUV);
   // NetHack tiles use (71,108,108) as their background colour
   if (vMisc.y > 0.5 && distance(c.rgb, vec3(71.0, 108.0, 108.0) / 255.0) < 0.03) discard;
@@ -101,15 +55,9 @@ const SKY_FS = `#version 300 es
 precision highp float;
 in vec3 vDir;
 uniform float uTime;
-uniform float uDay; // 1: Dreamland's happy blue daytime sky
+uniform float uDay; // 1: the happy blue daytime sky
 uniform float uSpace; // 1: floating in space: stars below the horizon too
-uniform sampler2D uPano; // Dreamland's horizon picture (art/sky/dreamland-horizon.*)
-uniform float uHasPano;
-uniform vec2 uPanoSize; // in pixels
 const vec3 GRASS = vec3(0.27, 0.62, 0.17); // the ground below the horizon by day
-// where the picture's ground line (the far hills' feet) and the bottom of its
-// clear sky are, as fractions of its height (fits art/sky/dreamland-horizon.webp)
-const float PANO_HORIZON_AT = 0.37, PANO_SKY_AT = 0.14;
 out vec4 o;
 
 const vec3 PURPLE = vec3(0.62, 0.36, 0.98);
@@ -169,11 +117,11 @@ vec3 cubeUV(vec3 d) {
 }
 
 vec3 starTint(float h) {
-  // the Kirby palette: pink, green, yellow, white, red (+ a little icy blue)
+  // the palette: pink, green, yellow, white, red (+ a little icy blue)
   return h < 0.22 ? PINK : h < 0.42 ? GREEN : h < 0.6 ? YELLOW : h < 0.74 ? WHITE : h < 0.9 ? vec3(1.0, 0.32, 0.38) : vec3(0.7, 0.9, 1.0);
 }
 
-// Pixel-art sky sprites, modelled on the Kirby Milky Way Wishes star sheet.
+// Pixel-art sky sprites.
 // kind 0: blinking one-pixel dust
 // kind 1: four-point twinkles
 // kind 2: fat five-point stars with a white centre and a glow halo; each one
@@ -323,52 +271,27 @@ void main() {
   blue = mix(blue, vec3(1.0), smoothstep(0.55, 0.75, cl) * smoothstep(0.0, 0.25, d.y) * 0.85);
   vec3 bright = max(night - vec3(0.14, 0.06, 0.26), 0.0); // drop the purple space itself
   vec3 day = 1.0 - (1.0 - blue) * (1.0 - bright * 0.8);
-  float starW = 1.0, covered = 0.0;
-  if (uHasPano > 0.5) {
-    // the horizon picture all the way round (four copies, every other one
-    // mirrored so the seams match), at its own proportions, with its ground
-    // line on our horizon; its sky fades up into ours
-    float q = (atan(d.x, -d.z) / 6.2831853 + 0.5) * 4.0;
-    float f = fract(q);
-    if (mod(floor(q), 2.0) > 0.5) f = 1.0 - f;
-    float PANO_W = uPanoSize.x, PANO_H = uPanoSize.y;
-    float PANO_HORIZON = PANO_HORIZON_AT * PANO_H, PANO_SKY = PANO_SKY_AT * PANO_H;
-    float row = PANO_HORIZON - asin(clamp(d.y, -1.0, 1.0)) * PANO_W / 1.5707963; // picture pixel row
-    if (row >= 0.0 && row <= PANO_H) {
-      vec3 p = texture(uPano, vec2(f, row / PANO_H)).rgb;
-      p = mix(p, GRASS, smoothstep(PANO_H * 0.72, PANO_H, row)); // its foreground melts into plain grass
-      day = mix(day, p, smoothstep(0.0, PANO_SKY, row));
-      covered = 1.0;
-      // stars only where the picture is sky (blue, or bright cloud), above the hills
-      float skyish = clamp((p.b - max(p.r, p.g)) * 8.0 + (min(p.r, min(p.g, p.b)) - 0.82) * 12.0, 0.0, 1.0);
-      starW = mix(skyish, 1.0, 1.0 - smoothstep(0.0, PANO_SKY, row)) * (1.0 - smoothstep(PANO_SKY, PANO_SKY * 1.5, row));
-    }
-  }
-  day = 1.0 - (1.0 - day) * exp(-stars * 2.0 * starW); // every star stays, bright, over the blue and the clouds
+  day = 1.0 - (1.0 - day) * exp(-stars * 2.0); // every star stays, bright, over the blue and the clouds
   col = mix(night, day, uDay);
   // the sky stops at a horizon level with the floor; below it is dark void (or haze by day)
   vec3 voidCol = mix(vec3(0.035, 0.02, 0.06), GRASS, uDay); // by day: grass all the way down
-  col = mix(voidCol, col, max(max(smoothstep(-0.015, 0.02, d.y), covered * uDay), uSpace)); // (the horizon picture's ground covers it)
+  col = mix(voidCol, col, max(smoothstep(-0.015, 0.02, d.y), uSpace));
   o = vec4(col, 1.0);
 }`;
 
 const FLOATS = 8; // x y z u v shade key gray
 
 // block type -> texture slots [sides, top]
-const FACES = { grass: ['grassSide', 'grassTop'], sand: ['sand'], star: ['starBlock'], bomb: ['bombBlock'],
+const FACES = { grass: ['grassSide', 'grassTop'],
   log: ['logSide', 'logTop'], leaves: ['leaves'], brick: ['brick'], dirt: ['dirt'], cobble: ['cobble'], stone: ['stoneBricks'],
   planks: ['planks'], ridge: ['roof'],
-  peach: ['peach'], peachTop: ['peachTop', 'peach'], checker: ['checker'], skyPlat: ['skyPlat', 'skyTop'], pinkBrick: ['pinkBrick'],
-  marble: ['marble'], quartz: ['quartz', 'marble'], glass: ['glass'], hedge: ['hedge'],
-  window: ['windowGlass'], weeds: ['weeds', 'hedge'], weedsTop: ['weedsTop', 'weedsTuft'],
-  fakeWeeds: ['weeds', 'hedge'], fakeWeedsTop: ['weedsTop', 'weedsTuft'], scales: ['scales'], archWall: ['archWall'],
-  henge: ['stone'] }; // (the glade's standing stones: plain grey stone)
+  window: ['windowGlass'], weeds: ['weeds', 'hedge'], weedsTop: ['weedsTop', 'weedsTuft'] };
 // fallen logs: the log's rings on its two ends, bark along it everywhere else
 const LYING = { logX: 'x', logZ: 'z' };
 // blocks with see-through pixels (their texture's key colour)
-const CUTOUT = new Set(['peachTop', 'window', 'weedsTop', 'fakeWeedsTop']);
+const CUTOUT = new Set(['window', 'weedsTop']);
 // blocks that aren't whole cubes: they never hide the faces of blocks next to them
-const PARTIAL = new Set(['ladder', 'roofN', 'roofS', 'fence', 'gate', 'gateOpen', 'fire', 'peachTop', 'window', 'weedsTop', 'fakeWeedsTop']);
+const PARTIAL = new Set(['ladder', 'roofN', 'roofS', 'fence', 'gate', 'gateOpen', 'window', 'weedsTop']);
 
 function mat4Perspective(fovy, aspect, near, far) {
   const f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
@@ -406,7 +329,7 @@ export class Renderer {
     gl.attachShader(p, sh(gl.FRAGMENT_SHADER, FS));
     gl.linkProgram(p);
     this.u = {};
-    for (const n of ['uProj', 'uView', 'uTex', 'uFog', 'uFogRange', 'uSolid', 'uTime', 'uIri']) this.u[n] = gl.getUniformLocation(p, n);
+    for (const n of ['uProj', 'uView', 'uTex', 'uFog', 'uFogRange', 'uSolid', 'uTime']) this.u[n] = gl.getUniformLocation(p, n);
     this.a = { pos: gl.getAttribLocation(p, 'aPos'), uv: gl.getAttribLocation(p, 'aUV'), misc: gl.getAttribLocation(p, 'aMisc') };
 
     this.tex = gl.createTexture();
@@ -416,9 +339,6 @@ export class Renderer {
     this.sprites = this.makeMesh();
     this.lines = this.makeMesh();
     this.overlay = this.makeMesh();
-    this.water = this.makeMesh();
-    this.falls = this.makeMesh(); // iridescent waterfalls (world.falls)
-    this.mist = this.makeMesh(); // mist round the edges of an Ascend map
     this.blockMesh = this.makeMesh();
     this.figRender = new BrickRenderer(gl); // (the character previews' renderer; the game world is the BrickWorld's)
     this.brick = new BrickWorld(canvas, gl); // the brick dungeon and minifigs, drawn by three.js like the scene viewer
@@ -497,7 +417,7 @@ export class Renderer {
     gl.linkProgram(p);
     if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
     this.skyU = {};
-    for (const n of ['uRight', 'uUp', 'uFwd', 'uTan', 'uTime', 'uDay', 'uSpace', 'uPano', 'uHasPano', 'uPanoSize']) this.skyU[n] = gl.getUniformLocation(p, n);
+    for (const n of ['uRight', 'uUp', 'uFwd', 'uTan', 'uTime', 'uDay', 'uSpace']) this.skyU[n] = gl.getUniformLocation(p, n);
     this.skyVao = gl.createVertexArray();
     gl.bindVertexArray(this.skyVao);
     const buf = gl.createBuffer();
@@ -507,21 +427,6 @@ export class Renderer {
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     gl.bindVertexArray(null);
-  }
-
-  // a picture wrapped round the horizon of the day sky (null: none)
-  setPanorama(img) {
-    const gl = this.gl;
-    if (!img) { this.panoTex = null; return; }
-    this.panoTex = this.panoTex || gl.createTexture();
-    this.panoSize = [img.naturalWidth || img.width, img.naturalHeight || img.height];
-    gl.bindTexture(gl.TEXTURE_2D, this.panoTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindTexture(gl.TEXTURE_2D, this.tex);
   }
 
   drawSky(yaw, pitch, aspect) {
@@ -539,15 +444,6 @@ export class Renderer {
     gl.uniform1f(this.skyU.uTime, performance.now() / 1000);
     gl.uniform1f(this.skyU.uDay, this.daySky ? 1 : 0);
     gl.uniform1f(this.skyU.uSpace, this.spaceBelow ? 1 : 0);
-    const pano = this.daySky && this.panoTex;
-    gl.uniform1f(this.skyU.uHasPano, pano ? 1 : 0);
-    if (pano) {
-      gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, this.panoTex);
-      gl.uniform1i(this.skyU.uPano, 1);
-      gl.uniform2f(this.skyU.uPanoSize, this.panoSize[0], this.panoSize[1]);
-      gl.activeTexture(gl.TEXTURE0);
-    }
     gl.depthMask(false);
     gl.disable(gl.DEPTH_TEST);
     gl.bindVertexArray(this.skyVao);
@@ -676,41 +572,16 @@ export class Renderer {
       if (c.type === 'wall' || c.type === 'rock' || c.type === 'door') return true;
       return lvl >= DOOR_H && !!c.lintel;
     };
-    // ...for Dreamland's blocks, whose mesh is only rebuilt when the blocks
-    // change: doors don't count (a door kicked in or opened would otherwise
-    // leave the walls beside it with their faces missing)
-    const blockSolidAt = !world.dream ? solidAt : (x, y, lvl) => {
-      if (x < 0 || y < 0 || x >= W || y >= H) return false;
-      const bt = world.blocks && world.blocks.get(x, lvl, y);
-      if (bt) return !cutType(bt);
-      const c = lvl < WALL_H && cls[y * W + x];
-      return !!c && (c.type === 'wall' || c.type === 'rock');
-    };
     const T = this.slots || {};
     // wall columns: the game's wall tile (battlements) on top, plain brick below
     const wallLayer = (l, topTile) => (l === WALL_H - 1 || T.wallBrick == null ? topTile : T.wallBrick);
     const hx = world.hero.x, hy = world.hero.y;
     const WALL_TILE = wallTile();
-    const water = [];
-    // a platform floating in the sky: a slab under the floor from height
-    // `top` down (a grassy slab of earth; the Fountain of Dreams: a wall of
-    // arched windows over marble)
-    const slab = (x, y, top) => {
-      if (T.dirt == null) return;
-      const open = (xx, yy) => { const n = cls[yy * W + xx]; return !n || n.type === 'none'; };
-      const side = { n: !open(x, y - 1), s: !open(x, y + 1), w: !open(x - 1, y), e: !open(x + 1, y), top: true, bottom: true };
-      const layers = world.floating === 'fountain' ? [T.archWall, T.archWall, T.marble] : [T.grassSide ?? T.dirt, T.dirt];
-      layers.forEach((t, i) => {
-        const y1 = -i - (top < 0 ? 1 : 0);
-        if (y1 <= top) this.block(out, x, y, y1 - 1, y1, t ?? T.dirt, shade0, { ...side, bottom: i < layers.length - 1 });
-      });
-    };
-    const shade0 = 1;
     // dungeon levels are a brick maze out in the open: green studded floors on a
     // green baseplate, grey brick walls (and the rock you've seen round the
     // corridors: walled lanes), wooden brick doors, and haze over everything
     // not yet explored (a path you haven't followed yet fades into it)
-    const brickLevel = !world.dream;
+    const brickLevel = true; // (every level is: the dungeon, Ascend's baseplate)
     // what the BrickWorld builds: floor plates, walls, doors, fog
     const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [] };
     // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
@@ -769,8 +640,8 @@ export class Renderer {
         if (brickLevel && (!c || (c.type === 'none' && c.cmap !== CM.air))) { fogAt(x, y); continue; }
         if (!c || c.type === 'none') continue;
         const d = Math.hypot(x - hx, y - hy);
-        let shade = c.seen || world.dream ? 1.0 : brickLevel ? 0.62 : 0.42; // (Ascend is mapped and in daylight)
-        shade *= world.dream ? 1 : Math.max(brickLevel ? 0.75 : 0.55, Math.min(1, 1.25 - d / 16)); // Dreamland is in daylight
+        let shade = c.seen ? 1.0 : brickLevel ? 0.62 : 0.42;
+        shade *= Math.max(brickLevel ? 0.75 : 0.55, Math.min(1, 1.25 - d / 16));
         const blockTile = opts.wallStyle === 'exact' && c.type === 'wall' ? c.tile : WALL_TILE;
         const cull = (lvl) => ({
           n: solidAt(x, y - 1, lvl), s: solidAt(x, y + 1, lvl),
@@ -782,8 +653,6 @@ export class Renderer {
         const column = (from, tile, sh, tileFor, to = WALL_H) => {
           for (let l = from; l < to; l++) this.block(out, x, y, l, l + 1, tileFor ? tileFor(l) : tile, sh, cull(l));
         };
-        // (in Dreamland a door stands in a wall of blocks: no wall of its own over it)
-        const doorTop = world.dream ? DOOR_H : WALL_H;
         switch (c.type) {
           case 'wall':
             if (brickLevel) bricks.walls.push({ x, z: y, shade, rise: castleRise(x, y) });
@@ -795,28 +664,12 @@ export class Renderer {
             break;
           case 'door': // closed door: a two-block door with wall above (brick: a 1x4x6 door, shut)
             if (brickLevel) { bricks.floors.push({ x, z: y, shade, studs: true }); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
-            else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)), doorTop);
+            else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)));
             break;
           case 'liquid':
-            if (world.dream) {
-              // a sandy basin under clear water (the water itself is drawn later)
-              const sandT = (world.floating === 'fountain' ? T.marble : T.sand) ?? c.tile; // (the Fountain's pool is marble)
-              if (world.floating) slab(x, y, -1);
-              this.floor(out, x, y, -1, sandT, shade);
-              const dry = (xx, yy) => { const n = cls[yy * W + xx]; return !n || n.type !== 'liquid'; };
-              if (dry(x, y - 1)) this.quad(out, [x, 0, y], [x + 1, 0, y], [x + 1, -1, y], [x, -1, y], sandT, shade * 0.75);
-              if (dry(x, y + 1)) this.quad(out, [x + 1, 0, y + 1], [x, 0, y + 1], [x, -1, y + 1], [x + 1, -1, y + 1], sandT, shade * 0.75);
-              if (dry(x - 1, y)) this.quad(out, [x, 0, y + 1], [x, 0, y], [x, -1, y], [x, -1, y + 1], sandT, shade * 0.6);
-              if (dry(x + 1, y)) this.quad(out, [x + 1, 0, y], [x + 1, 0, y + 1], [x + 1, -1, y + 1], [x + 1, -1, y], sandT, shade * 0.6);
-              water.push(x, y);
-            } else this.floor(out, x, y, -0.12, c.tile, shade);
+            this.floor(out, x, y, -0.12, c.tile, shade);
             break;
           default:
-            // Ascend's plain is grass, with a dirt path through the woods;
-            // indoors (the house, the tower) it's the dungeon's own floor
-            const sq = `${x},${y}`;
-            const indoors = world.indoors && world.indoors.has(sq);
-            if (world.floating && T.dirt != null) slab(x, y, 0);
             if (brickLevel) {
               // a studded plate in the floor's colour; a special floor (stairs, an
               // altar's square...) is a smooth plate with its tile printed on top
@@ -827,11 +680,9 @@ export class Renderer {
               // an open door swung back in its frame; a doorway (no door, or a broken one): the frame alone
               if (c.type === 'odoor') doorPiece(x, y, 'door_open', doorAlongZ(x, y, c), shade);
               else if (c.cmap === CM.ndoor) doorPiece(x, y, 'doorway', doorAlongZ(x, y, c), shade);
-            } else this.floor(out, x, y, 0, world.dream && world.paved && world.paved.has(sq) && T.marble != null ? T.marble
-              : world.dream && world.path && world.path.has(sq) && T.dirt != null ? T.dirt
-              : world.dream && !indoors && T.grassTop != null && (c.cmap === CM.room || c.cmap === CM.darkroom || c.cmap === CM.tree) ? T.grassTop : c.floorTile ?? c.tile, shade);
+            } else this.floor(out, x, y, 0, c.floorTile ?? c.tile, shade);
             if (c.decal != null && !brickLevel) this.floor(out, x, y, 0.01, c.decal, shade, 1);
-            if (c.lintel && !world.dream) column(DOOR_H, null, shade, (l) => wallLayer(l, WALL_TILE));
+            if (c.lintel) column(DOOR_H, null, shade, (l) => wallLayer(l, WALL_TILE));
             if (c.chest && T.chestSide != null) {
               // NetHack chests and boxes as Minecraft-style chest blocks
               const m = 0.0625;
@@ -857,51 +708,8 @@ export class Renderer {
     // the baseplate under the whole level, a plate below the floors
     this.brickOn = brickLevel;
     if (brickLevel) this.brick.setTerrain(bricks);
-    // placed / generated blocks: their own mesh.  In Dreamland (thousands of
-    // blocks, even light) it is only rebuilt when the blocks change.
-    const bkey = world.dream && world.blocks ? `${world.blocks.version}:${world.blocks.levelKey}:${this.atlasKey}:${T.dirt}` : null;
-    if (!bkey || bkey !== this.blockKey) {
-      this.blockKey = bkey;
-      this.buildBlocks(world, blockSolidAt, T, hx, hy);
-    }
-    // the water surfaces
-    const wout = [];
-    for (let i = 0; i < water.length; i += 2) {
-      const x = water[i], z = water[i + 1];
-      const v = (px, pz) => wout.push(px, -0.12, pz, 0, 0, 1, 2, 0);
-      v(x, z); v(x + 1, z); v(x + 1, z + 1); v(x, z); v(x + 1, z + 1); v(x, z + 1);
-    }
-    this.upload(this.water, wout);
-    // the waterfalls: sheets (u along the sheet, v the height) and still surfaces
-    const fout = [];
-    const fv = (px, py, pz, u, v, still) => fout.push(px, py, pz, u, v, 1, 3, still);
-    for (const f of world.falls || []) {
-      if (f.a) {
-        const [ax, az] = f.a, [bx, bz] = f.b, ua = ax + az, ub = bx + bz, m = f.rise ? 2 : 0;
-        fv(ax, f.top, az, ua, f.top, m); fv(bx, f.top, bz, ub, f.top, m); fv(bx, f.bottom, bz, ub, f.bottom, m);
-        fv(ax, f.top, az, ua, f.top, m); fv(bx, f.bottom, bz, ub, f.bottom, m); fv(ax, f.bottom, az, ua, f.bottom, m);
-      } else {
-        fv(f.x0, f.y, f.z0, f.x0, f.z0, 1); fv(f.x1, f.y, f.z0, f.x1, f.z0, 1); fv(f.x1, f.y, f.z1, f.x1, f.z1, 1);
-        fv(f.x0, f.y, f.z0, f.x0, f.z0, 1); fv(f.x1, f.y, f.z1, f.x1, f.z1, 1); fv(f.x0, f.y, f.z1, f.x0, f.z1, 1);
-      }
-    }
-    this.upload(this.falls, fout);
-    // Ascend: mist round the edge of the map, in curtains: wisps well inside
-    // (in front of the tree line), thickening outwards, dense beyond the edge
-    const mout = [];
-    if (world.dream) {
-      const X0 = 1, Z0 = 1, X1 = W - 1, Z1 = H - 1, Y0 = -26, Y1 = 36;
-      const mv = (px, py, pz, u, a) => mout.push(px, py, pz, u, py, 1, 4, a);
-      for (const [d, a] of [[-14, 0.07], [-9, 0.09], [-5, 0.12], [-2, 0.16], [1, 0.22], [5, 0.34], [10, 0.5], [18, 0.72]]) {
-        const x0 = X0 - d, x1 = X1 + d, z0 = Z0 - d, z1 = Z1 + d;
-        for (const [ax, az, bx, bz] of [[x0, z0, x1, z0], [x1, z0, x1, z1], [x1, z1, x0, z1], [x0, z1, x0, z0]]) {
-          const ua = ax + az, ub = bx + bz;
-          mv(ax, Y1, az, ua, a); mv(bx, Y1, bz, ub, a); mv(bx, Y0, bz, ub, a);
-          mv(ax, Y1, az, ua, a); mv(bx, Y0, bz, ub, a); mv(ax, Y0, az, ua, a);
-        }
-      }
-    }
-    this.upload(this.mist, mout);
+    // placed blocks: their own mesh
+    this.buildBlocks(world, solidAt, T, hx, hy);
   }
 
   buildBlocks(world, solidAt, T, hx, hy) {
@@ -923,8 +731,6 @@ export class Renderer {
           this.quad(out, p[0], p[1], p[2], p[3], T.ladder, 1, 1);
           this.quad(out, p[1], p[0], p[3], p[2], T.ladder, 1, 1);
           continue;
-        } else if (b.type === 'fire') {
-          continue; // drawn as a flickering sprite (main.js)
         } else if (b.type === 'roofN' || b.type === 'roofS') {
           this.wedge(out, b.x, b.y, b.z, b.type === 'roofN', T.roof, T.planks);
           continue;
@@ -942,7 +748,7 @@ export class Renderer {
           tile = top = T[['leaves', 'leaves1', 'leaves2'][v % 3]] ?? T.leaves;
         } else { const f = FACES[b.type] || ['dirt']; tile = T[f[0]] ?? T.dirt; top = T[f[1] || f[0]] ?? tile; cut = CUTOUT.has(b.type); }
         const d = Math.hypot(b.x - hx, b.z - hy);
-        const shade = world.dream ? 1 : Math.max(0.55, Math.min(1, 1.25 - d / 16));
+        const shade = Math.max(0.55, Math.min(1, 1.25 - d / 16));
         const n0 = out.length;
         this.block(out, b.x, b.z, b.y, b.y + 1, tile, shade, {
           n: solidAt(b.x, b.z - 1, b.y), s: solidAt(b.x, b.z + 1, b.y),
@@ -1126,20 +932,6 @@ export class Renderer {
     gl.disable(gl.CULL_FACE);
     gl.bindVertexArray(this.sprites.vao);
     gl.drawArrays(gl.TRIANGLES, 0, this.sprites.count);
-    if (this.water.count || this.falls.count || this.mist.count) {
-      gl.uniform1f(this.u.uTime, performance.now() / 1000);
-      gl.uniform1f(this.u.uIri, this.iridescent ? 1 : 0);
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      gl.depthMask(false);
-      for (const m of [this.mist, this.water, this.falls]) {
-        if (!m.count) continue;
-        gl.bindVertexArray(m.vao);
-        gl.drawArrays(gl.TRIANGLES, 0, m.count);
-      }
-      gl.depthMask(true);
-      gl.disable(gl.BLEND);
-    }
     if (this.lines.count) {
       gl.uniform4f(this.u.uSolid, ...(outlineColor || [0, 0, 0, 1]));
       gl.bindVertexArray(this.lines.vao);

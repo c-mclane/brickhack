@@ -3,7 +3,7 @@
 `build_tileset.py <name>` draws SLASH'EM's tiles in another style, as
 `web/assets/tilesets/<name>/tiles.png` + `tiles.json` (the same tile numbers,
 32px or bigger). Players pick one under Options > Tileset. MineHack's own
-monsters (`mods/monsters`, like the Kirby crew) always keep their own art.
+monsters (`mods/monsters`) always keep their own art.
 
 | name     | looks like                     | where its tiles come from                                    |
 |----------|--------------------------------|--------------------------------------------------------------|

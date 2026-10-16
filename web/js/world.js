@@ -1,21 +1,17 @@
 // Client-side copy of the NetHack map as reported by the window port.
 import { classify, isSolidClass, WALL_H, DOOR_H, CM } from './terrain.js';
 
-const WALK_THROUGH = new Set(['gateOpen', 'fakeWeeds', 'fakeWeedsTop']);
+const WALK_THROUGH = new Set(['gateOpen']);
 import { posAt as motionPos, sizeHeight } from './motion.js';
 import { mobAnim } from './anim.js';
 import { brickItemForTile, gameTile } from './brickitems.js';
 
 export class World {
   constructor() {
-    // SLASH'EM's map is COLNO x ROWNO (MineHack: 120 x 64, for Dreamland);
+    // SLASH'EM's map is COLNO x ROWNO (BrickHack: 120 x 64);
     // 'vis' messages carry the real size
     this.w = 120;
     this.h = 64;
-    this.dream = false; // on the Dreamland overland level
-    this.path = null; // squares of dirt path ("x,z")
-    this.paved = null; // squares of marble floor ("x,z")
-    this.decor = []; // scenery sprites (flowers)
     this.reset();
   }
 
@@ -106,34 +102,16 @@ export class World {
         if (!c) continue;
         const seen = this.visible(x, y);
         const shade = seen ? 1 : 0.5;
-        // (a square with a Minecraft tree on it shows the tree instead of its tile)
-        // (a tree square in Dreamland's woods is drawn as blocks; a shrub is a little tree tile)
-        const sq = `${x},${y}`;
-        if (cl && cl.sprite && !(this.oaks && this.oaks.has(sq)))
-          out.push({ x, z: y, tile: cl.sprite.tile, size: this.shrubs && this.shrubs.has(sq) ? 1.0 : cl.sprite.size, shade });
+        if (cl && cl.sprite) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade });
         const isHero = x === this.hero.x && y === this.hero.y;
         // the brick dungeon: everything lying here as brick models, the bottom one first, each
         // on the one below (brickworld.js stacks them), even under you or a monster
-        const pile = !this.dream ? this.piles.get(y * this.w + x) || (c.k === 'o' ? [c.t] : null) : null;
+        const pile = this.piles.get(y * this.w + x) || (c.k === 'o' ? [c.t] : null);
         if (pile) {
           let level = 0;
           for (let i = pile.length - 1; i >= 0; i--) {
             const brick = brickItemForTile(pile[i]);
             if (brick) this.brickDrops.push({ x, z: y, url: brick.url, level: level++, upright: !!brick.upright });
-          }
-        }
-        if (cl && cl.type === 'liquid' && this.dream) {
-          // swimmers sink to their middle in the clear water
-          if (isHero || c.k === 'o') continue;
-          if (c.k === 'm' || c.k === 'p') {
-            const mob = motion.mobAt(x, y);
-            if (mob && !mob.fly) {
-              const [mx, mz] = motionPos(mob, now);
-              const an = mobAnim(mob, now, this.camYaw || 0);
-              out.push({ x: mx, z: mz, tile: c.t, size: sizeHeight(mob.size), lift: -0.55 + bob(x, y), shade, mon: true,
-                tilt: an.tilt, sx: an.sx, sy: an.sy, flip: an.flip });
-              continue;
-            }
           }
         }
         switch (c.k) {
@@ -146,7 +124,7 @@ export class World {
               let lift = mob.fly ? 0.5 + bob(x, y) * 2 : 0, sh = shade;
               const off = fx && fx.mobOffset(mob, now); // hit / dodge / lunge reaction
               if (off) { mx += off.dx; mz += off.dz; lift += off.dy; if (off.flash) sh = 2.4; }
-              const an = mobAnim(mob, now, this.camYaw || 0); // waddle, hop, flap...
+              const an = mobAnim(mob, now, this.camYaw || 0); // waddle or flap
               lift += this.standHeight(mob.tx, mob.tz); // up on a tower or a pillar
               out.push({ x: mx, z: mz, tile: c.t, size: h, lift: lift + an.dy, shade: sh, mon: true,
                 tilt: an.tilt, sx: an.sx, sy: an.sy, flip: an.flip, mob });
@@ -169,7 +147,6 @@ export class World {
             break;
         }
       }
-    for (const d of this.decor) out.push(d);
     // (brick levels: monsters and items at the minifig's scale)
     const k = this.spriteScale || 1;
     if (k !== 1) for (const s of out) s.size *= k;
@@ -189,11 +166,10 @@ export class World {
   // pick: for aiming (an open gate can be clicked; a fence is only its own block)
   solidVoxel(x, y, z, roof = false, pick = false) {
     if (y < 0) {
-      if (this.dream && this.isSky(x, z)) return false; // open sky round Dreamland's floating platforms: nothing below
-      return !(y === -1 && this.dream && this.isWater(x, z)); // bedrock under everything (but Dreamland's lakes are a block deep)
+      return true; // bedrock under everything
     }
     const b = this.blocks && this.blocks.get(x, y, z);
-    if (b) return b !== 'ladder' && (pick || !WALK_THROUGH.has(b)); // ladders are climbed, open gates and the secret path's weeds walked through
+    if (b) return b !== 'ladder' && (pick || !WALK_THROUGH.has(b)); // ladders are climbed, open gates walked through
     if (!pick && y === 1 && this.blocks) {
       const below = this.blocks.get(x, 0, z);
       if (below === 'fence' || below === 'gate') return true; // fences are too tall to jump
@@ -208,15 +184,9 @@ export class World {
   // a square of the haze over the unexplored (brick dungeon levels; render.js
   // draws it there): nothing known, or rock nobody has seen
   isHaze(x, z) {
-    if (this.dream || x < 0 || z < 0 || x >= this.w || z >= this.h) return false;
+    if (x < 0 || z < 0 || x >= this.w || z >= this.h) return false;
     const c = this.classAt(x, z);
     return !c || (c.type === 'none' && c.cmap !== CM.air) || (c.type === 'rock' && !c.known);
-  }
-
-  // open air (Dreamland's sky levels): no ground at all
-  isSky(x, z) {
-    const c = this.classAt(x, z);
-    return !!c && c.type === 'none' && c.cmap === CM.air;
   }
 
   isWater(x, z) {
@@ -249,7 +219,7 @@ export class World {
   groundAt(x, z, fromY, roof = false) {
     for (let y = Math.floor(fromY + 0.05) - 1; y >= -2; y--)
       if (this.solidVoxel(x, y, z, roof) || this.isLadder(x, y, z)) return y + 1;
-    return this.dream && this.isSky(x, z) ? -1000 : 0; // over open sky: nothing to land on
+    return 0;
   }
 
   // where the hero ends up stepping from height `curY` into column (x, z):
@@ -258,7 +228,7 @@ export class World {
   landingAt(x, z, curY, roof = false) {
     const lt = this.ladderTop(x, z);
     if (lt && curY < lt - 0.05 && !this.solidVoxel(x, lt, z, roof) && !this.solidVoxel(x, lt + 1, z, roof)) return lt;
-    for (let h = Math.floor(curY + 1.25); h >= (this.dream ? -1 : 0); h--) {
+    for (let h = Math.floor(curY + 1.25); h >= 0; h--) {
       if (!this.solidVoxel(x, h - 1, z, roof) && !this.isLadder(x, h - 1, z)) continue;
       if (this.solidVoxel(x, h, z, roof) || this.solidVoxel(x, h + 1, z, roof)) return null; // wall in the way
       return h;

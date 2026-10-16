@@ -22,7 +22,6 @@ migo queen
 assassin bug
 killer beetle
 acid blob
-Gordo
 quivering blob
 gelatinous cube
 jiggling blob
@@ -36,7 +35,6 @@ cockatrice
 pyrolisk
 parrot
 jackal
-Grizzo
 fox
 coyote
 werejackal
@@ -61,9 +59,7 @@ mist wolf
 hell hound
 Cerberus
 gas spore
-Bomber
 floating eye
-Waddle Doo
 glowing eye
 freezing sphere
 flaming sphere
@@ -89,23 +85,19 @@ gargoyle
 winged gargoyle
 statue gargoyle
 hobbit
-Parasol Waddle Dee
 dwarf
-Sir Kibble
 dwarf thief
 bugbear
 dwarf lord
 dwarf king
 duergar
 deep one
-Kirby
 mind flayer
 master mind flayer
 deeper one
 deepest one
 manes
 homunculus
-Noddy
 dretch
 imp
 lemure
@@ -122,7 +114,6 @@ yellow jelly
 orange jelly
 rancid jelly
 kobold
-Poppy Bros. Jr.
 large kobold
 kobold lord
 kobold shaman
@@ -186,7 +177,6 @@ rabid rabbit
 pack rat
 wererat
 rock mole
-Kabu
 woodchuck
 hellrat
 the Rat King
@@ -247,7 +237,6 @@ wallaroo
 kangaroo
 couatl
 Aleax
-cherub
 movanic deva
 monadic deva
 astral deva
@@ -257,7 +246,6 @@ Archon
 Planetar
 Solar
 bat
-Bronto Burt
 giant bat
 rhumbat
 athol
@@ -302,7 +290,6 @@ fire elemental
 earth elemental
 water elemental
 lichen
-Lovely
 brown mold
 yellow mold
 green mold
@@ -363,7 +350,6 @@ black naga
 golden naga
 guardian naga
 ogre
-Chef Kawasaki
 ogre lord
 ogre mage
 ogre king
@@ -410,7 +396,7 @@ wraith
 Nazgul
 xorn
 monkey
-Waddle Dee
+template monster
 ape
 owlbear
 yeti
@@ -539,7 +525,6 @@ giant crab
 electric eel
 kraken
 newt
-Broom Hatter
 gecko
 iguana
 baby crocodile

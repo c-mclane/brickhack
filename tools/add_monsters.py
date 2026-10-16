@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Add the custom monsters in mods/monsters/*.json to the SLASH'EM source.
 
-Each file:  {"name": "Waddle Dee", "base": "monkey", "tile": [16 x 16 chars]}
+Each file:  {"name": "template monster", "base": "monkey", "tile": [16 x 16 chars]}
   optional:  "replace": [["old text", "new text"], ...]  edits to the copied
              monster entry (level, attacks, generation flags, ...);
              "nogen": true  never randomly generated (only where a special
-             level places it, e.g. the Dreamland enemies);
+             level places it, e.g. the template);
              no "tile": the base monster's tile is reused
   - src/monst.c:                  a copy of the base monster's entry, renamed,
                                   inserted right after the base monster
@@ -98,7 +98,7 @@ write("src/monst.c", monst)
 write("win/share/monsters.txt", tiles)
 
 pl = read("include/patchlevel.h")
-# 50 = MineHack's bigger map and Dreamland option (also save-format changes)
+# 50 = the bigger map and Ascend's option (also save-format changes)
 pl = re.sub(r"#define EDITLEVEL\s+\d+", f"#define EDITLEVEL\t{50 + len(defs)}", pl)
 write("include/patchlevel.h", pl)
 print(f"custom monsters: {', '.join(d['name'] for d in defs) or 'none'} (EDITLEVEL {50 + len(defs)})")

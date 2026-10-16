@@ -53,8 +53,7 @@ export function nameTagEntries(motion, world, now, hero) {
   for (const m of motion.mobs.values()) {
     if (!m.name || !world.visible(m.tx, m.tz)) continue;
     const [mx, mz] = posAt(m, now);
-    const swim = world.dream && !m.fly && world.isWater(m.tx, m.tz);
-    const lift = (m.fly ? 0.5 : swim ? -0.55 : 0) + world.standHeight(m.tx, m.tz); // (up on a tower or a pillar)
+    const lift = (m.fly ? 0.5 : 0) + world.standHeight(m.tx, m.tz); // (up on a tower or a pillar)
     out.push({
       id: 'm' + m.id, x: mx + 0.5, y: lift + sizeHeight(m.size) + 0.3, z: mz + 0.5,
       text: m.peace === 1 ? '♥ ' + m.name : m.name,

@@ -8,7 +8,6 @@
     "tiles": "python3 tools/tiles2png.py vendor/SlashEM web/assets/slashem/tiles.png web/assets/slashem/tiles.json && python3 tools/monster_list.py web/assets/slashem/tiles.json art/monsters/MONSTERS.txt && python3 tools/roles2json.py vendor/SlashEM web/assets/slashem/roles.json",
     "start": "node server/server.js",
     "monster": "python3 tools/new_monster.py",
-    "peanut-sprites": "sh tools/get_peanut_sprites.sh",
     "bricks": "python3 tools/build_roster.py && python3 tools/build_items.py"
   }
 }

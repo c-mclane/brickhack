@@ -6,39 +6,21 @@ export const BLOCKS = {
   brick: { name: 'Bricks', tex: 'brick', hard: true },
   dirt: { name: 'Dirt', tex: 'dirt', hard: false },
   cobble: { name: 'Cobblestone', tex: 'cobble', hard: true },
-  // Dreamland blocks
   grass: { name: 'Grass Block', tex: 'grassSide', hard: false },
-  sand: { name: 'Peanut Sand', tex: 'sand', hard: false },
-  star: { name: 'Star Block', tex: 'starBlock', hard: false },
-  bomb: { name: 'Bomb Block', tex: 'bombBlock', hard: false },
   log: { name: 'Log', tex: 'logSide', hard: false },
   leaves: { name: 'Leaves', tex: 'leaves', hard: false },
   stone: { name: 'Stone Bricks', tex: 'stoneBricks', hard: true },
   planks: { name: 'Planks', tex: 'planks', hard: false },
   window: { name: 'Glass', tex: 'windowGlass', hard: false },
   weeds: { name: 'Tall Grass', tex: 'weeds', hard: false },
-  // Dreamland level 5
-  scales: { name: 'Dream Tiles', tex: 'scales', hard: true },
-  // Dreamland level 3
-  peach: { name: 'Peach Block', tex: 'peach', hard: false },
-  peachTop: { name: 'Peach Cap', tex: 'peachTop', hard: false },
-  checker: { name: 'Checker Block', tex: 'checker', hard: true },
-  skyPlat: { name: 'Sky Block', tex: 'skyPlat', hard: false },
-  pinkBrick: { name: 'Pink Bricks', tex: 'pinkBrick', hard: true },
-  // Dreamland level 4
-  marble: { name: 'Marble', tex: 'marble', hard: true },
-  quartz: { name: 'Quartz Pillar', tex: 'quartz', hard: true },
-  glass: { name: 'Stained Glass', tex: 'glass', hard: false },
-  hedge: { name: 'Hedge', tex: 'hedge', hard: false },
 };
-// scenery blocks that are another block when mined: fallen logs, the tops of
-// the weeds, the secret path's weeds
-const MINES_AS = { logX: 'log', logZ: 'log', weedsTop: 'weeds', fakeWeeds: 'weeds', fakeWeedsTop: 'weeds' };
+// blocks that are another block when mined: lying logs, the tops of the weeds
+const MINES_AS = { logX: 'log', logZ: 'log', weedsTop: 'weeds' };
 export const minedAs = (type) => MINES_AS[type] || type;
 export const START_BLOCKS = {}; // nothing to start with: every block you build with is one you mined
 export const BUILD_LIMIT = 16;
 const MONSTER_BLOCKING = 2; // blocks at heights 0..1 stop monsters walking through
-const PASSABLE = new Set(['gateOpen', 'fakeWeeds', 'fakeWeedsTop']); // ...except these
+const PASSABLE = new Set(['gateOpen']); // ...except these
 
 // how long a block takes to break, in ms (Minecraft-ish: dirt is quick, stone needs a pick)
 export function breakTime(type, hasPick) {
@@ -60,8 +42,8 @@ export class BlockWorld {
     this.ident = null;
     this.saveTimer = 0;
     this.version = 0; // bumped on every change (the renderer caches block meshes)
-    // generated levels (Dreamland): the scenery is rebuilt from its layout each
-    // time; only the player's changes to it are saved, as a diff ('-' = removed)
+    // generated levels: the scenery is rebuilt from its layout each time; only
+    // the player's changes to it are saved, as a diff ('-' = removed)
     this.based = {}; // levelKey -> true for levels saved as a diff
     this.base = null; // the generated blocks of the current level, once known
   }

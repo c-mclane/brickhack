@@ -37,8 +37,8 @@ python3 "$ROOT/tools/add_monsters.py" "$SE" "$ROOT/mods/monsters"
 # monsters shift every tile after them)
 python3 "$ROOT/tools/tiles2png.py" "$SE" "$ROOT/web/assets/slashem/tiles.png" "$ROOT/web/assets/slashem/tiles.json"
 python3 "$ROOT/tools/monster_list.py" "$ROOT/web/assets/slashem/tiles.json" "$ROOT/art/monsters/MONSTERS.txt"
-# the Dreamland overland level (and the client's layout for it)
-python3 "$ROOT/tools/dreamland_gen.py" "$SE/dat/dreamland.des" "$ROOT/web/assets/dreamland.json" "$SE/include/dreamlnd.h"
+# Ascend's level: a blank baseplate
+python3 "$ROOT/tools/dreamland_gen.py" "$SE/dat/dreamland.des" "$SE/include/dreamlnd.h"
 
 # 2. register the port in src/windows.c and util/makedefs.c (idempotent)
 python3 - "$SE" <<'EOF'
@@ -91,59 +91,21 @@ s = open(p).read()
 if 'WEB_GRAPHICS' not in s:
     s = re.sub(r'^#\s*include <curses.h>', '#ifndef WEB_GRAPHICS\n#include <curses.h>\n#endif', s, count=1, flags=re.M)
     open(p, 'w').write(s)
-# Dreamland's level file is part of the game data (dat/dreamland.des is generated)
+# Ascend's level file is part of the game data (dat/dreamland.des is generated)
 p = se + '/dat/Makefile'
 s = open(p).read()
 if 'dreamland.des' not in s:
     s = s.replace('\ttower.des yendor.des sokoban.des\n',
                   '\ttower.des yendor.des sokoban.des dreamland.des\n\t../util/lev_comp $(srcdir)/dreamland.des\n', 1)
-    open(p, 'w').write(s)
-if 'dreamland2.des' not in s:
-    s = s.replace('\t../util/lev_comp $(srcdir)/dreamland.des\n',
-                  '\t../util/lev_comp $(srcdir)/dreamland.des\n\t../util/lev_comp $(srcdir)/dreamland2.des\n', 1)
-    s = s.replace('sokoban.des dreamland.des\n', 'sokoban.des dreamland.des dreamland2.des\n', 1)
-    open(p, 'w').write(s)
-if 'dreamland3.des' not in s:
-    s = s.replace('\t../util/lev_comp $(srcdir)/dreamland2.des\n',
-                  '\t../util/lev_comp $(srcdir)/dreamland2.des\n\t../util/lev_comp $(srcdir)/dreamland3.des\n', 1)
-    s = s.replace('dreamland.des dreamland2.des\n', 'dreamland.des dreamland2.des dreamland3.des\n', 1)
-    open(p, 'w').write(s)
-if 'dreamland4.des' not in s:
-    s = s.replace('\t../util/lev_comp $(srcdir)/dreamland3.des\n',
-                  '\t../util/lev_comp $(srcdir)/dreamland3.des\n\t../util/lev_comp $(srcdir)/dreamland4.des\n', 1)
-    s = s.replace('dreamland2.des dreamland3.des\n', 'dreamland2.des dreamland3.des dreamland4.des\n', 1)
-    open(p, 'w').write(s)
-if 'dreamland5.des' not in s:
-    s = s.replace('\t../util/lev_comp $(srcdir)/dreamland4.des\n',
-                  '\t../util/lev_comp $(srcdir)/dreamland4.des\n\t../util/lev_comp $(srcdir)/dreamland5.des\n', 1)
-    s = s.replace('dreamland3.des dreamland4.des\n', 'dreamland3.des dreamland4.des dreamland5.des\n', 1)
-    open(p, 'w').write(s)
-if 'dreamland6.des' not in s:
-    s = s.replace('\t../util/lev_comp $(srcdir)/dreamland5.des\n',
-                  '\t../util/lev_comp $(srcdir)/dreamland5.des\n\t../util/lev_comp $(srcdir)/dreamland6.des\n', 1)
-    s = s.replace('dreamland4.des dreamland5.des\n', 'dreamland4.des dreamland5.des dreamland6.des\n', 1)
-    open(p, 'w').write(s)
-if 'dreamland7.des' not in s:
-    s = s.replace('\t../util/lev_comp $(srcdir)/dreamland6.des\n',
-                  '\t../util/lev_comp $(srcdir)/dreamland6.des\n\t../util/lev_comp $(srcdir)/dreamland7.des\n', 1)
-    s = s.replace('dreamland5.des dreamland6.des\n', 'dreamland5.des dreamland6.des dreamland7.des\n', 1)
-    open(p, 'w').write(s)
+# (a build from before Ascend was one level also listed levels 2 to 7: drop them)
+s = re.sub(r'\t\.\./util/lev_comp \$\(srcdir\)/dreamland[2-9]\.des\n', '', s)
+s = re.sub(r' dreamland[2-9]\.des', '', s)
+open(p, 'w').write(s)
 p = se + '/Makefile'
 s = open(p).read()
 if 'dreamlnd.lev' not in s:
     s = s.replace('SPEC_LEVS = asmodeus.lev', 'SPEC_LEVS = dreamlnd.lev asmodeus.lev', 1)
-if 'dreamln2.lev' not in s:
-    s = s.replace('SPEC_LEVS = dreamlnd.lev', 'SPEC_LEVS = dreamlnd.lev dreamln2.lev', 1)
-if 'dreamln3.lev' not in s:
-    s = s.replace('SPEC_LEVS = dreamlnd.lev dreamln2.lev', 'SPEC_LEVS = dreamlnd.lev dreamln2.lev dreamln3.lev', 1)
-if 'dreamln4.lev' not in s:
-    s = s.replace('dreamln2.lev dreamln3.lev', 'dreamln2.lev dreamln3.lev dreamln4.lev', 1)
-if 'dreamln5.lev' not in s:
-    s = s.replace('dreamln3.lev dreamln4.lev', 'dreamln3.lev dreamln4.lev dreamln5.lev', 1)
-if 'dreamln6.lev' not in s:
-    s = s.replace('dreamln4.lev dreamln5.lev', 'dreamln4.lev dreamln5.lev dreamln6.lev', 1)
-if 'dreamln7.lev' not in s:
-    s = s.replace('dreamln5.lev dreamln6.lev', 'dreamln5.lev dreamln6.lev dreamln7.lev', 1)
+s = re.sub(r' dreamln[2-9]\.lev', '', s)
 open(p, 'w').write(s)
 p = se + '/src/Makefile'
 s = open(p).read()
@@ -171,4 +133,8 @@ restore_player_data "$OUT/slashemdir" "$KEEP"
 # a change never mix with the new levels; scores (record, logfile) stay
 rm -f "$OUT"/slashemdir/save/* "$ROOT"/worlds/*/*.json
 echo "saved games wiped"
+# the client's item looks go by the engine's artifact numbers (an artifact is
+# sent as ART_TILE + its number: port/winweb.c), which follow the order the
+# hooks add them in: list them again from this build's artifact list
+python3 "$ROOT/tools/build_items.py" | tail -2
 echo "built: $(ls "$OUT"/*/slashem 2>/dev/null || find "$OUT" -name slashem -type f)"

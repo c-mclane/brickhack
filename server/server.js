@@ -13,9 +13,9 @@ const ROOT = path.resolve(__dirname, '..');
 const WEB = path.join(ROOT, 'web');
 const MUSIC = path.join(ROOT, 'music'); // local only (git-ignored): tracker modules to shuffle-play
 const MUSIC_EXT = /\.(xm|mod|s3m|it|mo3|mptm|669|med|okt|stm|ult|umx)$/i;
-// local custom art (see art/README.md): art/sky, art/skins, art/monsters
+// local custom art (see art/README.md): art/skins, art/monsters, art/blocks
 const ART = path.join(ROOT, 'art');
-const ART_DIRS = ['sky', 'skins', 'monsters', 'dreamland', 'blocks'];
+const ART_DIRS = ['skins', 'monsters', 'blocks'];
 const IMAGE_EXT = /\.(png|gif|webp)$/i;
 const WORLDS = path.join(ROOT, 'worlds'); // local only: placed blocks + block inventory per character
 // the game engine, built by tools/build-slashem.sh
@@ -78,7 +78,7 @@ function startGame(sid, opts) {
     if (v && v !== 'random') o.push(`${k}:${v}`);
   }
   // (the intro story: every new game opens with it, NetHack's legacy option, on by default)
-  if (opts.dreamland) o.push('dreamland'); // start on the Dreamland overland level
+  if (opts.dreamland) o.push('dreamland'); // Ascend: start on its blank baseplate
   const name = cleanName(opts.name);
   // a brand-new character (no save to restore) starts a fresh block world
   // ...and starts with whatever more its figure's design gives it ("holy wafer:4": port/winweb.c web_kit_item)

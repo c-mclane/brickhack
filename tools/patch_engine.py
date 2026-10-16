@@ -88,21 +88,20 @@ edit("src/mkmaze.c", [("	xmin = 3;\n	ymin = 1;\n	xmax = 78;\n	ymax = 20;",
 for rel in ("util/lev_comp.l", "sys/share/lev_lex.c"):
     edit(rel, [("static char map[4096];", "static char map[16384]; /* WEB_HOOK_MAPSIZE */")], "WEB_HOOK_MAPSIZE")
 
-# ---- MineHack Dreamland: an overland start level, its own story, swimming
+# ---- Ascend: its own start level (a blank baseplate) and its own story
 edit("include/flag.h", [("	boolean  legacy;	/* print game entry \"story\" */",
-                         "	boolean  legacy;	/* print game entry \"story\" */\n	boolean  dreamland;	/* MineHack: start in Dreamland; WEB_HOOK_DREAM */")],
+                         "	boolean  legacy;	/* print game entry \"story\" */\n	boolean  dreamland;	/* BrickHack: start in Ascend's level; WEB_HOOK_DREAM */")],
      "WEB_HOOK_DREAM")
 edit("src/options.c", [('	{"legacy", &flags.legacy, TRUE, DISP_IN_GAME},',
                         '	{"legacy", &flags.legacy, TRUE, DISP_IN_GAME},\n	{"dreamland", &flags.dreamland, FALSE, SET_IN_FILE}, /* WEB_HOOK_DREAM */')],
      "WEB_HOOK_DREAM")
-# the first level of the Dungeons of Doom is the Dreamland overland
-# (mklev.c holds only Dreamland's hook: start from SLASH'EM's own copy each
+# the first level of the Dungeons of Doom is Ascend's level
+# (mklev.c holds only Ascend's hook: start from SLASH'EM's own copy each
 # build, so the hook can change)
 import subprocess as _sp
 _sp.run(["git", "-C", src, "checkout", "--", "src/mklev.c"], check=True)
-# Dreamland's levels (Ascend): level n of the first dungeon is "dreamln<n>"
-# (the first, "dreamlnd"), up to DREAM_LEVELS (dreamlnd.h, from
-# tools/dreamland_gen.py)
+# Ascend's level: level 1 of the first dungeon is "dreamlnd", up to
+# DREAM_LEVELS (1: dreamlnd.h, from tools/dreamland_gen.py)
 edit("src/mklev.c", [("	    register s_level *slev = Is_special(&u.uz);\n",
                       "	    register s_level *slev = Is_special(&u.uz);\n\n"
                       "	    if (flags.dreamland && u.uz.dnum == 0 && u.uz.dlevel <= DREAM_LEVELS) { /* WEB_HOOK_DREAM */\n"
@@ -301,9 +300,9 @@ edit("src/cmd.c", [("struct ext_func_tab extcmdlist[] = {\n",
                     "	{\"alms\", \"give alms at an altar of your god\", web_alms, FALSE},\n"
                     "	{\"confess\", \"confess your sins at an altar of your god\", web_confess, FALSE},\n")],
      "WEB_HOOK_RITES")
-edit("src/pray.c", [("    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n",
-                     "    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n"
-                     "    if (!orac) { extern int FDECL(web_offer, (struct obj *)); if (web_offer(otmp)) return 1; } /* WEB_HOOK_RITES */\n")],
+edit("src/pray.c", [("    if (orac) return (offer_oracle(orac, otmp));\n",
+                     "    if (!orac) { extern int FDECL(web_offer, (struct obj *)); if (web_offer(otmp)) return 1; } /* WEB_HOOK_RITES */\n"
+                     "    if (orac) return (offer_oracle(orac, otmp));\n")],
      "WEB_HOOK_RITES")
 # BrickHack: a chalice is fragile: dropped anywhere but on an altar (where it's
 # set down) it shatters, as thrown; the hero keeps count of those lost (saved
@@ -414,78 +413,20 @@ edit("src/hack.c", [("			wt += otmp->owt;\n		otmp = otmp->nobj;\n",
                      "			wt += 5000;	/* (its burden: none but a hobbit can move under it) */\n"
                      "		otmp = otmp->nobj;\n")],
      "WEB_HOOK_ONERING")
-# Dreamland heroes are blessed with swimming (the lakes are for paddling)
-edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
-                       "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"
-                       "    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */")],
-     "WEB_HOOK_DREAM")
-# Dreamland's lakes are clear and friendly: swimmers stay on the surface
-# (NetHack's swimming is underwater: the map shrinks to the squares around
-# you and your scrolls and potions get soaked)
-edit("src/trap.c", [("	/* happily wading in the same contiguous pool */",
-                     "	if (flags.dreamland && Swimming && u.uz.dnum == 0) { /* WEB_HOOK_SWIM */\n"
-                     "	    if (!is_pool(u.ux - u.dx, u.uy - u.dy))\n"
-                     "		You(\"splash into the clear water and paddle along.\");\n"
-                     "	    u.uinwater = 0;\n"
-                     "	    return(FALSE);\n"
-                     "	}\n\n"
-                     "	/* happily wading in the same contiguous pool */")],
-     "WEB_HOOK_SWIM")
-# Dreamland's creatures stay in Dreamland: leaving it, only pets come along
-edit("src/dog.c", [("	    if (pets_only && !mtmp->mtame) continue;",
-                    "	    if (pets_only && !mtmp->mtame) continue;\n"
-                    "	    if (flags.dreamland && u.uz.dnum == 0 && u.uz.dlevel == 1 && !mtmp->mtame) continue; /* WEB_HOOK_DREAM */")],
-     "WEB_HOOK_DREAM")
 # ...and no zapping wands at a hero who's out of reach up high
 edit("src/muse.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int FDECL(web_mon_cant_reach, (struct monst *)); /* WEB_HOOK_REACH */\n"),
                     ("	m.offensive = (struct obj *)0;\n	m.has_offense = 0;\n",
                      "	m.offensive = (struct obj *)0;\n	m.has_offense = 0;\n"
                      "	if (web_mon_cant_reach(mtmp)) return FALSE; /* WEB_HOOK_REACH */\n")],
      "WEB_HOOK_REACH")
-# Ascend: the stair in the house you start in goes down and out of the game
-edit("src/do.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int NDECL(web_dream_exit_here); /* WEB_HOOK_EXIT */\n"),
-                  ("	if (Role_if(PM_GNOME) && on_level(&mineend_level,&u.uz)) {",
-                   "	if (web_dream_exit_here()) { /* WEB_HOOK_EXIT */\n"
-                   "		if (yn(\"Beware, there will be no return! Still go down?\") != 'y')\n"
-                   "			return(0);\n"
-                   "		if (!next_to_u()) {\n"
-                   "			You(\"are held back by your pet!\");\n"
-                   "			return(0);\n"
-                   "		}\n"
-                   "		prev_level(TRUE); /* level 0: you leave, as up the Dungeons' first stairs */\n"
-                   "		return(1);\n"
-                   "	}\n"
-                   "	if (Role_if(PM_GNOME) && on_level(&mineend_level,&u.uz)) {"),
-                  ("doup()\n{\n",
-                   "doup()\n{\n"
-                   "	if (web_dream_exit_here()) { /* WEB_HOOK_EXIT: that stair only goes down */\n"
-                   "		You_cant(\"go up here.\");\n"
-                   "		return(0);\n"
-                   "	}\n")],
-     "WEB_HOOK_EXIT")
-# Dreamland's second level (Ascend: you come up through the portal on the
-# first level's tower)
-# Dreamland: food heals you, as in Kirby (a melon heals you completely, like a Maxim Tomato)
-edit("src/eat.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern void FDECL(web_dream_food, (struct obj *)); /* WEB_HOOK_FOOD */\n"),
-                   ("register struct obj *otmp;\n{\n	switch(otmp->otyp) {\n	    case SPRIG_OF_WOLFSBANE:",
-                    "register struct obj *otmp;\n{\n	web_dream_food(otmp); /* WEB_HOOK_FOOD */\n"
-                    "	switch(otmp->otyp) {\n	    case SPRIG_OF_WOLFSBANE:")],
-     "WEB_HOOK_FOOD")
-# a monster standing on top of a stack of blocks (put there by a Dreamland
-# level) stays up there: it only moves along the tops
+# a monster standing on top of a stack of blocks stays up there: it only
+# moves along the tops
 edit("src/mon.c", [("extern int FDECL(web_cell_blocked, (int, int)); /* WEB_HOOK */",
                     "extern int FDECL(web_cell_blocked, (int, int)); /* WEB_HOOK */\n"
                     "extern int FDECL(web_mon_step_blocked, (int, int, int, int)); /* WEB_HOOK_UP */"),
                    ("            if (web_cell_blocked(nx, ny)) /* WEB_HOOK */",
                     "            if (web_mon_step_blocked(x, y, nx, ny)) /* WEB_HOOK WEB_HOOK_UP */")],
      "WEB_HOOK_UP")
-# Dreamland's palace: offering anything on its altar opens a portal in
-# one of the hedge mazes (whatever the gods make of the offering)
-edit("src/pray.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern void NDECL(web_dream_sacrifice); /* WEB_HOOK_ALTAR */\n"),
-                    ("    if (orac) return (offer_oracle(orac, otmp));",
-                     "    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n"
-                     "    if (orac) return (offer_oracle(orac, otmp));")],
-     "WEB_HOOK_ALTAR")
 # dev cheese: the "Blazing Cheese" armour sets monsters that hit you in melee on fire
 edit("src/mhitu.c", [("#include \"hack.h\"\n", "#include \"hack.h\"\nextern int FDECL(web_cheese_burn, (struct monst *)); /* WEB_HOOK_CHEESE */\n"),
                      ("	    if(sum[i] == 2) return 1;		/* attacker dead */",
@@ -577,26 +518,6 @@ edit("src/attrib.c", [
      "	case PM_QUANTUM_MECHANIC: rabil = qua_abil;	break; /* WEB_HOOK_RACES */\n"
      "	case PM_ANGEL:		rabil = ang_abil;	break;"),
 ], "WEB_HOOK_RACES")
-# Dreamland's levels have no random variants, even where the dungeon happens
-# to put one of SLASH'EM's special levels (makemaz would look for
-# "dreamln5-2.lev", fail and make a maze instead)
-edit("src/mkmaze.c", [
-    ("	    if(sp && sp->rndlevs) Sprintf(protofile, \"%s-%d\", s,",
-     "	    if(sp && sp->rndlevs && strncmp(s, \"dreamln\", 7)) /* WEB_HOOK_DREAMVARIANT */\n"
-     "			 Sprintf(protofile, \"%s-%d\", s,"),
-], "WEB_HOOK_DREAMVARIANT")
-# the Fountain of Dreams' trial runs once a turn (winweb.c web_dream_waves)
-edit("src/allmain.c", [
-    ("		    monstermoves++;\n		    moves++;\n",
-     "		    monstermoves++;\n		    moves++;\n"
-     "		    { extern void NDECL(web_dream_waves); web_dream_waves(); } /* WEB_HOOK_WAVES */\n"),
-], "WEB_HOOK_WAVES")
-# the Star Rod (the Fountain of Dreams' prize): its beam of stars (winweb.c web_star_rod)
-edit("src/zap.c", [
-    ("	if (otyp >= SPE_MAGIC_MISSILE && otyp <= SPE_ACID_STREAM)\n		skilldmg = spell_damage_bonus(obj->otyp);",
-     "	{ extern int FDECL(web_star_rod, (struct obj *)); if (web_star_rod(obj)) return; } /* WEB_HOOK_STARROD */\n"
-     "	if (otyp >= SPE_MAGIC_MISSILE && otyp <= SPE_ACID_STREAM)\n		skilldmg = spell_damage_bonus(obj->otyp);"),
-], "WEB_HOOK_STARROD")
 # ---- King Skelly III and the Realm Daggers. The king of the underworld
 # climbed out of Gehennom with the three Realm Daggers and took the Castle,
 # the fortress over hell's gate: he sits on its throne, his undead holding

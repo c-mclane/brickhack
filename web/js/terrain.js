@@ -4,14 +4,9 @@
 
 // brick dungeon levels: rooms and corridors are platforms of 4x4-stud squares,
 // walls six bricks (1.8 blocks: 2 for walking and the camera) and doors real
-// 1x4x6 brick doors, as tall as the wall.  Ascend's block-built levels keep
-// 4-block walls and 2-block doors.
-export let WALL_H = 2; // wall height in blocks (open air above for building)
-export let DOOR_H = 2; // doors and doorways
-export function setBlockHeights(dream) {
-  WALL_H = dream ? 4 : 2;
-  DOOR_H = 2;
-}
+// 1x4x6 brick doors, as tall as the wall.
+export const WALL_H = 2; // wall height in blocks (open air above for building)
+export const DOOR_H = 2; // doors and doorways
 
 export const CM = {
   stone: 0, vwall: 1, hwall: 2, tlcorn: 3, trcorn: 4, blcorn: 5, brcorn: 6, crwall: 7,
@@ -106,7 +101,7 @@ function classifyCell(world, x, y) {
     return { type: 'odoor', tile, floorTile: cmapTile(CM.ndoor), seen, cmap: cm, lintel: true, decal };
   if (cm === CM.ndoor) return { type: 'floor', tile, seen, cmap: cm, lintel: true, decal };
   if (isLiquid(cm)) return { type: 'liquid', tile, seen, cmap: cm };
-  if (cm === CM.air) return { type: 'none', cmap: cm }; // (open sky: Dreamland's floating platforms)
+  if (cm === CM.air) return { type: 'none', cmap: cm }; // (open air)
   if (cm === CM.tree) return { type: 'floor', tile: roomTile(), seen, cmap: cm, sprite: { tile, size: 1.6 } };
   if (cm === CM.bars) return { type: 'floor', tile: roomTile(), seen, cmap: cm, sprite: { tile, size: 1.4 } };
   if (cm === CM.cloud) return { type: 'floor', tile: roomTile(), seen, cmap: cm, sprite: { tile, size: 1 } };

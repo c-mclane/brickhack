@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create a MineHack custom monster from a sprite.
 
-  python3 tools/new_monster.py "Waddle Dee" monkey path/to/sprite.png
+  python3 tools/new_monster.py "Name" monkey path/to/sprite.png
 
   - mods/monsters/<name>.json   the definition: copies every stat, attack and
                                 behaviour of the base SLASH'EM monster, plus a
