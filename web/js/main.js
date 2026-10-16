@@ -891,12 +891,12 @@ const CONTROLS = [
   ['Left click', 'Attack / fight in the direction you look'], ['Right click', 'Use held item · open/close doors · travel to clicked spot'],
   ['Middle click', 'Look at what is under the crosshair'], ['1-9 / wheel', 'Select hotbar slot'], ['E', 'Inventory'],
   ['Q / Shift+Q', 'Drop one / drop stack of held item'], ['Space', 'Use stairs (on stairs) · otherwise search'],
-  ['G', 'Pick up'], ['R', 'Search / rest'], ['F', 'Fire quiver'], ['Z', 'Cast a spell'], ['X', 'Swap weapons'],
+  ['G or ,', 'Pick up'], ['R', 'Search / rest'], ['F', 'Fire quiver'], ['Z', 'Cast a spell'], ['X', 'Swap weapons'],
   ['K', 'Kick'], ['O', 'Open'], ['L', "Look here (:)"], ['C', 'Character attributes'], ['P', 'Pray'],
   ['T or Enter', 'Command bar (extended commands, e.g. "pray", "loot", "chat")'], ['/', 'Command bar'],
   ['Tab', 'Message history'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['M', 'Overhead map view on/off'], ['F1', 'Hide HUD'],
   ['F3', 'Debug info'], ['N', 'Next music track'], ['I', 'Actions menu (every command as a button)'],
-  ['Shift+1..4', 'Do a Recommended action (shown above the hotbar)'], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
+  ['↑ (up arrow)', 'Do the first Recommended action'], ['Shift+1..4', 'Do a Recommended action (shown above the hotbar)'], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
 ];
 
 function buildScreens() {
@@ -1947,7 +1947,13 @@ window.addEventListener('keydown', (e) => {
       return;
     }
     case '<': case '>': game.sendKeys(k); return;
-    case 'g': game.sendKeys(','); return;
+    case 'g': case ',': game.sendKeys(','); return; // (pick up: there's no autopickup)
+    case 'ArrowUp': { // the first Recommended action (shown above the hotbar)
+      e.preventDefault();
+      const r = game.recs && game.recs[0];
+      if (r) game.runAction(r);
+      return;
+    }
     case 'n': music.next(); return;
     case 'r': game.sendKeys('s'); return;
     case 'f': game.sendKeys('f'); return;

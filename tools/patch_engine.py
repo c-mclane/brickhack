@@ -304,6 +304,36 @@ edit("src/pray.c", [("    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything off
                      "    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n"
                      "    if (!orac) { extern int FDECL(web_offer, (struct obj *)); if (web_offer(otmp)) return 1; } /* WEB_HOOK_RITES */\n")],
      "WEB_HOOK_RITES")
+# BrickHack: a chalice is fragile: dropped anywhere but on an altar (where it's
+# set down) it shatters, as thrown; the hero keeps count of those lost (saved
+# with the game), and a follower's prayer brings one back, somewhere in the
+# room (winweb.c web_fill_glasses)
+edit("include/you.h", [("	boolean twoweap;		/* KMH -- using two-weapon combat */\n",
+                        "	boolean twoweap;		/* KMH -- using two-weapon combat */\n"
+                        "	int webchalices;	/* WEB_HOOK_CHALICE2: chalices shattered, owed back by prayer */\n")],
+     "WEB_HOOK_CHALICE2")
+edit("src/dothrow.c", [("boolean from_invent;\n{\n	int am;\n	if (IS_ALTAR(levl[x][y].typ))\n",
+                        "boolean from_invent;\n{\n	int am;\n"
+                        "	if (obj->otyp == CHALICE) u.webchalices += (int) obj->quan; /* WEB_HOOK_CHALICE2 */\n"
+                        "	if (IS_ALTAR(levl[x][y].typ))\n")],
+     "WEB_HOOK_CHALICE2")
+edit("src/do.c", [("	if (!u.uswallow) {\n	    if (ship_object(obj, u.ux, u.uy, FALSE)) return;\n",
+                   "	if (!u.uswallow && obj->otyp == CHALICE && !IS_ALTAR(levl[u.ux][u.uy].typ)) { /* WEB_HOOK_CHALICE2 */\n"
+                   "	    pline(\"%s %s!\", The(xname(obj)), otense(obj, \"shatter\"));\n"
+                   "	    u.webchalices += (int) obj->quan;\n"
+                   "	    obfree(obj, (struct obj *)0);\n"
+                   "	    return;\n"
+                   "	}\n"
+                   "	if (!u.uswallow) {\n	    if (ship_object(obj, u.ux, u.uy, FALSE)) return;\n")],
+     "WEB_HOOK_CHALICE2")
+# BrickHack: a good prayer (timeout run out, Luck and his favour sound) at
+# Jesus's altar by his follower: a holy wafer on the altar (winweb.c
+# web_altar_wafer); eaten, it heals, as it ever did a lawful hero. Not to be
+# farmed: only a good prayer brings one, and it sets the timeout long again
+edit("src/pray.c", [("	if(on_altar())\n	    (void) water_prayer(TRUE);\n	pleased(alignment); /* nice */\n",
+                     "	if(on_altar())\n	    (void) water_prayer(TRUE);\n	pleased(alignment); /* nice */\n"
+                     "	if (on_altar()) { extern void NDECL(web_altar_wafer); web_altar_wafer(); } /* WEB_HOOK_WAFER */\n")],
+     "WEB_HOOK_WAFER")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

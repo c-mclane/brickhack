@@ -827,7 +827,26 @@ web_confess(void)
     return 1;
 }
 
-/* pray.c prayer_done: a prayer fills chalices with holy wine again: those
+/* pray.c prayer_done: a good prayer by his follower at his altar (only a
+   good one: the prayer timeout run out, Luck and his favour sound; it sets
+   the timeout long again, so it isn't to be farmed) leaves a holy wafer on
+   the altar: eaten, it heals (eat.c, for a lawful hero) */
+void
+web_altar_wafer(void)
+{
+    struct obj *wafer;
+
+    if (!web_his_name() || Amask2align(levl[u.ux][u.uy].altarmask & AM_MASK) != A_LAWFUL)
+        return;
+    wafer = mksobj_at(HOLY_WAFER, u.ux, u.uy, TRUE, FALSE);
+    bless(wafer);
+    newsym(u.ux, u.uy);
+    pline("A holy wafer appears on the altar.");
+}
+
+/* pray.c prayer_done: a follower's prayer brings back a chalice lost (one
+   for each that shattered: thrown, or dropped off an altar), and fills
+   chalices with holy wine again: those
    on the altar you pray at (any altar), and for a Catholic priest (the
    server's LEGOHACK_PERKS: "chalice", from his design) those he carries,
    wherever he prays */
@@ -847,6 +866,19 @@ web_fill_glasses(void)
             pline("The chalice%s on the altar fill%s with wine.", n > 1 ? "s" : "", n > 1 ? "" : "s");
             newsym(u.ux, u.uy);
         }
+    }
+    if (web_his_name() && u.webchalices > 0) {   /* a chalice lost: he gives another, somewhere in the room */
+        coord cc;
+        int rn = levl[u.ux][u.uy].roomno - ROOMOFFSET;
+        if (rn < 0 || rn >= nroom || !somexy(&rooms[rn], &cc))
+            cc.x = u.ux, cc.y = u.uy;
+        (void) mksobj_at(CHALICE, cc.x, cc.y, FALSE, FALSE);
+        u.webchalices--;
+        newsym(cc.x, cc.y);
+        if (cansee(cc.x, cc.y))
+            pline("A golden chalice appears %s!", cc.x == u.ux && cc.y == u.uy ? "at your feet" : "nearby");
+        else
+            You_hear("a soft chime.");
     }
     if (perks && strstri(perks, "chalice")) {
         n = 0;
