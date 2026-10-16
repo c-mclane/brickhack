@@ -384,6 +384,17 @@ edit("src/potion.c", [("	boolean isyou = (mon == &youmonst);\n	int distance;\n\n
                        "	  web_shatter(obj, isyou ? u.ux : mon->mx, isyou ? u.uy : mon->my); }\n"
                        "	if(isyou) {\n")],
      "WEB_HOOK_SPLASH")
+# ...and a monster's throw flies in the client's physics too (winweb.c
+# web_mthrow_begin/end: what, from the monster to where it stopped; the flight
+# not painted square by square)
+edit("src/mthrowu.c", [("	if (sym) tmp_at(DISP_FLASH, obj_to_glyph(singleobj));\n",
+                        "	{ extern void FDECL(web_mthrow_begin, (struct obj *, int, int)); web_mthrow_begin(singleobj, x, y); } /* WEB_HOOK_MTHROW */\n"
+                        "	if (sym) tmp_at(DISP_FLASH, obj_to_glyph(singleobj));\n"),
+                       ("	tmp_at(bhitpos.x, bhitpos.y);\n	delay_output();\n	tmp_at(DISP_END, 0);\n\n	if (blindinc) {\n",
+                        "	tmp_at(bhitpos.x, bhitpos.y);\n	delay_output();\n	tmp_at(DISP_END, 0);\n"
+                        "	{ extern void FDECL(web_mthrow_end, (int, int)); web_mthrow_end(bhitpos.x, bhitpos.y); } /* WEB_HOOK_MTHROW */\n"
+                        "\n	if (blindinc) {\n")],
+     "WEB_HOOK_MTHROW")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

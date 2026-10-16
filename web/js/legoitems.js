@@ -11,6 +11,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const byTile = new Map(); // tile -> {name, url, lego}
+// items named as the game names them, where a plain name could be another class's ("ring of see invisible")
+const PREFIX = { ring: 'ring of ', wand: 'wand of ', spellbook: 'spellbook of ', scroll: 'scroll of ' };
 const icons = new Map(); // tile -> data URL
 const artBase = new Map(); // an artifact's tile (port/winweb.c: 90000 + its number) -> its base item's game tile
 let readyP = null;
@@ -67,7 +69,8 @@ export function loadLegoItems() {
         const key = real.toLowerCase().replace(/-/g, ' '); // (the engine's names have no hyphens: "two handed sword")
         if (!tileOf.has(key)) tileOf.set(key, i);
         // only an item of its own class: a ring of see invisible isn't the potion (tiles.json "classes", items "oc")
-        const it = items[real], cls = tiles.classes && tiles.classes[i];
+        const cls = tiles.classes && tiles.classes[i];
+        const it = items[(PREFIX[cls] || '') + real] || items[real]; // ("ring of see invisible": a ring's own; or the plain name)
         if (it && (!it.oc || !cls || it.oc === cls)) byTile.set(i, { name: real, ...it });
       });
       // artifacts: the game sends each as a tile of its own (winweb.c web_obj_tile): its own

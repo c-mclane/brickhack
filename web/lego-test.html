@@ -123,7 +123,7 @@ async function apply(data) {
       const el = document.createElement('div'); el.className = 'tag'; el.textContent = o.label; document.body.appendChild(el);
       // (a figure's name over its head; an item's at its feet, toward you)
       const fig = /\/fig_/.test(o.url || '');
-      tags.push({ el, at: fig ? new THREE.Vector3(o.pos[0] / 20, -o.pos[1] / 20 + 3.4, -o.pos[2] / 20) : new THREE.Vector3(o.pos[0] / 20, 0.3, -o.pos[2] / 20 + 1.6) });
+      tags.push({ el, at: fig ? new THREE.Vector3(o.pos[0] / 20, -o.pos[1] / 20 + 3.4, -o.pos[2] / 20) : new THREE.Vector3(o.pos[0] / 20, 0.3, -o.pos[2] / 20 + 0.75) });
     }
     const m = (await model(o.url)).clone();
     // LDraw units -> studs, LDraw's -Y up -> +Y up (the .glb itself is already converted)

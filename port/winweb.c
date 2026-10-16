@@ -2377,6 +2377,31 @@ web_throw(struct obj *obj, int x, int y, boolean hitmon)
     endmsg();
 }
 
+/* mthrowu.c m_throw: a monster throws obj from (x, y): its flight not painted
+   (web_mthrow_end sends it, from there to where it stopped; seen, if you can
+   see either end). The object may be dropped or broken before the flight
+   ends: the client takes the events in either order */
+static int web_mt_tile, web_mt_x, web_mt_y;
+
+void
+web_mthrow_begin(struct obj *obj, int x, int y)
+{
+    web_mt_tile = web_obj_tile(obj, obj_to_glyph(obj));
+    web_mt_x = x, web_mt_y = y;
+    web_freeze_map++;
+}
+
+void
+web_mthrow_end(int x, int y)
+{
+    web_freeze_map--;
+    if (!out || (x == web_mt_x && y == web_mt_y) || !(cansee(web_mt_x, web_mt_y) || cansee(x, y)))
+        return;
+    fprintf(out, "{\"t\":\"throw\",\"tile\":%d,\"fx\":%d,\"fy\":%d,\"tx\":%d,\"ty\":%d,\"mon\":0,\"by\":\"monster\"",
+            web_mt_tile, web_mt_x, web_mt_y, x, y);
+    endmsg();
+}
+
 /* dothrow.c breakobj: obj broke at (x, y): the client bursts it into shards
    (when it's flying there, as it lands) */
 void

@@ -61,6 +61,10 @@ def boot_parts(boots):
 
 
 SLASHEM = os.path.join(HERE, '..', 'vendor', 'SlashEM')
+# an item named as the game names it ("ring of see invisible"): the client looks
+# up a ring's tile by that name (legoitems.js), as a potion of see invisible
+# goes by its own
+PREFIX = {'ring': 'ring of ', 'wand': 'wand of ', 'spellbook': 'spellbook of ', 'scroll': 'scroll of '}
 ART_TILE = 90000   # the game sends an artifact as ART_TILE + its number (port/winweb.c web_obj_tile)
 VARIANT_TILE = 92000   # ...and a variant with a look of its own (holy water) as VARIANT_TILE + its number
 
@@ -121,6 +125,9 @@ def main():
         # its class (a potion, a ring...): a name can be more than one object (a potion and a ring
         # of see invisible); the client gives a tile only an item of its own class (tiles.json "classes")
         oc = item.get('class') or (next(iter(classes[name])) if len(classes.get(name, ())) == 1 else None)
+        for cls, pre in PREFIX.items():   # "ring of conflict": a ring, whatever else is named conflict
+            if name.startswith(pre) and cls in classes.get(name[len(pre):], ()):
+                oc = cls
         if oc:
             built[name]['oc'] = oc
         elif len(classes.get(name, ())) > 1:

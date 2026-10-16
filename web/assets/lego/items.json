@@ -6890,5 +6890,335 @@
    }
   ],
   "upright": true
+ },
+ "ring of adornment": {
+  "lego": "The LEGO ring (the One Ring, 11010) in reddish brown, wooden (a wooden ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 70
+   }
+  ],
+  "upright": true
+ },
+ "ring of hunger": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans light blue, topaz (a topaz ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 43
+   }
+  ],
+  "upright": true
+ },
+ "ring of mood": {
+  "lego": "The LEGO ring (the One Ring, 11010) in pearl dark grey, ridged (a ridged ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 148
+   }
+  ],
+  "upright": true
+ },
+ "ring of protection": {
+  "lego": "The LEGO ring (the One Ring, 11010) in glossy black, onyx (a black onyx ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 0
+   }
+  ],
+  "upright": true
+ },
+ "ring of protection from shape changers": {
+  "lego": "The LEGO ring (the One Ring, 11010) in chrome silver, shiny (a shiny ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 383
+   }
+  ],
+  "upright": true
+ },
+ "ring of sleeping": {
+  "lego": "The LEGO ring (the One Ring, 11010) in chrome gold, a wedding band (a wedding ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 334
+   }
+  ],
+  "upright": true
+ },
+ "ring of stealth": {
+  "lego": "The LEGO ring (the One Ring, 11010) in sand green, jade (a jade ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 378
+   }
+  ],
+  "upright": true
+ },
+ "ring of sustain ability": {
+  "lego": "The LEGO ring (the One Ring, 11010) in reddish copper, bronze (a bronze ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 346
+   }
+  ],
+  "upright": true
+ },
+ "ring of warning": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans clear, diamond (a diamond ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 47
+   }
+  ],
+  "upright": true
+ },
+ "ring of aggravate monster": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans dark blue, sapphire (a sapphire ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 33
+   }
+  ],
+  "upright": true
+ },
+ "ring of cold resistance": {
+  "lego": "The LEGO ring (the One Ring, 11010) in pearl light gold, brass (a brass ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 142
+   }
+  ],
+  "upright": true
+ },
+ "ring of gain constitution": {
+  "lego": "The LEGO ring (the One Ring, 11010) in opal trans clear, opal (a opal ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 360
+   }
+  ],
+  "upright": true
+ },
+ "ring of gain dexterity": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans black, obsidian (a obsidian ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 10375
+   }
+  ],
+  "upright": true
+ },
+ "ring of gain intelligence": {
+  "lego": "The LEGO ring (the One Ring, 11010) in light bluish grey, plain (a plain ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "ring of gain strength": {
+  "lego": "The LEGO ring (the One Ring, 11010) in speckled grey, granite (a granite ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 76
+   }
+  ],
+  "upright": true
+ },
+ "ring of gain wisdom": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans very light blue, glass (a glass ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 39
+   }
+  ],
+  "upright": true
+ },
+ "ring of increase accuracy": {
+  "lego": "The LEGO ring (the One Ring, 11010) in sand red, clay (a clay ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 335
+   }
+  ],
+  "upright": true
+ },
+ "ring of increase damage": {
+  "lego": "The LEGO ring (the One Ring, 11010) in coral (a coral ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 353
+   }
+  ],
+  "upright": true
+ },
+ "ring of slow digestion": {
+  "lego": "The LEGO ring (the One Ring, 11010) in metallic silver, steel (a steel ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 80
+   }
+  ],
+  "upright": true
+ },
+ "ring of invisibility": {
+  "lego": "The LEGO ring (the One Ring, 11010) in flat silver, wire (a wire ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 315
+   }
+  ],
+  "upright": true
+ },
+ "ring of poison resistance": {
+  "lego": "The LEGO ring (the One Ring, 11010) in pearl white (a pearl ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 183
+   }
+  ],
+  "upright": true
+ },
+ "ring of see invisible": {
+  "lego": "The LEGO ring (the One Ring, 11010) in metallic gold, an engagement ring (a engagement ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 82
+   }
+  ],
+  "upright": true
+ },
+ "ring of shock resistance": {
+  "lego": "The LEGO ring (the One Ring, 11010) in copper (a copper ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 134
+   }
+  ],
+  "upright": true
+ },
+ "ring of fire resistance": {
+  "lego": "The LEGO ring (the One Ring, 11010) in dark bluish grey, iron (a iron ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 72
+   }
+  ],
+  "upright": true
+ },
+ "ring of free action": {
+  "lego": "The LEGO ring (the One Ring, 11010) in speckled black and silver, twisted (a twisted ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 132
+   }
+  ],
+  "upright": true
+ },
+ "ring of levitation": {
+  "lego": "The LEGO ring (the One Ring, 11010) in dark red, agate (a agate ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 320
+   }
+  ],
+  "upright": true
+ },
+ "ring of regeneration": {
+  "lego": "The LEGO ring (the One Ring, 11010) in opal trans light blue, moonstone (a moonstone ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 362
+   }
+  ],
+  "upright": true
+ },
+ "ring of searching": {
+  "lego": "The LEGO ring (the One Ring, 11010) in dark orange, tiger eye (a tiger eye ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 484
+   }
+  ],
+  "upright": true
+ },
+ "ring of teleportation": {
+  "lego": "The LEGO ring (the One Ring, 11010) in pearl silver (a silver ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 179
+   }
+  ],
+  "upright": true
+ },
+ "ring of conflict": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans red, ruby (a ruby ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 36
+   }
+  ],
+  "upright": true
+ },
+ "ring of polymorph": {
+  "lego": "The LEGO ring (the One Ring, 11010) in bright light yellow, ivory (a ivory ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 226
+   }
+  ],
+  "upright": true
+ },
+ "ring of polymorph control": {
+  "lego": "The LEGO ring (the One Ring, 11010) in trans green, emerald (a emerald ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "ring of teleport control": {
+  "lego": "The LEGO ring (the One Ring, 11010) in pearl gold (a gold ring)",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 297
+   }
+  ],
+  "upright": true
  }
 }

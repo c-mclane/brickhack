@@ -1,10 +1,11 @@
 // Thrown things, in a little physics of their own (BrickWorld: LEGO levels).
-// The engine says what was thrown, from where, and where its flight stopped
-// (winweb.c web_throw); we fly it there in a slow, lofted arc, tumbling. Every
-// square of the dungeon is a box: inside the one it was thrown to, it hits the
-// far wall, bounces off and tumbles down, and comes to rest wherever it comes to
-// rest. It stays so (its pose: poseFor) until it's picked up. Something that
-// breaks (web_shatter) bursts into shards of its own colours as it lands.
+// The engine says what was thrown (by the hero or a monster), from where, and
+// where its flight stopped (winweb.c web_throw, web_mthrow_end); we fly it
+// there in a slow, lofted arc, tumbling. Every square of the dungeon is a box:
+// inside the one it was thrown to, it hits the far wall, bounces off and
+// tumbles down, and comes to rest wherever it comes to rest. It stays so (its
+// pose: poseFor) until it's picked up. Something that breaks (web_shatter)
+// bursts into shards of its own colours as it lands; a potion splashes too.
 //
 // The body: a box the size of its model (its eight corners are what touch),
 // with mass 1 and a box's inertia; contacts are impulses at the corners against
@@ -29,6 +30,7 @@ export class ThrowFX {
     this.shards = []; // bursts: {mesh, parts: [{p, v, q, w}], t}
     this.poses = new Map(); // x,z,url -> {p, q, c} where a thrown item came to rest
     this.incoming = new Map(); // x,z,url -> count still in the air (hidden on the floor till they land)
+    this.pending = []; // breaks heard before their throw (a monster's: the engine drops or breaks it mid-flight): {url, x, z, splash, t}
     this.last = performance.now() / 1000;
   }
 
@@ -40,9 +42,13 @@ export class ThrowFX {
   async launch(url, fx, fz, tx, tz) {
     const k = key(tx, tz, url);
     this.incoming.set(k, (this.incoming.get(k) || 0) + 1);
-    // in the air from now on (its model still loading): a break reported straight after finds it
+    // in the air from now on (its model still loading): a break reported straight after finds it;
+    // one reported just before (a monster's throw) is its
     const b = { k, url, tx, tz, breaks: false, loading: true };
+    const early = this.pending.findIndex((s) => s.x === tx && s.z === tz && s.url === url);
+    if (early >= 0) { b.breaks = true; b.splash = this.pending[early].splash; this.pending.splice(early, 1); }
     this.flying.push(b);
+    this.brick.redrawItems(k); // (already lying there, if the engine dropped it first: hidden till it lands)
     let m;
     try { m = (await this.brick.model(url)).clone(); } catch { this.flying.splice(this.flying.indexOf(b), 1); this.land(k); return; }
     // the body: its model inside a holder whose origin is the model's middle (its centre of mass)
@@ -79,7 +85,7 @@ export class ThrowFX {
   shatter(url, x, z, splash) {
     const b = this.flying.find((f) => f.tx === x && f.tz === z && !f.breaks);
     if (b) { b.breaks = true; b.splash = splash; return; }
-    this.brick.model(url).then((m) => this.burst(m, new THREE.Vector3(x + 0.5, STUD_H + 0.2, z + 0.5), new THREE.Vector3(), splash)).catch(() => {});
+    this.pending.push({ url, x, z, splash, t: performance.now() / 1000 }); // (its throw may be on its way: a moment's wait)
   }
 
   step() {
@@ -95,6 +101,11 @@ export class ThrowFX {
       b.holder.position.copy(b.p);
       b.holder.quaternion.copy(b.q);
     }
+    for (const s of [...this.pending]) // a break no throw came for: it bursts where it is
+      if (now - s.t > 0.12) {
+        this.pending.splice(this.pending.indexOf(s), 1);
+        this.brick.model(s.url).then((m) => this.burst(m, new THREE.Vector3(s.x + 0.5, STUD_H + 0.2, s.z + 0.5), new THREE.Vector3(), s.splash)).catch(() => {});
+      }
     for (const s of [...this.shards]) this.stepShards(s, dt);
     for (const d of [...(this.puddles || [])]) { // spreading, then drying up
       d.t += dt;
