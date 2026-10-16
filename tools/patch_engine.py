@@ -350,6 +350,32 @@ edit("src/invent.c", [("	if (obj->otyp != otmp->otyp) return FALSE;\n",
                        "	if (obj->otyp != otmp->otyp) return FALSE;\n"
                        "	if (obj->webstart != otmp->webstart) return FALSE; /* WEB_HOOK_STARTGEAR */\n")],
      "WEB_HOOK_STARTGEAR")
+# BrickHack: thrown things fly in the client's physics: the hero's throw is sent
+# as an event (winweb.c web_throw: what, from, to), its flight not painted
+# square by square on the map (web_freeze_map: the engine restores every square
+# it paints, so nothing is lost); anything that breaks is sent too (web_shatter)
+edit("src/dothrow.c", [("#include \"hack.h\"\n",
+                        "#include \"hack.h\"\n"
+                        "extern int web_freeze_map; /* WEB_HOOK_THROW */\n"
+                        "extern void FDECL(web_throw, (struct obj *, int, int, BOOLEAN_P));\n"
+                        "extern void FDECL(web_shatter, (struct obj *, int, int));\n"),
+                       ("		mon = bhit(u.dx,u.dy,range,THROWN_WEAPON,\n",
+                        "		web_freeze_map++; /* WEB_HOOK_THROW: the client flies it */\n"
+                        "		mon = bhit(u.dx,u.dy,range,THROWN_WEAPON,\n"),
+                       ("			   &obj);\n\n		/* have to do this after bhit() so u.ux & u.uy are correct */\n",
+                        "			   &obj);\n"
+                        "		web_freeze_map--;\n"
+                        "		if (obj) web_throw(obj, bhitpos.x, bhitpos.y, mon != 0);\n"
+                        "\n		/* have to do this after bhit() so u.ux & u.uy are correct */\n"),
+                       ("		    tmp_at(DISP_FLASH, obj_to_glyph(obj));\n		    tmp_at(bhitpos.x, bhitpos.y);\n		    delay_output();\n		    tmp_at(DISP_END, 0);\n		    breakmsg(obj, cansee(bhitpos.x, bhitpos.y));\n",
+                        "		    web_freeze_map++;\n"
+                        "		    tmp_at(DISP_FLASH, obj_to_glyph(obj));\n		    tmp_at(bhitpos.x, bhitpos.y);\n		    delay_output();\n		    tmp_at(DISP_END, 0);\n"
+                        "		    web_freeze_map--;\n"
+                        "		    breakmsg(obj, cansee(bhitpos.x, bhitpos.y));\n"),
+                       ("	if (obj->otyp == CHALICE) u.webchalices += (int) obj->quan; /* WEB_HOOK_CHALICE2 */\n",
+                        "	if (obj->otyp == CHALICE) u.webchalices += (int) obj->quan; /* WEB_HOOK_CHALICE2 */\n"
+                        "	web_shatter(obj, x, y); /* WEB_HOOK_THROW: shards */\n")],
+     "WEB_HOOK_THROW")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

@@ -2360,6 +2360,34 @@ web_cliparound(int x, int y)
 }
 #endif
 
+/* dothrow.c: while the hero's throw is in flight the map isn't painted (the
+   client flies it, in its physics: web_throw); the engine restores every
+   square it paints, so the map is as it was after */
+int web_freeze_map = 0;
+
+/* dothrow.c throwit: the hero threw obj, which stopped at (x, y), on a monster
+   or not: the client flies it there, in an arc, to bounce and tumble to rest */
+void
+web_throw(struct obj *obj, int x, int y, boolean hitmon)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"throw\",\"tile\":%d,\"fx\":%d,\"fy\":%d,\"tx\":%d,\"ty\":%d,\"mon\":%d",
+            web_obj_tile(obj, obj_to_glyph(obj)), u.ux, u.uy, x, y, hitmon ? 1 : 0);
+    endmsg();
+}
+
+/* dothrow.c breakobj: obj broke at (x, y): the client bursts it into shards
+   (when it's flying there, as it lands) */
+void
+web_shatter(struct obj *obj, int x, int y)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"shatter\",\"tile\":%d,\"x\":%d,\"y\":%d", web_obj_tile(obj, obj_to_glyph(obj)), x, y);
+    endmsg();
+}
+
 static void
 #ifdef WEB_NH34
 web_print_glyph(winid id, XCHAR_P x, XCHAR_P y, int glyph)
@@ -2372,7 +2400,7 @@ web_print_glyph(winid id, XCHAR_P x, XCHAR_P y, int glyph, int bkglyph)
 {
 #endif
     nhUse(id);
-    if (x < 0 || x >= COLNO || y < 0 || y >= ROWNO)
+    if (x < 0 || x >= COLNO || y < 0 || y >= ROWNO || web_freeze_map)
         return;
     if (mapglyph_buf[y][x] != glyph || mapbk_buf[y][x] != bkglyph) {
         mapglyph_buf[y][x] = glyph;
@@ -2575,6 +2603,8 @@ web_number_pad(int state)
 static void
 web_delay_output(void)
 {
+    if (web_freeze_map)   /* (a flight the client draws) */
+        return;
     sync_all();
     fputs("{\"t\":\"delay\"", out);
     endmsg();

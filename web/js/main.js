@@ -744,6 +744,16 @@ function handle(m) {
       releaseLock();
       ui.askLine('#', { list: game.ext }, (v) => { post(v ? 'E' + v.replace(/^[#/]/, '').trim() : 'X'); relock(); });
       break;
+    case 'throw': { // the hero threw something: flown in an arc, to bounce and tumble to rest (throwfx.js)
+      const l = legoItemForTile(m.tile);
+      if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty);
+      break;
+    }
+    case 'shatter': { // something broke there: shards
+      const l = legoItemForTile(m.tile);
+      if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.shatter(l.url, m.x, m.y);
+      break;
+    }
     case 'rip': game.rip = m; break;
     case 'bell': $('#hearts').classList.add('flash'); break;
     case 'prevmsg': ui.toggleHistory(); break;

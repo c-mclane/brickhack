@@ -11,6 +11,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura, addLightning } from './mist.js';
 import { figureJoints, poseJoints } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './lego.js';
+import { ThrowFX } from './throwfx.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
 
@@ -53,6 +54,7 @@ export class BrickWorld {
     this.inst = {}; // name -> [InstancedMesh]
     this.doors = new Map(); // where -> the door's group
     this.items = new Map(); // where + what -> a LEGO item lying on the floor
+    this.fx = new ThrowFX(this); // thrown things, flying and tumbling (throwfx.js)
     this.data = null;
     this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => { this.pieces[k] = await this.partsOf(url); }))
       .then(() => this.data && this.setTerrain(this.data));
@@ -309,8 +311,18 @@ export class BrickWorld {
         g.scale.setScalar(MODEL_SCALE);
         g.userData = { square: `${it.x},${it.z}`, level, thick: 0 };
         this.world.add(g);
+        if (this.fx.isIncoming(it.x, it.z, it.url)) g.visible = false; // (still in the air: it lands, then shows: throwfx.js)
+        const pose = this.fx.poseFor(it.x, it.z, it.url);
         this.model(it.url).then((m) => {
           const lay = m.clone();
+          if (pose) { // thrown here: where and how it came to rest
+            g.position.copy(pose.p);
+            g.quaternion.copy(pose.q);
+            lay.position.copy(pose.c).negate();
+            g.add(lay);
+            g.userData.posed = true;
+            return;
+          }
           if (!it.upright) lay.rotation.z = -Math.PI / 2; // on its side: a blade's length (the model's Y) along the floor (food stands as it is)
           lay.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(lay);
@@ -326,12 +338,26 @@ export class BrickWorld {
     }
     for (const [key, g] of this.items) if (!keep.has(key)) { this.world.remove(g); touched.add(g.userData.square); }
     this.items = keep;
+    // a thrown item picked up (or gone): its resting pose forgotten
+    for (const k of [...this.fx.poses.keys()]) {
+      const [x, z, ...u] = k.split(','), url = u.join(',');
+      if (!list.some((it) => it.x === +x && it.z === +z && it.url === url)) this.fx.poses.delete(k);
+    }
     for (const sq of touched) this.restack(sq);
+  }
+
+  // a thrown item landed (or burst): its square's items made again (with its pose, shown)
+  redrawItems(k) {
+    const [x, z, ...u] = k.split(','), url = u.join(',');
+    for (const [key, g] of [...this.items]) {
+      const [gx, gz, , ...gu] = key.split(',');
+      if (+gx === +x && +gz === +z && gu.join(',') === url) { this.world.remove(g); this.items.delete(key); }
+    }
   }
 
   // a square's pile, each item resting on the one below
   restack(square) {
-    const pile = [...this.items.values()].filter((g) => g.userData.square === square).sort((a, b) => a.userData.level - b.userData.level);
+    const pile = [...this.items.values()].filter((g) => g.userData.square === square && !g.userData.posed).sort((a, b) => a.userData.level - b.userData.level);
     let y = STUD_H;
     for (const g of pile) {
       g.position.y = y;
@@ -403,6 +429,7 @@ export class BrickWorld {
       this.sun.position.set(focus[0] + 12, 28, focus[2] + 18);
       this.sun.target.updateMatrixWorld();
     }
+    this.fx.step(); // thrown things in flight
     const now = performance.now() / 1000;
     if (this.hazeMat) this.hazeMat.uniforms.uTime.value = now;
     if (this.flowMat) this.flowMat.uniforms.uTime.value = now;
