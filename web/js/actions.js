@@ -45,6 +45,11 @@ export const ACTION_GROUPS = [
     { label: 'Cast spell', keys: 'Z', tip: 'Cast a spell (Z)' },
     { label: 'Pray', ext: 'pray', tip: 'Pray to your god (#pray)' },
     { label: 'Offer', ext: 'offer', tip: 'Sacrifice at an altar (#offer)' },
+    // the rites of a follower of Jesus (a Catholic figure: engine winweb.c), at his altar
+    { label: 'Celebrate Mass', ext: 'mass', tip: 'A priest offers the Mass: a holy wafer and holy wine (#mass)' },
+    { label: 'Receive Communion', ext: 'communion', tip: 'Receive a holy wafer at the altar (#communion)' },
+    { label: 'Give alms', ext: 'alms', tip: 'Give gold to the poor at the altar (#alms)' },
+    { label: 'Confess', ext: 'confess', tip: 'Confess your sins at the altar; penance follows (#confess)' },
     { label: 'Turn undead', ext: 'turn', tip: 'Turn undead (#turn)' },
     { label: 'Enhance skills', ext: 'enhance', tip: 'Advance weapon/spell skills (#enhance)' },
     { label: 'Monster power', ext: 'monster', tip: 'Use a polymorphed form\'s power (#monster)' },
@@ -124,7 +129,15 @@ export function recommend(ctx) {
   if (objs && objs[0] > objs[1]) add({ label: 'Pick up', keys: ',', why: 'items here' });
   if (cm === CM.upstair || cm === CM.upladder) add({ label: 'Go up', keys: '<', why: 'stairs here' });
   if (cm === CM.dnstair || cm === CM.dnladder) add({ label: 'Go down', keys: '>', why: 'stairs here' });
-  if (cm === CM.altar) { add({ label: 'Offer', ext: 'offer', why: 'altar here' }); add({ label: 'Pray', ext: 'pray', why: 'altar here' }); }
+  if (cm === CM.altar) {
+    if (stat && stat.faith) { // a follower of Jesus: his rites, not burnt offerings (Offer is still in Actions: he refuses it)
+      if (stat.angry) add({ label: 'Confess', ext: 'confess', why: `${stat.faith} is angry` });
+      if (stat.mass) add({ label: 'Celebrate Mass', ext: 'mass', why: 'altar here' });
+      add({ label: 'Receive Communion', ext: 'communion', why: 'altar here' });
+      add({ label: 'Give alms', ext: 'alms', why: 'altar here' });
+    } else add({ label: 'Offer', ext: 'offer', why: 'altar here' });
+    add({ label: 'Pray', ext: 'pray', why: 'altar here' });
+  }
   if (cm === CM.grave) add({ label: 'Read the headstone', keys: 'r.', why: 'grave here' }); // (r, then "." for what's written here)
   if (cm === CM.fountain) { add({ label: 'Drink from fountain', keys: 'q', answers: [{ key: 'y', re: /fountain/i }], why: 'fountain' }); add({ label: 'Dip in fountain', ext: 'dip', why: 'fountain' }); }
   if (cm === CM.sink) add({ label: 'Drink from sink', keys: 'q', answers: [{ key: 'y', re: /sink/i }], why: 'sink' });

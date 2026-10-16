@@ -514,7 +514,7 @@ web_kit_item(int i, int *quan)
     return 0;
 }
 
-/* a wine glass filled: holy wine again (in place: where it lies, or in the pack) */
+/* a chalice filled: holy wine again (in place: where it lies, or in the pack) */
 static void
 web_fill(struct obj *o)
 {
@@ -566,7 +566,7 @@ web_holy_wine(void)
 
 /* questpgr.c: a line of the intro story, told to a follower of the figure's
    own deity (the server's LEGOHACK_GOD: Jesus), in Christian canon: written in
-   the Bible, the cruel god is Satan, the Creator Jesus, and the Amulet's
+   the Scriptures, the cruel god is Satan, the Creator Jesus, and the Amulet's
    hunt is to take back what Satan stole. A line at a time (128 chars at most:
    questpgr.c out_line); a phrase swapped where it's found */
 static void
@@ -594,7 +594,7 @@ web_intro_line(char *line)
     if (!g || !*g)
         return;
     if (strstri(line, "It is written in the Book of")) {
-        Strcpy(line, "It is written in the Bible:");
+        Strcpy(line, "It is written in the Scriptures:");
         return;
     }
     web_swap(line, "Moloch", "Satan");
@@ -607,7 +607,227 @@ web_intro_line(char *line)
         Sprintf(line, "Satan's undeserved ascendance over the other gods.");
 }
 
-/* pray.c prayer_done: a prayer fills wine glasses with holy wine again: those
+/* do.c doaltarobj: a chalice set down on an altar by a follower of the
+   figure's own deity (the server's LEGOHACK_GOD: Jesus, the lawful god)
+   claims the altar for him, whoever's it was (Moloch's, a high altar too):
+   it turns lawful at once, and a temple priest of the old god turns on you */
+void
+web_altar_glass(struct obj *obj)
+{
+    const char *g = getenv("LEGOHACK_GOD");
+    struct rm *lev = &levl[u.ux][u.uy];
+    struct monst *pri;
+
+    if (!g || !*g || obj->otyp != CHALICE || !IS_ALTAR(lev->typ)
+        || Amask2align(lev->altarmask & AM_MASK) == A_LAWFUL)
+        return;
+    lev->altarmask = (lev->altarmask & AM_SHRINE) | AM_LAWFUL;
+    if (Blind)
+        You_feel("the altar shudder under %s.", the(xname(obj)));
+    else
+        pline("As %s touches the altar, it glows a brilliant white!", the(xname(obj)));
+    pline("The altar is %s's now.", g);
+    newsym(u.ux, u.uy);
+    if ((pri = findpriest(temple_occupied(u.urooms))) != 0 && !p_coaligned(pri))
+        angry_priest();
+}
+
+/* ---- the rites of a follower of the figure's own deity (the server's
+   LEGOHACK_GOD: Jesus, the lawful god), at his altar: in place of burnt
+   offerings (Hebrews 10:10-14: his sacrifice was made once, for all), the
+   Mass (offered by a priest: the server's LEGOHACK_PERKS "mass"), Communion,
+   alms, confession */
+static const char *
+web_his_name(void)
+{
+    const char *g = getenv("LEGOHACK_GOD");
+    return g && *g ? g : 0;
+}
+
+static int
+web_perk(const char *p)
+{
+    const char *s = getenv("LEGOHACK_PERKS");
+    return s && strstri(s, p) != 0;
+}
+
+/* standing at his altar (a lawful one), to do this; else why not */
+static int
+web_at_his_altar(const char *rite)
+{
+    if (!web_his_name()) {
+        You("don't know how to %s.", rite);
+        return 0;
+    }
+    if (u.uswallow || !IS_ALTAR(levl[u.ux][u.uy].typ)) {
+        You("must stand at an altar of %s to %s.", web_his_name(), rite);
+        return 0;
+    }
+    if (Amask2align(levl[u.ux][u.uy].altarmask & AM_MASK) != A_LAWFUL) {
+        pline("This is not an altar of %s.", web_his_name());
+        return 0;
+    }
+    return 1;
+}
+
+static struct obj *
+web_carried(int otyp)
+{
+    struct obj *o;
+    for (o = invent; o; o = o->nobj)
+        if (o->otyp == otyp)
+            return o;
+    return 0;
+}
+
+/* pray.c dosacrifice: a corpse offered by his follower is refused (one of
+   your own race stays the grave sin it ever was; the Amulet, anything else,
+   goes on as ever) */
+int
+web_offer(struct obj *otmp)
+{
+    if (!web_his_name() || otmp->otyp != CORPSE || your_race(&mons[otmp->corpsenm]))
+        return 0;
+    pline("%s has no need of burnt offerings.  His sacrifice was made once, for all.", web_his_name());
+    return 1;
+}
+
+/* #mass: a priest celebrates Mass with a holy wafer and holy wine (the chalice
+   stays): the grace of a perfect sacrifice, a gift as the gods give them */
+int
+web_mass(void)
+{
+    struct obj *wafer, *wine, *gift;
+    int nartifacts;
+
+    if (!web_at_his_altar("celebrate Mass"))
+        return 0;
+    if (!web_perk("mass")) {
+        pline("Only a priest may celebrate Mass.");
+        return 0;
+    }
+    if (!(wafer = web_carried(HOLY_WAFER)) || !(wine = web_carried(POT_HOLY_WINE))) {
+        You("need a holy wafer and holy wine to celebrate Mass.");
+        return 0;
+    }
+    You("celebrate Mass at the altar of %s.", web_his_name());
+    pline("The bread and wine are consecrated, and you receive them.");
+    useup(wafer);
+    useup(wine);
+    {
+        struct obj *chalice = mksobj(CHALICE, FALSE, FALSE);
+        (void) hold_another_object(chalice, "You set the empty chalice down.", (const char *)0, (const char *)0);
+    }
+    u.ublesscnt = u.ublesscnt > 300 ? u.ublesscnt - 300 : 0;
+    exercise(A_WIS, TRUE);
+    nartifacts = nartifact_exist();
+    if (u.ulevel > 2 && u.uluck >= 0 && !rn2(10 + (2 * u.ugifts * nartifacts))
+        && (gift = mk_artifact((struct obj *)0, A_LAWFUL)) != 0) {
+        if (gift->spe < 0) gift->spe = 0;
+        if (gift->cursed) uncurse(gift);
+        gift->oerodeproof = TRUE;
+        dropy(gift);
+        pline("An object appears at your %s!", makeplural(body_part(FOOT)));
+        pline("A voice booms out:  \"Use my gift wisely!\"");
+        u.ugifts++;
+        u.ublesscnt = rnz(300 + (50 * nartifacts));
+        unrestrict_weapon_skill(weapon_type(gift));
+        discover_artifact(gift->oartifact);
+    } else {
+        You_feel("the peace of %s.", web_his_name());
+        change_luck(1);
+    }
+    return 1;
+}
+
+/* #communion: his follower receives a holy wafer at his altar: a quiet grace */
+int
+web_communion(void)
+{
+    struct obj *wafer;
+
+    if (!web_at_his_altar("receive Communion"))
+        return 0;
+    if (!(wafer = web_carried(HOLY_WAFER))) {
+        You("have no holy wafer to receive.");
+        return 0;
+    }
+    You("receive Communion.");
+    u.uhunger += objects[HOLY_WAFER].oc_nutrition;
+    newuhs(FALSE);
+    useup(wafer);
+    u.ublesscnt = u.ublesscnt > 100 ? u.ublesscnt - 100 : 0;
+    if (u.uluck < 3)
+        change_luck(1);
+    You_feel("a quiet grace.");
+    exercise(A_WIS, TRUE);
+    return 1;
+}
+
+/* #alms: gold given to the poor at his altar, as a temple priest takes a
+   donation; all you have (the widow's mite, Mark 12:41-44) counts for more */
+int
+web_alms(void)
+{
+    char buf[BUFSZ];
+    long n, lvl = (long) u.ulevel;
+    boolean mite;
+
+    if (!web_at_his_altar("give alms"))
+        return 0;
+    if (u.ugold <= 0) {
+        You("have no gold to give.");
+        return 0;
+    }
+    getlin("How much gold will you give to the poor?", buf);
+    if (buf[0] == '\033' || (n = atol(buf)) <= 0)
+        return 0;
+    if (n > u.ugold)
+        n = u.ugold;
+    mite = n == u.ugold;
+    u.ugold -= n;
+    flags.botl = 1;
+    You("give %ld gold piece%s to the poor.", n, plur(n));
+    if (n < 400 * lvl && !mite) {
+        if (n < 200 * lvl)
+            pline("Your gift is noted.");
+        else {
+            You("have a hopeful feeling.");
+            if (u.uluck < 0) u.uluck = 0;
+        }
+    } else if (n < 600 * lvl || u.ublessed >= 20 || (u.ublessed >= 9 && rn2(u.ublessed))) {
+        You(mite ? "gave all you had, and feel blessed." : "feel a sense of peace.");
+        if (u.uluck < 0) u.uluck = 0;
+        else change_luck(1);
+    } else {
+        You_feel("watched over.");
+        u.ublessed++;
+    }
+    return 1;
+}
+
+/* #confess: at his altar, his anger absolved; the penance: a fast (down to
+   hungry) and your Luck, all of it */
+int
+web_confess(void)
+{
+    if (!web_at_his_altar("confess"))
+        return 0;
+    if (!u.ugangr) {
+        You("confess your sins before %s, and feel at peace.", web_his_name());
+        return 1;
+    }
+    You("confess your sins before %s.", web_his_name());
+    pline("You are absolved.  For your penance, you fast.");
+    u.ugangr = 0;
+    if (u.uhunger > 149) u.uhunger = 149;   /* (Hungry under 150) */
+    newuhs(FALSE);
+    u.uluck = 0;
+    flags.botl = 1;
+    return 1;
+}
+
+/* pray.c prayer_done: a prayer fills chalices with holy wine again: those
    on the altar you pray at (any altar), and for a Catholic priest (the
    server's LEGOHACK_PERKS: "chalice", from his design) those he carries,
    wherever he prays */
@@ -621,10 +841,10 @@ web_fill_glasses(void)
     if (IS_ALTAR(levl[u.ux][u.uy].typ)) {   /* (pray.c's on_altar) */
         for (o = level.objects[u.ux][u.uy]; o; o = next) {
             next = o->nexthere;
-            if (o->otyp == WINE_GLASS) { n += o->quan; web_fill(o); }
+            if (o->otyp == CHALICE) { n += o->quan; web_fill(o); }
         }
         if (n) {
-            pline("The glass%s on the altar fill%s with wine.", n > 1 ? "es" : "", n > 1 ? "" : "s");
+            pline("The chalice%s on the altar fill%s with wine.", n > 1 ? "s" : "", n > 1 ? "" : "s");
             newsym(u.ux, u.uy);
         }
     }
@@ -632,10 +852,10 @@ web_fill_glasses(void)
         n = 0;
         for (o = invent; o; o = next) {
             next = o->nobj;
-            if (o->otyp == WINE_GLASS) { n += o->quan; web_fill(o); }
+            if (o->otyp == CHALICE) { n += o->quan; web_fill(o); }
         }
         if (n) {
-            pline("The glass%s in your pack fill%s with wine.", n > 1 ? "es" : "", n > 1 ? "" : "s");
+            pline("The chalice%s in your pack fill%s with wine.", n > 1 ? "s" : "", n > 1 ? "" : "s");
             update_inventory();
         }
     }
@@ -1481,6 +1701,10 @@ build_status(void)
     fprintf(out, ",\"twoweap\":%d", u.twoweap ? 1 : 0);
     /* cantwo: whether you could ever fight with two weapons (your role, your form) */
     fprintf(out, ",\"cantwo\":%d", could_twoweap(youmonst.data) && !cantwield(youmonst.data) ? 1 : 0);
+    /* faith: a follower of the figure's own deity (Jesus): his name, whether a
+       priest who may say Mass, whether he's angry (the rites the client offers) */
+    if (web_his_name())
+        fprintf(out, ",\"faith\":\"%s\",\"mass\":%d,\"angry\":%d", web_his_name(), web_perk("mass"), u.ugangr ? 1 : 0);
     fprintf(out, ",\"female\":%d,\"baserole\":", flags.female ? 1 : 0);
     jstr(urole.name.m);
     fputs(",\"race\":", out);

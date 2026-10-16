@@ -195,25 +195,41 @@ edit("src/potion.c", [("	case POT_HOLY_WINE: /* WEB_HOOK_HOLYWINE: the chalice: 
                        "	case POT_HOLY_WINE: /* WEB_HOOK_HOLYWINE: the chalice: whole in body and soul */\n"
                        "		{ extern void NDECL(web_holy_wine_sip); web_holy_wine_sip(); } /* WEB_HOOK_DRUNK */\n")],
      "WEB_HOOK_DRUNK")
-# BrickHack: the wine glass, plain and clear (a tool, never made at random):
-# what's left when holy wine is drunk; prayer fills it again (winweb.c
-# web_fill_glasses: on an altar, or anywhere for a Catholic priest)
+# (the chalice was a wine glass once: a tree an earlier build patched says so;
+# made to say chalice before the edits below look for their tags)
+def rename(rel, pairs):
+    path = f"{src}/{rel}"
+    s = open(path, encoding="latin-1").read()
+    t = s
+    for a, b in pairs:
+        t = t.replace(a, b)
+    if t != s:
+        open(path, "w", encoding="latin-1").write(t)
+
+rename("src/objects.c", [("TOOL(\"wine glass\", (char *)0,   1, 1, 0, 0,   0,   3,   5, GLASS, HI_GLASS), /* WEB_HOOK_GLASS */\n", "TOOL(\"chalice\", (char *)0,      1, 1, 0, 0,   0,  20,  50, GOLD, HI_GOLD), /* WEB_HOOK_GLASS */\n")])
+rename("win/share/objects.txt", [("# tile 298 (wine glass)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMBBBBBBMMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMMBNPPPBMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMBBBBBBBBMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n}\n", "# tile 298 (chalice)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMAAAAAAAAAAMMM\n  MMMAHKKKKKKHAMMM\n  MMMAHNKKKKKHAMMM\n  MMMAHHKKKKHCAMMM\n  MMMMAHHHHHHCAMMM\n  MMMMMAHHHHCAMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMAHHHHCAMMMM\n  MMMMAAAAAAAAMMMM\n  MMMMMMMMMMMMMMMM\n}\n")])
+rename("src/potion.c", [("mksobj(WINE_GLASS, FALSE, FALSE)", "mksobj(CHALICE, FALSE, FALSE)"),
+                        ("\"You set the empty glass down.\"", "\"You set the empty chalice down.\"")])
+# BrickHack: the chalice, plain gold (a tool, never made at random): what's
+# left when holy wine is drunk; prayer fills it again (winweb.c
+# web_fill_glasses: on an altar, or anywhere for a Catholic priest or bishop);
+# thrown, it shatters and is gone
 edit("src/objects.c", [("		TOOL_CLASS, 0, 0,10, 5000, 0, 0, 0, 0, 50, HI_SILVER),\n#undef TOOL\n",
                         "		TOOL_CLASS, 0, 0,10, 5000, 0, 0, 0, 0, 50, HI_SILVER),\n"
-                        "TOOL(\"wine glass\", (char *)0,   1, 1, 0, 0,   0,   3,   5, GLASS, HI_GLASS), /* WEB_HOOK_GLASS */\n"
+                        "TOOL(\"chalice\", (char *)0,      1, 1, 0, 0,   0,  20,  50, GOLD, HI_GOLD), /* WEB_HOOK_GLASS */\n"
                         "#undef TOOL\n")],
      "WEB_HOOK_GLASS")
 edit("win/share/objects.txt", [("# tile 298 (tripe ration)\n",
-"""# tile 298 (wine glass)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMBBBBBBMMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMMBNPPPBMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMBBBBBBBBMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n}\n# tile 298 (tripe ration)\n""")],
-     "(wine glass)")
+"""# tile 298 (chalice)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMAAAAAAAAAAMMM\n  MMMAHKKKKKKHAMMM\n  MMMAHNKKKKKHAMMM\n  MMMAHHKKKKHCAMMM\n  MMMMAHHHHHHCAMMM\n  MMMMMAHHHHCAMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMAHHHHCAMMMM\n  MMMMAAAAAAAAMMMM\n  MMMMMMMMMMMMMMMM\n}\n# tile 298 (tripe ration)\n""")],
+     "(chalice)")
 edit("src/potion.c", [("		exercise(A_WIS, TRUE);\n		exercise(A_CON, TRUE);\n		break;\n	case POT_FULL_HEALING:\n",
                        "		exercise(A_WIS, TRUE);\n		exercise(A_CON, TRUE);\n"
                        "		{ extern void NDECL(web_holy_wine); web_holy_wine(); } /* WEB_HOOK_GLASS: drunk; peace with the figure's own god */\n"
                        "		{ /* WEB_HOOK_GLASS: the wine drunk, its glass stays */\n"
-                       "		    struct obj *glass = mksobj(WINE_GLASS, FALSE, FALSE);\n"
+                       "		    struct obj *glass = mksobj(CHALICE, FALSE, FALSE);\n"
                        "		    glass->blessed = otmp->blessed;\n"
                        "		    glass->cursed = otmp->cursed;\n"
-                       "		    (void) hold_another_object(glass, \"You set the empty glass down.\",\n"
+                       "		    (void) hold_another_object(glass, \"You set the empty chalice down.\",\n"
                        "					       (const char *)0, (const char *)0);\n"
                        "		}\n"
                        "		break;\n	case POT_FULL_HEALING:\n")],
@@ -255,6 +271,39 @@ edit("src/questpgr.c", [("STATIC_OVL void\ndeliver_by_window(qt_msg, how)\n",
                          "	    web_intro = 0;\n"
                          "	}\n")],
      "WEB_HOOK_INTRO")
+# ...and a chalice thrown shatters, gold or no: gone for good
+edit("src/dothrow.c", [("		case POT_WATER:		/* really, all potions */\n		case EGG:\n		case CREAM_PIE:\n",
+                        "		case CHALICE:		/* WEB_HOOK_CHALICE: thrown, it shatters */\n"
+                        "		case POT_WATER:		/* really, all potions */\n		case EGG:\n		case CREAM_PIE:\n"),
+                       ("		case CRYSTAL_BALL:\n",
+                        "		case CRYSTAL_BALL:\n		case CHALICE:		/* WEB_HOOK_CHALICE */\n")],
+     "WEB_HOOK_CHALICE")
+# BrickHack: a follower of the figure's own deity (Jesus) who sets a chalice
+# on another god's altar claims it for him on the spot (winweb.c
+# web_altar_glass): it turns lawful, its priest turns on you
+edit("src/do.c", [("	register struct obj *obj;\n{\n	if (Blind)\n		return;\n\n	/* KMH, conduct */\n",
+                   "	register struct obj *obj;\n{\n"
+                   "	{ extern void FDECL(web_altar_glass, (struct obj *)); web_altar_glass(obj); } /* WEB_HOOK_ALTARGLASS */\n"
+                   "	if (Blind)\n		return;\n\n	/* KMH, conduct */\n")],
+     "WEB_HOOK_ALTARGLASS")
+# BrickHack: the rites of a follower of the figure's own deity (Jesus), in
+# place of burnt offerings, which he refuses (his sacrifice was once for all):
+# #mass (a priest or bishop), #communion, #alms, #confess; winweb.c web_offer,
+# web_mass, web_communion, web_alms, web_confess
+edit("src/cmd.c", [("struct ext_func_tab extcmdlist[] = {\n",
+                    "extern int NDECL(web_mass), NDECL(web_communion), NDECL(web_alms), NDECL(web_confess); /* WEB_HOOK_RITES */\n"
+                    "struct ext_func_tab extcmdlist[] = {\n"),
+                   ("	{\"offer\", \"offer a sacrifice to the gods\", dosacrifice, FALSE},\n",
+                    "	{\"offer\", \"offer a sacrifice to the gods\", dosacrifice, FALSE},\n"
+                    "	{\"mass\", \"celebrate Mass at an altar of your god\", web_mass, FALSE},\n"
+                    "	{\"communion\", \"receive Communion at an altar of your god\", web_communion, FALSE},\n"
+                    "	{\"alms\", \"give alms at an altar of your god\", web_alms, FALSE},\n"
+                    "	{\"confess\", \"confess your sins at an altar of your god\", web_confess, FALSE},\n")],
+     "WEB_HOOK_RITES")
+edit("src/pray.c", [("    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n",
+                     "    web_dream_sacrifice(); /* WEB_HOOK_ALTAR: anything offered */\n"
+                     "    if (!orac) { extern int FDECL(web_offer, (struct obj *)); if (web_offer(otmp)) return 1; } /* WEB_HOOK_RITES */\n")],
+     "WEB_HOOK_RITES")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

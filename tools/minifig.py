@@ -12,7 +12,8 @@ SPEC example:
    "left":  {"part": "3846p4c", "color": 15, "aim": [0, -1, 0], "face": [0.3, 0, -1]}}
 
 "torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
-"dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs.
+"dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs
+(its "decal" printed down its front: a habit's embroidered band).
 "shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
 "boots": {"bands": [[y, colour], ...], "feet": {"part", "color", "pos"}} gives boots
 or shoes: the legs moulded in a second colour from height y down (booted), and
@@ -161,6 +162,7 @@ DECAL_SPOTS = {
     '2587': {'center': (0, 12, -22), 'size': (18, 18), 'side': 'front'},   # classic armour plate: the chest
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
     '973': {'center': (0, 15, -10), 'size': (17, 17), 'side': 'front'},     # torso: the chest
+    '30381': {'center': (0, -3, -18), 'size': (9, 9), 'side': 'front'},     # hood: its brow, over the face
     '95228': {'center': (0, 32, -10), 'size': (16, 16), 'side': 'front'},  # minifig bottle: its body
     'u9180': {'center': (0, 32, -12), 'size': (18, 14), 'side': 'front'},  # minifig conical flask: its body
     '98138': {'center': (0, 0, 0), 'size': (20, 20), 'side': 'top'},        # round tile 1 x 1: its face
@@ -545,6 +547,9 @@ def build(spec, base_dir='.'):
         # a long dress, the classic LEGO way: no hips or legs, the torso straight on
         # a sloped brick's top studs, turned round so its slope is at the back
         R180 = np.diag([-1.0, 1, -1])
+        if spec['dress'].get('decal'):   # a print down its front (its flat side, turned to the front: its own back)
+            out.append(decal_line(dict(part=spec['dress'].get('part', '3678b'), decal=dict({'center': (0, 24, 10), 'size': (10, 46), 'side': 'back'}, **spec['dress']['decal'])),
+                                  np.array([0.0, 32, 0]), R180, base_dir))
         out.append(line(spec['dress'].get('color', 16), (0, 32, 0), R180, spec['dress'].get('part', '3678b')))
     elif skel:
         # a skeleton: its torso has its pelvis built in; the bone legs clip onto its axle
@@ -626,7 +631,7 @@ def shift(l, dy):
     if t[0] == '1':
         t[3] = f'{float(t[3]) + dy:.4f}'
     elif l.startswith('0 !TEXMAP NEXT PLANAR'):
-        for i in (6, 9, 12):   # the y of p1, p2, p3
+        for i in (5, 8, 11):   # the y of p1, p2, p3 ('0 !TEXMAP NEXT PLANAR x1 y1 z1 x2 y2 z2 x3 y3 z3 image')
             t[i] = f'{float(t[i]) + dy:.4f}'
     return ' '.join(t)
 

@@ -6870,12 +6870,12 @@
    "layers": 1
   }
  },
- "wine glass": {
-  "lego": "The minifig goblet in clear (a wine glass)",
+ "chalice": {
+  "lego": "The minifig goblet in metallic gold, as holy wine is, but empty and not glowing (a chalice)",
   "parts": [
    {
     "part": "2343",
-    "color": 47
+    "color": 82
    }
   ],
   "upright": true

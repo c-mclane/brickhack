@@ -1,0 +1,49 @@
+{
+ "label": "Orthodox Schema Monk",
+ "name": "Orthodox Great Schema Monk (Schemamonk)",
+ "role": "monk",
+ "gender": "male",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "torsoDecal": {
+  "image": "../decals/analavos-top.png",
+  "center": [
+   0,
+   16,
+   -10
+  ],
+  "size": [
+   14,
+   32
+  ]
+ },
+ "head": "3626bp4g",
+ "headColor": 14,
+ "hat": "30381",
+ "hatColor": 0,
+ "dress": {
+  "part": "3678b",
+  "color": 0,
+  "decal": {
+   "image": "../decals/analavos-skirt.png",
+   "size": [
+    14,
+    46
+   ]
+  }
+ },
+ "hatDecal": {
+  "image": "../decals/koukoulion.png"
+ },
+ "neck": {
+  "part": "50231c01",
+  "color": 0,
+  "decal": {
+   "image": "../decals/schema-cape.png"
+  }
+ },
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
+}

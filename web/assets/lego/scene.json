@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   10,
-   18
+   3.2,
+   10
   ],
   "target": [
    0,
-   0.5,
-   0.5
+   2.4,
+   0
   ]
  },
  "objects": [
@@ -22,328 +22,24 @@
    ]
   },
   {
-   "item": "booze",
+   "fig": "orthodox-schema-monk",
    "pos": [
-    -240,
-    0,
-    -90
+    -40,
+    -80,
+    0
    ],
-   "label": "brown potion"
+   "rotY": 350,
+   "label": "front"
   },
   {
-   "item": "fruit juice",
+   "fig": "orthodox-schema-monk",
    "pos": [
-    -180,
-    0,
-    -90
+    40,
+    -80,
+    0
    ],
-   "label": "dark potion"
-  },
-  {
-   "item": "see invisible",
-   "pos": [
-    -120,
-    0,
-    -90
-   ],
-   "label": "magenta potion"
-  },
-  {
-   "item": "sickness",
-   "pos": [
-    -60,
-    0,
-    -90
-   ],
-   "label": "fizzy potion"
-  },
-  {
-   "item": "sleeping",
-   "pos": [
-    0,
-    0,
-    -90
-   ],
-   "label": "effervescent potion"
-  },
-  {
-   "item": "clairvoyance",
-   "pos": [
-    60,
-    0,
-    -90
-   ],
-   "label": "luminescent potion"
-  },
-  {
-   "item": "confusion",
-   "pos": [
-    120,
-    0,
-    -90
-   ],
-   "label": "orange potion"
-  },
-  {
-   "item": "hallucination",
-   "pos": [
-    180,
-    0,
-    -90
-   ],
-   "label": "sky blue potion"
-  },
-  {
-   "item": "healing",
-   "pos": [
-    240,
-    0,
-    -90
-   ],
-   "label": "purple-red potion"
-  },
-  {
-   "item": "extra healing",
-   "pos": [
-    -240,
-    0,
-    -20
-   ],
-   "label": "puce potion"
-  },
-  {
-   "item": "restore ability",
-   "pos": [
-    -180,
-    0,
-    -20
-   ],
-   "label": "pink potion"
-  },
-  {
-   "item": "blindness",
-   "pos": [
-    -120,
-    0,
-    -20
-   ],
-   "label": "yellow potion"
-  },
-  {
-   "item": "ESP",
-   "pos": [
-    -60,
-    0,
-    -20
-   ],
-   "label": "muddy potion"
-  },
-  {
-   "item": "gain energy",
-   "pos": [
-    0,
-    0,
-    -20
-   ],
-   "label": "cloudy potion"
-  },
-  {
-   "item": "invisibility",
-   "pos": [
-    60,
-    0,
-    -20
-   ],
-   "label": "brilliant blue potion"
-  },
-  {
-   "item": "monster detection",
-   "pos": [
-    120,
-    0,
-    -20
-   ],
-   "label": "bubbly potion"
-  },
-  {
-   "item": "object detection",
-   "pos": [
-    180,
-    0,
-    -20
-   ],
-   "label": "smoky potion"
-  },
-  {
-   "item": "enlightenment",
-   "pos": [
-    240,
-    0,
-    -20
-   ],
-   "label": "swirly potion"
-  },
-  {
-   "item": "full healing",
-   "pos": [
-    -240,
-    0,
-    50
-   ],
-   "label": "black potion"
-  },
-  {
-   "item": "levitation",
-   "pos": [
-    -180,
-    0,
-    50
-   ],
-   "label": "cyan potion"
-  },
-  {
-   "item": "polymorph",
-   "pos": [
-    -120,
-    0,
-    50
-   ],
-   "label": "golden potion"
-  },
-  {
-   "item": "speed",
-   "pos": [
-    -60,
-    0,
-    50
-   ],
-   "label": "dark green potion"
-  },
-  {
-   "item": "acid",
-   "pos": [
-    0,
-    0,
-    50
-   ],
-   "label": "white potion"
-  },
-  {
-   "item": "oil",
-   "pos": [
-    60,
-    0,
-    50
-   ],
-   "label": "murky potion"
-  },
-  {
-   "item": "gain ability",
-   "pos": [
-    120,
-    0,
-    50
-   ],
-   "label": "ruby potion"
-  },
-  {
-   "item": "gain level",
-   "pos": [
-    180,
-    0,
-    50
-   ],
-   "label": "milky potion"
-  },
-  {
-   "item": "invulnerability",
-   "pos": [
-    240,
-    0,
-    50
-   ],
-   "label": "icy potion"
-  },
-  {
-   "item": "paralysis",
-   "pos": [
-    -240,
-    0,
-    120
-   ],
-   "label": "emerald potion"
-  },
-  {
-   "item": "water",
-   "pos": [
-    -180,
-    0,
-    120
-   ],
-   "label": "clear potion (water)"
-  },
-  {
-   "item": "blood",
-   "pos": [
-    -120,
-    0,
-    120
-   ],
-   "label": "blood-red potion"
-  },
-  {
-   "item": "vampire blood",
-   "pos": [
-    -60,
-    0,
-    120
-   ],
-   "label": "blood-red potion"
-  },
-  {
-   "item": "amnesia",
-   "pos": [
-    0,
-    0,
-    120
-   ],
-   "label": "sparkling potion"
-  },
-  {
-   "item": "holy water",
-   "pos": [
-    60,
-    0,
-    120
-   ],
-   "label": "holy water"
-  },
-  {
-   "item": "unholy water",
-   "pos": [
-    120,
-    0,
-    120
-   ],
-   "label": "unholy water"
-  },
-  {
-   "item": "holy wine",
-   "pos": [
-    260,
-    0,
-    150
-   ],
-   "label": "holy wine"
-  },
-  {
-   "item": "holy wafer",
-   "pos": [
-    200,
-    0,
-    150
-   ],
-   "label": "holy wafer"
+   "rotY": 170,
+   "label": "back"
   }
  ]
 }
