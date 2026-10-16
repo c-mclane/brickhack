@@ -9,6 +9,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { gradientEnvironment } from './envmap.js';
 
 const byTile = new Map(); // tile -> {name, url, lego}
 // items named as the game names them, where a plain name could be another class's ("ring of see invisible")
@@ -108,17 +109,18 @@ function kit() {
   const sun = new THREE.DirectionalLight(0xffffff, 2.0);
   sun.position.set(2, 5, 6);
   scene.add(sun);
-  return (iconKit = { canvas, r, scene, loader: new GLTFLoader() });
+  return (iconKit = { canvas, r, scene, loader: new GLTFLoader(), env: gradientEnvironment(THREE, r) });
 }
 // a model's picture: laid diagonally, blade to the top right, turned a little toward you
 async function renderIcon(url) {
-  const { canvas, r, scene, loader } = kit();
+  const { canvas, r, scene, loader, env } = kit();
   const g = await new Promise((res, rej) => loader.load(url, res, undefined, rej)).catch(() => null);
   if (!g) return null;
   const m = g.scene;
   m.traverse((o) => {
     if (!o.isMesh) return;
     o.material.flatShading = true;
+    if (o.material.metalness > 0.5) { o.material.envMap = env; o.material.envMapIntensity = 1.2; } // chrome: reflects (envmap.js)
     if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.8; o.material.opacity = 0.85; }
   });
   const holder = new THREE.Group();

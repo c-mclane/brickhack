@@ -2426,7 +2426,7 @@
   "parts": [
    {
     "part": "30173a",
-    "color": 297
+    "color": 334
    }
   ],
   "aura": {
@@ -2536,7 +2536,7 @@
   "parts": [
    {
     "part": "59232",
-    "color": 297
+    "color": 334
    }
   ],
   "aura": {
@@ -3293,7 +3293,7 @@
   "parts": [
    {
     "part": "37341d",
-    "color": 297
+    "color": 334
    }
   ]
  },
@@ -3302,7 +3302,7 @@
   "parts": [
    {
     "part": "67100-f1",
-    "color": 297
+    "color": 334
    }
   ]
  },
@@ -3311,11 +3311,11 @@
   "parts": [
    {
     "part": "93058",
-    "color": 297
+    "color": 334
    },
    {
     "part": "93058",
-    "color": 297,
+    "color": 334,
     "pos": [
      0,
      0,
@@ -3329,7 +3329,7 @@
   "parts": [
    {
     "part": "93055",
-    "color": 297
+    "color": 334
    }
   ]
  },
@@ -6871,7 +6871,7 @@
   "parts": [
    {
     "part": "2343",
-    "color": 82
+    "color": 334
    }
   ],
   "upright": true,
@@ -6886,7 +6886,7 @@
   "parts": [
    {
     "part": "2343",
-    "color": 82
+    "color": 334
    }
   ],
   "upright": true
@@ -7217,6 +7217,16 @@
    {
     "part": "11010",
     "color": 297
+   }
+  ],
+  "upright": true
+ },
+ "One Ring": {
+  "lego": "The One Ring (11010), as LEGO made it, in chrome gold",
+  "parts": [
+   {
+    "part": "11010",
+    "color": 334
    }
   ],
   "upright": true

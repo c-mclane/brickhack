@@ -8,6 +8,7 @@
 // The .glb models are in studs (20 LDU = 1), so they are drawn at scale 0.25.
 
 import { MIST_GLSL, AURA_GLSL, AURA_COLOR, isMist, quantumPart, strobeHex, auraShells, tipOf } from './mist.js';
+import { ENV_GLSL } from './envmap.js';
 
 export const LDU = 1 / 80;
 export const BRICK_H = 24 * LDU;
@@ -56,10 +57,13 @@ uniform float uEdges;     // 1: darken a thin line round each face (brick seams)
 uniform float uGlow;      // 1: a translucent part, lit from inside (flames, ice crystals)
 uniform float uMist, uTime; // 1: a doppelganger's misty half (mist.js)
 uniform float uAura;        // > 0: an angel's glow shell, this strong (mist.js), in uColor
+uniform float uMetal;       // 1: chrome, reflecting the sky-to-ground gradient (envmap.js)
+uniform vec3 uUpV;          // up, in view space (the gradient's)
 uniform vec3 uFog; uniform vec2 uFogRange;
 out vec4 o;
 ${MIST_GLSL}
 ${AURA_GLSL}
+${ENV_GLSL}
 void main() {
   if (uAura > 0.0) {   // added on top (blended ONE, ONE): brightest at the outline
     float a = auraGlow(normalize(vVN), normalize(-vVP), uAura, uTime);
@@ -74,6 +78,12 @@ void main() {
   float fill = max(dot(n, normalize(vec3(-0.5, 0.3, -0.6))), 0.0);
   float sky = 0.5 + 0.5 * n.y;
   vec3 col = base * (0.5 + 0.7 * key + 0.22 * fill + 0.18 * sky);
+  if (uMetal > 0.5) { // chrome: its colour is what it reflects, brightest at the rim
+    vec3 v = normalize(vVP), nv = normalize(gl_FrontFacing ? vVN : -vVN);
+    vec3 env = envGrad(dot(reflect(v, nv), normalize(uUpV)));
+    float rim = pow(1.0 - abs(dot(nv, -v)), 3.0);
+    col = base * (0.25 + 1.15 * env) + env * 0.35 * rim;
+  }
   if (uEdges > 0.5) {
     // distance to the nearest edge of this face: the middle of the three distances to the box's sides
     vec3 d = min(vLocal, vSize - vLocal);
@@ -154,6 +164,7 @@ async function parseGLB(buf) {
       pos: floats(p.attributes.POSITION), nrm: floats(p.attributes.NORMAL),
       uv: p.attributes.TEXCOORD_0 != null ? floats(p.attributes.TEXCOORD_0) : null,
       color: [lin2srgb(f[0]), lin2srgb(f[1]), lin2srgb(f[2]), f[3]], image, mist: isMist(mat), quantum: quantumPart(mat),
+      metal: (pbr.metallicFactor ?? 1) > 0.5, // (chrome: ldraw2glb.py)
       group: mesh.name || null,
     });
   }
@@ -226,7 +237,7 @@ export class Lego {
     gl.linkProgram(p);
     if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
     this.u = {};
-    for (const n of ['uProj', 'uView', 'uModel', 'uColor', 'uTex', 'uHasTex', 'uEdges', 'uGlow', 'uMist', 'uAura', 'uTime', 'uFog', 'uFogRange']) this.u[n] = gl.getUniformLocation(p, n);
+    for (const n of ['uProj', 'uView', 'uModel', 'uColor', 'uTex', 'uHasTex', 'uEdges', 'uGlow', 'uMist', 'uAura', 'uMetal', 'uUpV', 'uTime', 'uFog', 'uFogRange']) this.u[n] = gl.getUniformLocation(p, n);
     this.a = {};
     for (const n of ['aPos', 'aNrm', 'aUV', 'iPos', 'iSize', 'iCol']) this.a[n] = gl.getAttribLocation(p, n);
     this.models = new Map(); // url -> Promise<[{vao, count, color, tex}]>
@@ -303,7 +314,7 @@ export class Lego {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
-    return { vao, count: p.pos.length / 3, color: p.color, tex, mist: p.mist, quantum: p.quantum, aura: p.aura, group: p.group };
+    return { vao, count: p.pos.length / 3, color: p.color, tex, mist: p.mist, quantum: p.quantum, aura: p.aura, metal: p.metal, group: p.group };
   }
 
   // the per-instance attributes as constants (for drawing a single model)
@@ -322,6 +333,8 @@ export class Lego {
     gl.useProgram(this.prog);
     gl.uniformMatrix4fv(u.uProj, false, proj);
     gl.uniformMatrix4fv(u.uView, false, view);
+    gl.uniform3f(u.uUpV, view[4], view[5], view[6]); // (the world's up, in view space: the reflections' gradient)
+    gl.uniform1f(u.uMetal, 0);
     gl.uniform3fv(u.uFog, this.fog);
     gl.uniform2fv(u.uFogRange, this.fogRange);
     const now = performance.now() / 1000;
@@ -366,6 +379,7 @@ export class Lego {
           } else gl.uniform4fv(u.uColor, p.color);
           gl.uniform1f(u.uMist, p.mist ? 1 : 0);
           gl.uniform1f(u.uAura, p.aura || 0);
+          gl.uniform1f(u.uMetal, p.metal ? 1 : 0);
           if (glow) gl.blendFunc(gl.SRC_ALPHA, p.aura ? gl.ONE : gl.ONE_MINUS_SRC_ALPHA);
           gl.uniform1f(u.uHasTex, p.tex ? 1 : 0);
           if (p.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, p.tex); }

@@ -85,8 +85,8 @@ def artifacts():
         words = short.upper().split()
         n = next((num[k] for i in range(len(words))   # (makedefs shortens a few: "Platinum Yendorian
                   for k in [re.sub(r'[^A-Z0-9]', '_', ' '.join(words[i:]))] if k in num), None)   # Express Card")
-        if n:
-            arts[n] = (short, base.lower().replace('_', ' '))
+        if n:   # (its base item by name: RIN_INVISIBILITY, a ring: "invisibility")
+            arts[n] = (short, re.sub(r'^rin ', '', base.lower().replace('_', ' ')))
     return arts
 
 

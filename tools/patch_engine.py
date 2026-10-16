@@ -395,6 +395,24 @@ edit("src/mthrowu.c", [("	if (sym) tmp_at(DISP_FLASH, obj_to_glyph(singleobj));\
                         "	{ extern void FDECL(web_mthrow_end, (int, int)); web_mthrow_end(bhitpos.x, bhitpos.y); } /* WEB_HOOK_MTHROW */\n"
                         "\n	if (blindinc) {\n")],
      "WEB_HOOK_MTHROW")
+# ---- The One Ring: Sauron's, a ring of invisibility, never made at random (for
+# now it turns up nowhere: the dev command "give The One Ring"). Its burden is
+# crushing (inv_weight): whoever carries it can't move, unless a hobbit (the
+# Ring's bearers). Its LEGO look: the One Ring in chrome gold (items.json "One Ring")
+edit("include/artilist.h", [
+    ("A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )",
+     "/* WEB_HOOK_ONERING: the One Ring, to rule them all */\n"
+     "A(\"The One Ring\",		RIN_INVISIBILITY,\n"
+     "	(SPFX_NOGEN|SPFX_RESTR), 0, 0,\n"
+     "	NO_ATTK,	NO_DFNS,	NO_CARY,	0, A_CHAOTIC, NON_PM, NON_PM, 5000L ),\n\n"
+     "A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )"),
+], "WEB_HOOK_ONERING")
+edit("src/hack.c", [("			wt += otmp->owt;\n		otmp = otmp->nobj;\n",
+                     "			wt += otmp->owt;\n"
+                     "		if (otmp->oartifact == ART_ONE_RING && !Race_if(PM_HOBBIT)) /* WEB_HOOK_ONERING */\n"
+                     "			wt += 5000;	/* (its burden: none but a hobbit can move under it) */\n"
+                     "		otmp = otmp->nobj;\n")],
+     "WEB_HOOK_ONERING")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   9,
-   13.5
+   2.6,
+   4.6
   ],
   "target": [
    0,
-   0,
-   1.6
+   0.3,
+   0.6
   ]
  },
  "objects": [
@@ -22,301 +22,94 @@
    ]
   },
   {
-   "item": "ring of adornment",
+   "item": "Excalibur",
    "pos": [
     -160,
     0,
-    -60
+    -40
    ],
-   "label": "wooden ring"
+   "label": "Excalibur"
   },
   {
-   "item": "ring of hunger",
-   "pos": [
-    -120,
-    0,
-    -60
-   ],
-   "label": "topaz ring"
-  },
-  {
-   "item": "ring of mood",
+   "item": "Snickersnee",
    "pos": [
     -80,
     0,
-    -60
+    -40
    ],
-   "label": "ridged ring"
+   "label": "Snickersnee"
   },
   {
-   "item": "ring of protection",
-   "pos": [
-    -40,
-    0,
-    -60
-   ],
-   "label": "black onyx ring"
-  },
-  {
-   "item": "ring of protection from shape changers",
+   "item": "Trollsbane",
    "pos": [
     0,
     0,
-    -60
+    -40
    ],
-   "label": "shiny ring"
+   "label": "Trollsbane"
   },
   {
-   "item": "ring of sleeping",
-   "pos": [
-    40,
-    0,
-    -60
-   ],
-   "label": "wedding ring"
-  },
-  {
-   "item": "ring of stealth",
+   "item": "Scythe of Quakes",
    "pos": [
     80,
     0,
-    -60
+    -40
    ],
-   "label": "jade ring"
+   "label": "Scythe of Quakes"
   },
   {
-   "item": "ring of sustain ability",
-   "pos": [
-    120,
-    0,
-    -60
-   ],
-   "label": "bronze ring"
-  },
-  {
-   "item": "ring of warning",
+   "item": "Nunchucks of Lightning",
    "pos": [
     160,
     0,
-    -60
+    -40
    ],
-   "label": "diamond ring"
+   "label": "Nunchucks of Lightning"
   },
   {
-   "item": "ring of aggravate monster",
+   "item": "Shurikens of Ice",
    "pos": [
     -160,
     0,
-    -20
+    40
    ],
-   "label": "sapphire ring"
+   "label": "Shurikens of Ice"
   },
   {
-   "item": "ring of cold resistance",
-   "pos": [
-    -120,
-    0,
-    -20
-   ],
-   "label": "brass ring"
-  },
-  {
-   "item": "ring of gain constitution",
+   "item": "Sword of Fire",
    "pos": [
     -80,
     0,
-    -20
+    40
    ],
-   "label": "opal ring"
+   "label": "Sword of Fire"
   },
   {
-   "item": "ring of gain dexterity",
-   "pos": [
-    -40,
-    0,
-    -20
-   ],
-   "label": "obsidian ring"
-  },
-  {
-   "item": "ring of gain intelligence",
+   "item": "chalice",
    "pos": [
     0,
     0,
-    -20
+    40
    ],
-   "label": "plain ring"
+   "label": "chalice"
   },
   {
-   "item": "ring of gain strength",
-   "pos": [
-    40,
-    0,
-    -20
-   ],
-   "label": "granite ring"
-  },
-  {
-   "item": "ring of gain wisdom",
+   "item": "holy wine",
    "pos": [
     80,
     0,
-    -20
+    40
    ],
-   "label": "glass ring"
+   "label": "holy wine"
   },
   {
-   "item": "ring of increase accuracy",
-   "pos": [
-    120,
-    0,
-    -20
-   ],
-   "label": "clay ring"
-  },
-  {
-   "item": "ring of increase damage",
+   "item": "One Ring",
    "pos": [
     160,
     0,
-    -20
+    40
    ],
-   "label": "coral ring"
-  },
-  {
-   "item": "ring of slow digestion",
-   "pos": [
-    -160,
-    0,
-    20
-   ],
-   "label": "steel ring"
-  },
-  {
-   "item": "ring of invisibility",
-   "pos": [
-    -120,
-    0,
-    20
-   ],
-   "label": "wire ring"
-  },
-  {
-   "item": "ring of poison resistance",
-   "pos": [
-    -80,
-    0,
-    20
-   ],
-   "label": "pearl ring"
-  },
-  {
-   "item": "ring of see invisible",
-   "pos": [
-    -40,
-    0,
-    20
-   ],
-   "label": "engagement ring"
-  },
-  {
-   "item": "ring of shock resistance",
-   "pos": [
-    0,
-    0,
-    20
-   ],
-   "label": "copper ring"
-  },
-  {
-   "item": "ring of fire resistance",
-   "pos": [
-    40,
-    0,
-    20
-   ],
-   "label": "iron ring"
-  },
-  {
-   "item": "ring of free action",
-   "pos": [
-    80,
-    0,
-    20
-   ],
-   "label": "twisted ring"
-  },
-  {
-   "item": "ring of levitation",
-   "pos": [
-    120,
-    0,
-    20
-   ],
-   "label": "agate ring"
-  },
-  {
-   "item": "ring of regeneration",
-   "pos": [
-    160,
-    0,
-    20
-   ],
-   "label": "moonstone ring"
-  },
-  {
-   "item": "ring of searching",
-   "pos": [
-    -160,
-    0,
-    60
-   ],
-   "label": "tiger eye ring"
-  },
-  {
-   "item": "ring of teleportation",
-   "pos": [
-    -120,
-    0,
-    60
-   ],
-   "label": "silver ring"
-  },
-  {
-   "item": "ring of conflict",
-   "pos": [
-    -80,
-    0,
-    60
-   ],
-   "label": "ruby ring"
-  },
-  {
-   "item": "ring of polymorph",
-   "pos": [
-    -40,
-    0,
-    60
-   ],
-   "label": "ivory ring"
-  },
-  {
-   "item": "ring of polymorph control",
-   "pos": [
-    0,
-    0,
-    60
-   ],
-   "label": "emerald ring"
-  },
-  {
-   "item": "ring of teleport control",
-   "pos": [
-    40,
-    0,
-    60
-   ],
-   "label": "gold ring"
+   "label": "The One Ring"
   }
  ]
 }

@@ -465,6 +465,8 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
             rgb, alpha, cname = colors.get(code, ([1, 0, 1], 1.0, f'unknown{code}'))
             # LDConfig colours are sRGB; glTF's baseColorFactor is linear (textures stay sRGB)
             pbr = {'baseColorFactor': [srgb_to_linear(c) for c in rgb] + [alpha], 'metallicFactor': 0.0, 'roughnessFactor': 0.35}
+            if cname.startswith('Chrome_'):   # chrome: a mirror of what's round it (the renderers give metal an environment: envmap.js)
+                pbr.update(metallicFactor=1.0, roughnessFactor=0.12)
             if tex:
                 png, (w, h) = decal_png(tex, rgb)
                 pad = 2

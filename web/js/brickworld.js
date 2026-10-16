@@ -12,6 +12,7 @@ import { isMist, mistify, quantumPart, strobify, addAura, addLightning } from '.
 import { figureJoints, poseJoints } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './lego.js';
 import { ThrowFX } from './throwfx.js';
+import { gradientEnvironment } from './envmap.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
 
@@ -55,6 +56,7 @@ export class BrickWorld {
     this.doors = new Map(); // where -> the door's group
     this.items = new Map(); // where + what -> a LEGO item lying on the floor
     this.fx = new ThrowFX(this); // thrown things, flying and tumbling (throwfx.js)
+    this.env = gradientEnvironment(THREE, r); // what metal reflects (envmap.js; plastic is lit as ever)
     this.data = null;
     this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => { this.pieces[k] = await this.partsOf(url); }))
       .then(() => this.data && this.setTerrain(this.data));
@@ -72,6 +74,7 @@ export class BrickWorld {
           if (!o.isMesh) return;
           o.material.flatShading = true;
           o.castShadow = o.receiveShadow = true;
+          if (o.material.metalness > 0.5) { o.material.envMap = this.env; o.material.envMapIntensity = 1.2; } // chrome: reflects (envmap.js)
           // a doppelganger's other half is shimmering mist
           if (isMist(o.material)) { mistify(o); return; }
           if (quantumPart(o.material) !== null) strobify(o);

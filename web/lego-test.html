@@ -20,6 +20,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura, addLightning } from './js/mist.js';
 import { FigureAnimator, figureJoints, poseJoints, ATTACK_TIME } from './js/minifig-anim.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { gradientEnvironment } from './js/envmap.js';
 
 const r = new THREE.WebGLRenderer({ antialias: true });
 r.setSize(innerWidth, innerHeight); r.setPixelRatio(devicePixelRatio);
@@ -39,6 +40,7 @@ scene.add(sun);
 const fill = new THREE.DirectionalLight(0xfff4e6, 1.3);
 fill.position.set(0, 12, 20); scene.add(fill);
 
+const env = gradientEnvironment(THREE, r); // what metal reflects (envmap.js; plastic is lit as ever)
 const loader = new GLTFLoader();
 const models = new Map();   // url -> Promise<Object3D>
 function model(url) {
@@ -46,6 +48,7 @@ function model(url) {
     g.scene.traverse(o => {
       if (!o.isMesh) return;
       o.material.flatShading = true; o.castShadow = o.receiveShadow = true;
+      if (o.material.metalness > 0.5) { o.material.envMap = env; o.material.envMapIntensity = 1.2; } // chrome: reflects
       // a doppelganger's other half is shimmering mist
       if (isMist(o.material)) { mistify(o); return; }
       if (quantumPart(o.material) !== null) strobify(o);
