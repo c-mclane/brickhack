@@ -111,7 +111,7 @@ export function tipOf(pos, tip) {
 
 // the shells for a model's triangles (positions, 9 floats a triangle): [{pos, nrm, strength}];
 // scale: how far out they stand (1: an angel's; less, a thinner glow)
-export function auraShells(pos, scale = 1) {
+export function auraShells(pos, scale = 1, layers = AURA.length) {
   const key = (i) => `${Math.round(pos[i] * 40)},${Math.round(pos[i + 1] * 40)},${Math.round(pos[i + 2] * 40)}`;
   const sum = new Map(), face = new Float32Array(pos.length);
   for (let t = 0; t < pos.length; t += 9) {
@@ -133,7 +133,7 @@ export function auraShells(pos, scale = 1) {
     if (l > 0.3 * s[3]) nrm.set([s[0] / l, s[1] / l, s[2] / l], i);
     else nrm.set(face.subarray(i, i + 3), i);
   }
-  return AURA.map(({ off, strength }) => {
+  return AURA.slice(0, layers).map(({ off, strength }) => {
     const p = new Float32Array(pos.length);
     for (let i = 0; i < pos.length; i++) p[i] = pos[i] + nrm[i] * off * scale;
     return { pos: p, nrm, strength };
@@ -142,8 +142,9 @@ export function auraShells(pos, scale = 1) {
 
 // three.js: give a loaded model (gltf.scene) its aura, if it's an angel; a
 // figure in joints gets a set of shells per joint, so the glow moves with them.
-// An aura is true (an angel's) or {color: [r, g, b], scale (its thickness), tip:
-// {dir, fraction} (only that end of the model glows: Sting's blade)}
+// An aura is true (an angel's) or {color: [r, g, b], scale (its thickness),
+// strength (how bright: 1 an angel's), layers (how many shells: an angel's 3),
+// tip: {dir, fraction} (only that end of the model glows: Sting's blade)}
 export function addAura(THREE, root) {
   let angel = null;
   root.traverse((o) => { if (!angel && o.userData && o.userData.aura) angel = o; });
@@ -166,12 +167,12 @@ function auraOf(THREE, root, cfg = {}) {
   });
   const pos = tipOf(new Float32Array(all), cfg.tip);
   if (!pos.length) return;
-  for (const sh of auraShells(pos, cfg.scale ?? 1)) {
+  for (const sh of auraShells(pos, cfg.scale ?? 1, cfg.layers)) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(sh.pos, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(sh.nrm, 3));
     const mat = new THREE.ShaderMaterial({
-      uniforms: { uStrength: { value: sh.strength }, uMistTime: uTime, uColor: { value: new THREE.Vector3(...(cfg.color || AURA_COLOR)) } },
+      uniforms: { uStrength: { value: sh.strength * (cfg.strength ?? 1) }, uMistTime: uTime, uColor: { value: new THREE.Vector3(...(cfg.color || AURA_COLOR)) } },
       vertexShader: `varying vec3 vN; varying vec3 vP;
         void main() { vN = normalize(normalMatrix * normal); vec4 p = modelViewMatrix * vec4(position, 1.0); vP = p.xyz; gl_Position = projectionMatrix * p; }`,
       fragmentShader: `varying vec3 vN; varying vec3 vP; uniform float uStrength, uMistTime; uniform vec3 uColor;

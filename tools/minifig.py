@@ -154,13 +154,17 @@ HELD = {
 }
 
 # Where a custom picture ("decal") goes on a part, in the part's own frame:
-# its centre, its size, and whether it is seen from the part's front (-Z) or back (+Z).
+# its centre, its size, and whether it is seen from the part's front (-Z), back (+Z) or top (-Y).
 DECAL_SPOTS = {
     '3846': {'center': (0, 3, -10), 'size': (26, 26), 'side': 'front'},    # triangular shield
     '3876': {'center': (0, 0, -14), 'size': (36, 36), 'side': 'front'},    # round shield (rodela)
     '2587': {'center': (0, 12, -22), 'size': (18, 18), 'side': 'front'},   # classic armour plate: the chest
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
     '973': {'center': (0, 15, -10), 'size': (17, 17), 'side': 'front'},     # torso: the chest
+    '95228': {'center': (0, 32, -10), 'size': (16, 16), 'side': 'front'},  # minifig bottle: its body
+    '98138': {'center': (0, 0, 0), 'size': (20, 20), 'side': 'top'},        # round tile 1 x 1: its face
+    '4150': {'center': (0, 0, 0), 'size': (40, 40), 'side': 'top'},         # round tile 2 x 2: its face
+    '3069b': {'center': (0, 0, 0), 'size': (40, 20), 'side': 'top'},        # tile 1 x 2: its face
     '15423': {'center': (0, 13, -15), 'size': (31, 23), 'side': 'front'},  # body armour vest: its front
     '85961': {'center': (0, 13, -16), 'size': (36, 28), 'side': 'front'},  # body armour vest with back stud: its front
     '22402': {'center': (0, 14, -16), 'size': (38, 35), 'side': 'front'},  # large breastplate with shoulder pads: its front
@@ -267,9 +271,14 @@ def decal_line(item, pos, mat, base_dir):
     spot = next((v for k, v in DECAL_SPOTS.items() if item['part'].startswith(k)), {})
     cx, cy, cz = d.get('center', spot.get('center', (0, 0, 0)))
     w, h = d.get('size', spot.get('size', (20, 20)))
-    if d.get('side', spot.get('side', 'front')) == 'back':
+    side = d.get('side', spot.get('side', 'front'))
+    if side == 'back':
         w = -w   # seen from behind, the viewer's right is the part's -X
-    local = np.array([(cx - w / 2, cy - h / 2, cz), (cx + w / 2, cy - h / 2, cz), (cx - w / 2, cy + h / 2, cz)])
+    if side == 'top':   # seen from above, the picture's top toward the part's back (+Z); facing up, so
+        # its top faces are the ones printed (ldraw2glb prints what nothing covers, looking out along it)
+        local = np.array([(cx - w / 2, cy, cz + h / 2), (cx + w / 2, cy, cz + h / 2), (cx - w / 2, cy, cz - h / 2)])
+    else:
+        local = np.array([(cx - w / 2, cy - h / 2, cz), (cx + w / 2, cy - h / 2, cz), (cx - w / 2, cy + h / 2, cz)])
     pts = (np.asarray(mat) @ local.T).T + pos
     img = os.path.abspath(os.path.join(base_dir, d['image']))
     return '0 !TEXMAP NEXT PLANAR ' + ' '.join(f'{v:.4f}' for v in pts.flatten()) + ' ' + img
@@ -373,6 +382,69 @@ def booted(part, bands, upper=True):
                     continue
                 for i in range(1, len(poly) - 1):   # (a fan of triangles)
                     lines.append(f'3 {c} ' + ' '.join(f'{v:.3f}' for q in (poly[0], poly[i], poly[i + 1]) for v in q))
+    os.makedirs(DERIVED, exist_ok=True)
+    open(out + '.dat', 'w').write('\n'.join(lines) + '\n')
+    return out
+
+
+def _clip(poly, n, d):
+    """The part of a polygon (a list of points) where n . p >= d."""
+    out = []
+    for a, b in zip(poly, poly[1:] + poly[:1]):
+        sa, sb = n @ a - d, n @ b - d
+        if sa >= 0:
+            out.append(a)
+        if (sa >= 0) != (sb >= 0):
+            out.append(a + (sa / (sa - sb)) * (b - a))
+    return out
+
+
+def striped(part, color, count, width=0.35, wave=10.0, top=None, bottom=None, slabs=8):
+    """Path (without .dat) of a part moulded with stripes running up and down
+    it, as LEGO prints a watermelon on a head: `count` stripes round its Y
+    axis, each `width` of the way to the next, in `color`, between heights top
+    and bottom (LDU, -Y up; the whole part when None); each stripe sways
+    `wave` degrees to and fro as it goes up (cut in `slabs` bands, each turned
+    a little). The part is cut flat along each stripe's edges."""
+    import ldraw2glb   # (only here: the geometry, flattened)
+    key = hashlib.sha1(json.dumps([part, color, count, width, wave, top, bottom, slabs]).encode()).hexdigest()[:10]
+    out = os.path.join(DERIVED, os.path.basename(part) + '_stripes_' + key)
+    if os.path.exists(out + '.dat'):
+        return out
+    geo = ldraw2glb.Library(ldraw2glb.LDRAW).parse(part + '.dat')
+    ys = np.concatenate([t.reshape(-1, 3)[:, 1] for _, _, t, _ in geo])
+    lo, hi = (ys.min() if top is None else top), (ys.max() if bottom is None else bottom)
+    cuts = [lo + (hi - lo) * k / slabs for k in range(slabs + 1)]
+    step = 2 * np.pi / count
+    def sector(a0, a1):   # the half-planes bounding the wedge between two angles about Y (less than a half turn)
+        return [(np.array([-np.sin(a0), 0.0, np.cos(a0)]), 0.0), (np.array([np.sin(a1), 0.0, -np.cos(a1)]), 0.0)]
+    lines = [f'0 {part} with stripes (BrickHack)', '0 BFC NOCERTIFY']
+    def emit(c, poly):
+        for i in range(1, len(poly) - 1):
+            lines.append(f'3 {c} ' + ' '.join(f'{v:.3f}' for q in (poly[0], poly[i], poly[i + 1]) for v in q))
+    for code, tex, tris, _ in geo:
+        for tri in tris:
+            poly0 = [np.array(v, float) for v in tri]
+            rest = poly0
+            # above and below the striped band: plain
+            for n, d in ((np.array([0.0, -1, 0]), -lo), (np.array([0.0, 1, 0]), hi)):
+                part_out = _clip(rest, n, d)
+                if len(part_out) >= 3:
+                    emit(code, part_out)
+                rest = _clip(rest, -n, -d)
+            for k in range(slabs):
+                band = _clip(_clip(rest, np.array([0.0, 1, 0]), cuts[k]), np.array([0.0, -1, 0]), -cuts[k + 1])
+                if len(band) < 3:
+                    continue
+                turn = np.radians(wave) * np.sin(np.pi * 2 * (k + 0.5) / slabs)
+                for j in range(count):
+                    a0 = j * step + turn
+                    for a, b, c in ((a0, a0 + step * width, color), (a0 + step * width, a0 + step, code)):
+                        piece = band
+                        for n, d in sector(a, b):
+                            piece = _clip(piece, n, d)
+                        if len(piece) >= 3:
+                            emit(c, piece)
     os.makedirs(DERIVED, exist_ok=True)
     open(out + '.dat', 'w').write('\n'.join(lines) + '\n')
     return out

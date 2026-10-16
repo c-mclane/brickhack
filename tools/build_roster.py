@@ -75,6 +75,8 @@ def main():
         built.append({'id': name, 'label': spec.get('label', name), 'url': url,
                       'role': spec.get('role', 'knight'), 'gender': spec.get('gender', 'male'),
                       'race': spec.get('race', 'human'),
+                      # more it starts the game with than its role's own kit ("holy wafer:4,..."): winweb.c web_kit_item
+                      **({'kit': spec['kit']} if spec.get('kit') else {}),
                       # the slots its design fills: starting gear shows only where it takes the place of something
                       'slots': {'helm': bool(full.get('hat')),
                                 'cloak': any(wardrobe.is_cape(n) for n in (full.get('neck') or []) if isinstance(n, dict))

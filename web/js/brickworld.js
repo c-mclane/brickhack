@@ -286,9 +286,10 @@ export class BrickWorld {
     this.flowMesh.geometry = fg;
   }
 
-  // Items lying on the floor as LEGO models ([{x, z, url, level}], world.js):
+  // Items lying on the floor as LEGO models ([{x, z, url, level, upright}], world.js):
   // each laid flat on its side (its length along the floor, the flat of a
-  // blade up) across its square at a diagonal. A pile is stacked: the bottom
+  // blade up) across its square at a diagonal; one made to stand (upright:
+  // food) set down the right way up. A pile is stacked: the bottom
   // one (level 0) on the studs, each next one resting on top of the one
   // below, turned the other way so they cross like a heap of swords. Kept
   // from frame to frame; only what's picked up, dropped or changed is redone.
@@ -310,7 +311,7 @@ export class BrickWorld {
         this.world.add(g);
         this.model(it.url).then((m) => {
           const lay = m.clone();
-          lay.rotation.z = -Math.PI / 2; // on its side: a blade's length (the model's Y) along the floor
+          if (!it.upright) lay.rotation.z = -Math.PI / 2; // on its side: a blade's length (the model's Y) along the floor (food stands as it is)
           lay.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(lay);
           const c = box.getCenter(new THREE.Vector3());

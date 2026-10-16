@@ -1061,6 +1061,7 @@ function buildScreens() {
       // roles go by their 3-letter file code (handles "Flame Mage" etc), races by full name
       o[k] = v === 'random' ? 'random' : k === 'race' ? v : v.slice(0, 3);
     }
+    if (figPicker.current() && figPicker.current().kit) o.kit = figPicker.current().kit; // (what its design starts it with besides)
     o.legacy = choice.legacy === 1;
     o.dreamland = !!game.createDream;
     o.variant = game.variant;

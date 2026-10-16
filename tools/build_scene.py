@@ -45,7 +45,11 @@ def item_ldr(lib, item, stand=False):
     R = np.eye(3) if stand else np.array([[0.0, -1, 0], [1, 0, 0], [0, 0, 1]])   # (a quarter turn about Z)
     lines, pts = [], []
     for l in build_items.held_ldr(item).splitlines():
-        if l.startswith('0 '):   # (a print: not shown here)
+        if l.startswith('0 !TEXMAP NEXT PLANAR '):   # a print on the next part: its three points turned with it
+            t = l.split()
+            lines.append(('tex', (R @ np.array([float(v) for v in t[4:13]]).reshape(3, 3).T).T, None, ' '.join(t[13:])))
+            continue
+        if l.startswith('0 '):
             continue
         t = l.split()
         pos = R @ np.array([float(v) for v in t[2:5]])
@@ -57,7 +61,13 @@ def item_ldr(lib, item, stand=False):
     pts = np.concatenate(pts)
     lo, hi = pts.min(0), pts.max(0)
     shift = np.array([-(lo[0] + hi[0]) / 2, -4 - hi[1], -(lo[2] + hi[2]) / 2])   # (studs are 4 LDU tall)
-    return ''.join(minifig.line(c, pos + shift, m, part) + '\n' for c, pos, m, part in lines)
+    out = ''
+    for c, pos, m, part in lines:
+        if c == 'tex':
+            out += '0 !TEXMAP NEXT PLANAR ' + ' '.join(f'{v:.4f}' for v in (pos + shift).flatten()) + ' ' + part + '\n'
+        else:
+            out += minifig.line(c, pos + shift, m, part) + '\n'
+    return out
 
 
 def hold_item(ldr_text, item):
@@ -106,7 +116,7 @@ def main(scene_path):
             item = {'parts': obj['parts']} if 'parts' in obj else items[obj['item']]   # (or its own parts: a variant)
             if 'parts' not in item and item.get('wear', {}).get('boots'):   # (boots: their parts made from the bands)
                 item = dict(item, parts=build_items.boot_parts(item['wear']['boots']))
-            text = item_ldr(lib, item, obj.get('stand', False))
+            text = item_ldr(lib, item, obj.get('stand', item.get('upright', False)))   # (food stands as the game sets it down)
             aura = item.get('aura')
             if aura:   # an angel's glow round it (ldraw2glb.figure_extras); a tip's end: up standing, glTF +X lying down
                 if isinstance(aura, dict) and 'tip' in aura:

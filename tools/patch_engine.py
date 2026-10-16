@@ -116,6 +116,24 @@ edit("src/allmain.c", [("	if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1
                         "	if (flags.dreamland) { /* WEB_HOOK_DREAM */\n		extern void NDECL(web_dreamland_intro);\n"
                         "		flush_screen(1);\n		web_dreamland_intro();\n	} else if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1);\n	}")],
      "WEB_HOOK_DREAM")
+# BrickHack: a character's figure can start it with more than its role's kit
+# (the server's LEGOHACK_KIT, from the design: a Catholic priest's hosts;
+# winweb.c web_kit_item), unless it already has some
+edit("src/u_init.c", [("            ini_inv(Pickaxe);\n    }\n",
+                       "            ini_inv(Pickaxe);\n    }\n"
+                       "    { /* WEB_HOOK_KIT */\n"
+                       "        extern int FDECL(web_kit_item, (int, int *));\n"
+                       "        struct trobj kit[2];\n"
+                       "        int i, otyp, quan;\n"
+                       "        for (i = 0; (otyp = web_kit_item(i, &quan)) >= 0; i++) {\n"
+                       "            if (!otyp || carrying(otyp)) continue;\n"
+                       "            kit[0].trotyp = otyp; kit[0].trspe = UNDEF_SPE; kit[0].trclass = objects[otyp].oc_class;\n"
+                       "            kit[0].trquan = quan; kit[0].trbless = UNDEF_BLESS;\n"
+                       "            kit[1].trotyp = 0; kit[1].trspe = 0; kit[1].trclass = 0; kit[1].trquan = 0; kit[1].trbless = 0;\n"
+                       "            ini_inv(kit);\n"
+                       "        }\n"
+                       "    }\n")],
+     "WEB_HOOK_KIT")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

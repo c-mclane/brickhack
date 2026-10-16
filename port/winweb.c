@@ -468,13 +468,50 @@ web_realm_count(struct obj *chain)
 /* the client's id for an object's look: its tile, or for an artifact
    ART_TILE + its number (an artifact shares its base item's tile, but has a
    LEGO model of its own: tools/build_items.py lists them for the client,
-   which falls back to the base item's look for one without) */
+   which falls back to the base item's look for one without); and for a
+   variant with a look of its own, VARIANT_TILE + its number: water you know
+   is holy (0) or unholy (1) (items.json "variant") */
 #define ART_TILE 90000
+#define VARIANT_TILE 92000
 static int tile_of(int glyph);
 static int
 web_obj_tile(struct obj *o, int glyph)
 {
-    return o->oartifact && !Hallucination ? ART_TILE + o->oartifact : tile_of(glyph);
+    if (Hallucination)
+        return tile_of(glyph);
+    if (o->oartifact)
+        return ART_TILE + o->oartifact;
+    if (o->otyp == POT_WATER && o->bknown && (o->blessed || o->cursed))
+        return VARIANT_TILE + (o->blessed ? 0 : 1);
+    return tile_of(glyph);
+}
+
+/* u_init.c: what more a character starts with than its role's own kit, from
+   its figure's design (the server's LEGOHACK_KIT: "holy wafer:4,...", name
+   and how many): the i-th one's object type, its quantity in *quan; 0 for one
+   that names no object, -1 past the last */
+int
+web_kit_item(int i, int *quan)
+{
+    const char *p = getenv("LEGOHACK_KIT");
+    char name[BUFSZ];
+    int n, k;
+
+    for (; p && *p && i > 0; i--)   /* to the i-th */
+        if ((p = index(p, ',')) != 0)
+            p++;
+    if (!p || !*p)
+        return -1;
+    for (n = 0; p[n] && p[n] != ',' && p[n] != ':' && n < BUFSZ - 1; n++)
+        name[n] = p[n];
+    name[n] = 0;
+    *quan = p[n] == ':' ? atoi(p + n + 1) : 1;
+    if (*quan < 1) *quan = 1;
+    if (*quan > 63) *quan = 63;   /* (a starting item's count: trobj trquan) */
+    for (k = 1; k < NUM_OBJECTS; k++)
+        if (OBJ_NAME(objects[k]) && !strcmpi(OBJ_NAME(objects[k]), name))
+            return k;
+    return 0;
 }
 
 /* artifact.c arti_invoke: 1 = the hero holds all three (the invoke opens a portal) */

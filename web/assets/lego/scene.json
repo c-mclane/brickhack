@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   3,
-   20
+   14,
+   22
   ],
   "target": [
    0,
-   1.5,
-   0
+   0,
+   1
   ]
  },
  "objects": [
@@ -22,124 +22,355 @@
    ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "handColor": 28,
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "tripe ration",
    "pos": [
-    -160,
-    -72,
-    0
+    -270,
+    0,
+    -120
    ],
-   "rotY": 345,
-   "label": "leather gloves (old gloves)"
+   "label": "tripe ration"
   },
   {
-   "item": "leather gloves",
+   "item": "egg",
    "pos": [
-    -160,
+    -210,
+    0,
+    -120
+   ],
+   "label": "egg"
+  },
+  {
+   "item": "meatball",
+   "pos": [
+    -150,
+    0,
+    -120
+   ],
+   "label": "meatball"
+  },
+  {
+   "item": "meat stick",
+   "pos": [
+    -90,
+    0,
+    -120
+   ],
+   "label": "meat stick"
+  },
+  {
+   "item": "huge chunk of meat",
+   "pos": [
+    -30,
+    0,
+    -120
+   ],
+   "label": "huge chunk of meat"
+  },
+  {
+   "item": "eyeball",
+   "pos": [
+    30,
+    0,
+    -120
+   ],
+   "label": "eyeball"
+  },
+  {
+   "item": "severed hand",
+   "pos": [
+    90,
+    0,
+    -120
+   ],
+   "label": "severed hand"
+  },
+  {
+   "item": "kelp frond",
+   "pos": [
+    150,
+    0,
+    -120
+   ],
+   "label": "kelp frond"
+  },
+  {
+   "item": "eucalyptus leaf",
+   "pos": [
+    210,
+    0,
+    -120
+   ],
+   "label": "eucalyptus leaf"
+  },
+  {
+   "item": "clove of garlic",
+   "pos": [
+    270,
+    0,
+    -120
+   ],
+   "label": "clove of garlic"
+  },
+  {
+   "item": "sprig of wolfsbane",
+   "pos": [
+    -270,
     0,
     -60
-   ]
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "handColor": 71,
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -80,
-    -72,
-    0
    ],
-   "rotY": 345,
-   "label": "gauntlets of fumbling (padded gloves)"
+   "label": "sprig of wolfsbane"
   },
   {
-   "item": "gauntlets of fumbling",
+   "item": "apple",
    "pos": [
-    -80,
+    -210,
     0,
     -60
-   ]
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "handColor": 70,
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    0,
-    -72,
-    0
    ],
-   "rotY": 345,
-   "label": "gauntlets of power (riding gloves)"
+   "label": "apple"
   },
   {
-   "item": "gauntlets of power",
+   "item": "carrot",
    "pos": [
-    0,
+    -150,
     0,
     -60
-   ]
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "handColor": 0,
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    80,
-    -72,
-    0
    ],
-   "rotY": 345,
-   "label": "gauntlets of swimming (black gloves)"
+   "label": "carrot"
   },
   {
-   "item": "gauntlets of swimming",
+   "item": "pear",
    "pos": [
-    80,
+    -90,
     0,
     -60
-   ]
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "handColor": 15,
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    160,
-    -72,
-    0
    ],
-   "rotY": 345,
-   "label": "gauntlets of dexterity (fencing gloves)"
+   "label": "pear"
   },
   {
-   "item": "gauntlets of dexterity",
+   "item": "asian pear",
    "pos": [
-    160,
+    -30,
     0,
     -60
-   ]
+   ],
+   "label": "asian pear"
+  },
+  {
+   "item": "banana",
+   "pos": [
+    30,
+    0,
+    -60
+   ],
+   "label": "banana"
+  },
+  {
+   "item": "orange",
+   "pos": [
+    90,
+    0,
+    -60
+   ],
+   "label": "orange"
+  },
+  {
+   "item": "mushroom",
+   "pos": [
+    150,
+    0,
+    -60
+   ],
+   "label": "mushroom"
+  },
+  {
+   "item": "melon",
+   "pos": [
+    210,
+    0,
+    -60
+   ],
+   "label": "melon"
+  },
+  {
+   "item": "slime mold",
+   "pos": [
+    270,
+    0,
+    -60
+   ],
+   "label": "slime mold"
+  },
+  {
+   "item": "lump of royal jelly",
+   "pos": [
+    -270,
+    0,
+    0
+   ],
+   "label": "lump of royal jelly"
+  },
+  {
+   "item": "cream pie",
+   "pos": [
+    -210,
+    0,
+    0
+   ],
+   "label": "cream pie"
+  },
+  {
+   "item": "sandwich",
+   "pos": [
+    -150,
+    0,
+    0
+   ],
+   "label": "sandwich"
+  },
+  {
+   "item": "candy bar",
+   "pos": [
+    -90,
+    0,
+    0
+   ],
+   "label": "candy bar"
+  },
+  {
+   "item": "fortune cookie",
+   "pos": [
+    -30,
+    0,
+    0
+   ],
+   "label": "fortune cookie"
+  },
+  {
+   "item": "pancake",
+   "pos": [
+    30,
+    0,
+    0
+   ],
+   "label": "pancake"
+  },
+  {
+   "item": "tortilla",
+   "pos": [
+    90,
+    0,
+    0
+   ],
+   "label": "tortilla"
+  },
+  {
+   "item": "cheese",
+   "pos": [
+    150,
+    0,
+    0
+   ],
+   "label": "cheese"
+  },
+  {
+   "item": "holy wafer",
+   "pos": [
+    210,
+    0,
+    0
+   ],
+   "label": "holy wafer"
+  },
+  {
+   "item": "lembas wafer",
+   "pos": [
+    270,
+    0,
+    0
+   ],
+   "label": "lembas wafer"
+  },
+  {
+   "item": "cram ration",
+   "pos": [
+    -270,
+    0,
+    60
+   ],
+   "label": "cram ration"
+  },
+  {
+   "item": "food ration",
+   "pos": [
+    -210,
+    0,
+    60
+   ],
+   "label": "food ration"
+  },
+  {
+   "item": "K-ration",
+   "pos": [
+    -150,
+    0,
+    60
+   ],
+   "label": "K-ration"
+  },
+  {
+   "item": "C-ration",
+   "pos": [
+    -90,
+    0,
+    60
+   ],
+   "label": "C-ration"
+  },
+  {
+   "item": "tin",
+   "pos": [
+    -30,
+    0,
+    60
+   ],
+   "label": "tin"
+  },
+  {
+   "item": "water",
+   "pos": [
+    30,
+    0,
+    60
+   ],
+   "label": "water"
+  },
+  {
+   "item": "holy water",
+   "pos": [
+    90,
+    0,
+    60
+   ],
+   "label": "holy water"
+  },
+  {
+   "item": "unholy water",
+   "pos": [
+    150,
+    0,
+    60
+   ],
+   "label": "unholy water"
+  },
+  {
+   "item": "pill",
+   "pos": [
+    210,
+    0,
+    60
+   ],
+   "label": "pill"
   }
  ]
 }

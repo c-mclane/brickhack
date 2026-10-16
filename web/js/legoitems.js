@@ -44,6 +44,14 @@ export function loadLegoItems() {
         if (own) byTile.set(tile, { name: a.name, ...own });
         else if (base != null && byTile.has(base)) byTile.set(tile, byTile.get(base));
       }
+      // variants with a look of their own (holy water): sent as a tile of their own too
+      // (winweb.c web_obj_tile), shown as their base item's sprite where there's no model
+      for (const [name, it] of Object.entries(items)) {
+        if (!it.base || it.vtile == null) continue;
+        const base = tileOf.get(it.base.toLowerCase());
+        if (base != null) artBase.set(it.vtile, base);
+        byTile.set(it.vtile, { name, ...it });
+      }
       await drawIcons();
     }).catch((e) => console.warn('LEGO items:', e));
   return readyP;

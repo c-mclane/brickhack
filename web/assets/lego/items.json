@@ -5480,5 +5480,604 @@
   "wear": {
    "handColor": 15
   }
+ },
+ "tripe ration": {
+  "lego": "A sausage in sand red (offal)",
+  "parts": [
+   {
+    "part": "33078",
+    "color": 335
+   }
+  ],
+  "upright": true
+ },
+ "egg": {
+  "lego": "The LEGO egg, white",
+  "parts": [
+   {
+    "part": "24946",
+    "color": 15
+   }
+  ],
+  "upright": true
+ },
+ "meatball": {
+  "lego": "An ice cream scoop in brown (a meatball)",
+  "parts": [
+   {
+    "part": "6254",
+    "color": 70
+   }
+  ],
+  "upright": true
+ },
+ "meat stick": {
+  "lego": "A sausage, reddish brown",
+  "parts": [
+   {
+    "part": "33078",
+    "color": 70
+   }
+  ],
+  "upright": true
+ },
+ "huge chunk of meat": {
+  "lego": "The roast turkey, reddish brown",
+  "parts": [
+   {
+    "part": "33048c01",
+    "color": 70
+   }
+  ],
+  "upright": true
+ },
+ "eyeball": {
+  "lego": "A white round plate with an eye-printed tile on top",
+  "parts": [
+   {
+    "part": "6141",
+    "color": 15
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "severed hand": {
+  "lego": "A minifig hand, alone",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 78
+   }
+  ],
+  "upright": true
+ },
+ "kelp frond": {
+  "lego": "Sea grass, green",
+  "parts": [
+   {
+    "part": "30093",
+    "color": 2
+   }
+  ],
+  "upright": true
+ },
+ "eucalyptus leaf": {
+  "lego": "Plant leaves in sand green",
+  "parts": [
+   {
+    "part": "2423",
+    "color": 378
+   }
+  ],
+  "upright": true
+ },
+ "clove of garlic": {
+  "lego": "A swirled round plate in tan (a garlic bulb)",
+  "parts": [
+   {
+    "part": "15470",
+    "color": 19
+   }
+  ],
+  "upright": true
+ },
+ "sprig of wolfsbane": {
+  "lego": "A flower stem with purple flowers",
+  "parts": [
+   {
+    "part": "24855c02",
+    "color": 22
+   }
+  ],
+  "upright": true
+ },
+ "apple": {
+  "lego": "The LEGO apple, red",
+  "parts": [
+   {
+    "part": "33051",
+    "color": 4
+   }
+  ],
+  "upright": true
+ },
+ "carrot": {
+  "lego": "The LEGO carrot with green leaves",
+  "parts": [
+   {
+    "part": "33172c01",
+    "color": 25
+   }
+  ],
+  "upright": true
+ },
+ "pear": {
+  "lego": "The LEGO pear, yellowish green",
+  "parts": [
+   {
+    "part": "5822",
+    "color": 326
+   }
+  ],
+  "upright": true
+ },
+ "asian pear": {
+  "lego": "The LEGO pear in tan (an Asian pear)",
+  "parts": [
+   {
+    "part": "5822",
+    "color": 19
+   }
+  ],
+  "upright": true
+ },
+ "banana": {
+  "lego": "The LEGO banana",
+  "parts": [
+   {
+    "part": "33085",
+    "color": 14
+   }
+  ],
+  "upright": true
+ },
+ "orange": {
+  "lego": "The LEGO peach in orange",
+  "parts": [
+   {
+    "part": "5234",
+    "color": 25
+   }
+  ],
+  "upright": true
+ },
+ "mushroom": {
+  "lego": "A red dome cap on a white round brick stem",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "4740",
+    "color": 4,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "melon": {
+  "lego": "A bright green minifig head with dark green watermelon stripes, a green round plate with tabs on top (its stalk)",
+  "parts": [
+   {
+    "part": "3626c",
+    "color": 10,
+    "stripes": {
+     "color": 288,
+     "count": 12,
+     "width": 0.4,
+     "wave": 6,
+     "top": 1,
+     "bottom": 20,
+     "slabs": 24
+    }
+   },
+   {
+    "part": "33291",
+    "color": 2,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "slime mold": {
+  "lego": "A swirled round plate in trans green",
+  "parts": [
+   {
+    "part": "15470",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "lump of royal jelly": {
+  "lego": "A dumpling in trans yellow",
+  "parts": [
+   {
+    "part": "6647",
+    "color": 46
+   }
+  ],
+  "upright": true
+ },
+ "cream pie": {
+  "lego": "The LEGO pie with white cream filling, tan crust",
+  "parts": [
+   {
+    "part": "93568p01",
+    "color": 19
+   }
+  ],
+  "upright": true
+ },
+ "sandwich": {
+  "lego": "A burger: a tan round 2 x 2 plate bun, lettuce, patty, cheese and tomato as round 1 x 1 plates on its four studs, a tan round 2 x 2 tile on top (as the tortilla)",
+  "parts": [
+   {
+    "part": "4032b",
+    "color": 19
+   },
+   {
+    "part": "6141",
+    "color": 2,
+    "pos": [
+     -10,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 70,
+    "pos": [
+     10,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 14,
+    "pos": [
+     10,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 4,
+    "pos": [
+     -10,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "4150",
+    "color": 19,
+    "pos": [
+     0,
+     -16,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "candy bar": {
+  "lego": "The LEGO chocolate bar tile with a gold bow, reddish brown",
+  "parts": [
+   {
+    "part": "3069bph3",
+    "color": 70
+   }
+  ],
+  "upright": true
+ },
+ "fortune cookie": {
+  "lego": "The curled LEGO croissant, golden",
+  "parts": [
+   {
+    "part": "33125",
+    "color": 191
+   }
+  ],
+  "upright": true
+ },
+ "pancake": {
+  "lego": "Two nougat round plates under a round tile printed with syrup and a pat of butter (a stack of pancakes)",
+  "parts": [
+   {
+    "part": "4032b",
+    "color": 84
+   },
+   {
+    "part": "4032b",
+    "color": 84,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "4150",
+    "color": 84,
+    "pos": [
+     0,
+     -16,
+     0
+    ],
+    "decal": {
+     "image": "../decals/pancake.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "tortilla": {
+  "lego": "A tan round tile 2 x 2",
+  "parts": [
+   {
+    "part": "4150",
+    "color": 19
+   }
+  ],
+  "upright": true
+ },
+ "cheese": {
+  "lego": "The yellow cheese slope",
+  "parts": [
+   {
+    "part": "54200",
+    "color": 14
+   }
+  ],
+  "upright": true
+ },
+ "pill": {
+  "lego": "Two light globes back to back, red and blue (a capsule)",
+  "parts": [
+   {
+    "part": "4770",
+    "color": 4
+   },
+   {
+    "part": "4770",
+    "color": 1,
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ]
+ },
+ "holy wafer": {
+  "lego": "A white round 1 x 1 tile printed as a Eucharistic host (a small Greek cross pressed into the bread), glowing with an angel's aura",
+  "parts": [
+   {
+    "part": "98138",
+    "color": 15,
+    "decal": {
+     "image": "../decals/host.png"
+    }
+   }
+  ],
+  "upright": true,
+  "aura": {
+   "strength": 0.4,
+   "scale": 0.6,
+   "layers": 1
+  }
+ },
+ "lembas wafer": {
+  "lego": "A tan tile 1 x 2 on a green plate (wrapped in a leaf)",
+  "parts": [
+   {
+    "part": "3023",
+    "color": 10
+   },
+   {
+    "part": "3069b",
+    "color": 19,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "cram ration": {
+  "lego": "A French bread loaf in unappetizing dark tan (a hard biscuit of a loaf)",
+  "parts": [
+   {
+    "part": "4342",
+    "color": 28
+   }
+  ],
+  "upright": true
+ },
+ "food ration": {
+  "lego": "A French bread loaf beside a can like the tin, but blue (bread and a tinned ration)",
+  "parts": [
+   {
+    "part": "4342",
+    "color": 84
+   },
+   {
+    "part": "3062b",
+    "color": 1,
+    "pos": [
+     24,
+     -24,
+     22
+    ]
+   },
+   {
+    "part": "98138p0h",
+    "color": 179,
+    "pos": [
+     24,
+     -32,
+     22
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "K-ration": {
+  "lego": "An olive green brick 1 x 2 under an olive tile stencilled with a K (a boxed ration)",
+  "parts": [
+   {
+    "part": "3004",
+    "color": 330
+   },
+   {
+    "part": "3069b",
+    "color": 330,
+    "pos": [
+     0,
+     -8,
+     0
+    ],
+    "decal": {
+     "image": "../decals/k-ration.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "C-ration": {
+  "lego": "An olive green round brick, a can, with a grey tile lid stencilled with a C",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 330
+   },
+   {
+    "part": "98138",
+    "color": 72,
+    "pos": [
+     0,
+     -8,
+     0
+    ],
+    "decal": {
+     "image": "../decals/c-ration.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "tin": {
+  "lego": "A silver round brick, a can, with a can-top tile",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 179
+   },
+   {
+    "part": "98138p0h",
+    "color": 179,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "water": {
+  "lego": "A clear minifig bottle (a clear potion: water, holy or unholy)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 47
+   }
+  ],
+  "upright": true
+ },
+ "holy water": {
+  "lego": "A clear minifig bottle printed with a gold Latin cross, glowing with an angel's aura",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 47,
+    "decal": {
+     "image": "../decals/gold-cross.png"
+    }
+   }
+  ],
+  "upright": true,
+  "aura": {
+   "strength": 0.4,
+   "scale": 0.6,
+   "layers": 1
+  },
+  "variant": {
+   "of": "water",
+   "n": 0
+  }
+ },
+ "unholy water": {
+  "lego": "A clear minifig bottle in a red glow",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 47
+   }
+  ],
+  "upright": true,
+  "variant": {
+   "of": "water",
+   "n": 1
+  },
+  "aura": {
+   "strength": 0.7,
+   "scale": 0.6,
+   "layers": 1,
+   "color": [
+    1.0,
+    0.12,
+    0.08
+   ]
+  }
  }
 }

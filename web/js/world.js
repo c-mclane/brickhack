@@ -119,7 +119,7 @@ export class World {
           let level = 0;
           for (let i = pile.length - 1; i >= 0; i--) {
             const lego = legoItemForTile(pile[i]);
-            if (lego) this.legoDrops.push({ x, z: y, url: lego.url, level: level++ });
+            if (lego) this.legoDrops.push({ x, z: y, url: lego.url, level: level++, upright: !!lego.upright });
           }
         }
         if (cl && cl.type === 'liquid' && this.dream) {

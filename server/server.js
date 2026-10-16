@@ -81,9 +81,12 @@ function startGame(sid, opts) {
   if (opts.dreamland) o.push('dreamland'); // start on the Dreamland overland level
   const name = cleanName(opts.name);
   // a brand-new character (no save to restore) starts a fresh block world
-  if (!listSaves(variant).includes(name)) {
+  // ...and starts with whatever more its figure's design gives it ("holy wafer:4": port/winweb.c web_kit_item)
+  const fresh = !listSaves(variant).includes(name);
+  if (fresh) {
     try { fs.unlinkSync(worldFile(variant, name)); } catch {}
   }
+  const kit = fresh ? String(opts.kit || '').replace(/[^a-z0-9 ,:'-]/gi, '').slice(0, 200) : '';
 
   const start = () => {
     // LEGOHACK_WIZARD=1 npm start: every game in debug (wizard) mode, for testing
@@ -91,7 +94,7 @@ function startGame(sid, opts) {
     const args = process.env.LEGOHACK_WIZARD === '1' ? ['-D', '-u', name] : ['-u', name];
     const proc = spawn(path.join(V.dir, V.bin), args, {
       cwd: V.dir,
-      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir },
+      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, LEGOHACK_KIT: kit },
       stdio: ['pipe', 'pipe', 'pipe', 'pipe'],
     });
     sess.proc = proc;

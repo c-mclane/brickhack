@@ -55,15 +55,15 @@ uniform sampler2D uTex; uniform float uHasTex;
 uniform float uEdges;     // 1: darken a thin line round each face (brick seams)
 uniform float uGlow;      // 1: a translucent part, lit from inside (flames, ice crystals)
 uniform float uMist, uTime; // 1: a doppelganger's misty half (mist.js)
-uniform float uAura;        // > 0: an angel's glow shell, this strong (mist.js)
+uniform float uAura;        // > 0: an angel's glow shell, this strong (mist.js), in uColor
 uniform vec3 uFog; uniform vec2 uFogRange;
 out vec4 o;
 ${MIST_GLSL}
 ${AURA_GLSL}
 void main() {
-  if (uAura > 0.0) {   // added on top (blended ONE, ONE): white, brightest at the outline
+  if (uAura > 0.0) {   // added on top (blended ONE, ONE): brightest at the outline
     float a = auraGlow(normalize(vVN), normalize(-vVP), uAura, uTime);
-    o = vec4(vec3(${AURA_COLOR.join(', ')}) * a, 1.0);
+    o = vec4(uColor.rgb * a, 1.0);   // (the shell's colour: an angel's white, or the aura's own)
     return;
   }
   vec3 n = normalize(gl_FrontFacing ? vNrm : -vNrm);
@@ -166,8 +166,8 @@ async function parseGLB(buf) {
       const all = new Float32Array(mine.reduce((n, p) => n + p.pos.length, 0));
       let at = 0;
       for (const p of mine) { all.set(p.pos, at); at += p.pos.length; }
-      const cfg = typeof extras.aura === 'object' ? extras.aura : {}; // (this renderer's glow keeps its colour)
-      for (const sh of auraShells(tipOf(all, cfg.tip), cfg.scale ?? 1)) prims.push({ pos: sh.pos, nrm: sh.nrm, uv: null, color: [1, 1, 1, 0.5], image: null, aura: sh.strength, group: g });
+      const cfg = typeof extras.aura === 'object' ? extras.aura : {};
+      for (const sh of auraShells(tipOf(all, cfg.tip), cfg.scale ?? 1, cfg.layers)) prims.push({ pos: sh.pos, nrm: sh.nrm, uv: null, color: [...(cfg.color || AURA_COLOR), 0.5], image: null, aura: sh.strength * (cfg.strength ?? 1), group: g });
     }
   }
   prims.rig = extras.rig || null; // the joints, for the animation
