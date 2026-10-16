@@ -66,7 +66,9 @@ export function loadLegoItems() {
         const real = n.split(' / ').pop();
         const key = real.toLowerCase().replace(/-/g, ' '); // (the engine's names have no hyphens: "two handed sword")
         if (!tileOf.has(key)) tileOf.set(key, i);
-        if (items[real]) byTile.set(i, { name: real, ...items[real] });
+        // only an item of its own class: a ring of see invisible isn't the potion (tiles.json "classes", items "oc")
+        const it = items[real], cls = tiles.classes && tiles.classes[i];
+        if (it && (!it.oc || !cls || it.oc === cls)) byTile.set(i, { name: real, ...it });
       });
       // artifacts: the game sends each as a tile of its own (winweb.c web_obj_tile): its own
       // LEGO look if it has one, or else its base item's (model, or sprite)

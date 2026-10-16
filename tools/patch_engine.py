@@ -376,6 +376,14 @@ edit("src/dothrow.c", [("#include \"hack.h\"\n",
                         "	if (obj->otyp == CHALICE) u.webchalices += (int) obj->quan; /* WEB_HOOK_CHALICE2 */\n"
                         "	web_shatter(obj, x, y); /* WEB_HOOK_THROW: shards */\n")],
      "WEB_HOOK_THROW")
+# ...and a potion that breaks over someone (potionhit: thrown at a monster, or
+# at you) shatters too: shards and a splash
+edit("src/potion.c", [("	boolean isyou = (mon == &youmonst);\n	int distance;\n\n	if(isyou) {\n",
+                       "	boolean isyou = (mon == &youmonst);\n	int distance;\n\n"
+                       "	{ extern void FDECL(web_shatter, (struct obj *, int, int)); /* WEB_HOOK_SPLASH */\n"
+                       "	  web_shatter(obj, isyou ? u.ux : mon->mx, isyou ? u.uy : mon->my); }\n"
+                       "	if(isyou) {\n")],
+     "WEB_HOOK_SPLASH")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

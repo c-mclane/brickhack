@@ -751,7 +751,7 @@ function handle(m) {
     }
     case 'shatter': { // something broke there: shards
       const l = legoItemForTile(m.tile);
-      if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.shatter(l.url, m.x, m.y);
+      if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.shatter(l.url, m.x, m.y, l.oc === 'potion'); // (a potion splashes too)
       break;
     }
     case 'rip': game.rip = m; break;
@@ -906,7 +906,7 @@ const CONTROLS = [
   ['T or Enter', 'Command bar (extended commands, e.g. "pray", "loot", "chat")'], ['/', 'Command bar'],
   ['Tab', 'Message history'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['M', 'Overhead map view on/off'], ['F1', 'Hide HUD'],
   ['F3', 'Debug info'], ['N', 'Next music track'], ['I', 'Actions menu (every command as a button)'],
-  ['↑ (up arrow)', 'Do the first Recommended action'], ['Shift+1..4', 'Do a Recommended action (shown above the hotbar)'], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
+  ['↑ (up arrow)', 'Do the first Recommended action'], ['Shift+1', 'Pick up'], ['Shift+2..4', 'Do a Recommended action (shown above the hotbar)'], ['`', 'Raw NetHack keys on/off (classic controls)'], ['Esc', 'Cancel prompt / game menu'],
 ];
 
 function buildScreens() {
@@ -1947,8 +1947,9 @@ window.addEventListener('keydown', (e) => {
   const lower = k.length === 1 ? k.toLowerCase() : k;
   if ('wasd'.includes(lower) && k.length === 1) { held.add(lower); return; }
   if (/^[1-9]$/.test(k)) { ui.selectHotbar(+k - 1); return; }
-  // Shift+1..4: the Recommended actions
-  if (e.shiftKey && /^Digit[1-4]$/.test(e.code)) {
+  // Shift+1: pick up, always; Shift+2..4: the Recommended actions in those rows
+  if (e.shiftKey && e.code === 'Digit1') { e.preventDefault(); game.sendKeys(','); return; }
+  if (e.shiftKey && /^Digit[2-4]$/.test(e.code)) {
     const r = game.recs && game.recs[+e.code.slice(5) - 1];
     if (r) { e.preventDefault(); game.runAction(r); }
     return;

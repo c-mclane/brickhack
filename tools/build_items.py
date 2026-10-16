@@ -14,7 +14,7 @@ import hashlib, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import ldraw2glb, minifig
+import ldraw2glb, minifig, objclasses
 import numpy as np
 
 LEGO = os.path.join(HERE, '..', 'web', 'assets', 'lego')
@@ -92,6 +92,9 @@ def main():
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
     built = {}
     arts = artifacts()
+    classes = {}   # an object's name -> its classes (objclasses.py)
+    for n, _, c in objclasses.objects(SLASHEM):
+        classes.setdefault(n, set()).add(c)
     art_num = {name: n for n, (name, base) in arts.items()}
     for name, item in json.load(open(os.path.join(LEGO, 'items.json'))).items():
         if 'parts' not in item and item.get('wear', {}).get('boots'):
@@ -115,6 +118,13 @@ def main():
             print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.glowing(lib.parse(src), ldr), colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
         built[name] = {'url': f'assets/lego/items/{slug}.glb?v={key}', 'lego': item.get('lego', '')}
+        # its class (a potion, a ring...): a name can be more than one object (a potion and a ring
+        # of see invisible); the client gives a tile only an item of its own class (tiles.json "classes")
+        oc = item.get('class') or (next(iter(classes[name])) if len(classes.get(name, ())) == 1 else None)
+        if oc:
+            built[name]['oc'] = oc
+        elif len(classes.get(name, ())) > 1:
+            print(f'  {name}: more than one object has this name ({", ".join(sorted(classes[name]))}): say which ("class")')
         if item.get('upright'):   # set down the right way up (food: a cheese, a pie), not on its side as a blade is
             built[name]['upright'] = True
         if item.get('wear'):   # worn on a minifig (a helm): the figure worker dresses the hero in it

@@ -74,11 +74,12 @@ export class ThrowFX {
     Object.assign(b, { holder, m, c, corners, inertia, p, v, q, w, t: 0, rest: 0, grounded: false, loading: false });
   }
 
-  // something broke at (x, z): if it's flying there, it bursts as it lands; else now
-  shatter(url, x, z) {
+  // something broke at (x, z): if it's flying there, it bursts as it lands; else now.
+  // splash: a potion (its drink splashes out too, and pools)
+  shatter(url, x, z, splash) {
     const b = this.flying.find((f) => f.tx === x && f.tz === z && !f.breaks);
-    if (b) { b.breaks = true; return; }
-    this.brick.model(url).then((m) => this.burst(m, new THREE.Vector3(x + 0.5, STUD_H + 0.2, z + 0.5), new THREE.Vector3())).catch(() => {});
+    if (b) { b.breaks = true; b.splash = splash; return; }
+    this.brick.model(url).then((m) => this.burst(m, new THREE.Vector3(x + 0.5, STUD_H + 0.2, z + 0.5), new THREE.Vector3(), splash)).catch(() => {});
   }
 
   step() {
@@ -95,6 +96,12 @@ export class ThrowFX {
       b.holder.quaternion.copy(b.q);
     }
     for (const s of [...this.shards]) this.stepShards(s, dt);
+    for (const d of [...(this.puddles || [])]) { // spreading, then drying up
+      d.t += dt;
+      d.mesh.scale.setScalar(d.size * Math.min(1, d.t / 0.35));
+      d.mesh.material.opacity = 0.7 * Math.max(0, Math.min(1, (3.5 - d.t) / 1.5));
+      if (d.t > 3.5) { this.brick.world.remove(d.mesh); d.mesh.geometry.dispose(); d.mesh.material.dispose(); this.puddles.splice(this.puddles.indexOf(d), 1); }
+    }
   }
 
   // one step of a body; true when it's done (at rest, or burst)
@@ -154,7 +161,7 @@ export class ThrowFX {
     this.flying.splice(this.flying.indexOf(b), 1);
     this.brick.world.remove(b.holder);
     if (burst) {
-      this.burst(b.m, b.p.clone(), b.v.clone());
+      this.burst(b.m, b.p.clone(), b.v.clone(), b.splash);
       this.land(b.k);
       return;
     }
@@ -186,8 +193,9 @@ export class ThrowFX {
     this.brick.redrawItems(k);
   }
 
-  // shards of a model's own colours, flung out from p (moving at v)
-  burst(model, p, v) {
+  // shards of a model's own colours, flung out from p (moving at v); a potion's drink
+  // splashes out too: droplets of its colour, and a puddle
+  burst(model, p, v, splash) {
     const colors = [], transparent = [];
     model.traverse((o) => { if (o.isMesh && o.material && o.material.color) { colors.push(o.material.color); transparent.push(!!o.material.transparent); } });
     if (!colors.length) colors.push(new THREE.Color(0xcccccc));
@@ -203,21 +211,49 @@ export class ThrowFX {
     }
     this.brick.world.add(mesh);
     this.shards.push({ mesh, parts, t: 0 });
+    if (splash) this.splash(colors, p, v);
+  }
+
+  // a drink spilt: droplets flung low and wide that stick where they land, and a puddle spreading
+  splash(colors, p, v) {
+    const drink = colors.reduce((best, c) => (c.r + c.g + c.b < best.r + best.g + best.b ? best : c), colors[0]).clone(); // (its brightest colour: the drink)
+    const geo = new THREE.IcosahedronGeometry(0.022, 0);
+    const mat = new THREE.MeshStandardMaterial({ color: drink, roughness: 0.1, metalness: 0, transparent: true, opacity: 0.85 });
+    const n = 40, mesh = new THREE.InstancedMesh(geo, mat, n), parts = [];
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, s = 0.8 + Math.random() * 1.8;
+      parts.push({ p: p.clone(), v: new THREE.Vector3(Math.cos(a) * s, 0.6 + Math.random() * 1.6, Math.sin(a) * s).addScaledVector(v, 0.15),
+        q: new THREE.Quaternion(), w: new THREE.Vector3(), s: 0.6 + Math.random(), stick: true });
+    }
+    this.brick.world.add(mesh);
+    this.shards.push({ mesh, parts, t: 0, life: 2.4 });
+    const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshStandardMaterial({ color: drink, roughness: 0.05, transparent: true, opacity: 0.7, depthWrite: false }));
+    puddle.rotation.x = -Math.PI / 2;
+    puddle.position.set(p.x, STUD_H + 0.004, p.z);
+    puddle.scale.setScalar(0.01);
+    this.brick.world.add(puddle);
+    this.puddles = this.puddles || [];
+    this.puddles.push({ mesh: puddle, t: 0, size: 0.28 + Math.random() * 0.12 });
   }
 
   stepShards(s, dt) {
     s.t += dt;
-    const m4 = new THREE.Matrix4(), fade = Math.max(0, Math.min(1, (SHARD_LIFE - s.t) / 0.6));
+    const life = s.life || SHARD_LIFE;
+    const m4 = new THREE.Matrix4(), fade = Math.max(0, Math.min(1, (life - s.t) / 0.6));
     s.parts.forEach((f, i) => {
       f.v.y += G * dt;
       f.p.addScaledVector(f.v, dt);
-      if (f.p.y < STUD_H + 0.01) { f.p.y = STUD_H + 0.01; f.v.y *= -0.3; f.v.x *= 0.6; f.v.z *= 0.6; f.w.multiplyScalar(0.6); }
+      if (f.p.y < STUD_H + 0.01) {
+        f.p.y = STUD_H + 0.01;
+        if (f.stick) f.v.set(0, 0, 0); // (a drop: where it lands, it stays)
+        else { f.v.y *= -0.3; f.v.x *= 0.6; f.v.z *= 0.6; f.w.multiplyScalar(0.6); }
+      }
       f.q.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(f.w.x * dt, f.w.y * dt, f.w.z * dt)));
       m4.compose(f.p, f.q, new THREE.Vector3(f.s * fade, f.s * fade, f.s * fade));
       s.mesh.setMatrixAt(i, m4);
     });
     s.mesh.instanceMatrix.needsUpdate = true;
-    if (s.t > SHARD_LIFE) {
+    if (s.t > life) {
       this.brick.world.remove(s.mesh);
       s.mesh.geometry.dispose();
       s.mesh.material.dispose();

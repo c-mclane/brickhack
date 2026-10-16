@@ -6525,7 +6525,8 @@
     "color": 37
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "sickness": {
   "lego": "A minifig bottle in trans light green, fizzing with fine bubbles (a fizzy potion)",
@@ -6551,7 +6552,8 @@
     }
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "clairvoyance": {
   "lego": "A minifig bottle in trans neon green, glowing (a luminescent potion)",
@@ -6571,7 +6573,8 @@
    "strength": 0.5,
    "scale": 0.6,
    "layers": 1
-  }
+  },
+  "class": "potion"
  },
  "confusion": {
   "lego": "A minifig bottle in trans orange (a orange potion)",
@@ -6601,7 +6604,8 @@
     "color": 284
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "extra healing": {
   "lego": "A jar in sand red, puce (a puce potion)",
@@ -6611,7 +6615,8 @@
     "color": 335
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "restore ability": {
   "lego": "A minifig bottle in trans pink (a pink potion)",
@@ -6621,7 +6626,8 @@
     "color": 45
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "blindness": {
   "lego": "A minifig bottle in trans yellow (a yellow potion)",
@@ -6661,7 +6667,8 @@
     "color": 10366
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "monster detection": {
   "lego": "A conical flask in trans light blue violet, full of big bubbles (a bubbly potion)",
@@ -6697,7 +6704,8 @@
     }
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "full healing": {
   "lego": "A big jug in trans black, inky (a black potion)",
@@ -6717,7 +6725,8 @@
     "color": 43
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "polymorph": {
   "lego": "A jar in pearl gold, golden (a golden potion)",
@@ -6727,7 +6736,8 @@
     "color": 297
    }
   ],
-  "upright": true
+  "upright": true,
+  "class": "potion"
  },
  "speed": {
   "lego": "A wine bottle in opaque dark green (a dark green potion)",
@@ -6853,7 +6863,8 @@
    "strength": 0.3,
    "scale": 0.6,
    "layers": 1
-  }
+  },
+  "class": "potion"
  },
  "holy wine": {
   "lego": "The minifig goblet in metallic gold, glowing as the holy wafer does (a chalice)",
