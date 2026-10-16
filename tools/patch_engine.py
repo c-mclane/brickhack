@@ -134,6 +134,48 @@ edit("src/u_init.c", [("            ini_inv(Pickaxe);\n    }\n",
                        "        }\n"
                        "    }\n")],
      "WEB_HOOK_KIT")
+# BrickHack: holy wine, the Catholic priest's chalice (with his hosts: the
+# figure's kit, LEGOHACK_KIT): a potion in a golden goblet, never made at random
+# (only his, or set in a level), always known, its look never shuffled (it
+# follows water, as the fixed ones do); drunk, it heals fully and restores
+edit("src/objects.c", [('POTION("amnesia", "sparkling",          1, 0,          16, 100, CLR_CYAN),\n',
+                        'POTION("amnesia", "sparkling",          1, 0,          16, 100, CLR_CYAN),\n'
+                        'POTION("holy wine", "golden goblet",    1, 0,           0, 300, CLR_YELLOW), /* WEB_HOOK_HOLYWINE */\n')],
+     "WEB_HOOK_HOLYWINE")
+edit("src/o_init.c", [("	/* shuffle descriptions */\n	shuffle_all();\n",
+                       "	objects[POT_HOLY_WINE].oc_name_known = 1; /* WEB_HOOK_HOLYWINE */\n"
+                       "	/* shuffle descriptions */\n	shuffle_all();\n")],
+     "WEB_HOOK_HOLYWINE")
+edit("src/potion.c", [("	case POT_FULL_HEALING:\n		You_feel(\"completely healed.\");\n",
+                       "	case POT_HOLY_WINE: /* WEB_HOOK_HOLYWINE: the chalice: whole in body and soul */\n"
+                       "		pline(\"A warm, holy light fills you.\");\n"
+                       "		healup(400, 8, TRUE, TRUE);\n"
+                       "		if (Upolyd) u.mh = u.mhmax;\n"
+                       "		u.uen = u.uenmax;\n"
+                       "		for (i = 0; i < A_MAX; i++)\n"
+                       "		    if (ABASE(i) < AMAX(i)) ABASE(i) = AMAX(i);\n"
+                       "		if (u.ulevel < u.ulevelmax) {\n"
+                       "		    u.ulevelmax -= 1;\n"
+                       "		    pluslvl(FALSE);\n"
+                       "		}\n"
+                       "		(void) make_hallucinated(0L, TRUE, 0L);\n"
+                       "		make_confused(0L, TRUE);\n"
+                       "		make_stunned(0L, TRUE);\n"
+                       "		if (Stoned) fix_petrification();\n"
+                       "		if (Slimed) Slimed = 0L;\n"
+                       "		flags.botl = 1;\n"
+                       "		exercise(A_WIS, TRUE);\n"
+                       "		exercise(A_CON, TRUE);\n"
+                       "		break;\n"
+                       "	case POT_FULL_HEALING:\n		You_feel(\"completely healed.\");\n"),
+                      ("	case POT_FULL_HEALING:\n		if (mon->data == &mons[PM_PESTILENCE]) goto do_illness;\n",
+                       "	case POT_HOLY_WINE: /* WEB_HOOK_HOLYWINE */\n"
+                       "	case POT_FULL_HEALING:\n		if (mon->data == &mons[PM_PESTILENCE]) goto do_illness;\n")],
+     "WEB_HOOK_HOLYWINE")
+# ...and its sprite, after amnesia's (the tile files are read in order)
+edit("win/share/objects.txt", [("# tile 368 (LEP GEX VEN ZEA / create monster)\n",
+"""# tile 384 (golden goblet / holy wine)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMAAAAAAAAAAMMM\n  MMMAHHHHHHHHAMMM\n  MMMAHDDDDDDHAMMM\n  MMMAHNDDDDDHAMMM\n  MMMMAHDDDDHCAMMM\n  MMMMMAHHHHCAMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMAHHHHCAMMMM\n  MMMMAAAAAAAAMMMM\n  MMMMMMMMMMMMMMMM\n}\n# tile 368 (LEP GEX VEN ZEA / create monster)\n""")],
+     "golden goblet / holy wine")
 # Dreamland heroes are blessed with swimming (the lakes are for paddling)
 edit("src/u_init.c", [("    { /* WEB_HOOK */ /* NetHack 3D: everyone starts with a pick-axe */",
                        "    if (flags.dreamland) HSwimming |= FROMOUTSIDE; /* WEB_HOOK_DREAM */\n"

@@ -3,12 +3,12 @@
   "pos": [
    0,
    10,
-   16
+   18
   ],
   "target": [
    0,
-   0,
-   1
+   0.5,
+   0.5
   ]
  },
  "objects": [
@@ -22,355 +22,328 @@
    ]
   },
   {
-   "item": "dilithium crystal",
+   "item": "booze",
    "pos": [
-    -270,
+    -240,
     0,
-    -120
+    -90
    ],
-   "label": "dilithium crystal"
+   "label": "brown potion"
   },
   {
-   "item": "diamond",
+   "item": "fruit juice",
    "pos": [
-    -210,
+    -180,
     0,
-    -120
+    -90
    ],
-   "label": "diamond"
+   "label": "dark potion"
   },
   {
-   "item": "ruby",
+   "item": "see invisible",
    "pos": [
-    -150,
+    -120,
     0,
-    -120
+    -90
    ],
-   "label": "ruby"
+   "label": "magenta potion"
   },
   {
-   "item": "jacinth",
+   "item": "sickness",
    "pos": [
-    -90,
+    -60,
     0,
-    -120
+    -90
    ],
-   "label": "jacinth"
+   "label": "fizzy potion"
   },
   {
-   "item": "sapphire",
+   "item": "sleeping",
    "pos": [
-    -30,
     0,
-    -120
+    0,
+    -90
    ],
-   "label": "sapphire"
+   "label": "effervescent potion"
   },
   {
-   "item": "black opal",
+   "item": "clairvoyance",
    "pos": [
-    30,
+    60,
     0,
-    -120
+    -90
    ],
-   "label": "black opal"
+   "label": "luminescent potion"
   },
   {
-   "item": "emerald",
+   "item": "confusion",
    "pos": [
-    90,
+    120,
     0,
-    -120
+    -90
    ],
-   "label": "emerald"
+   "label": "orange potion"
   },
   {
-   "item": "turquoise",
+   "item": "hallucination",
    "pos": [
-    150,
+    180,
     0,
-    -120
+    -90
    ],
-   "label": "turquoise"
+   "label": "sky blue potion"
   },
   {
-   "item": "citrine",
+   "item": "healing",
    "pos": [
-    210,
+    240,
     0,
-    -120
+    -90
    ],
-   "label": "citrine"
+   "label": "purple-red potion"
   },
   {
-   "item": "aquamarine",
+   "item": "extra healing",
    "pos": [
-    270,
+    -240,
     0,
-    -120
+    -20
    ],
-   "label": "aquamarine"
+   "label": "puce potion"
   },
   {
-   "item": "amber",
+   "item": "restore ability",
    "pos": [
-    -270,
+    -180,
     0,
-    -60
+    -20
    ],
-   "label": "amber"
+   "label": "pink potion"
   },
   {
-   "item": "topaz",
+   "item": "blindness",
    "pos": [
-    -210,
+    -120,
     0,
-    -60
+    -20
    ],
-   "label": "topaz"
+   "label": "yellow potion"
   },
   {
-   "item": "jet",
+   "item": "ESP",
    "pos": [
-    -150,
+    -60,
     0,
-    -60
+    -20
    ],
-   "label": "jet"
+   "label": "muddy potion"
   },
   {
-   "item": "opal",
+   "item": "gain energy",
    "pos": [
-    -90,
     0,
-    -60
+    0,
+    -20
    ],
-   "label": "opal"
+   "label": "cloudy potion"
   },
   {
-   "item": "chrysoberyl",
+   "item": "invisibility",
    "pos": [
-    -30,
+    60,
     0,
-    -60
+    -20
    ],
-   "label": "chrysoberyl"
+   "label": "brilliant blue potion"
   },
   {
-   "item": "garnet",
+   "item": "monster detection",
    "pos": [
-    30,
+    120,
     0,
-    -60
+    -20
    ],
-   "label": "garnet"
+   "label": "bubbly potion"
   },
   {
-   "item": "amethyst",
+   "item": "object detection",
    "pos": [
-    90,
+    180,
     0,
-    -60
+    -20
    ],
-   "label": "amethyst"
+   "label": "smoky potion"
   },
   {
-   "item": "jasper",
+   "item": "enlightenment",
    "pos": [
-    150,
+    240,
     0,
-    -60
+    -20
    ],
-   "label": "jasper"
+   "label": "swirly potion"
   },
   {
-   "item": "fluorite",
+   "item": "full healing",
    "pos": [
-    210,
+    -240,
     0,
-    -60
+    50
    ],
-   "label": "fluorite"
+   "label": "black potion"
   },
   {
-   "item": "obsidian",
+   "item": "levitation",
    "pos": [
-    270,
+    -180,
     0,
-    -60
+    50
    ],
-   "label": "obsidian"
+   "label": "cyan potion"
   },
   {
-   "item": "agate",
+   "item": "polymorph",
    "pos": [
-    -270,
+    -120,
     0,
-    0
+    50
    ],
-   "label": "agate"
+   "label": "golden potion"
   },
   {
-   "item": "jade",
+   "item": "speed",
    "pos": [
-    -210,
+    -60,
     0,
-    0
+    50
    ],
-   "label": "jade"
+   "label": "dark green potion"
   },
   {
-   "item": "worthless piece of white glass",
+   "item": "acid",
    "pos": [
-    -150,
     0,
-    0
+    0,
+    50
    ],
-   "label": "worthless piece of white glass"
+   "label": "white potion"
   },
   {
-   "item": "worthless piece of blue glass",
+   "item": "oil",
    "pos": [
-    -90,
+    60,
     0,
-    0
+    50
    ],
-   "label": "worthless piece of blue glass"
+   "label": "murky potion"
   },
   {
-   "item": "worthless piece of red glass",
+   "item": "gain ability",
    "pos": [
-    -30,
+    120,
     0,
-    0
+    50
    ],
-   "label": "worthless piece of red glass"
+   "label": "ruby potion"
   },
   {
-   "item": "worthless piece of yellowish brown glass",
+   "item": "gain level",
    "pos": [
-    30,
+    180,
     0,
-    0
+    50
    ],
-   "label": "worthless piece of yellowish brown glass"
+   "label": "milky potion"
   },
   {
-   "item": "worthless piece of orange glass",
+   "item": "invulnerability",
    "pos": [
-    90,
+    240,
     0,
-    0
+    50
    ],
-   "label": "worthless piece of orange glass"
+   "label": "icy potion"
   },
   {
-   "item": "worthless piece of yellow glass",
+   "item": "paralysis",
    "pos": [
-    150,
+    -240,
     0,
-    0
+    120
    ],
-   "label": "worthless piece of yellow glass"
+   "label": "emerald potion"
   },
   {
-   "item": "worthless piece of black glass",
+   "item": "water",
    "pos": [
-    210,
+    -180,
     0,
-    0
+    120
    ],
-   "label": "worthless piece of black glass"
+   "label": "clear potion (water)"
   },
   {
-   "item": "worthless piece of green glass",
+   "item": "blood",
    "pos": [
-    270,
+    -120,
     0,
-    0
+    120
    ],
-   "label": "worthless piece of green glass"
+   "label": "blood-red potion"
   },
   {
-   "item": "worthless piece of violet glass",
+   "item": "vampire blood",
    "pos": [
-    -270,
+    -60,
     0,
-    60
+    120
    ],
-   "label": "worthless piece of violet glass"
+   "label": "blood-red potion"
   },
   {
-   "item": "luckstone",
+   "item": "amnesia",
    "pos": [
-    -210,
     0,
-    60
+    0,
+    120
    ],
-   "label": "luckstone"
+   "label": "sparkling potion"
   },
   {
-   "item": "healthstone",
+   "item": "holy water",
    "pos": [
-    -150,
+    60,
     0,
-    60
+    120
    ],
-   "label": "healthstone"
+   "label": "holy water"
   },
   {
-   "item": "loadstone",
+   "item": "unholy water",
    "pos": [
-    -90,
+    120,
     0,
-    60
+    120
    ],
-   "label": "loadstone"
+   "label": "unholy water"
   },
   {
-   "item": "touchstone",
+   "item": "holy wine",
    "pos": [
-    -30,
+    260,
     0,
-    60
+    150
    ],
-   "label": "touchstone"
+   "label": "holy wine"
   },
   {
-   "item": "whetstone",
+   "item": "holy wafer",
    "pos": [
-    30,
+    200,
     0,
-    60
+    150
    ],
-   "label": "whetstone"
-  },
-  {
-   "item": "flint",
-   "pos": [
-    90,
-    0,
-    60
-   ],
-   "label": "flint"
-  },
-  {
-   "item": "rock",
-   "pos": [
-    150,
-    0,
-    60
-   ],
-   "label": "rock"
-  },
-  {
-   "item": "gold piece",
-   "pos": [
-    210,
-    0,
-    60
-   ],
-   "label": "gold piece"
+   "label": "holy wafer"
   }
  ]
 }

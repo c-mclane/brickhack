@@ -162,6 +162,7 @@ DECAL_SPOTS = {
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
     '973': {'center': (0, 15, -10), 'size': (17, 17), 'side': 'front'},     # torso: the chest
     '95228': {'center': (0, 32, -10), 'size': (16, 16), 'side': 'front'},  # minifig bottle: its body
+    'u9180': {'center': (0, 32, -12), 'size': (18, 14), 'side': 'front'},  # minifig conical flask: its body
     '98138': {'center': (0, 0, 0), 'size': (20, 20), 'side': 'top'},        # round tile 1 x 1: its face
     '4150': {'center': (0, 0, 0), 'size': (40, 40), 'side': 'top'},         # round tile 2 x 2: its face
     '3069b': {'center': (0, 0, 0), 'size': (40, 20), 'side': 'top'},        # tile 1 x 2: its face

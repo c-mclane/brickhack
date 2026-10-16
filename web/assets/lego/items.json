@@ -6496,5 +6496,378 @@
    }
   ],
   "upright": true
+ },
+ "booze": {
+  "lego": "A wine bottle in amber, brown (a brown potion)",
+  "parts": [
+   {
+    "part": "33011b",
+    "color": 231
+   }
+  ],
+  "upright": true
+ },
+ "fruit juice": {
+  "lego": "A minifig bottle in trans black, dark (a dark potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 10375
+   }
+  ],
+  "upright": true
+ },
+ "see invisible": {
+  "lego": "A wine bottle in trans dark pink, magenta (a magenta potion)",
+  "parts": [
+   {
+    "part": "33011b",
+    "color": 37
+   }
+  ],
+  "upright": true
+ },
+ "sickness": {
+  "lego": "A minifig bottle in trans light green, fizzing with fine bubbles (a fizzy potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 285,
+    "decal": {
+     "image": "../decals/fizz.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "sleeping": {
+  "lego": "A conical flask in trans light blue, fizzing (a effervescent potion)",
+  "parts": [
+   {
+    "part": "u9180",
+    "color": 43,
+    "decal": {
+     "image": "../decals/fizz.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "clairvoyance": {
+  "lego": "A minifig bottle in trans neon green, glowing (a luminescent potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 42
+   }
+  ],
+  "upright": true,
+  "aura": {
+   "color": [
+    0.75,
+    1.0,
+    0.3
+   ],
+   "strength": 0.5,
+   "scale": 0.6,
+   "layers": 1
+  }
+ },
+ "confusion": {
+  "lego": "A minifig bottle in trans orange (a orange potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 57
+   }
+  ],
+  "upright": true
+ },
+ "hallucination": {
+  "lego": "A big jug in trans medium blue, sky blue (a sky blue potion)",
+  "parts": [
+   {
+    "part": "4429",
+    "color": 41
+   }
+  ],
+  "upright": true
+ },
+ "healing": {
+  "lego": "A conical flask in trans reddish lilac, purple-red (a purple-red potion)",
+  "parts": [
+   {
+    "part": "u9180",
+    "color": 284
+   }
+  ],
+  "upright": true
+ },
+ "extra healing": {
+  "lego": "A jar in sand red, puce (a puce potion)",
+  "parts": [
+   {
+    "part": "33011c",
+    "color": 335
+   }
+  ],
+  "upright": true
+ },
+ "restore ability": {
+  "lego": "A minifig bottle in trans pink (a pink potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 45
+   }
+  ],
+  "upright": true
+ },
+ "blindness": {
+  "lego": "A minifig bottle in trans yellow (a yellow potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 46
+   }
+  ],
+  "upright": true
+ },
+ "ESP": {
+  "lego": "A big jug in opaque dark tan, muddy (a muddy potion)",
+  "parts": [
+   {
+    "part": "4429",
+    "color": 28
+   }
+  ],
+  "upright": true
+ },
+ "gain energy": {
+  "lego": "A jar in opal trans clear, cloudy (a cloudy potion)",
+  "parts": [
+   {
+    "part": "33011c",
+    "color": 360
+   }
+  ],
+  "upright": true
+ },
+ "invisibility": {
+  "lego": "A minifig bottle in opal trans dark blue, brilliant (a brilliant blue potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 10366
+   }
+  ],
+  "upright": true
+ },
+ "monster detection": {
+  "lego": "A conical flask in trans light blue violet, full of big bubbles (a bubbly potion)",
+  "parts": [
+   {
+    "part": "u9180",
+    "color": 293,
+    "decal": {
+     "image": "../decals/bubbles.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "object detection": {
+  "lego": "A jar in opal trans black, smoky (a smoky potion)",
+  "parts": [
+   {
+    "part": "33011c",
+    "color": 363
+   }
+  ],
+  "upright": true
+ },
+ "enlightenment": {
+  "lego": "A conical flask in opal trans clear, swirling with colours (a swirly potion)",
+  "parts": [
+   {
+    "part": "u9180",
+    "color": 360,
+    "decal": {
+     "image": "../decals/swirl.png"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "full healing": {
+  "lego": "A big jug in trans black, inky (a black potion)",
+  "parts": [
+   {
+    "part": "4429",
+    "color": 32
+   }
+  ],
+  "upright": true
+ },
+ "levitation": {
+  "lego": "A wine bottle in trans light blue, cyan (a cyan potion)",
+  "parts": [
+   {
+    "part": "33011b",
+    "color": 43
+   }
+  ],
+  "upright": true
+ },
+ "polymorph": {
+  "lego": "A jar in pearl gold, golden (a golden potion)",
+  "parts": [
+   {
+    "part": "33011c",
+    "color": 297
+   }
+  ],
+  "upright": true
+ },
+ "speed": {
+  "lego": "A wine bottle in opaque dark green (a dark green potion)",
+  "parts": [
+   {
+    "part": "33011b",
+    "color": 288
+   }
+  ],
+  "upright": true
+ },
+ "acid": {
+  "lego": "A minifig bottle in opaque white (a white potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 15
+   }
+  ],
+  "upright": true
+ },
+ "oil": {
+  "lego": "A jar in opaque olive, murky (a murky potion)",
+  "parts": [
+   {
+    "part": "33011c",
+    "color": 330
+   }
+  ],
+  "upright": true
+ },
+ "gain ability": {
+  "lego": "A minifig bottle in trans red, ruby (a ruby potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 36
+   }
+  ],
+  "upright": true
+ },
+ "gain level": {
+  "lego": "A big jug in trans white, milky (a milky potion)",
+  "parts": [
+   {
+    "part": "4429",
+    "color": 11015
+   }
+  ],
+  "upright": true
+ },
+ "invulnerability": {
+  "lego": "A minifig bottle in opal trans light blue, icy, frosted with glints (a icy potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 362,
+    "decal": {
+     "image": "../decals/sparkle.png"
+    }
+   }
+  ],
+  "upright": true,
+  "aura": {
+   "color": [
+    0.7,
+    0.9,
+    1.0
+   ],
+   "strength": 0.35,
+   "scale": 0.6,
+   "layers": 1
+  }
+ },
+ "paralysis": {
+  "lego": "A minifig bottle in trans green, emerald (a emerald potion)",
+  "parts": [
+   {
+    "part": "95228",
+    "color": 34
+   }
+  ],
+  "upright": true
+ },
+ "blood": {
+  "lego": "A big jug in opaque dark red, blood (a blood-red potion)",
+  "parts": [
+   {
+    "part": "4429",
+    "color": 320
+   }
+  ],
+  "upright": true
+ },
+ "vampire blood": {
+  "lego": "A big jug in opaque dark red, blood (a blood-red potion)",
+  "parts": [
+   {
+    "part": "4429",
+    "color": 320
+   }
+  ],
+  "upright": true
+ },
+ "amnesia": {
+  "lego": "A wine bottle in glitter trans clear, sparkling (a sparkling potion)",
+  "parts": [
+   {
+    "part": "33011b",
+    "color": 117,
+    "decal": {
+     "image": "../decals/sparkle.png"
+    }
+   }
+  ],
+  "upright": true,
+  "aura": {
+   "color": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "strength": 0.3,
+   "scale": 0.6,
+   "layers": 1
+  }
+ },
+ "holy wine": {
+  "lego": "The minifig goblet in metallic gold, glowing as the holy wafer does (a chalice)",
+  "parts": [
+   {
+    "part": "2343",
+    "color": 82
+   }
+  ],
+  "upright": true,
+  "aura": {
+   "strength": 0.4,
+   "scale": 0.6,
+   "layers": 1
+  }
  }
 }
