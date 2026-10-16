@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""LEGO part 5685, "Minifig Weapon Dagger / Knife Curved" (2024: Paul's
+"""brick part 5685, "Minifig Weapon Dagger / Knife Curved" (2024: Paul's
 crysknife from the Dune Atreides Royal Ornithopter), modelled by hand for
 our own use: it's too new for the LDraw library (when LDraw has it, theirs is
 used instead: ldraw2glb.EXTRA).

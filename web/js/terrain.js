@@ -2,9 +2,9 @@
 // Defaults are NetHack 3.6.7's numbering; the engine sends its own table in
 // the "hello" message (SLASH'EM numbers them differently), see setCmap().
 
-// LEGO dungeon levels: rooms and corridors are platforms of 4x4-stud squares,
+// brick dungeon levels: rooms and corridors are platforms of 4x4-stud squares,
 // walls six bricks (1.8 blocks: 2 for walking and the camera) and doors real
-// 1x4x6 LEGO doors, as tall as the wall.  Ascend's block-built levels keep
+// 1x4x6 brick doors, as tall as the wall.  Ascend's block-built levels keep
 // 4-block walls and 2-block doors.
 export let WALL_H = 2; // wall height in blocks (open air above for building)
 export let DOOR_H = 2; // doors and doorways
@@ -68,7 +68,7 @@ function classifyCell(world, x, y) {
   const cell = world.cell(x, y);
   if (!cell || (cell.k === 'c' && cell.c === CM.stone)) {
     // a blank square. If it's in sight now (or ever was), or we've stood beside
-    // it, it's rock: no way on there (on LEGO levels: wall). Otherwise nobody
+    // it, it's rock: no way on there (on brick levels: wall). Otherwise nobody
     // knows yet (fog), though next to a known corridor it still counts as
     // solid (the camera and the block world treat it so)
     const i = y * world.w + x;

@@ -57,7 +57,7 @@ export class Motion {
   }
 
   heroHeight() {
-    // (figHeight: the LEGO minifig's height, on LEGO levels)
+    // (figHeight: the brick minifig's height, on brick levels)
     return this.heroPoly ? sizeHeight(this.heroSize) : this.figHeight || STEVE_HEIGHT;
   }
 

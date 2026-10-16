@@ -2,11 +2,11 @@
 //
 // A quantum mechanic (tools/ldraw2glb.py: 'Quantum_Strobe_<n>', one per part):
 // every part flashes between red, white, yellow and blue, each on its own, a
-// dozen times a second, like the magic portal in the old LEGO stop-motion films.
+// dozen times a second, like the magic portal in the old brick stop-motion films.
 //
 // A doppelganger's other half (tools/ldraw2glb.py: the 'Doppel_Mist' colour):
 // translucent green that glows and ripples like liquid, the same in the scene
-// viewer and the game (three.js), and in lego.js's own shader (MIST_GLSL).
+// viewer and the game (three.js), and in brick.js's own shader (MIST_GLSL).
 
 const t0 = performance.now();
 const uTime = { value: 0 };
@@ -19,7 +19,7 @@ const tick = () => {
 };
 const startTicking = () => { if (!ticking) { ticking = true; tick(); } };
 
-const STROBE = [0xc91a09, 0xffffff, 0xf2cd37, 0x0055bf]; // LEGO red, white, yellow, blue
+const STROBE = [0xc91a09, 0xffffff, 0xf2cd37, 0x0055bf]; // brick red, white, yellow, blue
 const STROBE_FPS = 12;
 // the part's colour at time t (s): a new one each frame, picked at random but the same for everyone
 export function strobeHex(part, t) {

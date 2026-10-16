@@ -3,7 +3,7 @@
 // NetHack tile atlas.
 
 import { CM, classify, wallTile, cmapTile, WALL_H, DOOR_H } from './terrain.js';
-import { Lego, STUD_H, PARTS, DOOR_TOP, partMatrix } from './lego.js';
+import { BrickRenderer, STUD_H, PARTS, DOOR_TOP, partMatrix } from './brick.js';
 import { BrickWorld } from './brickworld.js';
 
 const VS = `#version 300 es
@@ -420,12 +420,12 @@ export class Renderer {
     this.falls = this.makeMesh(); // iridescent waterfalls (world.falls)
     this.mist = this.makeMesh(); // mist round the edges of an Ascend map
     this.blockMesh = this.makeMesh();
-    this.lego = new Lego(gl); // (the character previews' renderer; the game world is the BrickWorld's)
-    this.brick = new BrickWorld(canvas, gl); // the LEGO dungeon and minifigs, drawn by three.js like the scene viewer
-    this.brickOn = false; // drawing a LEGO level (the dungeon), not a block one (Ascend)
-    this.legoFigures = []; // [{prims, matrix, shade}] drawn this frame (the hero)
+    this.figRender = new BrickRenderer(gl); // (the character previews' renderer; the game world is the BrickWorld's)
+    this.brick = new BrickWorld(canvas, gl); // the brick dungeon and minifigs, drawn by three.js like the scene viewer
+    this.brickOn = false; // drawing a brick level (the dungeon), not a block one (Ascend)
+    this.brickFigures = []; // [{prims, matrix, shade}] drawn this frame (the hero)
     this.fpArm = null; // [{prims, matrix, pose, only, skip}]: first person, the hero's arms (and what they hold) in view space
-    this.legoItems = []; // [{x, z, url}]: items lying on the floor as LEGO models (the LEGO dungeon)
+    this.brickItems = []; // [{x, z, url}]: items lying on the floor as brick models (the brick dungeon)
     this.fog = [0.04, 0.04, 0.06];
     this.fov = 75;
   }
@@ -706,11 +706,11 @@ export class Renderer {
       });
     };
     const shade0 = 1;
-    // dungeon levels are a LEGO maze out in the open: green studded floors on a
+    // dungeon levels are a brick maze out in the open: green studded floors on a
     // green baseplate, grey brick walls (and the rock you've seen round the
-    // corridors: walled lanes), wooden LEGO doors, and haze over everything
+    // corridors: walled lanes), wooden brick doors, and haze over everything
     // not yet explored (a path you haven't followed yet fades into it)
-    const lego = !world.dream;
+    const brickLevel = !world.dream;
     // what the BrickWorld builds: floor plates, walls, doors, fog
     const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [] };
     // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
@@ -747,7 +747,7 @@ export class Renderer {
     // the Castle (King Skelly's): its outer walls, the ones on the moat, rise
     // high with battlements, and its four corner towers higher still (rise 1,
     // 2: brickworld.js); the walls inside stay as they are
-    const castle = lego && world.castle;
+    const castle = brickLevel && world.castle;
     const castleRise = (x, y) => {
       if (!castle) return 0;
       const [x0, y0, x1, y1] = castle;
@@ -766,11 +766,11 @@ export class Renderer {
     for (let y = 0; y < H; y++)
       for (let x = 0; x < W; x++) {
         const c = cls[y * W + x];
-        if (lego && (!c || (c.type === 'none' && c.cmap !== CM.air))) { fogAt(x, y); continue; }
+        if (brickLevel && (!c || (c.type === 'none' && c.cmap !== CM.air))) { fogAt(x, y); continue; }
         if (!c || c.type === 'none') continue;
         const d = Math.hypot(x - hx, y - hy);
-        let shade = c.seen || world.dream ? 1.0 : lego ? 0.62 : 0.42; // (Ascend is mapped and in daylight)
-        shade *= world.dream ? 1 : Math.max(lego ? 0.75 : 0.55, Math.min(1, 1.25 - d / 16)); // Dreamland is in daylight
+        let shade = c.seen || world.dream ? 1.0 : brickLevel ? 0.62 : 0.42; // (Ascend is mapped and in daylight)
+        shade *= world.dream ? 1 : Math.max(brickLevel ? 0.75 : 0.55, Math.min(1, 1.25 - d / 16)); // Dreamland is in daylight
         const blockTile = opts.wallStyle === 'exact' && c.type === 'wall' ? c.tile : WALL_TILE;
         const cull = (lvl) => ({
           n: solidAt(x, y - 1, lvl), s: solidAt(x, y + 1, lvl),
@@ -786,15 +786,15 @@ export class Renderer {
         const doorTop = world.dream ? DOOR_H : WALL_H;
         switch (c.type) {
           case 'wall':
-            if (lego) bricks.walls.push({ x, z: y, shade, rise: castleRise(x, y) });
+            if (brickLevel) bricks.walls.push({ x, z: y, shade, rise: castleRise(x, y) });
             else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
           case 'rock': // known rock is wall; rock nobody has seen yet is fog
-            if (lego) { if (c.known) bricks.walls.push({ x, z: y, shade }); else fogAt(x, y); }
+            if (brickLevel) { if (c.known) bricks.walls.push({ x, z: y, shade }); else fogAt(x, y); }
             else column(0, T.stone ?? WALL_TILE, 0.45);
             break;
-          case 'door': // closed door: a two-block door with wall above (LEGO: a 1x4x6 door, shut)
-            if (lego) { bricks.floors.push({ x, z: y, shade, studs: true }); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
+          case 'door': // closed door: a two-block door with wall above (brick: a 1x4x6 door, shut)
+            if (brickLevel) { bricks.floors.push({ x, z: y, shade, studs: true }); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
             else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)), doorTop);
             break;
           case 'liquid':
@@ -817,7 +817,7 @@ export class Renderer {
             const sq = `${x},${y}`;
             const indoors = world.indoors && world.indoors.has(sq);
             if (world.floating && T.dirt != null) slab(x, y, 0);
-            if (lego) {
+            if (brickLevel) {
               // a studded plate in the floor's colour; a special floor (stairs, an
               // altar's square...) is a smooth plate with its tile printed on top
               const ft = c.floorTile ?? c.tile, plain = plainFloor.has(ft);
@@ -830,7 +830,7 @@ export class Renderer {
             } else this.floor(out, x, y, 0, world.dream && world.paved && world.paved.has(sq) && T.marble != null ? T.marble
               : world.dream && world.path && world.path.has(sq) && T.dirt != null ? T.dirt
               : world.dream && !indoors && T.grassTop != null && (c.cmap === CM.room || c.cmap === CM.darkroom || c.cmap === CM.tree) ? T.grassTop : c.floorTile ?? c.tile, shade);
-            if (c.decal != null && !lego) this.floor(out, x, y, 0.01, c.decal, shade, 1);
+            if (c.decal != null && !brickLevel) this.floor(out, x, y, 0.01, c.decal, shade, 1);
             if (c.lintel && !world.dream) column(DOOR_H, null, shade, (l) => wallLayer(l, WALL_TILE));
             if (c.chest && T.chestSide != null) {
               // NetHack chests and boxes as Minecraft-style chest blocks
@@ -838,7 +838,7 @@ export class Renderer {
               this.box(out, x + m, 0, y + m, x + 1 - m, 0.875, y + 1 - m,
                 { n: T.chestSide, s: T.chestFront, w: T.chestSide, e: T.chestSide, top: T.chestTop }, shade);
             }
-            if (c.type === 'odoor' && !lego) {
+            if (c.type === 'odoor' && !brickLevel) {
               // swung-open door panel along one edge of the doorway, two blocks tall
               for (let l = 0; l < DOOR_H; l++) {
                 const a = l + 1, b = l;
@@ -855,8 +855,8 @@ export class Renderer {
       }
     this.upload(this.terrain, out);
     // the baseplate under the whole level, a plate below the floors
-    this.brickOn = lego;
-    if (lego) this.brick.setTerrain(bricks);
+    this.brickOn = brickLevel;
+    if (brickLevel) this.brick.setTerrain(bricks);
     // placed / generated blocks: their own mesh.  In Dreamland (thousands of
     // blocks, even light) it is only rebuilt when the blocks change.
     const bkey = world.dream && world.blocks ? `${world.blocks.version}:${world.blocks.levelKey}:${this.atlasKey}:${T.dirt}` : null;
@@ -1079,9 +1079,9 @@ export class Renderer {
     this.proj = mat4Perspective((this.fov * Math.PI) / 180, w / h, 0.05, 200);
     this.view = mat4View(eye, yaw, pitch);
     if (this.brickOn) {
-      // a LEGO level: the BrickWorld draws the world (and clears to its sky blue); our pass draws on top
-      this.brick.setFigures(this.legoFigures.filter((f) => f.url));
-      this.brick.setItems(this.legoItems || []);
+      // a brick level: the BrickWorld draws the world (and clears to its sky blue); our pass draws on top
+      this.brick.setFigures(this.brickFigures.filter((f) => f.url));
+      this.brick.setItems(this.brickItems || []);
       this.brick.render(this.proj, this.view, w, h, this.focus);
       gl.viewport(0, 0, w, h);
     } else {
@@ -1114,11 +1114,11 @@ export class Renderer {
       gl.drawArrays(gl.TRIANGLES, 0, this.overlay.count);
       gl.disable(gl.POLYGON_OFFSET_FILL);
     }
-    // the LEGO pass (its own shader), then back to ours
-    if (!this.brickOn && this.legoFigures.length) { // (a minifig on a block level: Ascend)
-      this.lego.fog = this.fog;
-      this.lego.fogRange = this.fogRange || [10, 30];
-      this.lego.draw(this.proj, this.view, this.legoFigures);
+    // the brick pass (its own shader), then back to ours
+    if (!this.brickOn && this.brickFigures.length) { // (a minifig on a block level: Ascend)
+      this.figRender.fog = this.fog;
+      this.figRender.fogRange = this.fogRange || [10, 30];
+      this.figRender.draw(this.proj, this.view, this.brickFigures);
       gl.useProgram(this.prog);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
@@ -1150,10 +1150,10 @@ export class Renderer {
     if (this.fpArm && this.fpArm.length) {
       gl.clear(gl.DEPTH_BUFFER_BIT);
       gl.disable(gl.CULL_FACE);
-      this.lego.fog = this.fog;
-      this.lego.fogRange = [1e4, 2e4];
+      this.figRender.fog = this.fog;
+      this.figRender.fogRange = [1e4, 2e4];
       const fp = mat4Perspective((70 * Math.PI) / 180, w / h, 0.01, 10);
-      this.lego.draw(fp, FP_VIEW, this.fpArm, true);
+      this.figRender.draw(fp, FP_VIEW, this.fpArm, true);
     }
     gl.bindVertexArray(null);
   }

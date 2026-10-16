@@ -117,7 +117,7 @@ edit("src/allmain.c", [("	if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1
                         "		flush_screen(1);\n		web_dreamland_intro();\n	} else if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1);\n	}")],
      "WEB_HOOK_DREAM")
 # BrickHack: a character's figure can start it with more than its role's kit
-# (the server's LEGOHACK_KIT, from the design: a Catholic priest's hosts;
+# (the server's BRICKHACK_KIT, from the design: a Catholic priest's hosts;
 # winweb.c web_kit_item), unless it already has some
 edit("src/u_init.c", [("            ini_inv(Pickaxe);\n    }\n",
                        "            ini_inv(Pickaxe);\n    }\n"
@@ -147,7 +147,7 @@ edit("src/u_init.c", [("STATIC_DCL void FDECL(ini_inv, (struct trobj *));\n",
                        "            web_kit_exact = 1;\n            ini_inv(kit);\n            web_kit_exact = 0;\n")],
      "WEB_HOOK_KITEXACT")
 # BrickHack: holy wine, the Catholic priest's chalice (with his hosts: the
-# figure's kit, LEGOHACK_KIT): a potion in a golden goblet, never made at random
+# figure's kit, BRICKHACK_KIT): a potion in a golden goblet, never made at random
 # (only his, or set in a level), always known, its look never shuffled (it
 # follows water, as the fixed ones do); drunk, it heals fully and restores
 edit("src/objects.c", [('POTION("amnesia", "sparkling",          1, 0,          16, 100, CLR_CYAN),\n',
@@ -206,6 +206,7 @@ def rename(rel, pairs):
     if t != s:
         open(path, "w", encoding="latin-1").write(t)
 
+rename("src/role.c", [("\"brick" "HACK_", "\"BRICK" "HACK_")])
 rename("src/objects.c", [("TOOL(\"wine glass\", (char *)0,   1, 1, 0, 0,   0,   3,   5, GLASS, HI_GLASS), /* WEB_HOOK_GLASS */\n", "TOOL(\"chalice\", (char *)0,      1, 1, 0, 0,   0,  20,  50, GOLD, HI_GOLD), /* WEB_HOOK_GLASS */\n")])
 rename("win/share/objects.txt", [("# tile 298 (wine glass)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMBBBBBBMMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMBNPPPPPBMMMM\n  MMMMMBNPPPBMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMMBBMMMMMMM\n  MMMMMMBBBBMMMMMM\n  MMMMBBBBBBBBMMMM\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n}\n", "# tile 298 (chalice)\n{\n  MMMMMMMMMMMMMMMM\n  MMMMMMMMMMMMMMMM\n  MMMAAAAAAAAAAMMM\n  MMMAHKKKKKKHAMMM\n  MMMAHNKKKKKHAMMM\n  MMMAHHKKKKHCAMMM\n  MMMMAHHHHHHCAMMM\n  MMMMMAHHHHCAMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMMAHAMMMMMM\n  MMMMMMAHHCAMMMMM\n  MMMMMAHHHHCAMMMM\n  MMMMAAAAAAAAMMMM\n  MMMMMMMMMMMMMMMM\n}\n")])
 rename("src/potion.c", [("mksobj(WINE_GLASS, FALSE, FALSE)", "mksobj(CHALICE, FALSE, FALSE)"),
@@ -239,7 +240,7 @@ edit("src/pray.c", [("	pleased(alignment); /* nice */\n    }\n    return(1);\n}\
                      "    { extern void NDECL(web_fill_glasses); web_fill_glasses(); } /* WEB_HOOK_GLASS */\n"
                      "    return(1);\n}\n")],
      "WEB_HOOK_GLASS")
-# BrickHack: a figure's own deity (the server's LEGOHACK_GOD, from its design:
+# BrickHack: a figure's own deity (the server's BRICKHACK_GOD, from its design:
 # Jesus, for the Catholic priest, the monastic orders and the crusading
 # knights), the lawful god (its followers are lawful: the server sets
 # align:lawful); set again on every restore
@@ -247,7 +248,7 @@ edit("src/role.c", [("	    urole.cgod = roles[flags.pantheon].cgod;\n	}\n",
                      "	    urole.cgod = roles[flags.pantheon].cgod;\n	}\n"
                      "	{ /* WEB_HOOK_GOD */\n"
                      "	    static char web_god[64];\n"
-                     "	    const char *g = getenv(\"LEGOHACK_GOD\");\n"
+                     "	    const char *g = getenv(\"BRICKHACK_GOD\");\n"
                      "	    if (g && *g) {\n"
                      "		(void) strncpy(web_god, g, sizeof web_god - 1);\n"
                      "		urole.lgod = web_god;\n"
@@ -398,7 +399,7 @@ edit("src/mthrowu.c", [("	if (sym) tmp_at(DISP_FLASH, obj_to_glyph(singleobj));\
 # ---- The One Ring: Sauron's, a ring of invisibility, never made at random (for
 # now it turns up nowhere: the dev command "give The One Ring"). Its burden is
 # crushing (inv_weight): whoever carries it can't move, unless a hobbit (the
-# Ring's bearers). Its LEGO look: the One Ring in chrome gold (items.json "One Ring")
+# Ring's bearers). Its brick look: the One Ring in chrome gold (items.json "One Ring")
 edit("include/artilist.h", [
     ("A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )",
      "/* WEB_HOOK_ONERING: the One Ring, to rule them all */\n"
@@ -700,8 +701,8 @@ if _n != 27:
 open(_castle, "w", encoding="latin-1").write(_s)
 # ---- Narsil, the Sword that was Broken: Elendil's long sword, lawful, bane
 # of Sauron's orcs (as Orcrist is); and Glamdring, Gandalf's Foe-hammer, bane
-# of orcs and demons. They turn up as artifacts do. (Their LEGO looks: the
-# LotR swords, web/assets/lego/items.json.)
+# of orcs and demons. They turn up as artifacts do. (Their brick looks: the
+# LotR swords, web/assets/brick/items.json.)
 edit("include/artilist.h", [
     ("A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )",
      "/* WEB_HOOK_NARSIL: the Sword that was Broken */\n"

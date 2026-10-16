@@ -1,4 +1,4 @@
-// LEGO rendering for the WebGL2 renderer: lit meshes from our .glb models
+// brick rendering for the WebGL2 renderer: lit meshes from our .glb models
 // (minifigs, built by tools/build_roster.py) and instanced bricks, plates and
 // studs for the dungeon.
 //
@@ -92,7 +92,7 @@ void main() {
   }
   float alpha = uColor.a;
   if (uGlow > 0.5) {
-    // translucent LEGO glows: mostly its own colour, brightest where it faces you
+    // translucent brick glows: mostly its own colour, brightest where it faces you
     col = base * (0.95 + 0.25 * key) + base * 0.35 * (1.0 - abs(n.y));
     alpha = 0.78;
   }
@@ -201,7 +201,7 @@ function mul4(a, b) { // column-major a * b
 }
 
 // model matrix: stand a figure's feet at (x, y, z), facing yaw (the game's
-// yaw: 0 looks north, toward -Z), at LEGO scale
+// yaw: 0 looks north, toward -Z), at brick scale
 export function figureMatrix(x, y, z, yaw, scale = MODEL_SCALE) {
   return partMatrix(x, y + FIG_FEET * scale, z, Math.PI - yaw, scale);
 }
@@ -212,16 +212,16 @@ export function partMatrix(x, y, z, turn, scale = MODEL_SCALE) {
   return new Float32Array([c, 0, -s, 0, 0, scale, 0, 0, s, 0, c, 0, x, y, z, 1]);
 }
 
-// The dungeon's LEGO pieces (tools/build_roster.py), and how high each one's
+// The dungeon's brick pieces (tools/build_roster.py), and how high each one's
 // origin sits above the floor: a door frame's origin is its top, six bricks up.
 export const PARTS = {
-  door_closed: 'assets/lego/parts/door_closed.glb',
-  door_open: 'assets/lego/parts/door_open.glb',
-  doorway: 'assets/lego/parts/doorway.glb',
+  door_closed: 'assets/brick/parts/door_closed.glb',
+  door_open: 'assets/brick/parts/door_open.glb',
+  doorway: 'assets/brick/parts/doorway.glb',
 };
 export const DOOR_TOP = WALL_LAYERS * 24 * LDU;
 
-export class Lego {
+export class BrickRenderer {
   constructor(gl) {
     this.gl = gl;
     const sh = (type, src) => {
@@ -408,7 +408,7 @@ export class Lego {
 const GAP = 0.004; // a hair's gap between neighbouring bricks
 
 // a wall: a foundation flush with the platform's underside, then courses of
-// two 2x4 bricks, crossing direction every course like real LEGO masonry
+// two 2x4 bricks, crossing direction every course like real brick masonry
 export function wallColumn(inst, x, z, layers, color, shade, studsOnTop = true) {
   inst.box.push(x + GAP, -PLATE_H - BRICK_H, z + GAP, shade * 0.85, 1 - 2 * GAP, PLATE_H + BRICK_H - GAP, 1 - 2 * GAP, ...color);
   for (let l = 0; l < layers; l++) {

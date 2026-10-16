@@ -1,6 +1,6 @@
 {
  "orcish short sword": {
-  "lego": "Small sword with curved blade",
+  "brick": "Small sword with curved blade",
   "parts": [
    {
     "part": "10053",
@@ -9,7 +9,7 @@
   ]
  },
  "short sword": {
-  "lego": "Shortsword",
+  "brick": "Shortsword",
   "parts": [
    {
     "part": "3847",
@@ -18,7 +18,7 @@
   ]
  },
  "silver short sword": {
-  "lego": "Shortsword, chrome",
+  "brick": "Shortsword, chrome",
   "parts": [
    {
     "part": "3847",
@@ -27,7 +27,7 @@
   ]
  },
  "dwarvish short sword": {
-  "lego": "Roman gladius",
+  "brick": "Roman gladius",
   "parts": [
    {
     "part": "18034",
@@ -36,7 +36,7 @@
   ]
  },
  "elven short sword": {
-  "lego": "Small sword, upturned crossguard",
+  "brick": "Small sword, upturned crossguard",
   "parts": [
    {
     "part": "2674f",
@@ -45,7 +45,7 @@
   ]
  },
  "dark elven short sword": {
-  "lego": "Small sword, upturned crossguard",
+  "brick": "Small sword, upturned crossguard",
   "parts": [
    {
     "part": "2674f",
@@ -54,7 +54,7 @@
   ]
  },
  "broadsword": {
-  "lego": "Longsword with thick guard",
+  "brick": "Longsword with thick guard",
   "parts": [
    {
     "part": "18031",
@@ -63,7 +63,7 @@
   ]
  },
  "runesword": {
-  "lego": "Sword with angular hilt",
+  "brick": "Sword with angular hilt",
   "parts": [
    {
     "part": "48495",
@@ -72,7 +72,7 @@
   ]
  },
  "elven broadsword": {
-  "lego": "Elvish sword",
+  "brick": "Elvish sword",
   "parts": [
    {
     "part": "2674a",
@@ -81,7 +81,7 @@
   ]
  },
  "long sword": {
-  "lego": "Greatsword (the classic Castle sword)",
+  "brick": "Greatsword (the classic Castle sword)",
   "parts": [
    {
     "part": "59",
@@ -90,7 +90,7 @@
   ]
  },
  "silver long sword": {
-  "lego": "Greatsword, chrome",
+  "brick": "Greatsword, chrome",
   "parts": [
    {
     "part": "59",
@@ -99,7 +99,7 @@
   ]
  },
  "katana": {
-  "lego": "Katana",
+  "brick": "Katana",
   "parts": [
    {
     "part": "30173a",
@@ -108,7 +108,7 @@
   ]
  },
  "two-handed sword": {
-  "lego": "Greatsword with capped pommel",
+  "brick": "Greatsword with capped pommel",
   "parts": [
    {
     "part": "2674b",
@@ -117,7 +117,7 @@
   ]
  },
  "tsurugi": {
-  "lego": "Katana with smooth endcap",
+  "brick": "Katana with smooth endcap",
   "parts": [
    {
     "part": "21459",
@@ -126,7 +126,7 @@
   ]
  },
  "scimitar": {
-  "lego": "Scimitar",
+  "brick": "Scimitar",
   "parts": [
    {
     "part": "43887",
@@ -135,7 +135,7 @@
   ]
  },
  "rapier": {
-  "lego": "Rapier (the fencing sword)",
+  "brick": "Rapier (the fencing sword)",
   "parts": [
    {
     "part": "93550",
@@ -144,7 +144,7 @@
   ]
  },
  "silver saber": {
-  "lego": "Saber with clip pommel",
+  "brick": "Saber with clip pommel",
   "parts": [
    {
     "part": "59229",
@@ -153,7 +153,7 @@
   ]
  },
  "green lightsaber": {
-  "lego": "Lightsaber hilt and bar",
+  "brick": "Lightsaber hilt and bar",
   "parts": [
    {
     "part": "18673",
@@ -171,7 +171,7 @@
   ]
  },
  "blue lightsaber": {
-  "lego": "Lightsaber hilt and bar",
+  "brick": "Lightsaber hilt and bar",
   "parts": [
    {
     "part": "18673",
@@ -189,7 +189,7 @@
   ]
  },
  "red lightsaber": {
-  "lego": "Lightsaber hilt and bar",
+  "brick": "Lightsaber hilt and bar",
   "parts": [
    {
     "part": "18673",
@@ -207,7 +207,7 @@
   ]
  },
  "red double lightsaber": {
-  "lego": "Lightsaber hilt and bar (two blades)",
+  "brick": "Lightsaber hilt and bar (two blades)",
   "parts": [
    {
     "part": "18673",
@@ -234,7 +234,7 @@
   ]
  },
  "orcish dagger": {
-  "lego": "Kunai (Ninjago short spear), dark grey",
+  "brick": "Kunai (Ninjago short spear), dark grey",
   "parts": [
    {
     "part": "98338",
@@ -243,7 +243,7 @@
   ]
  },
  "dagger": {
-  "lego": "Knife (the classic Pirates dagger)",
+  "brick": "Knife (the classic Pirates dagger)",
   "parts": [
    {
     "part": "44658",
@@ -252,7 +252,7 @@
   ]
  },
  "athame": {
-  "lego": "Curved dagger, pearl gold hilt, printed blade",
+  "brick": "Curved dagger, pearl gold hilt, printed blade",
   "parts": [
    {
     "part": "88288p01",
@@ -261,7 +261,7 @@
   ]
  },
  "silver dagger": {
-  "lego": "Knife, chrome",
+  "brick": "Knife, chrome",
   "parts": [
    {
     "part": "44658",
@@ -270,7 +270,7 @@
   ]
  },
  "elven dagger": {
-  "lego": "Small sword with angular guard (Ninjago), pearl gold",
+  "brick": "Small sword with angular guard (Ninjago), pearl gold",
   "parts": [
    {
     "part": "95053",
@@ -279,7 +279,7 @@
   ]
  },
  "dark elven dagger": {
-  "lego": "Small sword with angular guard (Ninjago), black",
+  "brick": "Small sword with angular guard (Ninjago), black",
   "parts": [
    {
     "part": "95053",
@@ -288,7 +288,7 @@
   ]
  },
  "wooden stake": {
-  "lego": "Bar 3L with a spear tip (a pointed stake)",
+  "brick": "Bar 3L with a spear tip (a pointed stake)",
   "parts": [
    {
     "part": "87994",
@@ -301,7 +301,7 @@
   ]
  },
  "great dagger": {
-  "lego": "Lightsaber hilt (black) with a 3L blade on a bar (64727)",
+  "brick": "Lightsaber hilt (black) with a 3L blade on a bar (64727)",
   "parts": [
    {
     "part": "64567a",
@@ -319,7 +319,7 @@
   ]
  },
  "worm tooth": {
-  "lego": "Cow horn (a curved fang)",
+  "brick": "Cow horn (a curved fang)",
   "parts": [
    {
     "part": "13564",
@@ -328,7 +328,7 @@
   ]
  },
  "knife": {
-  "lego": "Curved knife with cross-hatched grip",
+  "brick": "Curved knife with cross-hatched grip",
   "parts": [
    {
     "part": "37341b",
@@ -337,7 +337,7 @@
   ]
  },
  "stiletto": {
-  "lego": "Lightsaber hilt (black) with a finned spike (24482)",
+  "brick": "Lightsaber hilt (black) with a finned spike (24482)",
   "parts": [
    {
     "part": "64567a",
@@ -355,7 +355,7 @@
   ]
  },
  "scalpel": {
-  "lego": "Screwdriver, chrome (a slim blade on a handle)",
+  "brick": "Screwdriver, chrome (a slim blade on a handle)",
   "parts": [
    {
     "part": "55298",
@@ -364,7 +364,7 @@
   ]
  },
  "crysknife": {
-  "lego": "Dune crysknife (part 5685, 2024; modelled in ldraw-extra)",
+  "brick": "Dune crysknife (part 5685, 2024; modelled in ldraw-extra)",
   "parts": [
    {
     "part": "5685",
@@ -373,7 +373,7 @@
   ]
  },
  "lance": {
-  "lego": "Lance (the classic Castle lance)",
+  "brick": "Lance (the classic Castle lance)",
   "parts": [
    {
     "part": "3849",
@@ -382,7 +382,7 @@
   ]
  },
  "Dagger of Creation": {
-  "lego": "Realm Dagger: pearl gold hilt, dark turquoise blade, a blue gem in the pommel",
+  "brick": "Realm Dagger: pearl gold hilt, dark turquoise blade, a blue gem in the pommel",
   "parts": [
    {
     "part": "64567a",
@@ -419,7 +419,7 @@
   ]
  },
  "Dagger of Protection": {
-  "lego": "Realm Dagger: pearl gold hilt, green blade, a green gem in the pommel",
+  "brick": "Realm Dagger: pearl gold hilt, green blade, a green gem in the pommel",
   "parts": [
    {
     "part": "64567a",
@@ -456,7 +456,7 @@
   ]
  },
  "Dagger of Destruction": {
-  "lego": "Realm Dagger: pearl gold hilt, red blade, a red gem in the pommel",
+  "brick": "Realm Dagger: pearl gold hilt, red blade, a red gem in the pommel",
   "parts": [
    {
     "part": "64567a",
@@ -493,7 +493,7 @@
   ]
  },
  "axe": {
-  "lego": "Battleaxe",
+  "brick": "Battleaxe",
   "parts": [
    {
     "part": "3848",
@@ -502,7 +502,7 @@
   ]
  },
  "battle-axe": {
-  "lego": "Two battleaxe blades (53454) clipped back to back on a bar 4L",
+  "brick": "Two battleaxe blades (53454) clipped back to back on a bar 4L",
   "parts": [
    {
     "part": "30374",
@@ -539,7 +539,7 @@
   ]
  },
  "pick-axe": {
-  "lego": "Pickaxe",
+  "brick": "Pickaxe",
   "parts": [
    {
     "part": "3841",
@@ -548,7 +548,7 @@
   ]
  },
  "dwarvish mattock": {
-  "lego": "Axe with pick end and long handle",
+  "brick": "Axe with pick end and long handle",
   "parts": [
    {
     "part": "39802",
@@ -557,7 +557,7 @@
   ]
  },
  "club": {
-  "lego": "Spiked club (the caveman's)",
+  "brick": "Spiked club (the caveman's)",
   "parts": [
    {
     "part": "88001",
@@ -566,7 +566,7 @@
   ]
  },
  "aklys": {
-  "lego": "Billy club",
+  "brick": "Billy club",
   "parts": [
    {
     "part": "13790",
@@ -575,7 +575,7 @@
   ]
  },
  "baseball bat": {
-  "lego": "Baseball bat",
+  "brick": "Baseball bat",
   "parts": [
    {
     "part": "93220",
@@ -584,7 +584,7 @@
   ]
  },
  "mace": {
-  "lego": "Spiked ball 24084 on a bar 3L",
+  "brick": "Spiked ball 24084 on a bar 3L",
   "parts": [
    {
     "part": "87994",
@@ -602,7 +602,7 @@
   ]
  },
  "silver mace": {
-  "lego": "Spiked ball 24084 in silver on a silver bar 3L",
+  "brick": "Spiked ball 24084 in silver on a silver bar 3L",
   "parts": [
    {
     "part": "87994",
@@ -620,7 +620,7 @@
   ]
  },
  "morning star": {
-  "lego": "Morning star (ball and chain)",
+  "brick": "Morning star (ball and chain)",
   "parts": [
    {
     "part": "59232",
@@ -629,7 +629,7 @@
   ]
  },
  "flail": {
-  "lego": "Nunchaku (two sticks on a chain)",
+  "brick": "Nunchaku (two sticks on a chain)",
   "parts": [
    {
     "part": "67100-f1",
@@ -638,7 +638,7 @@
   ]
  },
  "war hammer": {
-  "lego": "A 1x1 brick with a stud on its side and a cheese slope for a head, its side stud in an upside-down open-stud plate on a bar 4L",
+  "brick": "A 1x1 brick with a stud on its side and a cheese slope for a head, its side stud in an upside-down open-stud plate on a bar 4L",
   "parts": [
    {
     "part": "30374",
@@ -707,7 +707,7 @@
   ]
  },
  "heavy hammer": {
-  "lego": "Sledgehammer",
+  "brick": "Sledgehammer",
   "parts": [
    {
     "part": "75904",
@@ -716,7 +716,7 @@
   ]
  },
  "quarterstaff": {
-  "lego": "Bar 6L with stop ring",
+  "brick": "Bar 6L with stop ring",
   "parts": [
    {
     "part": "63965",
@@ -725,7 +725,7 @@
   ]
  },
  "fly swatter": {
-  "lego": "Bar 3L with a grille tile",
+  "brick": "Bar 3L with a grille tile",
   "parts": [
    {
     "part": "87994",
@@ -753,7 +753,7 @@
   ]
  },
  "halberd": {
-  "lego": "Halberd (classic Castle)",
+  "brick": "Halberd (classic Castle)",
   "parts": [
    {
     "part": "6123",
@@ -762,7 +762,7 @@
   ]
  },
  "spetum": {
-  "lego": "Spear with four side blades",
+  "brick": "Spear with four side blades",
   "parts": [
    {
     "part": "43899",
@@ -771,7 +771,7 @@
   ]
  },
  "glaive": {
-  "lego": "A translucent green blade on its own bar, set in a gold collar on a gold shaft",
+  "brick": "A translucent green blade on its own bar, set in a gold collar on a gold shaft",
   "parts": [
    {
     "part": "30374",
@@ -813,7 +813,7 @@
   ]
  },
  "partisan": {
-  "lego": "A broad blade on a gold collar, two curved wings clipped below it, on a long shaft",
+  "brick": "A broad blade on a gold collar, two curved wings clipped below it, on a long shaft",
   "parts": [
    {
     "part": "4095",
@@ -925,7 +925,7 @@
   ]
  },
  "ranseur": {
-  "lego": "A faceted spear tip, two short spikes out to the sides below it, on a long black shaft",
+  "brick": "A faceted spear tip, two short spikes out to the sides below it, on a long black shaft",
   "parts": [
    {
     "part": "4095",
@@ -1037,7 +1037,7 @@
   ]
  },
  "bardiche": {
-  "lego": "A long serrated crescent blade on a tube beside the shaft, a spike on top",
+  "brick": "A long serrated crescent blade on a tube beside the shaft, a spike on top",
   "parts": [
    {
     "part": "4095",
@@ -1109,7 +1109,7 @@
   ]
  },
  "voulge": {
-  "lego": "Two battleaxe blades one above the other for a cleaver, a blade for its point, on a long shaft",
+  "brick": "Two battleaxe blades one above the other for a cleaver, a blade for its point, on a long shaft",
   "parts": [
    {
     "part": "4095",
@@ -1181,7 +1181,7 @@
   ]
  },
  "lucern hammer": {
-  "lego": "A gold head with studs all round: a cone for its hammer, a tooth for its back spike, a spike on top",
+  "brick": "A gold head with studs all round: a cone for its hammer, a tooth for its back spike, a spike on top",
   "parts": [
    {
     "part": "4095",
@@ -1271,7 +1271,7 @@
   ]
  },
  "fauchard": {
-  "lego": "A long curved blade on its bar in a gold collar, a small hook on the back, on a shaft",
+  "brick": "A long curved blade on its bar in a gold collar, a small hook on the back, on a shaft",
   "parts": [
    {
     "part": "30374",
@@ -1353,7 +1353,7 @@
   ]
  },
  "guisarme": {
-  "lego": "A spike on top, a curved hook blade out one side, on a long shaft",
+  "brick": "A spike on top, a curved hook blade out one side, on a long shaft",
   "parts": [
    {
     "part": "4095",
@@ -1425,7 +1425,7 @@
   ]
  },
  "bill-guisarme": {
-  "lego": "A blade on top, a hook forward and a spike back on gold fittings, on a long shaft",
+  "brick": "A blade on top, a hook forward and a spike back on gold fittings, on a long shaft",
   "parts": [
    {
     "part": "4095",
@@ -1537,7 +1537,7 @@
   ]
  },
  "bec de corbin": {
-  "lego": "A black head with studs all round: a tooth for the raven's beak, a round plate for the hammer, a spike on top",
+  "brick": "A black head with studs all round: a tooth for the raven's beak, a round plate for the hammer, a spike on top",
   "parts": [
    {
     "part": "4095",
@@ -1627,7 +1627,7 @@
   ]
  },
  "spear": {
-  "lego": "Spear",
+  "brick": "Spear",
   "parts": [
    {
     "part": "4497",
@@ -1636,7 +1636,7 @@
   ]
  },
  "silver spear": {
-  "lego": "Spear in silver",
+  "brick": "Spear in silver",
   "parts": [
    {
     "part": "4497",
@@ -1645,7 +1645,7 @@
   ]
  },
  "dwarvish spear": {
-  "lego": "Spear in pearl dark grey",
+  "brick": "Spear in pearl dark grey",
   "parts": [
    {
     "part": "4497",
@@ -1654,7 +1654,7 @@
   ]
  },
  "orcish spear": {
-  "lego": "Spear with a flat end, dark brown",
+  "brick": "Spear with a flat end, dark brown",
   "parts": [
    {
     "part": "93789",
@@ -1663,7 +1663,7 @@
   ]
  },
  "elven spear": {
-  "lego": "Elaborate pike with a pearl gold head",
+  "brick": "Elaborate pike with a pearl gold head",
   "parts": [
    {
     "part": "90391p03",
@@ -1672,7 +1672,7 @@
   ]
  },
  "javelin": {
-  "lego": "Spear with a flat end, tan",
+  "brick": "Spear with a flat end, tan",
   "parts": [
    {
     "part": "93789",
@@ -1681,7 +1681,7 @@
   ]
  },
  "trident": {
-  "lego": "Trident in pearl gold",
+  "brick": "Trident in pearl gold",
   "parts": [
    {
     "part": "92290",
@@ -1690,7 +1690,7 @@
   ]
  },
  "bow": {
-  "lego": "Bow with arrow",
+  "brick": "Bow with arrow",
   "parts": [
    {
     "part": "4499",
@@ -1699,7 +1699,7 @@
   ]
  },
  "orcish bow": {
-  "lego": "Bow with arrow, dark brown",
+  "brick": "Bow with arrow, dark brown",
   "parts": [
    {
     "part": "4499",
@@ -1708,7 +1708,7 @@
   ]
  },
  "elven bow": {
-  "lego": "Long bow with arrow, pearl gold",
+  "brick": "Long bow with arrow, pearl gold",
   "parts": [
    {
     "part": "93231",
@@ -1717,7 +1717,7 @@
   ]
  },
  "dark elven bow": {
-  "lego": "Long bow with arrow, black (the elven bow, dark)",
+  "brick": "Long bow with arrow, black (the elven bow, dark)",
   "parts": [
    {
     "part": "93231",
@@ -1726,7 +1726,7 @@
   ]
  },
  "yumi": {
-  "lego": "Small bow with arrow, black",
+  "brick": "Small bow with arrow, black",
   "parts": [
    {
     "part": "95051",
@@ -1735,7 +1735,7 @@
   ]
  },
  "arrow": {
-  "lego": "Harpoon with a smooth bar",
+  "brick": "Harpoon with a smooth bar",
   "parts": [
    {
     "part": "18041",
@@ -1744,7 +1744,7 @@
   ]
  },
  "silver arrow": {
-  "lego": "Harpoon in silver",
+  "brick": "Harpoon in silver",
   "parts": [
    {
     "part": "18041",
@@ -1753,7 +1753,7 @@
   ]
  },
  "elven arrow": {
-  "lego": "Harpoon in pearl gold",
+  "brick": "Harpoon in pearl gold",
   "parts": [
    {
     "part": "18041",
@@ -1762,7 +1762,7 @@
   ]
  },
  "dark elven arrow": {
-  "lego": "Harpoon in black",
+  "brick": "Harpoon in black",
   "parts": [
    {
     "part": "18041",
@@ -1771,7 +1771,7 @@
   ]
  },
  "orcish arrow": {
-  "lego": "Harpoon in dark brown",
+  "brick": "Harpoon in dark brown",
   "parts": [
    {
     "part": "18041",
@@ -1780,7 +1780,7 @@
   ]
  },
  "ya": {
-  "lego": "Harpoon in tan",
+  "brick": "Harpoon in tan",
   "parts": [
    {
     "part": "18041",
@@ -1789,7 +1789,7 @@
   ]
  },
  "crossbow": {
-  "lego": "Crossbow",
+  "brick": "Crossbow",
   "parts": [
    {
     "part": "2570",
@@ -1798,7 +1798,7 @@
   ]
  },
  "crossbow bolt": {
-  "lego": "Harpoon",
+  "brick": "Harpoon",
   "parts": [
    {
     "part": "57467",
@@ -1807,7 +1807,7 @@
   ]
  },
  "sling": {
-  "lego": "Slingshot",
+  "brick": "Slingshot",
   "parts": [
    {
     "part": "20546",
@@ -1816,7 +1816,7 @@
   ]
  },
  "dart": {
-  "lego": "Spike with four fins",
+  "brick": "Spike with four fins",
   "parts": [
    {
     "part": "24482",
@@ -1825,7 +1825,7 @@
   ]
  },
  "shuriken": {
-  "lego": "Three-pointed throwing star",
+  "brick": "Three-pointed throwing star",
   "parts": [
    {
     "part": "93058",
@@ -1834,7 +1834,7 @@
   ]
  },
  "boomerang": {
-  "lego": "Boomerang",
+  "brick": "Boomerang",
   "parts": [
    {
     "part": "25892",
@@ -1843,7 +1843,7 @@
   ]
  },
  "bullwhip": {
-  "lego": "Coiled whip (Indiana Jones's)",
+  "brick": "Coiled whip (Indiana Jones's)",
   "parts": [
    {
     "part": "61975",
@@ -1852,7 +1852,7 @@
   ]
  },
  "rubber hose": {
-  "lego": "Flexible whip, black",
+  "brick": "Flexible whip, black",
   "parts": [
    {
     "part": "88704",
@@ -1861,7 +1861,7 @@
   ]
  },
  "pistol": {
-  "lego": "Semiautomatic pistol",
+  "brick": "Semiautomatic pistol",
   "parts": [
    {
     "part": "55707a",
@@ -1870,7 +1870,7 @@
   ]
  },
  "submachine gun": {
-  "lego": "Machine gun with drum magazine",
+  "brick": "Machine gun with drum magazine",
   "parts": [
    {
     "part": "55707b",
@@ -1879,7 +1879,7 @@
   ]
  },
  "heavy machine gun": {
-  "lego": "A blaster, two round bricks on its front stud for a jacket, a bar 4L for its long barrel",
+  "brick": "A blaster, two round bricks on its front stud for a jacket, a bar 4L for its long barrel",
   "parts": [
    {
     "part": "44709",
@@ -1948,7 +1948,7 @@
   ]
  },
  "rifle": {
-  "lego": "Musket (a long rifle)",
+  "brick": "Musket (a long rifle)",
   "parts": [
    {
     "part": "2561",
@@ -1957,7 +1957,7 @@
   ]
  },
  "assault rifle": {
-  "lego": "Long blaster",
+  "brick": "Long blaster",
   "parts": [
    {
     "part": "57899",
@@ -1966,7 +1966,7 @@
   ]
  },
  "sniper rifle": {
-  "lego": "Rifle, black, with a black telescope laid along its top (the rifle has nothing to clip it to)",
+  "brick": "Rifle, black, with a black telescope laid along its top (the rifle has nothing to clip it to)",
   "parts": [
    {
     "part": "30141",
@@ -1994,7 +1994,7 @@
   ]
  },
  "shotgun": {
-  "lego": "Two-barrel pistol (sawn off)",
+  "brick": "Two-barrel pistol (sawn off)",
   "parts": [
    {
     "part": "95199",
@@ -2003,7 +2003,7 @@
   ]
  },
  "auto shotgun": {
-  "lego": "Blaster with two barrels",
+  "brick": "Blaster with two barrels",
   "parts": [
    {
     "part": "17010",
@@ -2012,7 +2012,7 @@
   ]
  },
  "grenade launcher": {
-  "lego": "Shooting blaster, dark green",
+  "brick": "Shooting blaster, dark green",
   "parts": [
    {
     "part": "15391",
@@ -2021,7 +2021,7 @@
   ]
  },
  "rocket launcher": {
-  "lego": "Launcher barrel; a pin and bar in its lower back peg hole, a bar tube clipped on that bar, a bar 3L down from the tube for a pistol grip",
+  "brick": "Launcher barrel; a pin and bar in its lower back peg hole, a bar tube clipped on that bar, a bar 3L down from the tube for a pistol grip",
   "parts": [
    {
     "part": "18588",
@@ -2068,7 +2068,7 @@
   ]
  },
  "frag grenade": {
-  "lego": "Grenade, dark green",
+  "brick": "Grenade, dark green",
   "parts": [
    {
     "part": "40598c",
@@ -2077,7 +2077,7 @@
   ]
  },
  "gas grenade": {
-  "lego": "Grenade, yellow",
+  "brick": "Grenade, yellow",
   "parts": [
    {
     "part": "40598d",
@@ -2086,7 +2086,7 @@
   ]
  },
  "stick of dynamite": {
-  "lego": "Dynamite sticks",
+  "brick": "Dynamite sticks",
   "parts": [
    {
     "part": "64728",
@@ -2095,7 +2095,7 @@
   ]
  },
  "bullet": {
-  "lego": "Cone 1x1 in pearl gold",
+  "brick": "Cone 1x1 in pearl gold",
   "parts": [
    {
     "part": "4589",
@@ -2104,7 +2104,7 @@
   ]
  },
  "silver bullet": {
-  "lego": "Cone 1x1 in silver",
+  "brick": "Cone 1x1 in silver",
   "parts": [
    {
     "part": "4589",
@@ -2113,7 +2113,7 @@
   ]
  },
  "shotgun shell": {
-  "lego": "A red round brick 1x1 on a gold round plate",
+  "brick": "A red round brick 1x1 on a gold round plate",
   "parts": [
    {
     "part": "3062b",
@@ -2131,7 +2131,7 @@
   ]
  },
  "rocket": {
-  "lego": "A round brick 1x1 with a red cone on top and a finned round brick below",
+  "brick": "A round brick 1x1 with a red cone on top and a finned round brick below",
   "parts": [
    {
     "part": "3062b",
@@ -2158,7 +2158,7 @@
   ]
  },
  "torch": {
-  "lego": "A dark brown telescope, wide end up, a feather plume in translucent orange in it for the flame",
+  "brick": "A dark brown telescope, wide end up, a feather plume in translucent orange in it for the flame",
   "parts": [
    {
     "part": "64644",
@@ -2186,7 +2186,7 @@
   ]
  },
  "fishing pole": {
-  "lego": "Fishing rod",
+  "brick": "Fishing rod",
   "parts": [
    {
     "part": "2614",
@@ -2195,7 +2195,7 @@
   ]
  },
  "grappling hook": {
-  "lego": "Grappling hook with bar",
+  "brick": "Grappling hook with bar",
   "parts": [
    {
     "part": "15534",
@@ -2204,7 +2204,7 @@
   ]
  },
  "unicorn horn": {
-  "lego": "Spiral horn",
+  "brick": "Spiral horn",
   "parts": [
    {
     "part": "89522",
@@ -2213,7 +2213,7 @@
   ]
  },
  "spoon": {
-  "lego": "Spoon",
+  "brick": "Spoon",
   "parts": [
    {
     "part": "80179",
@@ -2222,7 +2222,7 @@
   ]
  },
  "Firewall": {
-  "lego": "An athame in translucent orange: a firewall",
+  "brick": "An athame in translucent orange: a firewall",
   "parts": [
    {
     "part": "88288p01",
@@ -2242,7 +2242,7 @@
   }
  },
  "Magicbane": {
-  "lego": "An athame in translucent purple, the wizard's own",
+  "brick": "An athame in translucent purple, the wizard's own",
   "parts": [
    {
     "part": "88288p01",
@@ -2262,7 +2262,7 @@
   }
  },
  "Deep Freeze": {
-  "lego": "An athame in translucent light blue, ice",
+  "brick": "An athame in translucent light blue, ice",
   "parts": [
    {
     "part": "88288p01",
@@ -2282,7 +2282,7 @@
   }
  },
  "Sting": {
-  "lego": "Sting itself: the LEGO Lord of the Rings small sword (10053), metallic silver, a thin blue glow round its blade toward the tip",
+  "brick": "Sting itself: the small sword piece (10053), metallic silver, a thin blue glow round its blade toward the tip",
   "parts": [
    {
     "part": "10053",
@@ -2302,7 +2302,7 @@
   }
  },
  "Giantkiller": {
-  "lego": "The battleaxe in pearl gold",
+  "brick": "The battleaxe in pearl gold",
   "parts": [
    {
     "part": "3848",
@@ -2322,7 +2322,7 @@
   }
  },
  "Quick Blade": {
-  "lego": "The elven short sword in translucent yellow, quick as lightning",
+  "brick": "The elven short sword in translucent yellow, quick as lightning",
   "parts": [
    {
     "part": "2674f",
@@ -2342,7 +2342,7 @@
   }
  },
  "Orcrist": {
-  "lego": "The LEGO Lord of the Rings elvish sword (Glamdring and Orcrist's), metallic silver, a thin blue glow round its blade toward the tip",
+  "brick": "The brick Lord of the Rings elvish sword (Glamdring and Orcrist's), metallic silver, a thin blue glow round its blade toward the tip",
   "parts": [
    {
     "part": "2674a",
@@ -2362,7 +2362,7 @@
   }
  },
  "Dragonbane": {
-  "lego": "The broadsword in dark red",
+  "brick": "The broadsword in dark red",
   "parts": [
    {
     "part": "18031",
@@ -2382,7 +2382,7 @@
   }
  },
  "Excalibur": {
-  "lego": "The long sword in chrome gold",
+  "brick": "The long sword in chrome gold",
   "parts": [
    {
     "part": "59",
@@ -2402,7 +2402,7 @@
   }
  },
  "Sunsword": {
-  "lego": "The long sword in translucent yellow, in a warm golden glow of sunlight",
+  "brick": "The long sword in translucent yellow, in a warm golden glow of sunlight",
   "parts": [
    {
     "part": "59",
@@ -2422,7 +2422,7 @@
   }
  },
  "Snickersnee": {
-  "lego": "The katana in pearl gold",
+  "brick": "The katana in pearl gold",
   "parts": [
    {
     "part": "30173a",
@@ -2442,7 +2442,7 @@
   }
  },
  "Sword of Justice": {
-  "lego": "The long sword in white",
+  "brick": "The long sword in white",
   "parts": [
    {
     "part": "59",
@@ -2462,7 +2462,7 @@
   }
  },
  "Demonbane": {
-  "lego": "The long sword in translucent clear, holy, in an angel's glow",
+  "brick": "The long sword in translucent clear, holy, in an angel's glow",
   "parts": [
    {
     "part": "59",
@@ -2472,7 +2472,7 @@
   "aura": true
  },
  "Werebane": {
-  "lego": "The saber in pearl light grey",
+  "brick": "The saber in pearl light grey",
   "parts": [
    {
     "part": "59229",
@@ -2492,7 +2492,7 @@
   }
  },
  "Grayswandir": {
-  "lego": "The saber in pearl dark grey: grey Grayswandir",
+  "brick": "The saber in pearl dark grey: grey Grayswandir",
   "parts": [
    {
     "part": "59229",
@@ -2512,7 +2512,7 @@
   }
  },
  "Skullcrusher": {
-  "lego": "The spiked club in white, bone",
+  "brick": "The spiked club in white, bone",
   "parts": [
    {
     "part": "88001",
@@ -2532,7 +2532,7 @@
   }
  },
  "Trollsbane": {
-  "lego": "The morning star in pearl gold",
+  "brick": "The morning star in pearl gold",
   "parts": [
    {
     "part": "59232",
@@ -2552,7 +2552,7 @@
   }
  },
  "Ogresmasher": {
-  "lego": "The war hammer, its head in chrome gold on a black handle",
+  "brick": "The war hammer, its head in chrome gold on a black handle",
   "parts": [
    {
     "part": "30374",
@@ -2632,7 +2632,7 @@
   }
  },
  "Reaper": {
-  "lego": "The halberd in black",
+  "brick": "The halberd in black",
   "parts": [
    {
     "part": "6123",
@@ -2652,7 +2652,7 @@
   }
  },
  "Holy Spear of Light": {
-  "lego": "The spear in translucent yellow, light",
+  "brick": "The spear in translucent yellow, light",
   "parts": [
    {
     "part": "4497",
@@ -2672,7 +2672,7 @@
   }
  },
  "Luckblade": {
-  "lego": "The short sword in bright green, a four-leaf clover's",
+  "brick": "The short sword in bright green, a four-leaf clover's",
   "parts": [
    {
     "part": "3847",
@@ -2692,7 +2692,7 @@
   }
  },
  "Sword of Balance": {
-  "lego": "The short sword in white",
+  "brick": "The short sword in white",
   "parts": [
    {
     "part": "3847",
@@ -2712,7 +2712,7 @@
   }
  },
  "Frost Brand": {
-  "lego": "The jagged sword (11439) in translucent light blue: frost, its stub in a pearl gold telescope for a hilt",
+  "brick": "The jagged sword (11439) in translucent light blue: frost, its stub in a pearl gold telescope for a hilt",
   "parts": [
    {
     "part": "64644",
@@ -2751,7 +2751,7 @@
   }
  },
  "Fire Brand": {
-  "lego": "The jagged sword (11439) in translucent orange: fire, its stub in a pearl gold telescope for a hilt",
+  "brick": "The jagged sword (11439) in translucent orange: fire, its stub in a pearl gold telescope for a hilt",
   "parts": [
    {
     "part": "64644",
@@ -2790,7 +2790,7 @@
   }
  },
  "Vorpal Blade": {
-  "lego": "The shortsword (Luckblade's) in a doppelganger's mist",
+  "brick": "The shortsword (Luckblade's) in a doppelganger's mist",
   "parts": [
    {
     "part": "3847",
@@ -2799,7 +2799,7 @@
   ]
  },
  "Disrupter": {
-  "lego": "The mace, its spiked ball in translucent purple on a black handle",
+  "brick": "The mace, its spiked ball in translucent purple on a black handle",
   "parts": [
    {
     "part": "87994",
@@ -2828,7 +2828,7 @@
   }
  },
  "Mjollnir": {
-  "lego": "Thor's hammer (the sledgehammer is LEGO's Mjolnir) in flat silver, lightning crackling over it",
+  "brick": "Thor's hammer (the sledgehammer piece) in flat silver, lightning crackling over it",
   "parts": [
    {
     "part": "75904",
@@ -2838,7 +2838,7 @@
   "lightning": true
  },
  "Grimtooth": {
-  "lego": "The kunai in dark red",
+  "brick": "The kunai in dark red",
   "parts": [
    {
     "part": "98338",
@@ -2858,7 +2858,7 @@
   }
  },
  "Serpent's Tongue": {
-  "lego": "The dagger in dark green, venom",
+  "brick": "The dagger in dark green, venom",
   "parts": [
    {
     "part": "44658",
@@ -2878,7 +2878,7 @@
   }
  },
  "Cleaver": {
-  "lego": "The LotR dwarven axe (2674d) in chrome silver",
+  "brick": "The LotR dwarven axe (2674d) in chrome silver",
   "parts": [
    {
     "part": "2674d",
@@ -2898,7 +2898,7 @@
   }
  },
  "Doomblade": {
-  "lego": "The orcish short sword in black",
+  "brick": "The orcish short sword in black",
   "parts": [
    {
     "part": "10053",
@@ -2918,7 +2918,7 @@
   }
  },
  "Stormbringer": {
-  "lego": "The runesword in smoky translucent black",
+  "brick": "The runesword in smoky translucent black",
   "parts": [
    {
     "part": "48495",
@@ -2938,7 +2938,7 @@
   }
  },
  "Thiefbane": {
-  "lego": "The long sword in blue-violet",
+  "brick": "The long sword in blue-violet",
   "parts": [
    {
     "part": "59",
@@ -2958,7 +2958,7 @@
   }
  },
  "Deathsword": {
-  "lego": "The two-handed sword in black",
+  "brick": "The two-handed sword in black",
   "parts": [
    {
     "part": "2674b",
@@ -2978,7 +2978,7 @@
   }
  },
  "Bat from Hell": {
-  "lego": "The baseball bat in dark red",
+  "brick": "The baseball bat in dark red",
   "parts": [
    {
     "part": "93220",
@@ -2998,7 +2998,7 @@
   }
  },
  "Elfrist": {
-  "lego": "The orcish spear in black",
+  "brick": "The orcish spear in black",
   "parts": [
    {
     "part": "93789",
@@ -3018,7 +3018,7 @@
   }
  },
  "Plague": {
-  "lego": "The long bow in dark green, plague",
+  "brick": "The long bow in dark green, plague",
   "parts": [
    {
     "part": "93231",
@@ -3038,7 +3038,7 @@
   }
  },
  "Hellfire": {
-  "lego": "The crossbow in dark red",
+  "brick": "The crossbow in dark red",
   "parts": [
    {
     "part": "2570",
@@ -3058,7 +3058,7 @@
   }
  },
  "Houchou": {
-  "lego": "The spoon in chrome gold",
+  "brick": "The spoon in chrome gold",
   "parts": [
    {
     "part": "80179",
@@ -3078,7 +3078,7 @@
   }
  },
  "Nighthorn": {
-  "lego": "The spiral horn in black, a night unicorn's",
+  "brick": "The spiral horn in black, a night unicorn's",
   "parts": [
    {
     "part": "89522",
@@ -3098,7 +3098,7 @@
   }
  },
  "Sceptre of Might": {
-  "lego": "The mace, its spiked ball in chrome gold on a pearl gold handle",
+  "brick": "The mace, its spiked ball in chrome gold on a pearl gold handle",
   "parts": [
    {
     "part": "87994",
@@ -3127,7 +3127,7 @@
   }
  },
  "Staff of Aesculapius": {
-  "lego": "A wooden staff with a pearl gold snake along its top, its head rising over the end",
+  "brick": "A wooden staff with a pearl gold snake along its top, its head rising over the end",
   "parts": [
    {
     "part": "63965",
@@ -3167,7 +3167,7 @@
   }
  },
  "Great Dagger of Glaurgnaa": {
-  "lego": "The great dagger, its blade smoky translucent black on a black hilt",
+  "brick": "The great dagger, its blade smoky translucent black on a black hilt",
   "parts": [
    {
     "part": "64567a",
@@ -3196,7 +3196,7 @@
   }
  },
  "Longbow of Diana": {
-  "lego": "The long bow in white, the moon's",
+  "brick": "The long bow in white, the moon's",
   "parts": [
    {
     "part": "93231",
@@ -3216,7 +3216,7 @@
   }
  },
  "Tsurugi of Muramasa": {
-  "lego": "The tsurugi in dark red, cursed Muramasa",
+  "brick": "The tsurugi in dark red, cursed Muramasa",
   "parts": [
    {
     "part": "21459",
@@ -3236,7 +3236,7 @@
   }
  },
  "Stake of Van Helsing": {
-  "lego": "The stake, dark brown with a pearl gold point",
+  "brick": "The stake, dark brown with a pearl gold point",
   "parts": [
    {
     "part": "87994",
@@ -3260,7 +3260,7 @@
   }
  },
  "Narsil": {
-  "lego": "The Sword that was Broken: the LotR sword with a broken blade (2674e), metallic silver",
+  "brick": "The Sword that was Broken: the LotR sword with a broken blade (2674e), metallic silver",
   "parts": [
    {
     "part": "2674e",
@@ -3269,7 +3269,7 @@
   ]
  },
  "Glamdring": {
-  "lego": "Glamdring: a long sword with a thin guard (98370), metallic silver, a thin blue glow round its blade toward the tip",
+  "brick": "Glamdring: a long sword with a thin guard (98370), metallic silver, a thin blue glow round its blade toward the tip",
   "parts": [
    {
     "part": "98370",
@@ -3289,7 +3289,7 @@
   }
  },
  "Scythe of Quakes": {
-  "lego": "Golden weapon of Spinjitzu: the scythe with a cross-hatched grip, pearl gold",
+  "brick": "Golden weapon of Spinjitzu: the scythe with a cross-hatched grip, pearl gold",
   "parts": [
    {
     "part": "37341d",
@@ -3299,7 +3299,7 @@
   "fx": "meteors"
  },
  "Nunchucks of Lightning": {
-  "lego": "Golden weapon of Spinjitzu: the nunchaku, pearl gold",
+  "brick": "Golden weapon of Spinjitzu: the nunchaku, pearl gold",
   "parts": [
    {
     "part": "67100-f1",
@@ -3309,7 +3309,7 @@
   "lightning": true
  },
  "Shurikens of Ice": {
-  "lego": "Golden weapon of Spinjitzu: a pair of throwing stars, pearl gold",
+  "brick": "Golden weapon of Spinjitzu: a pair of throwing stars, pearl gold",
   "parts": [
    {
     "part": "93058",
@@ -3328,7 +3328,7 @@
   "fx": "frost"
  },
  "Sword of Fire": {
-  "lego": "Golden weapon of Spinjitzu: the katana with a dragon guard, pearl gold",
+  "brick": "Golden weapon of Spinjitzu: the katana with a dragon guard, pearl gold",
   "parts": [
    {
     "part": "93055",
@@ -3338,7 +3338,7 @@
   "fx": "fire"
  },
  "elven leather helm": {
-  "lego": "Forestman cap (a leather hat)",
+  "brick": "Forestman cap (a leather hat)",
   "parts": [
    {
     "part": "4506",
@@ -3351,7 +3351,7 @@
   }
  },
  "orcish helm": {
-  "lego": "LotR Uruk-hai helmet (an iron skull cap)",
+  "brick": "LotR Uruk-hai helmet (an iron skull cap)",
   "parts": [
    {
     "part": "10051",
@@ -3364,7 +3364,7 @@
   }
  },
  "dwarvish iron helm": {
-  "lego": "Construction helmet in iron (a hard hat)",
+  "brick": "Construction helmet in iron (a hard hat)",
   "parts": [
    {
     "part": "3833",
@@ -3377,7 +3377,7 @@
   }
  },
  "fedora": {
-  "lego": "Fedora",
+  "brick": "Fedora",
   "parts": [
    {
     "part": "61506",
@@ -3390,7 +3390,7 @@
   }
  },
  "cornuthaum": {
-  "lego": "Wizard's hat, dark blue (a conical hat)",
+  "brick": "Wizard's hat, dark blue (a conical hat)",
   "parts": [
    {
     "part": "6131",
@@ -3403,7 +3403,7 @@
   }
  },
  "dunce cap": {
-  "lego": "High cone hat, white (a conical hat)",
+  "brick": "High cone hat, white (a conical hat)",
   "parts": [
    {
     "part": "2338",
@@ -3416,7 +3416,7 @@
   }
  },
  "dented pot": {
-  "lego": "A bucket with a handle, upside down and crooked on the head",
+  "brick": "A bucket with a handle, upside down and crooked on the head",
   "parts": [
    {
     "part": "12884c01",
@@ -3467,7 +3467,7 @@
   }
  },
  "helmet": {
-  "lego": "Castle helmet with a face grille and a red plume (a plumed helmet)",
+  "brick": "Castle helmet with a face grille and a red plume (a plumed helmet)",
   "parts": [
    {
     "part": "4503",
@@ -3493,7 +3493,7 @@
   }
  },
  "helm of brilliance": {
-  "lego": "Castle helmet with a dragon crown, chrome silver (an etched helmet)",
+  "brick": "Castle helmet with a dragon crown, chrome silver (an etched helmet)",
   "parts": [
    {
     "part": "6122",
@@ -3506,7 +3506,7 @@
   }
  },
  "helm of opposite alignment": {
-  "lego": "LotR Rohan helmet with its comb, black (a crested helmet)",
+  "brick": "LotR Rohan helmet with its comb, black (a crested helmet)",
   "parts": [
    {
     "part": "10054",
@@ -3519,7 +3519,7 @@
   }
  },
  "helm of telepathy": {
-  "lego": "Classic Space helmet with its visor down, translucent light blue (a visored helmet)",
+  "brick": "Classic Space helmet with its visor down, translucent light blue (a visored helmet)",
   "parts": [
    {
     "part": "3842a",
@@ -3547,7 +3547,7 @@
   }
  },
  "Mitre of Holiness": {
-  "lego": "A tall white pointed hat (a mitre)",
+  "brick": "A tall white pointed hat (a mitre)",
   "parts": [
    {
     "part": "17349",
@@ -3560,7 +3560,7 @@
   }
  },
  "Crown of Saint Edward": {
-  "lego": "The classic crown, chrome gold",
+  "brick": "The classic crown, chrome gold",
   "parts": [
    {
     "part": "71015",
@@ -3573,7 +3573,7 @@
   }
  },
  "small shield": {
-  "lego": "The classic round shield, wooden brown",
+  "brick": "The classic round shield, wooden brown",
   "parts": [
    {
     "part": "3876",
@@ -3598,7 +3598,7 @@
   }
  },
  "elven shield": {
-  "lego": "The oval shield with a green dragon (a blue and green shield)",
+  "brick": "The oval shield with a green dragon (a blue and green shield)",
   "parts": [
    {
     "part": "2586p4b",
@@ -3623,7 +3623,7 @@
   }
  },
  "Uruk-hai shield": {
-  "lego": "The LotR Uruk-hai shield with the White Hand (a white-handed shield)",
+  "brick": "The LotR Uruk-hai shield with the White Hand (a white-handed shield)",
   "parts": [
    {
     "part": "10049p01",
@@ -3648,7 +3648,7 @@
   }
  },
  "orcish shield": {
-  "lego": "The triangular shield with an eye (a red-eyed shield)",
+  "brick": "The triangular shield with an eye (a red-eyed shield)",
   "parts": [
    {
     "part": "3846pm0",
@@ -3673,7 +3673,7 @@
   }
  },
  "large shield": {
-  "lego": "The long triangular shield with gold lions and crossed keys",
+  "brick": "The long triangular shield with gold lions and crossed keys",
   "parts": [
    {
     "part": "18836p41",
@@ -3698,7 +3698,7 @@
   }
  },
  "dwarvish roundshield": {
-  "lego": "The LotR bowed round shield, a gold circle on a dark field (a large round shield)",
+  "brick": "The LotR bowed round shield, a gold circle on a dark field (a large round shield)",
   "parts": [
    {
     "part": "75902p06",
@@ -3723,7 +3723,7 @@
   }
  },
  "shield of reflection": {
-  "lego": "The oval shield in chrome silver (a polished silver shield)",
+  "brick": "The oval shield in chrome silver (a polished silver shield)",
   "parts": [
    {
     "part": "2586",
@@ -3748,7 +3748,7 @@
   }
  },
  "Mirrorbright": {
-  "lego": "The round shield in chrome silver, shining",
+  "brick": "The round shield in chrome silver, shining",
   "parts": [
    {
     "part": "3876",
@@ -3781,7 +3781,7 @@
   }
  },
  "mummy wrapping": {
-  "lego": "A tattered white shroud and a bandage-wrapped head",
+  "brick": "A tattered white shroud and a bandage-wrapped head",
   "parts": [
    {
     "part": "86038c01",
@@ -3813,7 +3813,7 @@
   }
  },
  "orcish cloak": {
-  "lego": "The short cape, dark brown (a coarse mantelet)",
+  "brick": "The short cape, dark brown (a coarse mantelet)",
   "parts": [
    {
     "part": "99464c01",
@@ -3830,7 +3830,7 @@
   }
  },
  "dwarvish cloak": {
-  "lego": "A brown cape and the medieval cowl (a hooded cloak)",
+  "brick": "A brown cape and the medieval cowl (a hooded cloak)",
   "parts": [
    {
     "part": "50231c01",
@@ -3862,7 +3862,7 @@
   }
  },
  "oilskin cloak": {
-  "lego": "A dark blue cape (a slippery cloak)",
+  "brick": "A dark blue cape (a slippery cloak)",
   "parts": [
    {
     "part": "50231c01",
@@ -3879,7 +3879,7 @@
   }
  },
  "elven cloak": {
-  "lego": "The straight-sided cape in sand green (a faded pall)",
+  "brick": "The straight-sided cape in sand green (a faded pall)",
   "parts": [
    {
     "part": "65384c01",
@@ -3896,7 +3896,7 @@
   }
  },
  "lab coat": {
-  "lego": "A long white cape (a white coat)",
+  "brick": "A long white cape (a white coat)",
   "parts": [
    {
     "part": "50231c01",
@@ -3913,7 +3913,7 @@
   }
  },
  "leather cloak": {
-  "lego": "A reddish-brown cape",
+  "brick": "A reddish-brown cape",
   "parts": [
    {
     "part": "50231c01",
@@ -3930,7 +3930,7 @@
   }
  },
  "robe": {
-  "lego": "A long dark red robe (the minifig dress) (a red robe)",
+  "brick": "A long dark red robe (the minifig dress) (a red robe)",
   "parts": [
    {
     "part": "3678b",
@@ -3950,7 +3950,7 @@
   }
  },
  "alchemy smock": {
-  "lego": "A white straight skirt worn as an apron",
+  "brick": "A white straight skirt worn as an apron",
   "parts": [
    {
     "part": "600880c01",
@@ -3973,7 +3973,7 @@
   }
  },
  "cloak of protection": {
-  "lego": "The tattered cape with holes, iron grey",
+  "brick": "The tattered cape with holes, iron grey",
   "parts": [
    {
     "part": "86038c01",
@@ -3990,7 +3990,7 @@
   }
  },
  "poisonous cloak": {
-  "lego": "The pixelated tattered cape, olive green (a dirty rag)",
+  "brick": "The pixelated tattered cape, olive green (a dirty rag)",
   "parts": [
    {
     "part": "u9490c01",
@@ -4007,7 +4007,7 @@
   }
  },
  "cloak of invisibility": {
-  "lego": "The pointed high-collared cape, black (an opera cloak)",
+  "brick": "The pointed high-collared cape, black (an opera cloak)",
   "parts": [
    {
     "part": "42450c01",
@@ -4024,7 +4024,7 @@
   }
  },
  "cloak of magic resistance": {
-  "lego": "The scalloped 6-point cape, purple (an ornamental cope)",
+  "brick": "The scalloped 6-point cape, purple (an ornamental cope)",
   "parts": [
    {
     "part": "38301c01",
@@ -4041,7 +4041,7 @@
   }
  },
  "cloak of displacement": {
-  "lego": "A plain tan cape (a piece of cloth)",
+  "brick": "A plain tan cape (a piece of cloth)",
   "parts": [
    {
     "part": "50231c01",
@@ -4058,7 +4058,7 @@
   }
  },
  "Deluder": {
-  "lego": "The scalloped 5-point cape in a doppelganger's mist",
+  "brick": "The scalloped 5-point cape in a doppelganger's mist",
   "parts": [
    {
     "part": "56630c01",
@@ -4075,7 +4075,7 @@
   }
  },
  "Hawaiian shirt": {
-  "lego": "A magenta torso printed with flowers",
+  "brick": "A magenta torso printed with flowers",
   "parts": [
    {
     "part": "973p5l",
@@ -4090,7 +4090,7 @@
   }
  },
  "T-shirt": {
-  "lego": "A plain white torso",
+  "brick": "A plain white torso",
   "parts": [
    {
     "part": "973",
@@ -4105,7 +4105,7 @@
   }
  },
  "chain mail": {
-  "lego": "A grey torso printed with chain mail (a 4-in-1 weave of rings)",
+  "brick": "A grey torso printed with chain mail (a 4-in-1 weave of rings)",
   "parts": [
    {
     "part": "973",
@@ -4145,7 +4145,7 @@
   }
  },
  "orcish chain mail": {
-  "lego": "Dark chain mail with black six-spiked shoulder pads (crude chain mail)",
+  "brick": "Dark chain mail with black six-spiked shoulder pads (crude chain mail)",
   "parts": [
    {
     "part": "973",
@@ -4194,7 +4194,7 @@
   }
  },
  "ring mail": {
-  "lego": "A dark grey torso printed with rings sewn in rows",
+  "brick": "A dark grey torso printed with rings sewn in rows",
   "parts": [
    {
     "part": "973",
@@ -4234,7 +4234,7 @@
   }
  },
  "orcish ring mail": {
-  "lego": "Rings on dark brown, with grey four-spiked shoulder pads (crude ring mail)",
+  "brick": "Rings on dark brown, with grey four-spiked shoulder pads (crude ring mail)",
   "parts": [
    {
     "part": "973",
@@ -4283,7 +4283,7 @@
   }
  },
  "dwarvish mithril-coat": {
-  "lego": "Pearl silver chain mail with square shoulder pads",
+  "brick": "Pearl silver chain mail with square shoulder pads",
   "parts": [
    {
     "part": "973",
@@ -4332,7 +4332,7 @@
   }
  },
  "elven mithril-coat": {
-  "lego": "Pearl white chain mail with sweeping double-flap shoulder pads",
+  "brick": "Pearl white chain mail with sweeping double-flap shoulder pads",
   "parts": [
    {
     "part": "973",
@@ -4381,7 +4381,7 @@
   }
  },
  "dark elven mithril-coat": {
-  "lego": "Pearl dark grey chain mail with snake-headed shoulder pads",
+  "brick": "Pearl dark grey chain mail with snake-headed shoulder pads",
   "parts": [
    {
     "part": "973",
@@ -4430,7 +4430,7 @@
   }
  },
  "leather jacket": {
-  "lego": "A black torso printed with a leather jacket",
+  "brick": "A black torso printed with a leather jacket",
   "parts": [
    {
     "part": "973p28",
@@ -4446,7 +4446,7 @@
   }
  },
  "plate mail": {
-  "lego": "The classic castle armour plate, metallic silver",
+  "brick": "The classic castle armour plate, metallic silver",
   "parts": [
    {
     "part": "2587",
@@ -4464,7 +4464,7 @@
   }
  },
  "crystal plate mail": {
-  "lego": "A finned breastplate in transparent light blue",
+  "brick": "A finned breastplate in transparent light blue",
   "parts": [
    {
     "part": "89917",
@@ -4482,7 +4482,7 @@
   }
  },
  "bronze plate mail": {
-  "lego": "A copper breastplate with round shoulder pads",
+  "brick": "A copper breastplate with round shoulder pads",
   "parts": [
    {
     "part": "78643",
@@ -4500,7 +4500,7 @@
   }
  },
  "splint mail": {
-  "lego": "Smooth body and shoulder armour, dark grey",
+  "brick": "Smooth body and shoulder armour, dark grey",
   "parts": [
    {
     "part": "93565",
@@ -4518,7 +4518,7 @@
   }
  },
  "banded mail": {
-  "lego": "Samurai armour of lacquered bands, dark grey",
+  "brick": "Samurai armour of lacquered bands, dark grey",
   "parts": [
    {
     "part": "30174",
@@ -4536,7 +4536,7 @@
   }
  },
  "scale mail": {
-  "lego": "A grey body armour vest printed with scales",
+  "brick": "A grey body armour vest printed with scales",
   "parts": [
    {
     "part": "15423",
@@ -4560,7 +4560,7 @@
   }
  },
  "leather armor": {
-  "lego": "The classic vest in brown leather",
+  "brick": "The classic vest in brown leather",
   "parts": [
    {
     "part": "3840",
@@ -4578,7 +4578,7 @@
   }
  },
  "studded leather armor": {
-  "lego": "A brown body armour vest printed with silver studs",
+  "brick": "A brown body armour vest printed with silver studs",
   "parts": [
    {
     "part": "85961",
@@ -4602,7 +4602,7 @@
   }
  },
  "robe of protection": {
-  "lego": "A long blue robe (the minifig dress)",
+  "brick": "A long blue robe (the minifig dress)",
   "parts": [
    {
     "part": "3678b",
@@ -4622,7 +4622,7 @@
   }
  },
  "robe of power": {
-  "lego": "A long orange robe (the minifig dress)",
+  "brick": "A long orange robe (the minifig dress)",
   "parts": [
    {
     "part": "3678b",
@@ -4642,7 +4642,7 @@
   }
  },
  "robe of weakness": {
-  "lego": "A long green robe (the minifig dress)",
+  "brick": "A long green robe (the minifig dress)",
   "parts": [
    {
     "part": "3678b",
@@ -4662,7 +4662,7 @@
   }
  },
  "gray dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, grey",
+  "brick": "A large breastplate with shoulder pads, printed with scales, grey",
   "parts": [
    {
     "part": "22402",
@@ -4686,7 +4686,7 @@
   }
  },
  "gray dragon scales": {
-  "lego": "Shoulder pads with tiered fins, grey",
+  "brick": "Shoulder pads with tiered fins, grey",
   "parts": [
    {
     "part": "86123",
@@ -4704,7 +4704,7 @@
   }
  },
  "silver dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, chrome silver",
+  "brick": "A large breastplate with shoulder pads, printed with scales, chrome silver",
   "parts": [
    {
     "part": "22402",
@@ -4728,7 +4728,7 @@
   }
  },
  "silver dragon scales": {
-  "lego": "Shoulder pads with tiered fins, chrome silver",
+  "brick": "Shoulder pads with tiered fins, chrome silver",
   "parts": [
    {
     "part": "86123",
@@ -4746,7 +4746,7 @@
   }
  },
  "shimmering dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, azure",
+  "brick": "A large breastplate with shoulder pads, printed with scales, azure",
   "parts": [
    {
     "part": "22402",
@@ -4770,7 +4770,7 @@
   }
  },
  "shimmering dragon scales": {
-  "lego": "Shoulder pads with tiered fins, azure",
+  "brick": "Shoulder pads with tiered fins, azure",
   "parts": [
    {
     "part": "86123",
@@ -4788,7 +4788,7 @@
   }
  },
  "deep dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, purple",
+  "brick": "A large breastplate with shoulder pads, printed with scales, purple",
   "parts": [
    {
     "part": "22402",
@@ -4812,7 +4812,7 @@
   }
  },
  "deep dragon scales": {
-  "lego": "Shoulder pads with tiered fins, purple",
+  "brick": "Shoulder pads with tiered fins, purple",
   "parts": [
    {
     "part": "86123",
@@ -4830,7 +4830,7 @@
   }
  },
  "red dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, red",
+  "brick": "A large breastplate with shoulder pads, printed with scales, red",
   "parts": [
    {
     "part": "22402",
@@ -4854,7 +4854,7 @@
   }
  },
  "red dragon scales": {
-  "lego": "Shoulder pads with tiered fins, red",
+  "brick": "Shoulder pads with tiered fins, red",
   "parts": [
    {
     "part": "86123",
@@ -4872,7 +4872,7 @@
   }
  },
  "white dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, white",
+  "brick": "A large breastplate with shoulder pads, printed with scales, white",
   "parts": [
    {
     "part": "22402",
@@ -4896,7 +4896,7 @@
   }
  },
  "white dragon scales": {
-  "lego": "Shoulder pads with tiered fins, white",
+  "brick": "Shoulder pads with tiered fins, white",
   "parts": [
    {
     "part": "86123",
@@ -4914,7 +4914,7 @@
   }
  },
  "orange dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, orange",
+  "brick": "A large breastplate with shoulder pads, printed with scales, orange",
   "parts": [
    {
     "part": "22402",
@@ -4938,7 +4938,7 @@
   }
  },
  "orange dragon scales": {
-  "lego": "Shoulder pads with tiered fins, orange",
+  "brick": "Shoulder pads with tiered fins, orange",
   "parts": [
    {
     "part": "86123",
@@ -4956,7 +4956,7 @@
   }
  },
  "black dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, black",
+  "brick": "A large breastplate with shoulder pads, printed with scales, black",
   "parts": [
    {
     "part": "22402",
@@ -4980,7 +4980,7 @@
   }
  },
  "black dragon scales": {
-  "lego": "Shoulder pads with tiered fins, black",
+  "brick": "Shoulder pads with tiered fins, black",
   "parts": [
    {
     "part": "86123",
@@ -4998,7 +4998,7 @@
   }
  },
  "blue dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, blue",
+  "brick": "A large breastplate with shoulder pads, printed with scales, blue",
   "parts": [
    {
     "part": "22402",
@@ -5022,7 +5022,7 @@
   }
  },
  "blue dragon scales": {
-  "lego": "Shoulder pads with tiered fins, blue",
+  "brick": "Shoulder pads with tiered fins, blue",
   "parts": [
    {
     "part": "86123",
@@ -5040,7 +5040,7 @@
   }
  },
  "green dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, green",
+  "brick": "A large breastplate with shoulder pads, printed with scales, green",
   "parts": [
    {
     "part": "22402",
@@ -5064,7 +5064,7 @@
   }
  },
  "green dragon scales": {
-  "lego": "Shoulder pads with tiered fins, green",
+  "brick": "Shoulder pads with tiered fins, green",
   "parts": [
    {
     "part": "86123",
@@ -5082,7 +5082,7 @@
   }
  },
  "yellow dragon scale mail": {
-  "lego": "A large breastplate with shoulder pads, printed with scales, yellow",
+  "brick": "A large breastplate with shoulder pads, printed with scales, yellow",
   "parts": [
    {
     "part": "22402",
@@ -5106,7 +5106,7 @@
   }
  },
  "yellow dragon scales": {
-  "lego": "Shoulder pads with tiered fins, yellow",
+  "brick": "Shoulder pads with tiered fins, yellow",
   "parts": [
    {
     "part": "86123",
@@ -5124,7 +5124,7 @@
   }
  },
  "low boots": {
-  "lego": "Brown shoes with black soles, moulded on the legs (walking shoes)",
+  "brick": "Brown shoes with black soles, moulded on the legs (walking shoes)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5142,7 +5142,7 @@
   }
  },
  "iron shoes": {
-  "lego": "Dark grey shoes, moulded on the legs (hard shoes)",
+  "brick": "Dark grey shoes, moulded on the legs (hard shoes)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5156,7 +5156,7 @@
   }
  },
  "high boots": {
-  "lego": "Black boots up to the hips (jackboots)",
+  "brick": "Black boots up to the hips (jackboots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5170,7 +5170,7 @@
   }
  },
  "speed boots": {
-  "lego": "Black boots to mid-shin with grey soles (combat boots)",
+  "brick": "Black boots to mid-shin with grey soles (combat boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5188,7 +5188,7 @@
   }
  },
  "water walking boots": {
-  "lego": "Olive green boots with dark brown soles (jungle boots)",
+  "brick": "Olive green boots with dark brown soles (jungle boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5206,7 +5206,7 @@
   }
  },
  "jumping boots": {
-  "lego": "Nougat boots with brown cuffs and black soles (hiking boots)",
+  "brick": "Nougat boots with brown cuffs and black soles (hiking boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5228,7 +5228,7 @@
   }
  },
  "elven boots": {
-  "lego": "Tall dark green wellies (mud boots)",
+  "brick": "Tall dark green wellies (mud boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5242,7 +5242,7 @@
   }
  },
  "kicking boots": {
-  "lego": "Pearl silver boots to the knee (steel boots)",
+  "brick": "Pearl silver boots to the knee (steel boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5256,7 +5256,7 @@
   }
  },
  "fumble boots": {
-  "lego": "Tall brown boots with dark folded tops (riding boots)",
+  "brick": "Tall brown boots with dark folded tops (riding boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5274,7 +5274,7 @@
   }
  },
  "levitation boots": {
-  "lego": "White fur-cuffed boots on white snowshoes (snow boots)",
+  "brick": "White fur-cuffed boots on white snowshoes (snow boots)",
   "slot": "boots",
   "wear": {
    "boots": {
@@ -5301,7 +5301,7 @@
   }
  },
  "leather gloves": {
-  "lego": "Hands in faded dark tan (old gloves)",
+  "brick": "Hands in faded dark tan (old gloves)",
   "parts": [
    {
     "part": "3820",
@@ -5338,7 +5338,7 @@
   }
  },
  "gauntlets of fumbling": {
-  "lego": "Hands in light grey, padded (padded gloves)",
+  "brick": "Hands in light grey, padded (padded gloves)",
   "parts": [
    {
     "part": "3820",
@@ -5375,7 +5375,7 @@
   }
  },
  "gauntlets of power": {
-  "lego": "Hands in brown leather (riding gloves)",
+  "brick": "Hands in brown leather (riding gloves)",
   "parts": [
    {
     "part": "3820",
@@ -5412,7 +5412,7 @@
   }
  },
  "gauntlets of swimming": {
-  "lego": "Black hands (black gloves)",
+  "brick": "Black hands (black gloves)",
   "parts": [
    {
     "part": "3820",
@@ -5449,7 +5449,7 @@
   }
  },
  "gauntlets of dexterity": {
-  "lego": "White hands (fencing gloves)",
+  "brick": "White hands (fencing gloves)",
   "parts": [
    {
     "part": "3820",
@@ -5486,7 +5486,7 @@
   }
  },
  "tripe ration": {
-  "lego": "A sausage in sand red (offal)",
+  "brick": "A sausage in sand red (offal)",
   "parts": [
    {
     "part": "33078",
@@ -5496,7 +5496,7 @@
   "upright": true
  },
  "egg": {
-  "lego": "The LEGO egg, white",
+  "brick": "The brick egg, white",
   "parts": [
    {
     "part": "24946",
@@ -5506,7 +5506,7 @@
   "upright": true
  },
  "meatball": {
-  "lego": "An ice cream scoop in brown (a meatball)",
+  "brick": "An ice cream scoop in brown (a meatball)",
   "parts": [
    {
     "part": "6254",
@@ -5516,7 +5516,7 @@
   "upright": true
  },
  "meat stick": {
-  "lego": "A sausage, reddish brown",
+  "brick": "A sausage, reddish brown",
   "parts": [
    {
     "part": "33078",
@@ -5526,7 +5526,7 @@
   "upright": true
  },
  "huge chunk of meat": {
-  "lego": "The roast turkey, reddish brown",
+  "brick": "The roast turkey, reddish brown",
   "parts": [
    {
     "part": "33048c01",
@@ -5536,7 +5536,7 @@
   "upright": true
  },
  "eyeball": {
-  "lego": "A white round plate with an eye-printed tile on top",
+  "brick": "A white round plate with an eye-printed tile on top",
   "parts": [
    {
     "part": "6141",
@@ -5555,7 +5555,7 @@
   "upright": true
  },
  "severed hand": {
-  "lego": "A minifig hand, alone",
+  "brick": "A minifig hand, alone",
   "parts": [
    {
     "part": "3820",
@@ -5565,7 +5565,7 @@
   "upright": true
  },
  "kelp frond": {
-  "lego": "Sea grass, green",
+  "brick": "Sea grass, green",
   "parts": [
    {
     "part": "30093",
@@ -5575,7 +5575,7 @@
   "upright": true
  },
  "eucalyptus leaf": {
-  "lego": "Plant leaves in sand green",
+  "brick": "Plant leaves in sand green",
   "parts": [
    {
     "part": "2423",
@@ -5585,7 +5585,7 @@
   "upright": true
  },
  "clove of garlic": {
-  "lego": "A swirled round plate in tan (a garlic bulb)",
+  "brick": "A swirled round plate in tan (a garlic bulb)",
   "parts": [
    {
     "part": "15470",
@@ -5595,7 +5595,7 @@
   "upright": true
  },
  "sprig of wolfsbane": {
-  "lego": "A flower stem with purple flowers",
+  "brick": "A flower stem with purple flowers",
   "parts": [
    {
     "part": "24855c02",
@@ -5605,7 +5605,7 @@
   "upright": true
  },
  "apple": {
-  "lego": "The LEGO apple, red",
+  "brick": "The brick apple, red",
   "parts": [
    {
     "part": "33051",
@@ -5615,7 +5615,7 @@
   "upright": true
  },
  "carrot": {
-  "lego": "The LEGO carrot with green leaves",
+  "brick": "The brick carrot with green leaves",
   "parts": [
    {
     "part": "33172c01",
@@ -5625,7 +5625,7 @@
   "upright": true
  },
  "pear": {
-  "lego": "The LEGO pear, yellowish green",
+  "brick": "The brick pear, yellowish green",
   "parts": [
    {
     "part": "5822",
@@ -5635,7 +5635,7 @@
   "upright": true
  },
  "asian pear": {
-  "lego": "The LEGO pear in tan (an Asian pear)",
+  "brick": "The brick pear in tan (an Asian pear)",
   "parts": [
    {
     "part": "5822",
@@ -5645,7 +5645,7 @@
   "upright": true
  },
  "banana": {
-  "lego": "The LEGO banana",
+  "brick": "The brick banana",
   "parts": [
    {
     "part": "33085",
@@ -5655,7 +5655,7 @@
   "upright": true
  },
  "orange": {
-  "lego": "The LEGO peach in orange",
+  "brick": "The brick peach in orange",
   "parts": [
    {
     "part": "5234",
@@ -5665,7 +5665,7 @@
   "upright": true
  },
  "mushroom": {
-  "lego": "A red dome cap on a white round brick stem",
+  "brick": "A red dome cap on a white round brick stem",
   "parts": [
    {
     "part": "3062b",
@@ -5684,7 +5684,7 @@
   "upright": true
  },
  "melon": {
-  "lego": "A bright green minifig head with dark green watermelon stripes, a green round plate with tabs on top (its stalk)",
+  "brick": "A bright green minifig head with dark green watermelon stripes, a green round plate with tabs on top (its stalk)",
   "parts": [
    {
     "part": "3626c",
@@ -5712,7 +5712,7 @@
   "upright": true
  },
  "slime mold": {
-  "lego": "A swirled round plate in trans green",
+  "brick": "A swirled round plate in trans green",
   "parts": [
    {
     "part": "15470",
@@ -5722,7 +5722,7 @@
   "upright": true
  },
  "lump of royal jelly": {
-  "lego": "A dumpling in trans yellow",
+  "brick": "A dumpling in trans yellow",
   "parts": [
    {
     "part": "6647",
@@ -5732,7 +5732,7 @@
   "upright": true
  },
  "cream pie": {
-  "lego": "The LEGO pie with white cream filling, tan crust",
+  "brick": "The brick pie with white cream filling, tan crust",
   "parts": [
    {
     "part": "93568p01",
@@ -5742,7 +5742,7 @@
   "upright": true
  },
  "sandwich": {
-  "lego": "A burger: a tan round 2 x 2 plate bun, lettuce, patty, cheese and tomato as round 1 x 1 plates on its four studs, a tan round 2 x 2 tile on top (as the tortilla)",
+  "brick": "A burger: a tan round 2 x 2 plate bun, lettuce, patty, cheese and tomato as round 1 x 1 plates on its four studs, a tan round 2 x 2 tile on top (as the tortilla)",
   "parts": [
    {
     "part": "4032b",
@@ -5797,7 +5797,7 @@
   "upright": true
  },
  "candy bar": {
-  "lego": "The LEGO chocolate bar tile with a gold bow, reddish brown",
+  "brick": "The brick chocolate bar tile with a gold bow, reddish brown",
   "parts": [
    {
     "part": "3069bph3",
@@ -5807,7 +5807,7 @@
   "upright": true
  },
  "fortune cookie": {
-  "lego": "The curled LEGO croissant, golden",
+  "brick": "The curled brick croissant, golden",
   "parts": [
    {
     "part": "33125",
@@ -5817,7 +5817,7 @@
   "upright": true
  },
  "pancake": {
-  "lego": "Two nougat round plates under a round tile printed with syrup and a pat of butter (a stack of pancakes)",
+  "brick": "Two nougat round plates under a round tile printed with syrup and a pat of butter (a stack of pancakes)",
   "parts": [
    {
     "part": "4032b",
@@ -5848,7 +5848,7 @@
   "upright": true
  },
  "tortilla": {
-  "lego": "A tan round tile 2 x 2",
+  "brick": "A tan round tile 2 x 2",
   "parts": [
    {
     "part": "4150",
@@ -5858,7 +5858,7 @@
   "upright": true
  },
  "cheese": {
-  "lego": "The yellow cheese slope",
+  "brick": "The yellow cheese slope",
   "parts": [
    {
     "part": "54200",
@@ -5868,7 +5868,7 @@
   "upright": true
  },
  "pill": {
-  "lego": "Two light globes back to back, red and blue (a capsule)",
+  "brick": "Two light globes back to back, red and blue (a capsule)",
   "parts": [
    {
     "part": "4770",
@@ -5891,7 +5891,7 @@
   ]
  },
  "holy wafer": {
-  "lego": "A white round 1 x 1 tile printed as a Eucharistic host (a small Greek cross pressed into the bread), glowing with an angel's aura",
+  "brick": "A white round 1 x 1 tile printed as a Eucharistic host (a small Greek cross pressed into the bread), glowing with an angel's aura",
   "parts": [
    {
     "part": "98138",
@@ -5909,7 +5909,7 @@
   }
  },
  "lembas wafer": {
-  "lego": "A tan tile 1 x 2 on a green plate (wrapped in a leaf)",
+  "brick": "A tan tile 1 x 2 on a green plate (wrapped in a leaf)",
   "parts": [
    {
     "part": "3023",
@@ -5928,7 +5928,7 @@
   "upright": true
  },
  "cram ration": {
-  "lego": "A French bread loaf in unappetizing dark tan (a hard biscuit of a loaf)",
+  "brick": "A French bread loaf in unappetizing dark tan (a hard biscuit of a loaf)",
   "parts": [
    {
     "part": "4342",
@@ -5938,7 +5938,7 @@
   "upright": true
  },
  "food ration": {
-  "lego": "A French bread loaf beside a can like the tin, but blue (bread and a tinned ration)",
+  "brick": "A French bread loaf beside a can like the tin, but blue (bread and a tinned ration)",
   "parts": [
    {
     "part": "4342",
@@ -5966,7 +5966,7 @@
   "upright": true
  },
  "K-ration": {
-  "lego": "An olive green brick 1 x 2 under an olive tile stencilled with a K (a boxed ration)",
+  "brick": "An olive green brick 1 x 2 under an olive tile stencilled with a K (a boxed ration)",
   "parts": [
    {
     "part": "3004",
@@ -5988,7 +5988,7 @@
   "upright": true
  },
  "C-ration": {
-  "lego": "An olive green round brick, a can, with a grey tile lid stencilled with a C",
+  "brick": "An olive green round brick, a can, with a grey tile lid stencilled with a C",
   "parts": [
    {
     "part": "3062b",
@@ -6010,7 +6010,7 @@
   "upright": true
  },
  "tin": {
-  "lego": "A silver round brick, a can, with a can-top tile",
+  "brick": "A silver round brick, a can, with a can-top tile",
   "parts": [
    {
     "part": "3062b",
@@ -6029,7 +6029,7 @@
   "upright": true
  },
  "water": {
-  "lego": "A clear minifig bottle (a clear potion: water, holy or unholy)",
+  "brick": "A clear minifig bottle (a clear potion: water, holy or unholy)",
   "parts": [
    {
     "part": "95228",
@@ -6039,7 +6039,7 @@
   "upright": true
  },
  "holy water": {
-  "lego": "A clear minifig bottle printed with a gold Latin cross, glowing with an angel's aura",
+  "brick": "A clear minifig bottle printed with a gold Latin cross, glowing with an angel's aura",
   "parts": [
    {
     "part": "95228",
@@ -6061,7 +6061,7 @@
   }
  },
  "unholy water": {
-  "lego": "A clear minifig bottle in a red glow",
+  "brick": "A clear minifig bottle in a red glow",
   "parts": [
    {
     "part": "95228",
@@ -6085,7 +6085,7 @@
   }
  },
  "dilithium crystal": {
-  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6095,7 +6095,7 @@
   "upright": true
  },
  "diamond": {
-  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6105,7 +6105,7 @@
   "upright": true
  },
  "ruby": {
-  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent red (a red gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6115,7 +6115,7 @@
   "upright": true
  },
  "jacinth": {
-  "lego": "The faceted LEGO jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6125,7 +6125,7 @@
   "upright": true
  },
  "sapphire": {
-  "lego": "The faceted LEGO jewel in transparent blue (a blue gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent blue (a blue gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6135,7 +6135,7 @@
   "upright": true
  },
  "black opal": {
-  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent black (a black gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6145,7 +6145,7 @@
   "upright": true
  },
  "emerald": {
-  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6155,7 +6155,7 @@
   "upright": true
  },
  "turquoise": {
-  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6165,7 +6165,7 @@
   "upright": true
  },
  "citrine": {
-  "lego": "The LEGO 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6175,7 +6175,7 @@
   "upright": true
  },
  "aquamarine": {
-  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6185,7 +6185,7 @@
   "upright": true
  },
  "amber": {
-  "lego": "The faceted LEGO jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6195,7 +6195,7 @@
   "upright": true
  },
  "topaz": {
-  "lego": "The faceted LEGO jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6205,7 +6205,7 @@
   "upright": true
  },
  "jet": {
-  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent black (a black gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6215,7 +6215,7 @@
   "upright": true
  },
  "opal": {
-  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6225,7 +6225,7 @@
   "upright": true
  },
  "chrysoberyl": {
-  "lego": "The LEGO 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6235,7 +6235,7 @@
   "upright": true
  },
  "garnet": {
-  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent red (a red gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6245,7 +6245,7 @@
   "upright": true
  },
  "amethyst": {
-  "lego": "The LEGO 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6255,7 +6255,7 @@
   "upright": true
  },
  "jasper": {
-  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent red (a red gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6265,7 +6265,7 @@
   "upright": true
  },
  "fluorite": {
-  "lego": "The LEGO 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6275,7 +6275,7 @@
   "upright": true
  },
  "obsidian": {
-  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent black (a black gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6285,7 +6285,7 @@
   "upright": true
  },
  "agate": {
-  "lego": "The faceted LEGO jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6295,7 +6295,7 @@
   "upright": true
  },
  "jade": {
-  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6305,7 +6305,7 @@
   "upright": true
  },
  "worthless piece of white glass": {
-  "lego": "The LEGO 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent white (a white gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6315,7 +6315,7 @@
   "upright": true
  },
  "worthless piece of blue glass": {
-  "lego": "The faceted LEGO jewel in transparent blue (a blue gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent blue (a blue gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6325,7 +6325,7 @@
   "upright": true
  },
  "worthless piece of red glass": {
-  "lego": "The faceted LEGO jewel in transparent red (a red gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent red (a red gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6335,7 +6335,7 @@
   "upright": true
  },
  "worthless piece of yellowish brown glass": {
-  "lego": "The faceted LEGO jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent yellowish brown (a yellowish brown gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6345,7 +6345,7 @@
   "upright": true
  },
  "worthless piece of orange glass": {
-  "lego": "The faceted LEGO jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent orange (a orange gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6355,7 +6355,7 @@
   "upright": true
  },
  "worthless piece of yellow glass": {
-  "lego": "The LEGO 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
+  "brick": "The brick 4-point crystal in transparent yellow (a yellow gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "11127",
@@ -6365,7 +6365,7 @@
   "upright": true
  },
  "worthless piece of black glass": {
-  "lego": "The faceted LEGO jewel in transparent black (a black gem: every one this colour looks alike until known)",
+  "brick": "The faceted brick jewel in transparent black (a black gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30153",
@@ -6375,7 +6375,7 @@
   "upright": true
  },
  "worthless piece of green glass": {
-  "lego": "The LEGO 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent green (a green gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6385,7 +6385,7 @@
   "upright": true
  },
  "worthless piece of violet glass": {
-  "lego": "The LEGO 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
+  "brick": "The brick 5-point crystal brick in transparent violet (a violet gem: every one this colour looks alike until known)",
   "parts": [
    {
     "part": "30385",
@@ -6395,7 +6395,7 @@
   "upright": true
  },
  "luckstone": {
-  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "brick": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
   "parts": [
    {
     "part": "33176",
@@ -6405,7 +6405,7 @@
   "upright": true
  },
  "healthstone": {
-  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "brick": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
   "parts": [
    {
     "part": "33176",
@@ -6415,7 +6415,7 @@
   "upright": true
  },
  "loadstone": {
-  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "brick": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
   "parts": [
    {
     "part": "33176",
@@ -6425,7 +6425,7 @@
   "upright": true
  },
  "touchstone": {
-  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "brick": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
   "parts": [
    {
     "part": "33176",
@@ -6435,7 +6435,7 @@
   "upright": true
  },
  "whetstone": {
-  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "brick": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
   "parts": [
    {
     "part": "33176",
@@ -6445,7 +6445,7 @@
   "upright": true
  },
  "flint": {
-  "lego": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
+  "brick": "A smooth light grey sphere (a gray stone: every one looks alike until known)",
   "parts": [
    {
     "part": "33176",
@@ -6455,7 +6455,7 @@
   "upright": true
  },
  "rock": {
-  "lego": "The LEGO rock nugget in dark grey",
+  "brick": "The brick rock nugget in dark grey",
   "parts": [
    {
     "part": "35646",
@@ -6465,7 +6465,7 @@
   "upright": true
  },
  "gold piece": {
-  "lego": "A little pile of LEGO coins in metallic gold",
+  "brick": "A little pile of brick coins in metallic gold",
   "parts": [
    {
     "part": "96904",
@@ -6502,7 +6502,7 @@
   "upright": true
  },
  "booze": {
-  "lego": "A wine bottle in amber, brown (a brown potion)",
+  "brick": "A wine bottle in amber, brown (a brown potion)",
   "parts": [
    {
     "part": "33011b",
@@ -6512,7 +6512,7 @@
   "upright": true
  },
  "fruit juice": {
-  "lego": "A minifig bottle in trans black, dark (a dark potion)",
+  "brick": "A minifig bottle in trans black, dark (a dark potion)",
   "parts": [
    {
     "part": "95228",
@@ -6522,7 +6522,7 @@
   "upright": true
  },
  "see invisible": {
-  "lego": "A wine bottle in trans dark pink, magenta (a magenta potion)",
+  "brick": "A wine bottle in trans dark pink, magenta (a magenta potion)",
   "parts": [
    {
     "part": "33011b",
@@ -6533,7 +6533,7 @@
   "class": "potion"
  },
  "sickness": {
-  "lego": "A minifig bottle in trans light green, fizzing with fine bubbles (a fizzy potion)",
+  "brick": "A minifig bottle in trans light green, fizzing with fine bubbles (a fizzy potion)",
   "parts": [
    {
     "part": "95228",
@@ -6546,7 +6546,7 @@
   "upright": true
  },
  "sleeping": {
-  "lego": "A conical flask in trans light blue, fizzing (a effervescent potion)",
+  "brick": "A conical flask in trans light blue, fizzing (a effervescent potion)",
   "parts": [
    {
     "part": "u9180",
@@ -6560,7 +6560,7 @@
   "class": "potion"
  },
  "clairvoyance": {
-  "lego": "A minifig bottle in trans neon green, glowing (a luminescent potion)",
+  "brick": "A minifig bottle in trans neon green, glowing (a luminescent potion)",
   "parts": [
    {
     "part": "95228",
@@ -6581,7 +6581,7 @@
   "class": "potion"
  },
  "confusion": {
-  "lego": "A minifig bottle in trans orange (a orange potion)",
+  "brick": "A minifig bottle in trans orange (a orange potion)",
   "parts": [
    {
     "part": "95228",
@@ -6591,7 +6591,7 @@
   "upright": true
  },
  "hallucination": {
-  "lego": "A big jug in trans medium blue, sky blue (a sky blue potion)",
+  "brick": "A big jug in trans medium blue, sky blue (a sky blue potion)",
   "parts": [
    {
     "part": "4429",
@@ -6601,7 +6601,7 @@
   "upright": true
  },
  "healing": {
-  "lego": "A conical flask in trans reddish lilac, purple-red (a purple-red potion)",
+  "brick": "A conical flask in trans reddish lilac, purple-red (a purple-red potion)",
   "parts": [
    {
     "part": "u9180",
@@ -6612,7 +6612,7 @@
   "class": "potion"
  },
  "extra healing": {
-  "lego": "A jar in sand red, puce (a puce potion)",
+  "brick": "A jar in sand red, puce (a puce potion)",
   "parts": [
    {
     "part": "33011c",
@@ -6623,7 +6623,7 @@
   "class": "potion"
  },
  "restore ability": {
-  "lego": "A minifig bottle in trans pink (a pink potion)",
+  "brick": "A minifig bottle in trans pink (a pink potion)",
   "parts": [
    {
     "part": "95228",
@@ -6634,7 +6634,7 @@
   "class": "potion"
  },
  "blindness": {
-  "lego": "A minifig bottle in trans yellow (a yellow potion)",
+  "brick": "A minifig bottle in trans yellow (a yellow potion)",
   "parts": [
    {
     "part": "95228",
@@ -6644,7 +6644,7 @@
   "upright": true
  },
  "ESP": {
-  "lego": "A big jug in opaque dark tan, muddy (a muddy potion)",
+  "brick": "A big jug in opaque dark tan, muddy (a muddy potion)",
   "parts": [
    {
     "part": "4429",
@@ -6654,7 +6654,7 @@
   "upright": true
  },
  "gain energy": {
-  "lego": "A jar in opal trans clear, cloudy (a cloudy potion)",
+  "brick": "A jar in opal trans clear, cloudy (a cloudy potion)",
   "parts": [
    {
     "part": "33011c",
@@ -6664,7 +6664,7 @@
   "upright": true
  },
  "invisibility": {
-  "lego": "A minifig bottle in opal trans dark blue, brilliant (a brilliant blue potion)",
+  "brick": "A minifig bottle in opal trans dark blue, brilliant (a brilliant blue potion)",
   "parts": [
    {
     "part": "95228",
@@ -6675,7 +6675,7 @@
   "class": "potion"
  },
  "monster detection": {
-  "lego": "A conical flask in trans light blue violet, full of big bubbles (a bubbly potion)",
+  "brick": "A conical flask in trans light blue violet, full of big bubbles (a bubbly potion)",
   "parts": [
    {
     "part": "u9180",
@@ -6688,7 +6688,7 @@
   "upright": true
  },
  "object detection": {
-  "lego": "A jar in opal trans black, smoky (a smoky potion)",
+  "brick": "A jar in opal trans black, smoky (a smoky potion)",
   "parts": [
    {
     "part": "33011c",
@@ -6698,7 +6698,7 @@
   "upright": true
  },
  "enlightenment": {
-  "lego": "A conical flask in opal trans clear, swirling with colours (a swirly potion)",
+  "brick": "A conical flask in opal trans clear, swirling with colours (a swirly potion)",
   "parts": [
    {
     "part": "u9180",
@@ -6712,7 +6712,7 @@
   "class": "potion"
  },
  "full healing": {
-  "lego": "A big jug in trans black, inky (a black potion)",
+  "brick": "A big jug in trans black, inky (a black potion)",
   "parts": [
    {
     "part": "4429",
@@ -6722,7 +6722,7 @@
   "upright": true
  },
  "levitation": {
-  "lego": "A wine bottle in trans light blue, cyan (a cyan potion)",
+  "brick": "A wine bottle in trans light blue, cyan (a cyan potion)",
   "parts": [
    {
     "part": "33011b",
@@ -6733,7 +6733,7 @@
   "class": "potion"
  },
  "polymorph": {
-  "lego": "A jar in pearl gold, golden (a golden potion)",
+  "brick": "A jar in pearl gold, golden (a golden potion)",
   "parts": [
    {
     "part": "33011c",
@@ -6744,7 +6744,7 @@
   "class": "potion"
  },
  "speed": {
-  "lego": "A wine bottle in opaque dark green (a dark green potion)",
+  "brick": "A wine bottle in opaque dark green (a dark green potion)",
   "parts": [
    {
     "part": "33011b",
@@ -6754,7 +6754,7 @@
   "upright": true
  },
  "acid": {
-  "lego": "A minifig bottle in opaque white (a white potion)",
+  "brick": "A minifig bottle in opaque white (a white potion)",
   "parts": [
    {
     "part": "95228",
@@ -6764,7 +6764,7 @@
   "upright": true
  },
  "oil": {
-  "lego": "A jar in opaque olive, murky (a murky potion)",
+  "brick": "A jar in opaque olive, murky (a murky potion)",
   "parts": [
    {
     "part": "33011c",
@@ -6774,7 +6774,7 @@
   "upright": true
  },
  "gain ability": {
-  "lego": "A minifig bottle in trans red, ruby (a ruby potion)",
+  "brick": "A minifig bottle in trans red, ruby (a ruby potion)",
   "parts": [
    {
     "part": "95228",
@@ -6784,7 +6784,7 @@
   "upright": true
  },
  "gain level": {
-  "lego": "A big jug in trans white, milky (a milky potion)",
+  "brick": "A big jug in trans white, milky (a milky potion)",
   "parts": [
    {
     "part": "4429",
@@ -6794,7 +6794,7 @@
   "upright": true
  },
  "invulnerability": {
-  "lego": "A minifig bottle in opal trans light blue, icy, frosted with glints (a icy potion)",
+  "brick": "A minifig bottle in opal trans light blue, icy, frosted with glints (a icy potion)",
   "parts": [
    {
     "part": "95228",
@@ -6817,7 +6817,7 @@
   }
  },
  "paralysis": {
-  "lego": "A minifig bottle in trans green, emerald (a emerald potion)",
+  "brick": "A minifig bottle in trans green, emerald (a emerald potion)",
   "parts": [
    {
     "part": "95228",
@@ -6827,7 +6827,7 @@
   "upright": true
  },
  "blood": {
-  "lego": "A big jug in opaque dark red, blood (a blood-red potion)",
+  "brick": "A big jug in opaque dark red, blood (a blood-red potion)",
   "parts": [
    {
     "part": "4429",
@@ -6837,7 +6837,7 @@
   "upright": true
  },
  "vampire blood": {
-  "lego": "A big jug in opaque dark red, blood (a blood-red potion)",
+  "brick": "A big jug in opaque dark red, blood (a blood-red potion)",
   "parts": [
    {
     "part": "4429",
@@ -6847,7 +6847,7 @@
   "upright": true
  },
  "amnesia": {
-  "lego": "A wine bottle in glitter trans clear, sparkling (a sparkling potion)",
+  "brick": "A wine bottle in glitter trans clear, sparkling (a sparkling potion)",
   "parts": [
    {
     "part": "33011b",
@@ -6871,7 +6871,7 @@
   "class": "potion"
  },
  "holy wine": {
-  "lego": "The minifig goblet in metallic gold, glowing as the holy wafer does (a chalice)",
+  "brick": "The minifig goblet in metallic gold, glowing as the holy wafer does (a chalice)",
   "parts": [
    {
     "part": "2343",
@@ -6886,7 +6886,7 @@
   }
  },
  "chalice": {
-  "lego": "The minifig goblet in metallic gold, as holy wine is, but empty and not glowing (a chalice)",
+  "brick": "The minifig goblet in metallic gold, as holy wine is, but empty and not glowing (a chalice)",
   "parts": [
    {
     "part": "2343",
@@ -6896,7 +6896,7 @@
   "upright": true
  },
  "ring of adornment": {
-  "lego": "The LEGO ring (the One Ring, 11010) in reddish brown, wooden (a wooden ring)",
+  "brick": "The brick ring (the One Ring, 11010) in reddish brown, wooden (a wooden ring)",
   "parts": [
    {
     "part": "11010",
@@ -6906,7 +6906,7 @@
   "upright": true
  },
  "ring of hunger": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans light blue, topaz (a topaz ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans light blue, topaz (a topaz ring)",
   "parts": [
    {
     "part": "11010",
@@ -6916,7 +6916,7 @@
   "upright": true
  },
  "ring of mood": {
-  "lego": "The LEGO ring (the One Ring, 11010) in pearl dark grey, ridged (a ridged ring)",
+  "brick": "The brick ring (the One Ring, 11010) in pearl dark grey, ridged (a ridged ring)",
   "parts": [
    {
     "part": "11010",
@@ -6926,7 +6926,7 @@
   "upright": true
  },
  "ring of protection": {
-  "lego": "The LEGO ring (the One Ring, 11010) in glossy black, onyx (a black onyx ring)",
+  "brick": "The brick ring (the One Ring, 11010) in glossy black, onyx (a black onyx ring)",
   "parts": [
    {
     "part": "11010",
@@ -6936,7 +6936,7 @@
   "upright": true
  },
  "ring of protection from shape changers": {
-  "lego": "The LEGO ring (the One Ring, 11010) in chrome silver, shiny (a shiny ring)",
+  "brick": "The brick ring (the One Ring, 11010) in chrome silver, shiny (a shiny ring)",
   "parts": [
    {
     "part": "11010",
@@ -6946,7 +6946,7 @@
   "upright": true
  },
  "ring of sleeping": {
-  "lego": "The LEGO ring (the One Ring, 11010) in chrome gold, a wedding band (a wedding ring)",
+  "brick": "The brick ring (the One Ring, 11010) in chrome gold, a wedding band (a wedding ring)",
   "parts": [
    {
     "part": "11010",
@@ -6956,7 +6956,7 @@
   "upright": true
  },
  "ring of stealth": {
-  "lego": "The LEGO ring (the One Ring, 11010) in sand green, jade (a jade ring)",
+  "brick": "The brick ring (the One Ring, 11010) in sand green, jade (a jade ring)",
   "parts": [
    {
     "part": "11010",
@@ -6966,7 +6966,7 @@
   "upright": true
  },
  "ring of sustain ability": {
-  "lego": "The LEGO ring (the One Ring, 11010) in reddish copper, bronze (a bronze ring)",
+  "brick": "The brick ring (the One Ring, 11010) in reddish copper, bronze (a bronze ring)",
   "parts": [
    {
     "part": "11010",
@@ -6976,7 +6976,7 @@
   "upright": true
  },
  "ring of warning": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans clear, diamond (a diamond ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans clear, diamond (a diamond ring)",
   "parts": [
    {
     "part": "11010",
@@ -6986,7 +6986,7 @@
   "upright": true
  },
  "ring of aggravate monster": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans dark blue, sapphire (a sapphire ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans dark blue, sapphire (a sapphire ring)",
   "parts": [
    {
     "part": "11010",
@@ -6996,7 +6996,7 @@
   "upright": true
  },
  "ring of cold resistance": {
-  "lego": "The LEGO ring (the One Ring, 11010) in pearl light gold, brass (a brass ring)",
+  "brick": "The brick ring (the One Ring, 11010) in pearl light gold, brass (a brass ring)",
   "parts": [
    {
     "part": "11010",
@@ -7006,7 +7006,7 @@
   "upright": true
  },
  "ring of gain constitution": {
-  "lego": "The LEGO ring (the One Ring, 11010) in opal trans clear, opal (a opal ring)",
+  "brick": "The brick ring (the One Ring, 11010) in opal trans clear, opal (a opal ring)",
   "parts": [
    {
     "part": "11010",
@@ -7016,7 +7016,7 @@
   "upright": true
  },
  "ring of gain dexterity": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans black, obsidian (a obsidian ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans black, obsidian (a obsidian ring)",
   "parts": [
    {
     "part": "11010",
@@ -7026,7 +7026,7 @@
   "upright": true
  },
  "ring of gain intelligence": {
-  "lego": "The LEGO ring (the One Ring, 11010) in light bluish grey, plain (a plain ring)",
+  "brick": "The brick ring (the One Ring, 11010) in light bluish grey, plain (a plain ring)",
   "parts": [
    {
     "part": "11010",
@@ -7036,7 +7036,7 @@
   "upright": true
  },
  "ring of gain strength": {
-  "lego": "The LEGO ring (the One Ring, 11010) in speckled grey, granite (a granite ring)",
+  "brick": "The brick ring (the One Ring, 11010) in speckled grey, granite (a granite ring)",
   "parts": [
    {
     "part": "11010",
@@ -7046,7 +7046,7 @@
   "upright": true
  },
  "ring of gain wisdom": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans very light blue, glass (a glass ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans very light blue, glass (a glass ring)",
   "parts": [
    {
     "part": "11010",
@@ -7056,7 +7056,7 @@
   "upright": true
  },
  "ring of increase accuracy": {
-  "lego": "The LEGO ring (the One Ring, 11010) in sand red, clay (a clay ring)",
+  "brick": "The brick ring (the One Ring, 11010) in sand red, clay (a clay ring)",
   "parts": [
    {
     "part": "11010",
@@ -7066,7 +7066,7 @@
   "upright": true
  },
  "ring of increase damage": {
-  "lego": "The LEGO ring (the One Ring, 11010) in coral (a coral ring)",
+  "brick": "The brick ring (the One Ring, 11010) in coral (a coral ring)",
   "parts": [
    {
     "part": "11010",
@@ -7076,7 +7076,7 @@
   "upright": true
  },
  "ring of slow digestion": {
-  "lego": "The LEGO ring (the One Ring, 11010) in metallic silver, steel (a steel ring)",
+  "brick": "The brick ring (the One Ring, 11010) in metallic silver, steel (a steel ring)",
   "parts": [
    {
     "part": "11010",
@@ -7086,7 +7086,7 @@
   "upright": true
  },
  "ring of invisibility": {
-  "lego": "The LEGO ring (the One Ring, 11010) in flat silver, wire (a wire ring)",
+  "brick": "The brick ring (the One Ring, 11010) in flat silver, wire (a wire ring)",
   "parts": [
    {
     "part": "11010",
@@ -7096,7 +7096,7 @@
   "upright": true
  },
  "ring of poison resistance": {
-  "lego": "The LEGO ring (the One Ring, 11010) in pearl white (a pearl ring)",
+  "brick": "The brick ring (the One Ring, 11010) in pearl white (a pearl ring)",
   "parts": [
    {
     "part": "11010",
@@ -7106,7 +7106,7 @@
   "upright": true
  },
  "ring of see invisible": {
-  "lego": "The LEGO ring (the One Ring, 11010) in metallic gold, an engagement ring (a engagement ring)",
+  "brick": "The brick ring (the One Ring, 11010) in metallic gold, an engagement ring (a engagement ring)",
   "parts": [
    {
     "part": "11010",
@@ -7116,7 +7116,7 @@
   "upright": true
  },
  "ring of shock resistance": {
-  "lego": "The LEGO ring (the One Ring, 11010) in copper (a copper ring)",
+  "brick": "The brick ring (the One Ring, 11010) in copper (a copper ring)",
   "parts": [
    {
     "part": "11010",
@@ -7126,7 +7126,7 @@
   "upright": true
  },
  "ring of fire resistance": {
-  "lego": "The LEGO ring (the One Ring, 11010) in dark bluish grey, iron (a iron ring)",
+  "brick": "The brick ring (the One Ring, 11010) in dark bluish grey, iron (a iron ring)",
   "parts": [
    {
     "part": "11010",
@@ -7136,7 +7136,7 @@
   "upright": true
  },
  "ring of free action": {
-  "lego": "The LEGO ring (the One Ring, 11010) in speckled black and silver, twisted (a twisted ring)",
+  "brick": "The brick ring (the One Ring, 11010) in speckled black and silver, twisted (a twisted ring)",
   "parts": [
    {
     "part": "11010",
@@ -7146,7 +7146,7 @@
   "upright": true
  },
  "ring of levitation": {
-  "lego": "The LEGO ring (the One Ring, 11010) in dark red, agate (a agate ring)",
+  "brick": "The brick ring (the One Ring, 11010) in dark red, agate (a agate ring)",
   "parts": [
    {
     "part": "11010",
@@ -7156,7 +7156,7 @@
   "upright": true
  },
  "ring of regeneration": {
-  "lego": "The LEGO ring (the One Ring, 11010) in opal trans light blue, moonstone (a moonstone ring)",
+  "brick": "The brick ring (the One Ring, 11010) in opal trans light blue, moonstone (a moonstone ring)",
   "parts": [
    {
     "part": "11010",
@@ -7166,7 +7166,7 @@
   "upright": true
  },
  "ring of searching": {
-  "lego": "The LEGO ring (the One Ring, 11010) in dark orange, tiger eye (a tiger eye ring)",
+  "brick": "The brick ring (the One Ring, 11010) in dark orange, tiger eye (a tiger eye ring)",
   "parts": [
    {
     "part": "11010",
@@ -7176,7 +7176,7 @@
   "upright": true
  },
  "ring of teleportation": {
-  "lego": "The LEGO ring (the One Ring, 11010) in pearl silver (a silver ring)",
+  "brick": "The brick ring (the One Ring, 11010) in pearl silver (a silver ring)",
   "parts": [
    {
     "part": "11010",
@@ -7186,7 +7186,7 @@
   "upright": true
  },
  "ring of conflict": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans red, ruby (a ruby ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans red, ruby (a ruby ring)",
   "parts": [
    {
     "part": "11010",
@@ -7196,7 +7196,7 @@
   "upright": true
  },
  "ring of polymorph": {
-  "lego": "The LEGO ring (the One Ring, 11010) in bright light yellow, ivory (a ivory ring)",
+  "brick": "The brick ring (the One Ring, 11010) in bright light yellow, ivory (a ivory ring)",
   "parts": [
    {
     "part": "11010",
@@ -7206,7 +7206,7 @@
   "upright": true
  },
  "ring of polymorph control": {
-  "lego": "The LEGO ring (the One Ring, 11010) in trans green, emerald (a emerald ring)",
+  "brick": "The brick ring (the One Ring, 11010) in trans green, emerald (a emerald ring)",
   "parts": [
    {
     "part": "11010",
@@ -7216,7 +7216,7 @@
   "upright": true
  },
  "ring of teleport control": {
-  "lego": "The LEGO ring (the One Ring, 11010) in pearl gold (a gold ring)",
+  "brick": "The brick ring (the One Ring, 11010) in pearl gold (a gold ring)",
   "parts": [
    {
     "part": "11010",
@@ -7226,7 +7226,7 @@
   "upright": true
  },
  "One Ring": {
-  "lego": "The One Ring (11010), as LEGO made it, in chrome gold",
+  "brick": "The One Ring (11010) in chrome gold",
   "parts": [
    {
     "part": "11010",

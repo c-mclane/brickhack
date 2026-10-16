@@ -5,12 +5,12 @@ raised rim round its edge and a small Greek cross pressed into its middle
 (drawn as an indentation: shadowed on its upper left edges, lit on its lower
 right, as light from the upper left falls into it).
 
-  host_print.py   -> web/assets/lego/decals/host.png
+  host_print.py   -> web/assets/brick/decals/host.png
 """
 import os
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'lego', 'decals', 'host.png')
+OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'brick', 'decals', 'host.png')
 S = 256
 BREAD = (250, 244, 226, 255)
 SHADE, LIGHT = (120, 106, 80, 255), (255, 255, 252, 255)

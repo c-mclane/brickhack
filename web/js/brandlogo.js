@@ -1,4 +1,4 @@
-// The menus' background: a grey LEGO baseplate seen from straight above,
+// The menus' background: a grey brick baseplate seen from straight above,
 // filling the screen behind every menu.  On the title screen BRICKHACK is
 // built on its studs in white bricks: each pixel of a 5x7 font is a 1x1
 // brick, two bricks tall with a stud on top, standing exactly on the plate's
@@ -6,7 +6,7 @@
 // menu's layout is unchanged); the other menus see the plate from the same
 // camera, so the studs look the same everywhere.
 
-import { Lego, perspective, BRICK_H, STUD_H, STUD_R, PLATE_H } from './lego.js';
+import { BrickRenderer, perspective, BRICK_H, STUD_H, STUD_R, PLATE_H } from './brick.js';
 
 const FONT = {
   A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
@@ -30,8 +30,8 @@ const FOVY = (24 * Math.PI) / 180;
 export function menuPlate(canvas, slot, state, text = 'BRICKHACK') {
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
   if (!gl) return false;
-  const lego = new Lego(gl);
-  lego.fogRange = [1000, 2000];
+  const brick = new BrickRenderer(gl);
+  brick.fogRange = [1000, 2000];
 
   // the letters, on stud cells (col, row) from (0, 0)
   const cells = new Set(), letters = { box: [], stud: [] };
@@ -80,15 +80,15 @@ export function menuPlate(canvas, slot, state, text = 'BRICKHACK') {
       for (let j = j0; j < j1; j++)
         if (!title || !cells.has(`${i},${j}`))
           inst.stud.push((i + 0.5) * STUD, 0, (j + 0.5) * STUD, PLATE_SHADE, STUD_R, STUD_H, STUD_R, ...PLATE);
-    lego.setInstances(lego.box, inst.box);
-    lego.setInstances(lego.stud, inst.stud);
+    brick.setInstances(brick.box, inst.box);
+    brick.setInstances(brick.stud, inst.stud);
     // looking straight down, north up the screen
     const view = new Float32Array([1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, -cx, cz, -h, 1]);
     gl.viewport(0, 0, cw, ch);
     gl.clearColor(PLATE[0] * 0.5, PLATE[1] * 0.5, PLATE[2] * 0.5, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
-    lego.draw(perspective(FOVY, aspect, 0.1, h + 10), view, []);
+    brick.draw(perspective(FOVY, aspect, 0.1, h + 10), view, []);
   };
   // redrawn only when something changes: which menu is up, or the window's size
   let last = '';

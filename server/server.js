@@ -92,12 +92,12 @@ function startGame(sid, opts) {
   const perks = String(opts.perks || '').replace(/[^a-z ,-]/gi, '').slice(0, 100);
 
   const start = () => {
-    // LEGOHACK_WIZARD=1 npm start: every game in debug (wizard) mode, for testing
+    // BRICKHACK_WIZARD=1 npm start: every game in debug (wizard) mode, for testing
     // (^V level teleport, ^G make a monster, ^W wish; saves go under the name "wizard")
-    const args = process.env.LEGOHACK_WIZARD === '1' ? ['-D', '-u', name] : ['-u', name];
+    const args = process.env.BRICKHACK_WIZARD === '1' ? ['-D', '-u', name] : ['-u', name];
     const proc = spawn(path.join(V.dir, V.bin), args, {
       cwd: V.dir,
-      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, LEGOHACK_KIT: kit, LEGOHACK_GOD: god, LEGOHACK_PERKS: perks },
+      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, BRICKHACK_KIT: kit, BRICKHACK_GOD: god, BRICKHACK_PERKS: perks },
       stdio: ['pipe', 'pipe', 'pipe', 'pipe'],
     });
     sess.proc = proc;

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""LEGO part 24084, "Minifig, Weapon Spiked Ball / Flail / Mace" (2016,
+"""brick part 24084, "Minifig, Weapon Spiked Ball / Flail / Mace" (2016,
 Nexo Knights; rubber), modelled by hand for our own use: it isn't in the
 LDraw library (when LDraw has it, theirs is used instead: ldraw2glb.EXTRA).
 

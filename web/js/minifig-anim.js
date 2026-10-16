@@ -1,10 +1,10 @@
-// Minifig animation: what makes a LEGO figure look alive, for any figure
+// Minifig animation: what makes a brick figure look alive, for any figure
 // built by tools/build_roster.py (or the wardrobe). A figure comes in joints
 // (body, head, armR, armL, itemR, itemL, legR, legL; ldraw2glb.figure_groups)
 // with its rig (pivots and axes, in the model's units: ldraw2glb.figure_rig).
 // FigureAnimator turns a state (walking, attacking, just spawned) into a
 // matrix per joint, in the model's own frame; the renderers put those between
-// the figure's model matrix and its parts (brickworld.js, lego.js).
+// the figure's model matrix and its parts (brickworld.js, brick.js).
 //
 //   breathing  the body swells and settles from the waist, always
 //   spawning   a big stretch: arms up overhead, head back, and down again
@@ -16,7 +16,7 @@
 //              and across to the left as the body twists through
 //
 // The right hand's item is a joint of its own (itemR) that moves with the arm,
-// so whatever is wielded can one day be swapped for another LEGO piece.
+// so whatever is wielded can one day be swapped for another brick piece.
 
 const DEG = Math.PI / 180;
 

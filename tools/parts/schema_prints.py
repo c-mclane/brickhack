@@ -17,7 +17,7 @@ crosses. The chest carries it to the seraph, the robe the rest.
 import math, os
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'lego', 'decals')
+OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'brick', 'decals')
 FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 WHITE = (236, 234, 226, 255)
 PX = 12            # pixels per LDU

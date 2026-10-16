@@ -1,4 +1,4 @@
-// The LEGO world, drawn by three.js exactly as the scene viewer (lego-test.html)
+// The brick world, drawn by three.js exactly as the scene viewer (baseplate.html)
 // draws it: the real LDraw parts as converted (tools/build_roster.py), the same
 // lights and shadows, the same plain sky-blue background (no skybox, no fog).
 // It shares the game's WebGL2 context and canvas, so the game's own pass
@@ -10,15 +10,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects } from './mist.js';
 import { figureJoints, poseJoints } from './minifig-anim.js';
-import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './lego.js';
+import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
 import { gradientEnvironment } from './envmap.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
 
 const PIECES = {
-  plate: 'assets/lego/parts/plate4x4.glb', // a floor square: a green 4x4 plate, origin at its top middle
-  brick: 'assets/lego/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
+  plate: 'assets/brick/parts/plate4x4.glb', // a floor square: a green 4x4 plate, origin at its top middle
+  brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
 };
 const WALL_GREY = 0xa0a5a9, GROUND_GREEN = 0x00852b;
 // how many courses higher the Castle's walls rise: [none, its outer walls, its corner towers]
@@ -54,7 +54,7 @@ export class BrickWorld {
     this.pieces = {}; // name -> [{geometry, material}] for instancing
     this.inst = {}; // name -> [InstancedMesh]
     this.doors = new Map(); // where -> the door's group
-    this.items = new Map(); // where + what -> a LEGO item lying on the floor
+    this.items = new Map(); // where + what -> a brick item lying on the floor
     this.fx = new ThrowFX(this); // thrown things, flying and tumbling (throwfx.js)
     this.env = gradientEnvironment(THREE, r); // what metal reflects (envmap.js; plastic is lit as ever)
     this.data = null;
@@ -78,7 +78,7 @@ export class BrickWorld {
           // a doppelganger's other half is shimmering mist
           if (isMist(o.material)) { mistify(o); return; }
           if (quantumPart(o.material) !== null) strobify(o);
-          // translucent LEGO (flames, ice) glows
+          // translucent brick (flames, ice) glows
           if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
         });
         addAura(THREE, g.scene); // an angel's glow
@@ -292,7 +292,7 @@ export class BrickWorld {
     this.flowMesh.geometry = fg;
   }
 
-  // Items lying on the floor as LEGO models ([{x, z, url, level, upright}], world.js):
+  // Items lying on the floor as brick models ([{x, z, url, level, upright}], world.js):
   // each laid flat on its side (its length along the floor, the flat of a
   // blade up) across its square at a diagonal; one made to stand (upright:
   // food) set down the right way up. A pile is stacked: the bottom
@@ -393,7 +393,7 @@ export class BrickWorld {
     });
   }
 
-  // What the figure has in its hands (hold: {R, L}, each a LEGO item's url;
+  // What the figure has in its hands (hold: {R, L}, each a brick item's url;
   // null: nothing, the hand empty; undefined: as the figure was built). A
   // held item hangs on its hand's joint at the hand's grip (the rig's grip,
   // tools/minifig.py grip_frame), the figure's own item in that hand hidden.

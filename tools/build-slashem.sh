@@ -82,6 +82,10 @@ if 'WEB_GRAPHICS' not in s:
     s = s.replace('#define TTY_GRAPHICS', '/* web build: no tty */ #undef TTY_GRAPHICS')
     s += '\n#define WEB_GRAPHICS\n'
     open(p, 'w').write(s)
+# (the game data's folder: kept where the project is now, should it have moved)
+s2 = re.sub(r'#define HACKDIR "[^"]*"', '#define HACKDIR "%s/slashemdir"' % sys.argv[2].replace('\\', '\\\\'), s)
+if s2 != s:
+    open(p, 'w').write(s2)
 p = se + '/sys/share/unixtty.c'
 s = open(p).read()
 if 'WEB_GRAPHICS' not in s:

@@ -468,7 +468,7 @@ web_realm_count(struct obj *chain)
 
 /* the client's id for an object's look: its tile, or for an artifact
    ART_TILE + its number (an artifact shares its base item's tile, but has a
-   LEGO model of its own: tools/build_items.py lists them for the client,
+   brick model of its own: tools/build_items.py lists them for the client,
    which falls back to the base item's look for one without); and for a
    variant with a look of its own, VARIANT_TILE + its number: water you know
    is holy (0) or unholy (1) (items.json "variant"); and armour the hero
@@ -493,13 +493,13 @@ web_obj_tile(struct obj *o, int glyph)
 }
 
 /* u_init.c: what more a character starts with than its role's own kit, from
-   its figure's design (the server's LEGOHACK_KIT: "holy wafer:4,...", name
+   its figure's design (the server's BRICKHACK_KIT: "holy wafer:4,...", name
    and how many): the i-th one's object type, its quantity in *quan; 0 for one
    that names no object, -1 past the last */
 int
 web_kit_item(int i, int *quan)
 {
-    const char *p = getenv("LEGOHACK_KIT");
+    const char *p = getenv("BRICKHACK_KIT");
     char name[BUFSZ];
     int n, k;
 
@@ -545,11 +545,11 @@ web_holy_wine_sip(void)
 
 /* ...and after them: really drunk (confused for hundreds of turns, unsteady
    for a few, out cold past 400), and a follower of the figure's own deity
-   (the server's LEGOHACK_GOD: Jesus, the lawful god) at peace with him */
+   (the server's BRICKHACK_GOD: Jesus, the lawful god) at peace with him */
 void
 web_holy_wine(void)
 {
-    const char *g = getenv("LEGOHACK_GOD");
+    const char *g = getenv("BRICKHACK_GOD");
 
     if (g && *g && u.ualign.type == A_LAWFUL && u.ugangr) {
         u.ugangr = 0;
@@ -571,7 +571,7 @@ web_holy_wine(void)
 }
 
 /* questpgr.c: a line of the intro story, told to a follower of the figure's
-   own deity (the server's LEGOHACK_GOD: Jesus), in Christian canon: written in
+   own deity (the server's BRICKHACK_GOD: Jesus), in Christian canon: written in
    the Scriptures, the cruel god is Satan, the Creator Jesus, and the Amulet's
    hunt is to take back what Satan stole. A line at a time (128 chars at most:
    questpgr.c out_line); a phrase swapped where it's found */
@@ -595,7 +595,7 @@ web_swap(char *line, const char *from, const char *to)
 void
 web_intro_line(char *line)
 {
-    const char *g = getenv("LEGOHACK_GOD");
+    const char *g = getenv("BRICKHACK_GOD");
 
     if (!g || !*g)
         return;
@@ -614,13 +614,13 @@ web_intro_line(char *line)
 }
 
 /* do.c doaltarobj: a chalice set down on an altar by a follower of the
-   figure's own deity (the server's LEGOHACK_GOD: Jesus, the lawful god)
+   figure's own deity (the server's BRICKHACK_GOD: Jesus, the lawful god)
    claims the altar for him, whoever's it was (Moloch's, a high altar too):
    it turns lawful at once, and a temple priest of the old god turns on you */
 void
 web_altar_glass(struct obj *obj)
 {
-    const char *g = getenv("LEGOHACK_GOD");
+    const char *g = getenv("BRICKHACK_GOD");
     struct rm *lev = &levl[u.ux][u.uy];
     struct monst *pri;
 
@@ -639,14 +639,14 @@ web_altar_glass(struct obj *obj)
 }
 
 /* ---- the rites of a follower of the figure's own deity (the server's
-   LEGOHACK_GOD: Jesus, the lawful god), at his altar: in place of burnt
+   BRICKHACK_GOD: Jesus, the lawful god), at his altar: in place of burnt
    offerings (Hebrews 10:10-14: his sacrifice was made once, for all), the
-   Mass (offered by a priest: the server's LEGOHACK_PERKS "mass"), Communion,
+   Mass (offered by a priest: the server's BRICKHACK_PERKS "mass"), Communion,
    alms, confession */
 static const char *
 web_his_name(void)
 {
-    const char *g = getenv("LEGOHACK_GOD");
+    const char *g = getenv("BRICKHACK_GOD");
     return g && *g ? g : 0;
 }
 
@@ -662,7 +662,7 @@ web_rite(const char *cmd)
 static int
 web_perk(const char *p)
 {
-    const char *s = getenv("LEGOHACK_PERKS");
+    const char *s = getenv("BRICKHACK_PERKS");
     return s && strstri(s, p) != 0;
 }
 
@@ -863,12 +863,12 @@ web_altar_wafer(void)
    for each that shattered: thrown, or dropped off an altar), and fills
    chalices with holy wine again: those
    on the altar you pray at (any altar), and for a Catholic priest (the
-   server's LEGOHACK_PERKS: "chalice", from his design) those he carries,
+   server's BRICKHACK_PERKS: "chalice", from his design) those he carries,
    wherever he prays */
 void
 web_fill_glasses(void)
 {
-    const char *perks = getenv("LEGOHACK_PERKS");
+    const char *perks = getenv("BRICKHACK_PERKS");
     struct obj *o, *next;
     long n = 0;
 
@@ -1500,7 +1500,7 @@ flush_vis(void)
 }
 
 /* Piles: the map shows only the top object of a pile, but the client lays
- * every item there on the floor (as LEGO). For each square in sight (yours
+ * every item there on the floor (as brick). For each square in sight (yours
  * too), the tiles of the objects on it, top first, when that changes:
  *   {"t":"piles","p":[[x, y, [tile, ...]], ...]}  ([] : nothing there now) */
 #define PILE_MAX 12
@@ -1745,7 +1745,7 @@ build_status(void)
     fputs(",\"role\":", out);
     jstr(flags.female && urole.name.f ? urole.name.f : urole.name.m);
     /* the hero's gender and the role's own name (as the creation screen lists it),
-       so the client can show the right LEGO figure for a random gender or role */
+       so the client can show the right brick figure for a random gender or role */
     /* twoweap: fighting with two weapons (the "alt" one in the left hand) */
     fprintf(out, ",\"twoweap\":%d", u.twoweap ? 1 : 0);
     /* cantwo: whether you could ever fight with two weapons (your role, your form) */

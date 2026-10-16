@@ -61,13 +61,13 @@ def figure_extras(ldr_text):
     """What the renderers need to know about a figure: an angel's glowing aura
     (mist.js), and its joints for the animation (figure_rig; minifig-anim.js)."""
     ex = {}
-    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK AURA')), None)
-    if line:   # (or '0 !LEGOHACK AURA {json}': its colour, thickness, the end that glows: mist.js addAura)
-        rest = line[len('0 !LEGOHACK AURA'):].strip()
+    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK AURA')), None)
+    if line:   # (or '0 !BRICKHACK AURA {json}': its colour, thickness, the end that glows: mist.js addAura)
+        rest = line[len('0 !BRICKHACK AURA'):].strip()
         ex['aura'] = json.loads(rest) if rest else True
-    if '0 !LEGOHACK LIGHTNING' in ldr_text:   # lightning crackling over it (mist.js addLightning)
+    if '0 !BRICKHACK LIGHTNING' in ldr_text:   # lightning crackling over it (mist.js addLightning)
         ex['lightning'] = True
-    fx = next((l.split()[3] for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK FX ')), None)
+    fx = next((l.split()[3] for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK FX ')), None)
     if fx:   # its element in particles: fire, meteors, frost (mist.js addEffects)
         ex['fx'] = fx
     rig = figure_rig(ldr_text)
@@ -77,11 +77,11 @@ def figure_extras(ldr_text):
 
 
 def figure_groups(ldr_text):
-    """The figure's lines by the joint they move with ('0 !LEGOHACK GROUP <name>'
+    """The figure's lines by the joint they move with ('0 !BRICKHACK GROUP <name>'
     before them; tools/minifig.py), in order: [(name, [lines])]."""
     groups, cur = {}, None
     for l in ldr_text.splitlines():
-        if l.startswith('0 !LEGOHACK GROUP '):
+        if l.startswith('0 !BRICKHACK GROUP '):
             cur = l.split()[3]
             groups.setdefault(cur, [])
         elif cur and (l.startswith('1 ') or l.startswith('0 !TEXMAP') or l.startswith('0 !:')):
@@ -96,7 +96,7 @@ def figure_geom(lib, path, ldr_text):
     one side mist (ghosted). A figure in joints (figure_groups) comes back as
     {joint: geometry}, for to_glb to make a node of each."""
     groups = figure_groups(ldr_text)
-    quantum = '0 !LEGOHACK QUANTUM' in ldr_text
+    quantum = '0 !BRICKHACK QUANTUM' in ldr_text
     if not groups:
         groups = [(None, ldr_text.splitlines())]
     out, i = {}, 0
@@ -134,13 +134,13 @@ def figure_geom(lib, path, ldr_text):
 
 
 def figure_rig(ldr_text):
-    """The figure's joints ('0 !LEGOHACK RIG', LDraw units) in the model's units
+    """The figure's joints ('0 !BRICKHACK RIG', LDraw units) in the model's units
     and axes (as to_glb writes it: studs, Y up, Z to the front), or None."""
-    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK RIG ')), None)
+    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK RIG ')), None)
     if not line:
         return None
     flip = np.array([1, -1, -1])
-    rig = json.loads(line[len('0 !LEGOHACK RIG '):])
+    rig = json.loads(line[len('0 !BRICKHACK RIG '):])
     for j in rig.values():
         j['pivot'] = (np.array(j['pivot']) * SCALE * flip).round(5).tolist()
         if 'axis' in j:
@@ -199,10 +199,10 @@ def split(geom, d, t, code):
 
 
 def ghosted(geom, ldr_text):
-    """A doppelganger: if the model says '0 !LEGOHACK GHOST <side>', everything
+    """A doppelganger: if the model says '0 !BRICKHACK GHOST <side>', everything
     on that side of the middle (x > 0 for side 1, x < 0 for -1) turns to mist.
     Triangles across the middle are cut in two; the shape stays the same."""
-    side = next((float(l.split()[3]) for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK GHOST')), None)
+    side = next((float(l.split()[3]) for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK GHOST')), None)
     if side is None:
         return geom
     return split(geom, (side, 0, 0), 0.0, MIST)
@@ -210,10 +210,10 @@ def ghosted(geom, ldr_text):
 
 def glowing(geom, ldr_text):
     """A glowing end (Sting's blade near its tip): if the model says
-    '0 !LEGOHACK GLOW <dx> <dy> <dz> <fraction> <colour>', the last fraction
+    '0 !BRICKHACK GLOW <dx> <dy> <dz> <fraction> <colour>', the last fraction
     of its length toward (dx, dy, dz) turns to that colour (a translucent one
     glows in the renderers)."""
-    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !LEGOHACK GLOW ')), None)
+    line = next((l for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK GLOW ')), None)
     if line is None or not geom:
         return geom
     dx, dy, dz, frac, code = line.split()[3:8]
@@ -502,7 +502,7 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
     else:
         nodes = [dict({'name': 'figure', 'children': list(range(1, len(named) + 1))}, **root_extras)]
         nodes += [{'name': n, 'mesh': i} for i, (n, _) in enumerate(named)]
-    gltf = {'asset': {'version': '2.0', 'generator': 'legohack ldraw2glb', 'copyright': 'LDraw.org Parts Library, CC BY 2.0/4.0'},
+    gltf = {'asset': {'version': '2.0', 'generator': 'brickhack ldraw2glb', 'copyright': 'LDraw.org Parts Library, CC BY 2.0/4.0'},
             'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': nodes,
             'meshes': meshes, 'materials': materials,
             'accessors': accessors, 'bufferViews': views, 'buffers': [{'byteLength': len(buf)}]}

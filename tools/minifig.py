@@ -35,7 +35,7 @@ a hair's "recolor" does the same for the hair (an elf-hair's printed ears in the
 "neck" can be one part or a list (e.g. a cape and an armour plate); a neck
 item's "turn" (degrees about the vertical) swings it round, e.g. a quiver onto the back.
 
-"skeleton": true builds a LEGO skeleton: "torso" should be 6260 (its pelvis
+"skeleton": true builds a brick skeleton: "torso" should be 6260 (its pelvis
 built in), the arms are bones (6265, claws and all; no hands) hanging from
 its shoulder balls, the legs bones (6266) clipped to its hip axle.
 
@@ -292,7 +292,7 @@ def decal_line(item, pos, mat, base_dir):
 # printed ears in the wearer's skin colour.  Written once, referenced by path.
 LDRAW = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'vendor', 'ldraw', 'ldraw')
 EXTRA = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ldraw-extra')   # our own parts (ldraw2glb.EXTRA)
-DERIVED = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'lego', 'cache', 'derived')
+DERIVED = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'brick', 'cache', 'derived')
 
 
 def _ldraw_file(name):
@@ -337,7 +337,7 @@ def recolored(part, cmap):
 
 
 def booted(part, bands, upper=True):
-    """Path (without .dat) of a leg moulded in two or more colours, as LEGO
+    """Path (without .dat) of a leg moulded in two or more colours, as brick
     makes legs with boots or shoes (dual-moulded): bands [[y, colour], ...],
     each colouring the leg from that height (the leg's own frame, LDU, -Y up:
     the hip pin at -9, the sole at 28) down to the next band's; above the
@@ -404,7 +404,7 @@ def _clip(poly, n, d):
 
 def striped(part, color, count, width=0.35, wave=10.0, top=None, bottom=None, slabs=8):
     """Path (without .dat) of a part moulded with stripes running up and down
-    it, as LEGO prints a watermelon on a head: `count` stripes round its Y
+    it, as brick prints a watermelon on a head: `count` stripes round its Y
     axis, each `width` of the way to the next, in `color`, between heights top
     and bottom (LDU, -Y up; the whole part when None); each stripe sways
     `wave` degrees to and fro as it goes up (cut in `slabs` bands, each turned
@@ -489,12 +489,12 @@ def build(spec, base_dir='.'):
     I = np.eye(3)
     out = [f"0 {spec.get('name', 'Minifig')}"]
     if spec.get('ghost'):   # a doppelganger: one side of the figure is mist (ldraw2glb.ghosted)
-        out.append(f"0 !LEGOHACK GHOST {1 if spec['ghost'] == 'right' else -1}")
+        out.append(f"0 !BRICKHACK GHOST {1 if spec['ghost'] == 'right' else -1}")
     if spec.get('aura'):   # an angel: the renderers wrap the figure in a white glow
-        out.append("0 !LEGOHACK AURA")
+        out.append("0 !BRICKHACK AURA")
     if spec.get('quantum'):   # a quantum mechanic: every part a plain colour, strobing (ldraw2glb.figure_geom)
-        out.append("0 !LEGOHACK QUANTUM")
-    G = lambda g: out.append(f'0 !LEGOHACK GROUP {g}')   # what follows moves with this joint (animation)
+        out.append("0 !BRICKHACK QUANTUM")
+    G = lambda g: out.append(f'0 !BRICKHACK GROUP {g}')   # what follows moves with this joint (animation)
     G('body')
     if spec.get('torsoDecal'):   # a picture on the chest
         out.append(decal_line({'part': spec.get('torso', '973'), 'decal': spec['torsoDecal']}, np.zeros(3), I, base_dir))
@@ -544,7 +544,7 @@ def build(spec, base_dir='.'):
             out.append(line(plume.get('color', 4), np.add((0, -24, 0), socket), I, plume.get('part', '87694')))
     G('body')
     if spec.get('dress'):
-        # a long dress, the classic LEGO way: no hips or legs, the torso straight on
+        # a long dress, the classic brick way: no hips or legs, the torso straight on
         # a sloped brick's top studs, turned round so its slope is at the back
         R180 = np.diag([-1.0, 1, -1])
         if spec['dress'].get('decal'):   # a print down its front (its flat side, turned to the front: its own back)
@@ -610,7 +610,7 @@ def build(spec, base_dir='.'):
         j['pivot'][1] += dy
         if 'grip' in j:
             j['grip']['pos'][1] += dy
-    out.insert(1, '0 !LEGOHACK RIG ' + json.dumps(rig, separators=(',', ':')))
+    out.insert(1, '0 !BRICKHACK RIG ' + json.dumps(rig, separators=(',', ':')))
     if spec.get('marble'):   # a statue: every part marble, its prints carved in one faint colour
         m = spec['marble']
         keep = set(m.get('keep', []))

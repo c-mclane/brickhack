@@ -3,15 +3,15 @@
 
   build_roster.py
 
-Reads web/assets/lego/roster.json (figure names, in shelf order) and each
-recipe in web/assets/lego/figs/, and writes:
-  web/assets/lego/roster/<name>.glb   the figure (rebuilt only when it changed)
-  web/assets/lego/roster.built.json   [{id, label, url}] for the client
-and the dungeon's LEGO pieces (DUNGEON_PARTS) as web/assets/lego/parts/<name>.glb.
+Reads web/assets/brick/roster.json (figure names, in shelf order) and each
+recipe in web/assets/brick/figs/, and writes:
+  web/assets/brick/roster/<name>.glb   the figure (rebuilt only when it changed)
+  web/assets/brick/roster.built.json   [{id, label, url}] for the client
+and the dungeon's brick pieces (DUNGEON_PARTS) as web/assets/brick/parts/<name>.glb.
 
-Monsters made in LEGO (web/assets/lego/monsters.json: {"<NetHack name>":
+Monsters made in brick (web/assets/brick/monsters.json: {"<NetHack name>":
 {"fig": recipe, "hold": an item of items.json in its right hand}}) are built
-the same way, listed in web/assets/lego/monsters.built.json for the client.
+the same way, listed in web/assets/brick/monsters.built.json for the client.
 """
 import hashlib, json, os, sys
 
@@ -19,9 +19,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import ldraw2glb, minifig, wardrobe
 
-LEGO = os.path.join(HERE, '..', 'web', 'assets', 'lego')
-OUT = os.path.join(LEGO, 'roster')
-PARTS = os.path.join(LEGO, 'parts')
+ASSETS = os.path.join(HERE, '..', 'web', 'assets', 'brick')
+OUT = os.path.join(ASSETS, 'roster')
+PARTS = os.path.join(ASSETS, 'parts')
 
 # The dungeon's pieces, as LDraw models (origin: the top middle of the frame).
 # A 1x4x6 door frame (60596) with its door (60616a) on the frame's hinge pins
@@ -48,7 +48,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     colors = ldraw2glb.load_colors(ldraw2glb.LDRAW)
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
-    figs = os.path.join(LEGO, 'figs')
+    figs = os.path.join(ASSETS, 'figs')
     built = []
 
     def figure(name, character=True):
@@ -67,9 +67,9 @@ def main():
             open(ldr_path, 'w').write(ldr)
             print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.figure_geom(lib, ldr_path, ldr), colors, 71, glb, ldraw2glb.figure_extras(ldr))} tris')
             open(keyfile, 'w').write(key)
-        return spec, f'assets/lego/roster/{name}.glb?v={key}'
+        return spec, f'assets/brick/roster/{name}.glb?v={key}'
 
-    for name in json.load(open(os.path.join(LEGO, 'roster.json'))):
+    for name in json.load(open(os.path.join(ASSETS, 'roster.json'))):
         spec, url = figure(name)
         full = wardrobe.recipe(name)   # (as designed: its hands not emptied)
         built.append({'id': name, 'label': spec.get('label', name), 'url': url,
@@ -77,7 +77,7 @@ def main():
                       'race': spec.get('race', 'human'),
                       # more it starts the game with than its role's own kit ("holy wafer:4,..."): winweb.c web_kit_item
                       **({'kit': spec['kit']} if spec.get('kit') else {}),
-                      # its own deity ("Jesus": winweb's LEGOHACK_GOD, role.c) and gifts ("chalice": winweb.c web_fill_glasses)
+                      # its own deity ("Jesus": winweb's BRICKHACK_GOD, role.c) and gifts ("chalice": winweb.c web_fill_glasses)
                       **({k: spec[k] for k in ('god', 'perks') if spec.get(k)}),
                       # the slots its design fills: starting gear shows only where it takes the place of something
                       'slots': {'helm': bool(full.get('hat')),
@@ -86,13 +86,13 @@ def main():
                                 'shield': bool(full.get('left')),
                                 'suit': any(wardrobe.is_armour(n) for n in wardrobe.necklist(full)),
                                 'boots': bool(full.get('boots'))}})
-    json.dump(built, open(os.path.join(LEGO, 'roster.built.json'), 'w'), indent=1)
+    json.dump(built, open(os.path.join(ASSETS, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
     mons = {}
-    for mon, m in json.load(open(os.path.join(LEGO, 'monsters.json'))).items():
+    for mon, m in json.load(open(os.path.join(ASSETS, 'monsters.json'))).items():
         mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold')}
-    json.dump(mons, open(os.path.join(LEGO, 'monsters.built.json'), 'w'), indent=1)
-    print(f'monsters in LEGO: {len(mons)}')
+    json.dump(mons, open(os.path.join(ASSETS, 'monsters.built.json'), 'w'), indent=1)
+    print(f'monsters in brick: {len(mons)}')
     os.makedirs(PARTS, exist_ok=True)
     for name, ldr in DUNGEON_PARTS.items():
         glb, src, keyfile = (os.path.join(PARTS, name + ext) for ext in ('.glb', '.ldr', '.key'))

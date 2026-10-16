@@ -5,7 +5,7 @@ spellbook, wand, coin, gem, rock, ball, chain, venom.
 
 The same name can be more than one object (a potion and a ring of see
 invisible, a potion and a spellbook of healing): what an item is goes by its
-class too (tiles2png.py writes each tile's; build_items.py each LEGO item's,
+class too (tiles2png.py writes each tile's; build_items.py each brick item's,
 so the client matches a tile only with an item of its own class)."""
 import re
 

@@ -1,12 +1,12 @@
 // What metal reflects: a soft sky-to-ground gradient (sky above, a bright band at
-// the horizon, dark stone below). Chrome LEGO (ldraw2glb.py: fully metallic,
+// the horizon, dark stone below). Chrome brick (ldraw2glb.py: fully metallic,
 // smooth) has no colour of its own to show but what's around it; with nothing
 // to reflect it would be black. Only metal gets it: plastic is lit as ever.
 //
 //   gradientEnvironment(THREE, renderer): a three.js environment map of it
 //     (prefiltered, for rough and smooth metal alike), for envMap
 //   ENV_GLSL: the same gradient as a GLSL function, envGrad(up), for a
-//     renderer of our own (lego.js): up, the reflected ray's height (-1..1)
+//     renderer of our own (brick.js): up, the reflected ray's height (-1..1)
 
 export const ENV = { sky: [0.42, 0.58, 0.86], horizon: [1.8, 1.7, 1.5], ground: [0.05, 0.045, 0.04] }; // (the horizon past white: a glint)
 

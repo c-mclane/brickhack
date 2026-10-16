@@ -14,10 +14,10 @@ import { NameTags, nameTagEntries } from './nametags.js';
 import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
-import { figureMatrix, FIG_HEIGHT } from './lego.js';
+import { figureMatrix, FIG_HEIGHT } from './brick.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
-import { loadLegoItems, legoItemForTile, gameTile, setStartPieces, isStartTile, onIcons } from './legoitems.js';
+import { loadBrickItems, brickItemForTile, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -393,7 +393,7 @@ function setDream(on) {
   setSky();
   world.dirty = true;
 }
-// BrickHack's dungeon is a LEGO maze out in the open, under a blue sky, and
+// BrickHack's dungeon is a brick maze out in the open, under a blue sky, and
 // Dreamland is in daylight too, until the Fountain of Dreams: night from
 // there on, the stars all round, above and below
 function setSky() {
@@ -616,13 +616,13 @@ async function init() {
   renderer.setAtlas(img, meta, await loadMonsterArt(meta));
   game.tilesets = await availableTilesets();
   loadHorizon();
-  document.documentElement.style.setProperty('--bgtile', `url(${legoPlateTile()})`);
+  document.documentElement.style.setProperty('--bgtile', `url(${brickPlateTile()})`);
   buildScreens();
-  // the items made in LEGO (legoitems.js): their models for the floor, their pictures for the slots
+  // the items made in brick (brickitems.js): their models for the floor, their pictures for the slots
   // (the items' pictures are drawn as the page loads, what's on screen first: redraw as they come)
   onIcons(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
-  loadLegoItems().then(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
-  loadLegoMonsters();
+  loadBrickItems().then(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
+  loadBrickMonsters();
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
   requestAnimationFrame(frame);
   // music can only start after the first click or key press (browser autoplay rules)
@@ -749,12 +749,12 @@ function handle(m) {
       ui.askLine('#', { list: game.ext }, (v) => { post(v ? 'E' + v.replace(/^[#/]/, '').trim() : 'X'); relock(); });
       break;
     case 'throw': { // the hero threw something: flown in an arc, to bounce and tumble to rest (throwfx.js)
-      const l = legoItemForTile(m.tile);
+      const l = brickItemForTile(m.tile);
       if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty);
       break;
     }
     case 'shatter': { // something broke there: shards
-      const l = legoItemForTile(m.tile);
+      const l = brickItemForTile(m.tile);
       if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.shatter(l.url, m.x, m.y, l.oc === 'potion'); // (a potion splashes too)
       break;
     }
@@ -854,9 +854,9 @@ function onGameOver() {
   game.rip = null;
 }
 
-// The menus' background: a LEGO plate seen from above, 4x4 studs to a tile
+// The menus' background: a brick plate seen from above, 4x4 studs to a tile
 // (dark bluish grey, each stud lit from the top left and casting a shadow)
-function legoPlateTile(size = 128) {
+function brickPlateTile(size = 128) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const x = c.getContext('2d'), s = size / 4, r = s * 0.3;
@@ -913,11 +913,11 @@ const CONTROLS = [
 
 function buildScreens() {
   $('#title .splash').textContent = SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
-  // every menu stands on a 3D LEGO baseplate; the title has BRICKHACK built on it
+  // every menu stands on a 3D brick baseplate; the title has BRICKHACK built on it
   const shown = (id) => !$('#' + id).classList.contains('hidden');
   const plated = SCREENS.filter((id) => $('#' + id).classList.contains('dirt'));
   if (menuPlate($('#menu-plate'), $('#title .logo-slot'), () => ({ plate: plated.some(shown), title: shown('title') })))
-    document.body.classList.add('lego3d');
+    document.body.classList.add('brick3d');
   else $('#title .logo').classList.add('no-gl');
   $('#title [data-act=singleplayer]').onclick = openWorlds;
   // Reset Game: delete every save, block world and bones (after a confirmation)
@@ -1140,7 +1140,7 @@ function drawOptions() {
   $('#options [data-opt=wallStyle]').textContent = `Wall blocks: ${opts.wallStyle === 'brick' ? 'Brick tile' : 'Exact wall tiles'}`;
   const ts = (game.tilesets || TILESETS).find((t) => t.id === opts.tileset) || TILESETS[0];
   $('#options [data-opt=tileset]').textContent = `Tileset: ${ts.label}`;
-  $('#options [data-opt=playerModel]').textContent = `Player: ${opts.playerModel === 'model' ? 'LEGO minifig' : 'Game sprite'}`;
+  $('#options [data-opt=playerModel]').textContent = `Player: ${opts.playerModel === 'model' ? 'Brick figure' : 'Game sprite'}`;
   const f = $('#options [data-opt=fov]');
   f.value = opts.fov;
   f.nextElementSibling.textContent = `FOV: ${opts.fov}`;
@@ -1224,7 +1224,7 @@ const creator = { file: null, url: null, removeBg: true, palette: true };
 const skinTile = () => meta.count; // first free slot in the tile atlas
 
 
-// ---- the hero as a LEGO minifig (on LEGO levels), chosen at character creation
+// ---- the hero as a brick minifig (on brick levels), chosen at character creation
 // (by the name as the server keeps it: server.js cleanName, so "Knight of St. Lazarus" is KnightofStLazarus)
 const FIG_KEY = (name) => 'lh.fig.' + (String(name || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 30) || 'Steve').toLowerCase();
 const hero3d = { id: null, prims: null, anim: null, jabT0: -1 };
@@ -1254,7 +1254,7 @@ async function loadHeroFigure(name, who) {
   hero3d.id = fig.id;
   hero3d.url = url;
   hero3d.prims = null;
-  try { hero3d.prims = await renderer.lego.model(url); } catch (e) { console.warn('hero figure:', e); }
+  try { hero3d.prims = await renderer.figRender.model(url); } catch (e) { console.warn('hero figure:', e); }
   // the figure comes alive (minifig-anim.js): a big stretch as you arrive, then breathing, looking about...
   hero3d.anim = hero3d.prims && hero3d.prims.rig ? new FigureAnimator(hero3d.prims.rig) : null;
   if (hero3d.anim) hero3d.anim.spawn();
@@ -1268,7 +1268,7 @@ let heroView = null;
 // a list, comma-separated. A new character looks just as designed: the pieces
 // it was designed with ARE the gear it starts wearing (a knight's helmet, his
 // shield). Take a starting piece off and its designed piece goes with it
-// ("strip:<slot>"); anything else you put on shows (items made in LEGO to be
+// ("strip:<slot>"); anything else you put on shows (items made in brick to be
 // worn: items.json "wear"), in its slot. (A designed shield is put back in
 // hand while you wear the one you started with: "design:shield", the roster's
 // figures being built empty-handed.)
@@ -1296,13 +1296,13 @@ function wornHelm() {
   return WORN_SLOTS.map((slot) => {
     const h = game.inv.find((i) => i.w === slot);
     if (h && isStartTile(h.t)) { // armour it started with: its design's own piece shows (where the design has one; else as ever)
-      const l = legoItemForTile(h.t);
+      const l = brickItemForTile(h.t);
       if (l && l.start) return slot === 'shield' && slots.shield ? 'design:shield' : '';
       return l && l.wear ? l.name : '';
     }
     if (h && start.items[h.l]) return slot === 'shield' && slots.shield ? 'design:shield' : ''; // as designed
     if (!h) return start.claimed.includes(slot) && slots[slot] ? 'strip:' + slot : ''; // its starting piece taken off
-    const l = legoItemForTile(h.t);
+    const l = brickItemForTile(h.t);
     return l && l.wear ? l.name : '';
   }).filter(Boolean).join(',');
 }
@@ -1316,35 +1316,35 @@ async function redressHero() {
   const url = (await customFigureUrl(hero3d.fig.id, hero3d.parts, wear)) || hero3d.fig.url;
   if (hero3d.wear !== wear || url === hero3d.url) return; // (changed again meanwhile)
   let prims = null;
-  try { prims = await renderer.lego.model(url); } catch (e) { console.warn('hero figure:', e); return; }
+  try { prims = await renderer.figRender.model(url); } catch (e) { console.warn('hero figure:', e); return; }
   if (hero3d.wear !== wear) return;
   hero3d.url = url;
   hero3d.prims = prims;
   hero3d.anim = prims && prims.rig ? new FigureAnimator(prims.rig) : null;
   if (heroView) heroView.show(url);
 }
-// the minifig stands in for the doll and the hero's sprite on LEGO levels
+// the minifig stands in for the doll and the hero's sprite on brick levels
 const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
 
-// What the hero has in each hand, as LEGO: {R, L}, each an item's url;
-// null: nothing in that hand; undefined: something not made in LEGO yet (the
+// What the hero has in each hand, as brick: {R, L}, each an item's url;
+// null: nothing in that hand; undefined: something not made in brick yet (the
 // figure keeps what it was built holding). The left hand only while fighting
 // with two weapons (the "alt" weapon); otherwise it's left as built (a shield...).
-const heldPrims = new Map(); // url -> the item's prims for lego.js (loading: null)
+const heldPrims = new Map(); // url -> the item's prims for brick.js (loading: null)
 function heroHold() {
   const wep = game.inv.find((i) => i.w === 'weapon');
   const two = !!(ui.stat && ui.stat.twoweap);
   const alt = two ? game.inv.find((i) => i.w === 'alt') : null;
-  const as = (it) => { const l = legoItemForTile(it.t); return l ? l.url : undefined; };
+  const as = (it) => { const l = brickItemForTile(it.t); return l ? l.url : undefined; };
   const hold = { R: wep ? as(wep) : null, L: alt ? as(alt) : undefined, two };
   for (const url of [hold.R, hold.L])
     if (url && !heldPrims.has(url)) {
       heldPrims.set(url, null);
-      renderer.lego.model(url).then((p) => heldPrims.set(url, p)).catch(() => {});
+      renderer.figRender.model(url).then((p) => heldPrims.set(url, p)).catch(() => {});
     }
   return hold;
 }
-// lego.js entries for what's held, on a figure drawn at `matrix` with its
+// brick.js entries for what's held, on a figure drawn at `matrix` with its
 // hands' joint matrices `hands` ({R, L}): each item at its hand's grip
 function heldEntries(hold, rig, matrix, hands) {
   const out = [];
@@ -1370,30 +1370,30 @@ function heroPose(dt, now) {
     holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two });
 }
 
-// ---- monsters made in LEGO (web/assets/lego/monsters.json, built by
+// ---- monsters made in brick (web/assets/brick/monsters.json, built by
 // tools/build_roster.py): drawn as their minifig in place of their sprite,
 // alive as the hero is (breathing, looking about, walking, swinging what
 // they hold when they lunge at you), always facing you
-const legoMons = new Map(); // tile -> {url, hold (an item's url), prims, anim, lungeT0, last}
-async function loadLegoMonsters() {
+const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, anim, lungeT0, last}
+async function loadBrickMonsters() {
   const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
-  const [mons, tiles, items] = await Promise.all([get('assets/lego/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/lego/items.built.json')]);
+  const [mons, tiles, items] = await Promise.all([get('assets/brick/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/brick/items.built.json')]);
   (tiles.names || []).forEach((n, i) => {
     const m = mons[n];
     if (!m) return;
     const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, anim: null, lungeT0: null, last: null };
-    legoMons.set(i, e);
-    renderer.lego.model(m.url).then((p) => { e.prims = p; e.anim = p && p.rig ? new FigureAnimator(p.rig) : null; if (e.anim) e.anim.spawn(); })
-      .catch((err) => console.warn('LEGO monster:', n, err));
+    brickMons.set(i, e);
+    renderer.figRender.model(m.url).then((p) => { e.prims = p; e.anim = p && p.rig ? new FigureAnimator(p.rig) : null; if (e.anim) e.anim.spawn(); })
+      .catch((err) => console.warn('brick monster:', n, err));
   });
 }
-// take the LEGO monsters' sprites out of the list; their figures, for renderer.legoFigures
-function legoMonFigures(sprites, dt, now) {
-  if (!legoMons.size) return [];
+// take the brick monsters' sprites out of the list; their figures, for renderer.brickFigures
+function brickMonFigures(sprites, dt, now) {
+  if (!brickMons.size) return [];
   const out = [];
   const [hx, hz] = motion.heroPos(now);
   for (let i = sprites.length - 1; i >= 0; i--) {
-    const s = sprites[i], e = s.mon && legoMons.get(s.tile);
+    const s = sprites[i], e = s.mon && brickMons.get(s.tile);
     if (!e || !e.prims) continue;
     sprites.splice(i, 1);
     const f = s.mob && fx.mobFX && fx.mobFX.get(s.mob.id);
@@ -1465,7 +1465,7 @@ function project(p) {
   return [((nx + 1) / 2) * c.clientWidth, ((1 - ny) / 2) * c.clientHeight];
 }
 
-const showDoll = () => false; // (BrickHack: the hero is a LEGO minifig, never the Minecraft doll)
+const showDoll = () => false; // (BrickHack: the hero is a brick minifig, never the Minecraft doll)
 
 function dollQuads(out, now) {
   const [hx, hz] = motion.heroPos(now);
@@ -2201,7 +2201,7 @@ function frame(t) {
     world.spriteScale = world.dream ? 1 : FIG_HEIGHT / 2.0; // a human-sized monster stands as tall as you
     world.camYaw = cam.vyaw; // creatures face the way they walk, as seen from here
     const sprites = world.sprites(opts.camera !== 0 && !doll3d && !fig3d, motion, t, fx);
-    renderer.legoItems = world.legoDrops || [];
+    renderer.brickItems = world.brickDrops || [];
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
     if (world.hearth && renderer.slots) sprites.push(...hearthSprites(world.hearth, t, renderer.slots));
     if (world.portal && renderer.slots) sprites.push(...portalSprites(world.portal, t, renderer.slots));
@@ -2219,12 +2219,12 @@ function frame(t) {
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
       const m = figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
-      renderer.legoFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
-        // (for the block levels' renderer, lego.js; the LEGO dungeon's hangs them on the hands itself)
+      renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
+        // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL }) : [])];
-    } else renderer.legoFigures = [];
-    renderer.legoFigures.push(...legoMonFigures(sprites, dt, t)); // (King Skelly...)
-    // first person: your own LEGO arm, and what it holds, in the corner of the
+    } else renderer.brickFigures = [];
+    renderer.brickFigures.push(...brickMonFigures(sprites, dt, t)); // (King Skelly...)
+    // first person: your own brick arm, and what it holds, in the corner of the
     // view; fighting with two weapons, your left one too, in the other corner
     const fpOn = !!pose && !!rig && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
     const vc = $('#view'), aspect = vc.clientWidth / Math.max(1, vc.clientHeight);
@@ -2250,7 +2250,7 @@ function frame(t) {
     updateHeld(t);
     fx.updateLabels(t, project);
     updateNameTags(t);
-    renderer.fogRange = !world.dream ? [1e4, 2e4] : opts.camera === 3 ? [30, 60] : [45, 150]; // (no fog on LEGO levels, as in the viewer)
+    renderer.fogRange = !world.dream ? [1e4, 2e4] : opts.camera === 3 ? [30, 60] : [45, 150]; // (no fog on brick levels, as in the viewer)
     let outline = null, color = [0, 0, 0, 1], cracks = null;
     if (game.playing) {
       if (game.mode === 'getpos' && game.cursor) {

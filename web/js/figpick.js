@@ -1,17 +1,17 @@
-// Character select: the LEGO minifig picker.  A turning 3D preview of the
+// Character select: the brick minifig picker.  A turning 3D preview of the
 // chosen figure, with arrows to cycle through the figures for the chosen role
 // and gender (tools/build_roster.py) and the figure's name.  Your pick is
 // your hero.  Beside it, the wardrobe: arrows to swap any part for one from
-// web/assets/lego/wardrobe.json (the game server builds the result:
+// web/assets/brick/wardrobe.json (the game server builds the result:
 // /api/figure), and a button back to the figure as it comes.
 
-import { Lego, figureMatrix, perspective, lookAt, loadGLB, FIG_FEET } from './lego.js';
+import { BrickRenderer, figureMatrix, perspective, lookAt, loadGLB, FIG_FEET } from './brick.js';
 import { FigureAnimator } from './minifig-anim.js';
 
 let rosterP = null;
 export function loadRoster() {
   if (!rosterP)
-    rosterP = fetch('assets/lego/roster.built.json', { cache: 'no-store' })
+    rosterP = fetch('assets/brick/roster.built.json', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : []))
       .catch(() => []);
   return rosterP;
@@ -23,7 +23,7 @@ const PARTS = 'lh.fig.parts.last'; // the wardrobe choices last made
 let wardrobeP = null;
 export function loadWardrobe() {
   if (!wardrobeP)
-    wardrobeP = fetch('assets/lego/wardrobe.json', { cache: 'no-store' })
+    wardrobeP = fetch('assets/brick/wardrobe.json', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null);
   return wardrobeP;
@@ -51,8 +51,8 @@ const lset = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
 export function figureView(canvas, visible) {
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: true, premultipliedAlpha: false });
   if (!gl) return null;
-  const lego = new Lego(gl);
-  lego.fogRange = [100, 200];
+  const brick = new BrickRenderer(gl);
+  brick.fogRange = [100, 200];
   let prims = null, want = null, spin = 0, last = performance.now(), anim = null;
   let fit = { lo: 0, hi: 2.9 }; // the figure's height range (feet to the top of a hat, flame...)
   const frame = (now) => {
@@ -78,7 +78,7 @@ export function figureView(canvas, visible) {
     const proj = perspective(fov, w / h, 0.1, 50 + dist);
     const view = lookAt([0, mid + dist * 0.07, dist], [0, mid, 0]);
     const pose = anim ? anim.update(dt) : null;
-    lego.draw(proj, view, [{ prims, matrix: figureMatrix(0, 0, 0, yaw, PREVIEW_SCALE), shade: 1.05, pose }]);
+    brick.draw(proj, view, [{ prims, matrix: figureMatrix(0, 0, 0, yaw, PREVIEW_SCALE), shade: 1.05, pose }]);
   };
   requestAnimationFrame(frame);
   return {
@@ -89,7 +89,7 @@ export function figureView(canvas, visible) {
       spin = 0; // each new figure starts facing you
       if (!url) return true;
       try {
-        const [p, raw] = await Promise.all([lego.model(url), loadGLB(url)]);
+        const [p, raw] = await Promise.all([brick.model(url), loadGLB(url)]);
         if (want !== url) return true;
         let lo = Infinity, hi = -Infinity;
         for (const q of raw) for (let i = 1; i < q.pos.length; i += 3) { lo = Math.min(lo, q.pos[i]); hi = Math.max(hi, q.pos[i]); }
@@ -144,7 +144,7 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
       if (n !== shown) return;
       label.textContent = f.label;
     }
-    if (!(await view.show(url)) && n === shown) label.textContent = `${f.label} (missing: run npm run lego)`;
+    if (!(await view.show(url)) && n === shown) label.textContent = `${f.label} (missing: run npm run bricks)`;
   };
 
   // the wardrobe: a row per category, its arrows going through the options
@@ -208,7 +208,7 @@ export function setupFigurePicker(root, visible, onChange = () => {}) {
   };
   loadRoster().then((r) => {
     all = r;
-    if (!all.length) { label.textContent = 'No figures built (npm run lego)'; return; }
+    if (!all.length) { label.textContent = 'No figures built (npm run bricks)'; return; }
     choose();
   });
 

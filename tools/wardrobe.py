@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Minifig customization: a roster figure with parts from the wardrobe swapped in.
 
-web/assets/lego/wardrobe.json lists, per category (hat, hair, head, torso,
+web/assets/brick/wardrobe.json lists, per category (hat, hair, head, torso,
 hands, pants, belt, cape, armor), options that each set some recipe keys
 (tools/minifig.py). A choice {category: option id} replaces everything the
 figure had in that category. What makes a race what it is stays: an angel's
@@ -13,8 +13,8 @@ what the game gives it to wield.
 import json, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-LEGO = os.path.join(HERE, '..', 'web', 'assets', 'lego')
-FIGS = os.path.join(LEGO, 'figs')
+ASSETS = os.path.join(HERE, '..', 'web', 'assets', 'brick')
+FIGS = os.path.join(ASSETS, 'figs')
 
 # the recipe keys each category owns
 KEYS = {
@@ -120,7 +120,7 @@ def stripped(spec, slot):
 
 
 def load_wardrobe():
-    return json.load(open(os.path.join(LEGO, 'wardrobe.json')))
+    return json.load(open(os.path.join(ASSETS, 'wardrobe.json')))
 
 
 def recipe(fig_id):

@@ -2,13 +2,13 @@
 """The prints on army rations, in military stencil, black, cut by the
 stencil's bridges as sprayed on an army box or can, seen from above:
 
-  ration_prints.py   -> web/assets/lego/decals/k-ration.png   a K on a 1 x 2 tile (the K-ration's box)
-                        web/assets/lego/decals/c-ration.png   a C on a round 1 x 1 tile (the C-ration's can lid)
+  ration_prints.py   -> web/assets/brick/decals/k-ration.png   a K on a 1 x 2 tile (the K-ration's box)
+                        web/assets/brick/decals/c-ration.png   a C on a round 1 x 1 tile (the C-ration's can lid)
 """
 import os
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'lego', 'decals')
+OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'brick', 'decals')
 W, H = 512, 256   # (the tile is twice as long as it is wide)
 INK = (24, 24, 20, 235)
 

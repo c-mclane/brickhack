@@ -1,4 +1,4 @@
-// Thrown things, in a little physics of their own (BrickWorld: LEGO levels).
+// Thrown things, in a little physics of their own (BrickWorld: brick levels).
 // The engine says what was thrown (by the hero or a monster), from where, and
 // where its flight stopped (winweb.c web_throw, web_mthrow_end); we fly it
 // there in a slow, lofted arc, tumbling. Every square of the dungeon is a box:
@@ -12,7 +12,7 @@
 // the floor and the target square's four walls, with bounce and friction.
 
 import * as THREE from 'three';
-import { MODEL_SCALE, STUD_H } from './lego.js';
+import { MODEL_SCALE, STUD_H } from './brick.js';
 
 const G = -9; // gravity, squares per second²
 const STEP = 1 / 240; // the simulation's step

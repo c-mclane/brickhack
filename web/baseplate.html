@@ -1,5 +1,5 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>LegoHack scene</title>
+<html><head><meta charset="utf-8"><title>BrickHack scene</title>
 <style>
 html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px system-ui,sans-serif}
 #status{position:fixed;left:10px;bottom:10px;padding:4px 9px;border-radius:6px;background:#0008;color:#fff;transition:background .3s}
@@ -13,7 +13,7 @@ html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px syst
 <div id="status">connecting...</div>
 <button id="music">&#9834; play music</button>
 <script type="module">
-// Live view of web/assets/lego/scene.built.json: polls it every second and
+// Live view of web/assets/brick/scene.built.json: polls it every second and
 // rebuilds the scene whenever it changes, keeping the camera where it is.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -52,7 +52,7 @@ function model(url) {
       // a doppelganger's other half is shimmering mist
       if (isMist(o.material)) { mistify(o); return; }
       if (quantumPart(o.material) !== null) strobify(o);
-      // translucent LEGO (flames, ice) glows, as in the game
+      // translucent brick (flames, ice) glows, as in the game
       if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
     });
     addAura(THREE, g.scene); // an angel's glow
@@ -72,7 +72,7 @@ const status = document.getElementById('status');
 let version = null, camKey = null;
 
 // NetHack's own sprites (assets/slashem/tiles.png), laid flat beside their
-// LEGO versions: the sheet with its key colour made see-through
+// brick versions: the sheet with its key colour made see-through
 const TILE_KEY = [71, 108, 108];
 let tileSheet = null;
 function tiles() {
@@ -146,7 +146,7 @@ async function apply(data) {
 
 async function poll() {
   try {
-    const data = await (await fetch('assets/lego/scene.built.json', { cache: 'no-store' })).json();
+    const data = await (await fetch('assets/brick/scene.built.json', { cache: 'no-store' })).json();
     if (data.version !== version) {
       const first = version === null;
       version = data.version;

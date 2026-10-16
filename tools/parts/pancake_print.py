@@ -3,12 +3,12 @@
 above on a round 2 x 2 tile: a pool of maple syrup spreading from the middle
 with runs reaching for the edge, glossy, and a pat of butter melting on top.
 
-  pancake_print.py   -> web/assets/lego/decals/pancake.png
+  pancake_print.py   -> web/assets/brick/decals/pancake.png
 """
 import math, os
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'lego', 'decals', 'pancake.png')
+OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'brick', 'decals', 'pancake.png')
 S = 256
 SYRUP, SYRUP_DARK, GLOSS = (176, 92, 18, 235), (124, 58, 10, 235), (255, 214, 150, 200)
 BUTTER, BUTTER_SIDE, BUTTER_LIGHT = (252, 232, 150, 255), (222, 196, 104, 255), (255, 248, 210, 255)

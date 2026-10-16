@@ -10,7 +10,7 @@ the front of a bottle or flask, drawn over the glass's own colour:
 import math, os, random
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'lego', 'decals')
+OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'brick', 'decals')
 S = 256
 RIM, SHINE = (255, 255, 255, 210), (255, 255, 255, 255)
 

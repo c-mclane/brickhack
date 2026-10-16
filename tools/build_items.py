@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the LEGO versions of NetHack's items (web/assets/lego/items.json).
+"""Build the brick versions of NetHack's items (web/assets/brick/items.json).
 
   build_items.py
 
@@ -7,8 +7,8 @@ Each item's parts, as they'd be held (held_ldr): its grip at the origin, a
 blade pointing up (LDraw: -Y), its flat toward +X, so the same model serves
 for an item in a hand (a figure's rig has each hand's grip: minifig.grip_frame)
 and, laid down by the game, on the floor (brickworld.js). Writes
-  web/assets/lego/items/<name>.glb      (rebuilt only when it changed)
-  web/assets/lego/items.built.json      {name: {url, lego}}
+  web/assets/brick/items/<name>.glb      (rebuilt only when it changed)
+  web/assets/brick/items.built.json      {name: {url, brick}}
 """
 import hashlib, json, os, re, sys
 
@@ -17,8 +17,8 @@ sys.path.insert(0, HERE)
 import ldraw2glb, minifig, objclasses
 import numpy as np
 
-LEGO = os.path.join(HERE, '..', 'web', 'assets', 'lego')
-OUT = os.path.join(LEGO, 'items')
+ASSETS = os.path.join(HERE, '..', 'web', 'assets', 'brick')
+OUT = os.path.join(ASSETS, 'items')
 
 
 def held_ldr(item):
@@ -62,7 +62,7 @@ def boot_parts(boots):
 
 SLASHEM = os.path.join(HERE, '..', 'vendor', 'SlashEM')
 # an item named as the game names it ("ring of see invisible"): the client looks
-# up a ring's tile by that name (legoitems.js), as a potion of see invisible
+# up a ring's tile by that name (brickitems.js), as a potion of see invisible
 # goes by its own
 PREFIX = {'ring': 'ring of ', 'wand': 'wand of ', 'spellbook': 'spellbook of ', 'scroll': 'scroll of '}
 ART_TILE = 90000   # the game sends an artifact as ART_TILE + its number (port/winweb.c web_obj_tile)
@@ -100,7 +100,7 @@ def main():
     for n, _, c in objclasses.objects(SLASHEM):
         classes.setdefault(n, set()).add(c)
     art_num = {name: n for n, (name, base) in arts.items()}
-    for name, item in json.load(open(os.path.join(LEGO, 'items.json'))).items():
+    for name, item in json.load(open(os.path.join(ASSETS, 'items.json'))).items():
         if 'parts' not in item and item.get('wear', {}).get('boots'):
             item = dict(item, parts=boot_parts(item['wear']['boots']))
         ldr = held_ldr(item)
@@ -113,7 +113,7 @@ def main():
                       **({'fx': item['fx']} if item.get('fx') else {})) or None   # (its element in particles: mist.js addEffects)
         glow = item.get('glow')   # its tip glowing: {"fraction": of its length from the tip, "color": a translucent one}
         if glow:   # (held, its tip is up: -Y)
-            ldr = f"0 !LEGOHACK GLOW 0 -1 0 {glow['fraction']} {glow['color']}\n" + ldr
+            ldr = f"0 !BRICKHACK GLOW 0 -1 0 {glow['fraction']} {glow['color']}\n" + ldr
         prints = ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in ldr.splitlines() if l.startswith('0 !TEXMAP'))
         key = hashlib.sha1((ldr + ldraw2glb.extra_stamp(ldr) + prints + json.dumps(extras)).encode()).hexdigest()[:12]   # (a hand-made part or a print changed: rebuild)
         slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
@@ -122,7 +122,7 @@ def main():
             open(src, 'w').write(ldr)
             print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.glowing(lib.parse(src), ldr), colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
-        built[name] = {'url': f'assets/lego/items/{slug}.glb?v={key}', 'lego': item.get('lego', '')}
+        built[name] = {'url': f'assets/brick/items/{slug}.glb?v={key}', 'brick': item.get('brick', '')}
         # its class (a potion, a ring...): a name can be more than one object (a potion and a ring
         # of see invisible); the client gives a tile only an item of its own class (tiles.json "classes")
         oc = item.get('class') or (next(iter(classes[name])) if len(classes.get(name, ())) == 1 else None)
@@ -142,10 +142,10 @@ def main():
         if item.get('variant'):   # a look for some of an item (holy water): the game sends it as this tile, its base item's sprite otherwise
             built[name]['vtile'] = VARIANT_TILE + item['variant']['n']
             built[name]['base'] = item['variant']['of']
-    json.dump(built, open(os.path.join(LEGO, 'items.built.json'), 'w'), indent=1)
+    json.dump(built, open(os.path.join(ASSETS, 'items.built.json'), 'w'), indent=1)
     # every artifact, for the client: its tile, its name, its base item (shown when it has no look of its own)
     json.dump({str(ART_TILE + n): {'name': name, 'base': base} for n, (name, base) in sorted(arts.items())},
-              open(os.path.join(LEGO, 'artifacts.built.json'), 'w'), indent=1)
+              open(os.path.join(ASSETS, 'artifacts.built.json'), 'w'), indent=1)
     print(f'artifacts: {len(arts)} ({sum(1 for _, (nm, _) in arts.items() if nm in built)} with a look of their own)')
     print(f'items: {len(built)}')
 

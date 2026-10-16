@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prints for body armour (decals: web/assets/lego/decals/), drawn over the
+"""Prints for body armour (decals: web/assets/brick/decals/), drawn over the
 part's own colour, so one print serves every colour (a dragon's scales in red,
 in blue...):
 
@@ -14,7 +14,7 @@ shows through.
 import math, os
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'lego', 'decals')
+OUT = os.path.join(os.path.dirname(__file__), '..', '..', 'web', 'assets', 'brick', 'decals')
 S = 256   # image size
 SHADE, LIGHT = (0, 0, 0, 120), (255, 255, 255, 90)
 

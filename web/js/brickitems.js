@@ -1,5 +1,5 @@
-// NetHack's items as LEGO (web/assets/lego/items.json, built by
-// tools/build_items.py): which game tile (sprite) is which LEGO item, and a
+// NetHack's items as brick (web/assets/brick/items.json, built by
+// tools/build_items.py): which game tile (sprite) is which brick item, and a
 // picture of each for the inventory and hotbar, rendered once from its model:
 // laid diagonally, blade to the top right, Minecraft-style.
 //
@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { gradientEnvironment } from './envmap.js';
 
-const byTile = new Map(); // tile -> {name, url, lego}
+const byTile = new Map(); // tile -> {name, url, brick}
 // items named as the game names them, where a plain name could be another class's ("ring of see invisible")
 const PREFIX = { ring: 'ring of ', wand: 'wand of ', spellbook: 'spellbook of ', scroll: 'scroll of ' };
 const icons = new Map(); // tile -> data URL
@@ -31,15 +31,15 @@ const startSlot = (t) => SLOTS[Math.floor((t - START_TILE) / 10000)];
 const startBase = (t) => (t - START_TILE) % 10000;
 export const isStartTile = isStart;
 
-export const legoItemForTile = (t) => {
+export const brickItemForTile = (t) => {
   if (isStart(t)) {
     const p = pieces.get(startSlot(t)), base = byTile.get(startBase(t));
-    return p ? { name: base ? base.name : '', url: p.url, lego: 'its own, from your design', upright: UPRIGHT.has(startSlot(t)), start: true } : base || null;
+    return p ? { name: base ? base.name : '', url: p.url, brick: 'its own, from your design', upright: UPRIGHT.has(startSlot(t)), start: true } : base || null;
   }
   return byTile.get(t) || null;
 };
-export const legoIconForTile = (t) => {
-  if (isStart(t)) { const p = pieces.get(startSlot(t)); return (p && p.icon) || legoIconForTile(startBase(t)); }
+export const brickIconForTile = (t) => {
+  if (isStart(t)) { const p = pieces.get(startSlot(t)); return (p && p.icon) || brickIconForTile(startBase(t)); }
   const icon = icons.get(t);
   if (!icon && byTile.has(t)) wanted.add(t); // (not drawn yet: it's on screen, so it's drawn next)
   return icon || null;
@@ -70,12 +70,12 @@ export async function setStartPieces(fig, parts) {
 }
 
 // load the list and draw the pictures; resolves when they're all done
-export function loadLegoItems() {
+export function loadBrickItems() {
   if (!readyP)
     readyP = Promise.all([
-      fetch('assets/lego/items.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})),
+      fetch('assets/brick/items.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})),
       fetch('assets/slashem/tiles.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : { names: [] })),
-      fetch('assets/lego/artifacts.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+      fetch('assets/brick/artifacts.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]).then(async ([items, tiles, arts]) => {
       const tileOf = new Map(); // an item's real name (lower case) -> its game tile
       (tiles.names || []).forEach((n, i) => {
@@ -88,7 +88,7 @@ export function loadLegoItems() {
         if (it && (!it.oc || !cls || it.oc === cls)) byTile.set(i, { name: real, ...it });
       });
       // artifacts: the game sends each as a tile of its own (winweb.c web_obj_tile): its own
-      // LEGO look if it has one, or else its base item's (model, or sprite)
+      // brick look if it has one, or else its base item's (model, or sprite)
       for (const [t, a] of Object.entries(arts)) {
         const tile = +t, base = tileOf.get(String(a.base).toLowerCase().replace(/-/g, ' '));
         if (base != null) artBase.set(tile, base);
@@ -105,7 +105,7 @@ export function loadLegoItems() {
         byTile.set(it.vtile, { name, ...it });
       }
       await drawIcons();
-    }).catch((e) => console.warn('LEGO items:', e));
+    }).catch((e) => console.warn('brick items:', e));
   return readyP;
 }
 

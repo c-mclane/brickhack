@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Lay out the character-select shelf: a LEGO display case with four
+"""Lay out the character-select shelf: a brick display case with four
 minifigs per shelf, as many shelves as the roster needs (first row on top).
 
-  shelf_scene.py              # writes web/assets/lego/scene.json, then run build_scene.py
+  shelf_scene.py              # writes web/assets/brick/scene.json, then run build_scene.py
 
-The roster is web/assets/lego/roster.json: a list of figure names (figs/<name>.json).
+The roster is web/assets/brick/roster.json: a list of figure names (figs/<name>.json).
 """
 import json, os
 
-LEGO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'lego')
+ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'web', 'assets', 'brick')
 PER_SHELF = 4
 FRAME, WALL = 70, 28          # reddish brown frame and boards, dark tan back wall
 TIER = 6 * 24                 # six bricks of headroom per shelf (room for a plume)
@@ -16,9 +16,9 @@ FEET = 72                     # a minifig's feet are 72 LDU below its neck origi
 
 
 def main():
-    roster = json.load(open(os.path.join(LEGO, 'roster.json')))
+    roster = json.load(open(os.path.join(ASSETS, 'roster.json')))
     # figures of other roles stand on the floor in front of the shelf, the knights' display case
-    front = [n for n in roster if json.load(open(os.path.join(LEGO, 'figs', n + '.json'))).get('role', 'knight') != 'knight']
+    front = [n for n in roster if json.load(open(os.path.join(ASSETS, 'figs', n + '.json'))).get('role', 'knight') != 'knight']
     roster = [n for n in roster if n not in front]
     shelves = [roster[i:i + PER_SHELF] for i in range(0, len(roster), PER_SHELF)]
     n = len(shelves)
@@ -41,7 +41,7 @@ def main():
         objs.append({'fig': fig, 'pos': [-40 * (len(front) - 1) + 80 * i, -FEET, -200]})
     mid = -tops[-1] / 2 / 20
     scene = {'camera': {'pos': [0, mid + 1, 22 + 9 * n], 'target': [0, mid, 0]}, 'objects': objs}
-    json.dump(scene, open(os.path.join(LEGO, 'scene.json'), 'w'), indent=1)
+    json.dump(scene, open(os.path.join(ASSETS, 'scene.json'), 'w'), indent=1)
     print(f'{len(roster)} figures on {n} shelves, {len(objs)} objects')
 
 

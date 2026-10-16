@@ -1,6 +1,6 @@
 :root {
   --font: 'VT323', 'Courier New', monospace;
-  --slot: 78px; /* (big enough for the LEGO items' pictures to show well) */
+  --slot: 78px; /* (big enough for the brick items' pictures to show well) */
   --icon: 69px;
   --mc-gray: #c6c6c6;
   --mc-slot: #8b8b8b;
@@ -122,13 +122,13 @@ button { font-family: inherit; }
 #title .logo { font-size: clamp(64px, 14vw, 150px); letter-spacing: 6px; color: #d8d8d8; margin-bottom: 30px; position: relative;
   text-shadow: 6px 6px 0 #3a3a3a, 0 0 2px #000; -webkit-text-stroke: 2px #222; }
 #title .logo span { font-size: .45em; color: #b22; margin-left: 10px; vertical-align: top; }
-/* the title screen: a LEGO baseplate with the logo built on it in bricks (brandlogo.js);
+/* the title screen: a brick baseplate with the logo built on it in bricks (brandlogo.js);
    the logo slot is where the letters are framed; plain text and the flat plate only without WebGL2 */
 #menu-plate { position: fixed; inset: 0; width: 100%; height: 100%; display: none; z-index: 9; }
-body.lego3d .screen.dirt { background: none; }
-body.lego3d .screen.dirt::before { display: none; }
+body.brick3d .screen.dirt { background: none; }
+body.brick3d .screen.dirt::before { display: none; }
 #title .logo .logo-slot { width: min(86vw, 860px); aspect-ratio: 53 / 7; }
-body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick letters, not on them) */
+body.brick3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick letters, not on them) */
 #title .logo .logo-text { display: none; font-size: 1em; color: inherit; margin: 0; }
 #title .logo.no-gl .logo-slot { display: none; }
 #title .logo.no-gl .logo-text { display: inline; }
@@ -348,7 +348,7 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 #reset .reset-text { font-size: 22px; text-align: center; max-width: 640px; padding: 0 16px; line-height: 1.4; }
 #reset .mc-btn { min-width: 0; width: 240px; }
 
-/* character select: the LEGO minifig picker (figpick.js) */
+/* character select: the brick minifig picker (figpick.js) */
 .figpick { position: relative; width: 220px; height: 300px; background: radial-gradient(ellipse at 50% 60%, #3d3a33 0%, #1b1a17 75%); border: 2px solid #000; box-shadow: inset 0 0 0 2px #555; outline: none; }
 .figpick canvas { position: absolute; inset: 0 0 46px 0; width: 100%; height: calc(100% - 46px); }
 .figpick .fig-prev, .figpick .fig-next { position: absolute; top: 112px; width: 34px; min-width: 0; height: 40px; padding: 0; font-size: 16px; }
@@ -379,5 +379,5 @@ body.lego3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick 
 #create .cycle.sworn { color: #ffd76a; cursor: default; } /* (held to its alignment by the figure's deity) */
 #create [data-act=go]:disabled { opacity: .45; cursor: not-allowed; }
 
-/* an item made in LEGO: a rendered picture of its model (legoitems.js), drawn smooth */
-.icon.lego-icon { image-rendering: auto; background-repeat: no-repeat; background-position: center; }
+/* an item made in brick: a rendered picture of its model (brickitems.js), drawn smooth */
+.icon.brick-icon { image-rendering: auto; background-repeat: no-repeat; background-position: center; }

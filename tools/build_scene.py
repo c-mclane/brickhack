@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build a LEGO scene for the live viewer (web/lego-test.html).
+"""Build a brick scene for the live viewer (web/baseplate.html).
 
-  build_scene.py [web/assets/lego/scene.json]
+  build_scene.py [web/assets/brick/scene.json]
 
 scene.json lists objects in LDraw units and axes (20 LDU = 1 stud, 24 = a
 brick's height, 8 = a plate's; -Y is up, -Z is toward the default camera's far side):
@@ -12,10 +12,10 @@ brick's height, 8 = a plate's; -Y is up, -Z is toward the default camera's far s
   ]}
 
 "part" is any LDraw part; "fig" names a minifig recipe in
-web/assets/lego/figs/<name>.json (see tools/minifig.py; "hold": an item of
+web/assets/brick/figs/<name>.json (see tools/minifig.py; "hold": an item of
 items.json in its right hand, as the game holds it; "set": recipe keys to
 change, e.g. a helm to try on); "item" names a
-NetHack item in web/assets/lego/items.json, built from its LEGO parts and
+NetHack item in web/assets/brick/items.json, built from its brick parts and
 laid on its side on the studs, as if dropped (pos: where on the baseplate;
 "stand": true stands it upright instead);
 "tile" names a NetHack item whose game sprite (assets/slashem/tiles.png) the
@@ -31,12 +31,12 @@ sys.path.insert(0, HERE)
 import build_items, ldraw2glb, minifig
 
 WEB = os.path.join(HERE, '..', 'web')
-LEGO = os.path.join(WEB, 'assets', 'lego')
-CACHE = os.path.join(LEGO, 'cache')
+ASSETS = os.path.join(WEB, 'assets', 'brick')
+CACHE = os.path.join(ASSETS, 'cache')
 
 
 def item_ldr(lib, item, stand=False):
-    """An item's LEGO parts (items.json) as an LDraw model, laid flat as if
+    """An item's brick parts (items.json) as an LDraw model, laid flat as if
     dropped, as the game lays it (brickworld.js setItems): as held
     (build_items.held_ldr: its length along Y), turned onto its side (its
     length along X; the flat of a blade facing up), centred, its lowest point
@@ -77,12 +77,12 @@ def hold_item(ldr_text, item):
     minifig.grip_frame), on a joint of its own; the arm marked as holding,
     so the viewer raises it as the game does."""
     lines = ldr_text.splitlines()
-    i = next(i for i, l in enumerate(lines) if l.startswith('0 !LEGOHACK RIG '))
-    rig = json.loads(lines[i][len('0 !LEGOHACK RIG '):])
+    i = next(i for i, l in enumerate(lines) if l.startswith('0 !BRICKHACK RIG '))
+    rig = json.loads(lines[i][len('0 !BRICKHACK RIG '):])
     rig['armR']['holds'] = True
-    lines[i] = '0 !LEGOHACK RIG ' + json.dumps(rig, separators=(',', ':'))
+    lines[i] = '0 !BRICKHACK RIG ' + json.dumps(rig, separators=(',', ':'))
     gp, gm = np.array(rig['armR']['grip']['pos']), np.array(rig['armR']['grip']['mat']).reshape(3, 3)
-    lines.append('0 !LEGOHACK GROUP itemR')
+    lines.append('0 !BRICKHACK GROUP itemR')
     for l in build_items.held_ldr(item).splitlines():
         if l.startswith('0 '):   # (a print: not shown here)
             continue
@@ -107,7 +107,7 @@ def main(scene_path):
     colors = ldraw2glb.load_colors(ldraw2glb.LDRAW)
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
     built = []
-    items = json.load(open(os.path.join(LEGO, 'items.json')))
+    items = json.load(open(os.path.join(ASSETS, 'items.json')))
     for obj in scene['objects']:
         if 'tile' in obj:   # (drawn by the viewer itself)
             built.append({'tile': tile_index(obj['tile']), 'pos': obj.get('pos', [0, 0, 0]), 'label': obj.get('label')})
@@ -121,20 +121,20 @@ def main(scene_path):
             if aura:   # an angel's glow round it (ldraw2glb.figure_extras); a tip's end: up standing, glTF +X lying down
                 if isinstance(aura, dict) and 'tip' in aura:
                     aura = dict(aura, tip=dict({'dir': [0, 1, 0] if obj.get('stand') else [1, 0, 0]}, **aura['tip']))
-                text = '0 !LEGOHACK AURA' + (' ' + json.dumps(aura) if isinstance(aura, dict) else '') + '\n' + text
+                text = '0 !BRICKHACK AURA' + (' ' + json.dumps(aura) if isinstance(aura, dict) else '') + '\n' + text
             if item.get('lightning'):   # lightning crackling over it (mist.js addLightning)
-                text = '0 !LEGOHACK LIGHTNING\n' + text
+                text = '0 !BRICKHACK LIGHTNING\n' + text
             if item.get('fx'):   # its element in particles (mist.js addEffects)
-                text = f"0 !LEGOHACK FX {item['fx']}\n" + text
+                text = f"0 !BRICKHACK FX {item['fx']}\n" + text
             if item.get('glow'):   # its tip glowing (ldraw2glb.glowing): the tip is up when it stands, +X lying down
                 g = item['glow']
-                text = f"0 !LEGOHACK GLOW {'0 -1' if obj.get('stand') else '1 0'} 0 {g['fraction']} {g['color']}\n" + text
+                text = f"0 !BRICKHACK GLOW {'0 -1' if obj.get('stand') else '1 0'} 0 {g['fraction']} {g['color']}\n" + text
             key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text)).encode()).hexdigest()[:10]
             src, color = os.path.join(CACHE, key + '.ldr'), 16
             if not os.path.exists(src):
                 open(src, 'w').write(text)
         elif 'fig' in obj:
-            recipe = os.path.join(LEGO, 'figs', obj['fig'] + '.json')
+            recipe = os.path.join(ASSETS, 'figs', obj['fig'] + '.json')
             spec = json.load(open(recipe))
             spec.update(obj.get('set', {}))   # recipe keys to change (a helm to try on: "hat", "hatColor"...)
             if obj.get('hold'):
@@ -161,13 +161,13 @@ def main(scene_path):
             else:   # a part from the library
                 geom, extras = lib.parse(src), None
             print(f'  converting {key}: {ldraw2glb.to_glb(geom, colors, color if color != 16 else 71, glb, extras)} tris')
-        built.append({'url': f'assets/lego/cache/{key}.glb?v={int(os.path.getmtime(glb))}',
+        built.append({'url': f'assets/brick/cache/{key}.glb?v={int(os.path.getmtime(glb))}',
                       'pos': obj.get('pos', [0, 0, 0]), 'rotY': obj.get('rotY', 0), 'label': obj.get('label')})
     out = {'objects': built, 'camera': scene.get('camera')}
     out['version'] = hashlib.sha1(json.dumps(out, sort_keys=True).encode()).hexdigest()[:12]
-    json.dump(out, open(os.path.join(LEGO, 'scene.built.json'), 'w'), indent=1)
+    json.dump(out, open(os.path.join(ASSETS, 'scene.built.json'), 'w'), indent=1)
     print(f"scene: {len(built)} objects, version {out['version']}")
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else os.path.join(LEGO, 'scene.json'))
+    main(sys.argv[1] if len(sys.argv) > 1 else os.path.join(ASSETS, 'scene.json'))
