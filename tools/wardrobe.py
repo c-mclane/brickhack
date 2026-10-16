@@ -57,15 +57,17 @@ def empty_handed(spec):
 def wearing(spec, item):
     """A recipe with a worn item on (items.json "wear": recipe keys, as a
     helm's hat, hatColor, plume, extras; a shield's left; a cloak's neck,
-    extras, dress; body armour's or a shirt's torso keys and neck armour). A
-    helm takes the hair off (it would poke through) and whatever hat, plume
-    or tiara the figure had; its extras go on beside the figure's own (an
-    angel keeps its wings)."""
+    extras, dress; body armour's or a shirt's torso keys and neck armour;
+    boots' bands). A helm takes the hair off (it would poke through) and
+    whatever hat, plume or tiara the figure had; its extras go on beside the
+    figure's own (an angel keeps its wings)."""
     wear = item.get('wear')
     if not wear:
         return spec
     if 'left' in wear:   # a shield, in the left hand
         return dict(spec, left=wear['left'])
+    if item.get('slot') == 'boots':   # the legs moulded with boots (minifig.booted), snowshoes under them
+        return dict(spec, boots=wear['boots'])
     if item.get('slot') in ('suit', 'shirt'):   # body armour, or a shirt (items.json "slot")
         # a print on the torso (a shirt, mail, a robe's top) in place of the figure's own;
         # a suit's attachment on the neck (a breastplate, shoulder pads) in place of the
@@ -99,7 +101,7 @@ def stripped(spec, slot):
     """A recipe with its designed piece in a slot taken off (the starting gear
     that piece stood for, taken off): 'helm' its hat (the hair under it stays),
     'cloak' its cape (armour on the neck stays), 'shield' its shield, 'suit'
-    its armour on the neck."""
+    its armour on the neck, 'boots' its boots."""
     if slot == 'helm':
         spec = {k: v for k, v in spec.items() if k not in ('hat', 'hatColor', 'hatDecal', 'plume')}
         return dict(spec, extras=[x for x in spec.get('extras', []) if not x['part'].startswith(CROWNS + HOODS)])
@@ -108,6 +110,8 @@ def stripped(spec, slot):
         return dict(spec, neck=[n for n in (neck if isinstance(neck, list) else [neck]) if not is_cape(n)])
     if slot == 'shield':
         return {k: v for k, v in spec.items() if k != 'left'}
+    if slot == 'boots':
+        return {k: v for k, v in spec.items() if k != 'boots'}
     if slot == 'suit':   # its armour (the torso's print is the figure itself: it stays)
         return dict(spec, neck=[n for n in necklist(spec) if not is_armour(n)])
     return spec

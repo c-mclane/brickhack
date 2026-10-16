@@ -14,6 +14,9 @@ SPEC example:
 "torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
 "dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs.
 "shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
+"boots": {"bands": [[y, colour], ...], "feet": {"part", "color", "pos"}} gives boots
+or shoes: the legs moulded in a second colour from height y down (booted), and
+anything strapped under the feet (snowshoes; "pos" under the right foot).
 "extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...),
 turned by "rot": [{"axis": [x, y, z], "deg": d}, ...] (in order) if given.
 "headRecolor": {"0": "4"} swaps colours in the face's print (black eyes made red...);
@@ -321,6 +324,60 @@ def recolored(part, cmap):
     return out
 
 
+def booted(part, bands, upper=True):
+    """Path (without .dat) of a leg moulded in two or more colours, as LEGO
+    makes legs with boots or shoes (dual-moulded): bands [[y, colour], ...],
+    each colouring the leg from that height (the leg's own frame, LDU, -Y up:
+    the hip pin at -9, the sole at 28) down to the next band's; above the
+    first, the leg's own colour (upper=False: none of it, the boot alone, as
+    one lies on the floor). The leg is cut flat at each height."""
+    import ldraw2glb   # (only here: the geometry, flattened)
+    bands = sorted((float(y), str(c)) for y, c in bands)
+    key = hashlib.sha1((part + json.dumps(bands) + ('' if upper else 'boot')).encode()).hexdigest()[:10]
+    out = os.path.join(DERIVED, os.path.basename(part) + '_boot_' + key)
+    if os.path.exists(out + '.dat'):
+        return out
+    cuts = [y for y, _ in bands]
+    def colour(code, y):   # the colour at height y of a face of colour `code`
+        if code != 16:
+            return str(code)
+        c = '16'
+        for top, bc in bands:
+            if y >= top:
+                c = bc
+        return c
+    def slab(poly, lo, hi):   # the part of a polygon between two heights
+        for bound, keep in ((lo, lambda v: v[1] >= lo), (hi, lambda v: v[1] <= hi)):
+            if bound is None or not poly:
+                continue
+            res = []
+            for a, b in zip(poly, poly[1:] + poly[:1]):
+                if keep(a):
+                    res.append(a)
+                if keep(a) != keep(b):
+                    t = (bound - a[1]) / (b[1] - a[1])
+                    res.append(a + t * (b - a))
+            poly = res
+        return poly
+    lines = [f'0 {part} with boots (BrickHack: dual-moulded)', '0 BFC NOCERTIFY']
+    edges = [None] + cuts + [None]
+    for code, tex, tris, _ in ldraw2glb.Library(ldraw2glb.LDRAW).parse(part + '.dat'):
+        for tri in tris:
+            for lo, hi in zip(edges, edges[1:]):
+                poly = slab([np.array(v, float) for v in tri], lo, hi)
+                if len(poly) < 3:
+                    continue
+                mid = sum(v[1] for v in poly) / len(poly)
+                c = colour(code, mid)
+                if c == '16' and not upper:
+                    continue
+                for i in range(1, len(poly) - 1):   # (a fan of triangles)
+                    lines.append(f'3 {c} ' + ' '.join(f'{v:.3f}' for q in (poly[0], poly[i], poly[i + 1]) for v in q))
+    os.makedirs(DERIVED, exist_ok=True)
+    open(out + '.dat', 'w').write('\n'.join(lines) + '\n')
+    return out
+
+
 def line(color, pos, mat, part):
     p = ' '.join(f'{v:.4f}'.rstrip('0').rstrip('.') for v in pos)
     m = ' '.join(f'{v:.4f}'.rstrip('0').rstrip('.') for v in np.asarray(mat).flatten())
@@ -427,10 +484,17 @@ def build(spec, base_dir='.'):
         out.append(line(spec['shortLegs'].get('color', 16), (0, 32, 0), I, spec['shortLegs'].get('part', '16709')))
     else:
         out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
+        boots = spec.get('boots') or {}   # boots or shoes: the legs dual-moulded (booted), and anything under the feet
+        leg = lambda part: booted(part, boots['bands']) if boots.get('bands') else part
+        feet = boots.get('feet')   # e.g. snowshoes: {part, color, pos (under the right foot: the left's mirrored)}
         G('legR')
-        out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legR', '3816')))
+        out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, leg(spec.get('legR', '3816'))))
+        if feet:
+            out.append(line(feet.get('color', 16), feet['pos'], I, feet['part']))
         G('legL')
-        out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, spec.get('legL', '3817')))
+        out.append(line(spec.get('legColor', spec.get('hipColor', 1)), (0, 44, 0), I, leg(spec.get('legL', '3817'))))
+        if feet:
+            out.append(line(feet.get('color', 16), (-feet['pos'][0], feet['pos'][1], feet['pos'][2]), I, feet['part']))
         rig['legs'] = {'pivot': [0.0, 44.0, 0.0], 'axis': [1.0, 0.0, 0.0]}   # the hip pin
     for x in spec.get('extras', []):   # any other part, at a place in the figure's frame (e.g. a tiara in the hair)
         G('head' if x['pos'][1] < -20 else 'body')   # (a tiara turns with the head; wings and tails stay on the body)

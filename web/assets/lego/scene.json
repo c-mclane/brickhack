@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   24,
-   50
+   1.6,
+   24
   ],
   "target": [
    0,
-   0,
-   3
+   1.2,
+   0
   ]
  },
  "objects": [
@@ -24,1062 +24,369 @@
   {
    "fig": "knight",
    "set": {
-    "torso": "973p5l",
-    "torsoColor": 26,
-    "armColor": 26,
-    "neck": [],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -400,
-    -72,
-    -270
-   ],
-   "rotY": 345,
-   "label": "Hawaiian shirt"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "torso": "973",
-    "torsoColor": 15,
-    "armColor": 15,
-    "neck": [],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -320,
-    -72,
-    -270
-   ],
-   "rotY": 345,
-   "label": "T-shirt"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "torso": "973",
-    "torsoColor": 71,
-    "armColor": 71,
-    "neck": [],
-    "torsoDecal": {
-     "image": "../decals/chain.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       20,
+       70
+      ],
+      [
+       26.5,
+       0
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    -240,
+    -360,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "chain mail"
+   "rotY": 330,
+   "label": "low boots (walking shoes)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 72,
-    "armColor": 0,
-    "neck": [
-     {
-      "part": "12618",
-      "color": 0
-     }
-    ],
-    "torsoDecal": {
-     "image": "../decals/chain.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       19,
+       72
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    -160,
+    -280,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "orcish chain mail"
+   "rotY": 330,
+   "label": "iron shoes (hard shoes)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 72,
-    "armColor": 72,
-    "neck": [],
-    "torsoDecal": {
-     "image": "../decals/rings.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       2,
+       0
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    -80,
+    -200,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "ring mail"
+   "rotY": 330,
+   "label": "high boots (jackboots)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 308,
-    "armColor": 0,
-    "neck": [
-     {
-      "part": "15490",
-      "color": 72
-     }
-    ],
-    "torsoDecal": {
-     "image": "../decals/rings.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       12,
+       0
+      ],
+      [
+       26.5,
+       72
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    0,
+    -120,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "orcish ring mail"
+   "rotY": 330,
+   "label": "speed boots (combat boots)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 179,
-    "armColor": 179,
-    "neck": [
-     {
-      "part": "15437",
-      "color": 179
-     }
-    ],
-    "torsoDecal": {
-     "image": "../decals/chain.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       10,
+       330
+      ],
+      [
+       26.5,
+       308
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    80,
+    -40,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "dwarvish mithril-coat"
+   "rotY": 330,
+   "label": "water walking boots (jungle boots)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 183,
-    "armColor": 183,
-    "neck": [
-     {
-      "part": "7549",
-      "color": 183
-     }
-    ],
-    "torsoDecal": {
-     "image": "../decals/chain.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       14,
+       84
+      ],
+      [
+       16,
+       70
+      ],
+      [
+       26.5,
+       0
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    160,
+    40,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "elven mithril-coat"
+   "rotY": 330,
+   "label": "jumping boots (hiking boots)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 148,
-    "armColor": 0,
-    "neck": [
-     {
-      "part": "41202",
-      "color": 148
-     }
-    ],
-    "torsoDecal": {
-     "image": "../decals/chain.png",
-     "center": [
-      0,
-      16,
-      -10
-     ],
-     "size": [
-      26,
-      32
+    "boots": {
+     "bands": [
+      [
+       6,
+       288
+      ]
      ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    240,
+    120,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "dark elven mithril-coat"
+   "rotY": 330,
+   "label": "elven boots (mud boots)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973p28",
-    "torsoColor": 0,
-    "armColor": 0,
-    "neck": [],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    320,
-    -72,
-    -270
-   ],
-   "rotY": 345,
-   "label": "leather jacket"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "torso": "973",
-    "torsoColor": 320,
-    "armColor": 320,
-    "neck": [],
-    "dress": {
-     "part": "3678b",
-     "color": 320
+    "boots": {
+     "bands": [
+      [
+       8,
+       179
+      ]
+     ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    400,
+    200,
     -72,
-    -270
+    0
    ],
-   "rotY": 345,
-   "label": "robe"
+   "rotY": 330,
+   "label": "kicking boots (steel boots)"
   },
   {
    "fig": "knight",
    "set": {
-    "neck": [
-     {
-      "part": "2587",
-      "color": 80
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -400,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "plate mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "89917",
-      "color": 43
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -320,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "crystal plate mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "78643",
-      "color": 134
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -240,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "bronze plate mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "93565",
-      "color": 72
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -160,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "splint mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "30174",
-      "color": 72
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -80,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "banded mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "15423",
-      "color": 71,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    0,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "3840",
-      "color": 70
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    80,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "leather armor"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "85961",
-      "color": 70,
-      "decal": {
-       "image": "../decals/studs.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    160,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "studded leather armor"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "torso": "973",
-    "torsoColor": 1,
-    "armColor": 1,
-    "neck": [],
-    "dress": {
-     "part": "3678b",
-     "color": 1
+    "boots": {
+     "bands": [
+      [
+       0,
+       70
+      ],
+      [
+       3,
+       308
+      ]
+     ]
     },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
-    240,
+    280,
     -72,
-    -90
+    0
    ],
-   "rotY": 345,
-   "label": "robe of protection"
+   "rotY": 330,
+   "label": "fumble boots (riding boots)"
   },
   {
    "fig": "knight",
    "set": {
-    "torso": "973",
-    "torsoColor": 25,
-    "armColor": 25,
-    "neck": [],
-    "dress": {
-     "part": "3678b",
-     "color": 25
-    },
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    320,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "robe of power"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "torso": "973",
-    "torsoColor": 2,
-    "armColor": 2,
-    "neck": [],
-    "dress": {
-     "part": "3678b",
-     "color": 2
-    },
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    400,
-    -72,
-    -90
-   ],
-   "rotY": 345,
-   "label": "robe of weakness"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 72,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -400,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "gray dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 383,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -320,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "silver dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 322,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -240,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "shimmering dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 22,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -160,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "deep dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 4,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -80,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "red dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
+    "boots": {
+     "bands": [
+      [
+       10,
+       15
+      ],
+      [
+       13,
+       19
+      ]
+     ],
+     "feet": {
+      "part": "30284",
       "color": 15,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
+      "pos": [
+       -10,
+       72,
+       0
+      ]
      }
-    ],
+    },
+    "legColor": 1,
     "right": null,
     "left": null,
-    "hat": null
+    "hat": null,
+    "neck": []
    },
    "pos": [
+    360,
+    -72,
+    0
+   ],
+   "rotY": 330,
+   "label": "levitation boots (snow boots)"
+  },
+  {
+   "item": "low boots",
+   "pos": [
+    -360,
     0,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "white dragon scale mail"
+    -60
+   ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 25,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "iron shoes",
    "pos": [
-    80,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "orange dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 0,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    160,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "black dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 1,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    240,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "blue dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 2,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    320,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "green dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "22402",
-      "color": 14,
-      "decal": {
-       "image": "../decals/scales.png"
-      }
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    400,
-    -72,
-    90
-   ],
-   "rotY": 345,
-   "label": "yellow dragon scale mail"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 72
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -400,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "gray dragon scales"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 383
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -320,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "silver dragon scales"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 322
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -240,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "shimmering dragon scales"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 22
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -160,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "deep dragon scales"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 4
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
-    -80,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "red dragon scales"
-  },
-  {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 15
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
-   "pos": [
+    -280,
     0,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "white dragon scales"
+    -60
+   ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 25
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "high boots",
    "pos": [
-    80,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "orange dragon scales"
+    -200,
+    0,
+    -60
+   ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 0
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "speed boots",
    "pos": [
-    160,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "black dragon scales"
+    -120,
+    0,
+    -60
+   ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 1
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "water walking boots",
    "pos": [
-    240,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "blue dragon scales"
+    -40,
+    0,
+    -60
+   ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 2
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "jumping boots",
    "pos": [
-    320,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "green dragon scales"
+    40,
+    0,
+    -60
+   ]
   },
   {
-   "fig": "knight",
-   "set": {
-    "neck": [
-     {
-      "part": "86123",
-      "color": 14
-     }
-    ],
-    "right": null,
-    "left": null,
-    "hat": null
-   },
+   "item": "elven boots",
    "pos": [
-    400,
-    -72,
-    270
-   ],
-   "rotY": 345,
-   "label": "yellow dragon scales"
+    120,
+    0,
+    -60
+   ]
+  },
+  {
+   "item": "kicking boots",
+   "pos": [
+    200,
+    0,
+    -60
+   ]
+  },
+  {
+   "item": "fumble boots",
+   "pos": [
+    280,
+    0,
+    -60
+   ]
+  },
+  {
+   "item": "levitation boots",
+   "pos": [
+    360,
+    0,
+    -60
+   ]
   }
  ]
 }

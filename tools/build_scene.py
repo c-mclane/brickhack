@@ -104,6 +104,8 @@ def main(scene_path):
             continue
         if 'item' in obj:
             item = {'parts': obj['parts']} if 'parts' in obj else items[obj['item']]   # (or its own parts: a variant)
+            if 'parts' not in item and item.get('wear', {}).get('boots'):   # (boots: their parts made from the bands)
+                item = dict(item, parts=build_items.boot_parts(item['wear']['boots']))
             text = item_ldr(lib, item, obj.get('stand', False))
             aura = item.get('aura')
             if aura:   # an angel's glow round it (ldraw2glb.figure_extras); a tip's end: up standing, glTF +X lying down

@@ -5118,5 +5118,182 @@
     }
    ]
   }
+ },
+ "low boots": {
+  "lego": "Brown shoes with black soles, moulded on the legs (walking shoes)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      20,
+      70
+     ],
+     [
+      26.5,
+      0
+     ]
+    ]
+   }
+  }
+ },
+ "iron shoes": {
+  "lego": "Dark grey shoes, moulded on the legs (hard shoes)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      19,
+      72
+     ]
+    ]
+   }
+  }
+ },
+ "high boots": {
+  "lego": "Black boots up to the hips (jackboots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      2,
+      0
+     ]
+    ]
+   }
+  }
+ },
+ "speed boots": {
+  "lego": "Black boots to mid-shin with grey soles (combat boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      12,
+      0
+     ],
+     [
+      26.5,
+      72
+     ]
+    ]
+   }
+  }
+ },
+ "water walking boots": {
+  "lego": "Olive green boots with dark brown soles (jungle boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      10,
+      330
+     ],
+     [
+      26.5,
+      308
+     ]
+    ]
+   }
+  }
+ },
+ "jumping boots": {
+  "lego": "Nougat boots with brown cuffs and black soles (hiking boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      14,
+      84
+     ],
+     [
+      16,
+      70
+     ],
+     [
+      26.5,
+      0
+     ]
+    ]
+   }
+  }
+ },
+ "elven boots": {
+  "lego": "Tall dark green wellies (mud boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      6,
+      288
+     ]
+    ]
+   }
+  }
+ },
+ "kicking boots": {
+  "lego": "Pearl silver boots to the knee (steel boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      8,
+      179
+     ]
+    ]
+   }
+  }
+ },
+ "fumble boots": {
+  "lego": "Tall brown boots with dark folded tops (riding boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      0,
+      70
+     ],
+     [
+      3,
+      308
+     ]
+    ]
+   }
+  }
+ },
+ "levitation boots": {
+  "lego": "White fur-cuffed boots on white snowshoes (snow boots)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      10,
+      15
+     ],
+     [
+      13,
+      19
+     ]
+    ],
+    "feet": {
+     "part": "30284",
+     "color": 15,
+     "pos": [
+      -10,
+      72,
+      0
+     ]
+    }
+   }
+  }
  }
 }

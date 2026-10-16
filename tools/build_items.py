@@ -46,6 +46,18 @@ def held_ldr(item):
     return out
 
 
+def boot_parts(boots):
+    """A pair of boots (items.json wear "boots": the bands a leg is moulded in,
+    minifig.booted), as parts: the legs' booted ends alone, and anything
+    strapped under them (a snowshoe)."""
+    parts = [{'part': minifig.booted(leg, boots['bands'], upper=False), 'color': 16} for leg in ('3816', '3817')]
+    feet = boots.get('feet')
+    if feet:   # (its pos is in the figure's frame: the legs hang from y = 44)
+        x, y, z = feet['pos']
+        parts += [{'part': feet['part'], 'color': feet.get('color', 16), 'pos': [sx * x, y - 44, z]} for sx in (1, -1)]
+    return parts
+
+
 SLASHEM = os.path.join(HERE, '..', 'vendor', 'SlashEM')
 ART_TILE = 90000   # the game sends an artifact as ART_TILE + its number (port/winweb.c web_obj_tile)
 
@@ -79,6 +91,8 @@ def main():
     arts = artifacts()
     art_num = {name: n for n, (name, base) in arts.items()}
     for name, item in json.load(open(os.path.join(LEGO, 'items.json'))).items():
+        if 'parts' not in item and item.get('wear', {}).get('boots'):
+            item = dict(item, parts=boot_parts(item['wear']['boots']))
         ldr = held_ldr(item)
         # an angel's glow round it (mist.js addAura): true, or {color, scale, tip: {fraction}}
         # (the tip's end: up as held, glTF +Y)
