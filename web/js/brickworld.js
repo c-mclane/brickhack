@@ -9,7 +9,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects } from './mist.js';
-import { figureJoints, poseJoints } from './minifig-anim.js';
+import { figureJoints, poseJoints, wristMatrix } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
 import { gradientEnvironment } from './envmap.js';
@@ -415,6 +415,20 @@ export class BrickWorld {
       arm.add(obj);
       held[side] = { url: want, obj };
       this.model(want).then((m) => { if (held[side] && held[side].obj === obj) obj.add(m.clone()); });
+    }
+    // rings worn as bracelets, round the wrists (hold.ringR, ringL: a ring's url)
+    for (const side of ['R', 'L']) {
+      const want = hold['ring' + side], key = 'ring' + side, hand = j.joints['hand' + side], cur = held[key];
+      if (cur && cur.url === want) continue;
+      if (cur) { cur.obj.parent && cur.obj.parent.remove(cur.obj); delete held[key]; }
+      const w = want && hand && wristMatrix(j.rig, side);
+      if (!w) continue;
+      const obj = new THREE.Group();
+      obj.matrixAutoUpdate = false;
+      obj.matrix.fromArray(w);
+      hand.add(obj);
+      held[key] = { url: want, obj };
+      this.model(want).then((m) => { if (held[key] && held[key].obj === obj) obj.add(m.clone()); });
     }
   }
 

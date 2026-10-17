@@ -276,3 +276,30 @@ export function firstPersonWrist(rig, fm, side = 'R') {
   wristCache.set(key, best.W);
   return best.W;
 }
+
+// A ring worn as a bracelet: round the wrist, where the hand meets the sleeve
+// (slipped over the hand's wrist peg, as a ring 11010 goes on a real
+// minifig). The hand's pivot and turning axis (rig hand{R,L}: the hand's own
+// Z) in the model's units; the wrist is 2 LDU along it, toward the hand. A
+// ring model (tools/build_items.py) stands on its axis, +Y, 0.4 tall: turned
+// onto the wrist's axis, its middle at the wrist. -> a column-major 4x4 in
+// the figure's (hand joint's) frame, or null.
+export function wristMatrix(rig, side) {
+  const h = rig && rig['hand' + side];
+  if (!h || !h.axis) return null;
+  let [ax, ay, az] = h.axis;
+  const n = Math.hypot(ax, ay, az) || 1;
+  ax /= n; ay /= n; az /= n;
+  // a rotation taking +Y onto the axis (Rodrigues, about Y x axis)
+  const c = ay, k = 1 / (1 + c + 1e-9);
+  const vx = az, vz = -ax; // (Y x a = (az, 0, -ax))
+  // the rotation's columns, written out: R = I + [v]x + [v]x^2 / (1 + c), v = (vx, 0, vz)
+  const R = [
+    [1 - k * vz * vz, -vz, k * vx * vz],
+    [vz, c, -vx],
+    [k * vx * vz, vx, 1 - k * vx * vx],
+  ];
+  const [px, py, pz] = h.pivot;
+  const t = [px - 0.3 * ax, py - 0.3 * ay, pz - 0.3 * az]; // (centre at pivot - 0.1 axis; the ring's own middle is 0.2 up it)
+  return [R[0][0], R[1][0], R[2][0], 0, R[0][1], R[1][1], R[2][1], 0, R[0][2], R[1][2], R[2][2], 0, t[0], t[1], t[2], 1];
+}

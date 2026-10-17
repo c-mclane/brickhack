@@ -9415,5 +9415,640 @@
     }
    }
   ]
+ },
+ "scroll of create monster": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled LEP GEX VEN ZEA (a scroll labeled LEP GEX VEN ZEA)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-lep-gex-ven-zea.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of taming": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled PRIRUTSENIE (a scroll labeled PRIRUTSENIE)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-prirutsenie.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of light": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled VERR YED HORRE (a scroll labeled VERR YED HORRE)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-verr-yed-horre.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of food detection": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled YUM YUM (a scroll labeled YUM YUM)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-yum-yum.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of gold detection": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled THARR (a scroll labeled THARR)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-tharr.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of identify": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled KERNOD WEL (a scroll labeled KERNOD WEL)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-kernod-wel.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of magic mapping": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled ELAM EBOW (a scroll labeled ELAM EBOW)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-elam-ebow.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of confuse monster": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled NR 9 (a scroll labeled NR 9)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-nr-9.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of scare monster": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled XIXAXA XOXAXA XUXAXA (a scroll labeled XIXAXA XOXAXA XUXAXA)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-xixaxa-xoxaxa-xuxaxa.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of enchant weapon": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled DAIYEN FOOELS (a scroll labeled DAIYEN FOOELS)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-daiyen-fooels.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of enchant armor": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled ZELGO MER (a scroll labeled ZELGO MER)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-zelgo-mer.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of remove curse": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled PRATYAVAYAH (a scroll labeled PRATYAVAYAH)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-pratyavayah.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of teleportation": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled VENZAR BORGAVVE (a scroll labeled VENZAR BORGAVVE)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-venzar-borgavve.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of fire": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled ANDOVA BEGARIN (a scroll labeled ANDOVA BEGARIN)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-andova-begarin.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of earth": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled KIRJE (a scroll labeled KIRJE)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-kirje.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of destroy armor": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled JUYED AWK YACC (a scroll labeled JUYED AWK YACC)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-juyed-awk-yacc.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of amnesia": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled DUAM XNAHT (a scroll labeled DUAM XNAHT)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-duam-xnaht.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of charging": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled HACKEM MUCHE (a scroll labeled HACKEM MUCHE)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-hackem-muche.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of genocide": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled ELBIB YLOH (a scroll labeled ELBIB YLOH)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-elbib-yloh.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of punishment": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled VE FORBRYDERNE (a scroll labeled VE FORBRYDERNE)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-ve-forbryderne.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of stinking cloud": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled VELOX NEB (a scroll labeled VELOX NEB)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-velox-neb.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of FOOBIE BLETCH": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled FOOBIE BLETCH (a scroll labeled FOOBIE BLETCH)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-foobie-bletch.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of TEMOV": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled TEMOV (a scroll labeled TEMOV)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-temov.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of GARVEN DEH": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled GARVEN DEH (a scroll labeled GARVEN DEH)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-garven-deh.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of READ ME": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles, labelled READ ME (a scroll labeled READ ME)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-read-me.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "scroll of mail": {
+  "brick": "A 1 x 2 tile printed with an envelope sealed in red wax (a stamped scroll: mail)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3069bp86",
+    "color": 15
+   }
+  ]
+ },
+ "scroll of blank paper": {
+  "brick": "A tan 2 x 2 tile printed with a scroll on two spindles (a unlabeled scroll)",
+  "oc": "scroll",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "decal": {
+     "image": "../decals/scroll-tile-blank.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ]
  }
 }

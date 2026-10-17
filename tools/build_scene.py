@@ -129,7 +129,9 @@ def main(scene_path):
             if item.get('glow'):   # its tip glowing (ldraw2glb.glowing): the tip is up when it stands, +X lying down
                 g = item['glow']
                 text = f"0 !BRICKHACK GLOW {'0 -1' if obj.get('stand') else '1 0'} 0 {g['fraction']} {g['color']}\n" + text
-            key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text)).encode()).hexdigest()[:10]
+            # (its prints are part of the model too: a changed picture rebuilds it, as a figure's do)
+            prints = ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in text.splitlines() if '!TEXMAP' in l)
+            key = 'item_' + hashlib.sha1((text + ldraw2glb.extra_stamp(text) + prints).encode()).hexdigest()[:10]
             src, color = os.path.join(CACHE, key + '.ldr'), 16
             if not os.path.exists(src):
                 open(src, 'w').write(text)

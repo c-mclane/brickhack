@@ -14,7 +14,7 @@ import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
 import { figureMatrix, FIG_HEIGHT } from './brick.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, firstPersonMatrix, firstPersonWrist, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
+import { FigureAnimator, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
@@ -1194,8 +1194,15 @@ function heroHold() {
   const two = !!(ui.stat && ui.stat.twoweap);
   const alt = two ? game.inv.find((i) => i.w === 'alt') : null;
   const as = (it) => { const l = brickItemForTile(it.t); return l ? l.url : undefined; };
-  const hold = { R: wep ? as(wep) : null, L: alt ? as(alt) : undefined, two };
-  for (const url of [hold.R, hold.L])
+  const isRing = (it) => it && it.c === '=';
+  const hold = { R: wep && !isRing(wep) ? as(wep) : null, L: alt && !isRing(alt) ? as(alt) : undefined, two };
+  // rings: worn as bracelets round the wrists, the right ring on the right
+  // (and a ring wielded: on the wrist too, not in the fist)
+  const worn = (slot) => game.inv.find((i) => i.w === slot);
+  const ringR = worn('ringr') || (isRing(wep) ? wep : null), ringL = worn('ringl') || (isRing(alt) ? alt : null);
+  hold.ringR = ringR ? as(ringR) : undefined;
+  hold.ringL = ringL ? as(ringL) : undefined;
+  for (const url of [hold.R, hold.L, hold.ringR, hold.ringL])
     if (url && !heldPrims.has(url)) {
       heldPrims.set(url, null);
       renderer.figRender.model(url).then((p) => heldPrims.set(url, p)).catch(() => {});
@@ -1209,6 +1216,8 @@ function heldEntries(hold, rig, matrix, hands) {
   for (const side of ['R', 'L']) {
     const url = hold[side], prims = url && heldPrims.get(url), j = rig['arm' + side];
     if (prims && j && j.grip && hands[side]) out.push({ prims, matrix: mul4(matrix, mul4(hands[side], new Float32Array(j.grip))), shade: 1 });
+    const ring = hold['ring' + side] && heldPrims.get(hold['ring' + side]), w = ring && hands[side] && wristMatrix(rig, side);
+    if (w) out.push({ prims: ring, matrix: mul4(matrix, mul4(hands[side], new Float32Array(w))), shade: 1 }); // (a bracelet)
   }
   return out;
 }
@@ -1943,7 +1952,7 @@ function frame(t) {
         const W = hold[side] ? firstPersonWrist(rig, fm, side) : null, hp = W ? mul4(ap, W) : ap;
         arms.push({ prims: hero3d.prims, matrix: fm, pose: { ['arm' + side]: ap, ['hand' + side]: hp, ['item' + side]: hp },
           only: ['arm' + side, 'hand' + side, 'item' + side], skip: skipped(hold), shade: 1 },
-          ...heldEntries({ [side]: hold[side] }, rig, fm, { [side]: hp }));
+          ...heldEntries({ [side]: hold[side], ["ring" + side]: hold["ring" + side] }, rig, fm, { [side]: hp }));
       }
       renderer.fpArm = arms;
     } else renderer.fpArm = null;

@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   24,
-   22
+   16,
+   14
   ],
   "target": [
    0,
    0,
-   2
+   1
   ]
  },
  "objects": [
@@ -22,644 +22,247 @@
    ]
   },
   {
-   "item": "spellbook of force bolt",
+   "item": "scroll of create monster",
    "pos": [
-    -315,
+    -250,
     0,
-    -315
+    -250
    ],
-   "rotY": 90,
-   "label": "red spellbook"
+   "label": "scroll labeled LEP GEX VEN ZEA"
   },
   {
-   "item": "spellbook of create monster",
+   "item": "scroll of taming",
    "pos": [
-    -225,
+    -150,
     0,
-    -315
+    -250
    ],
-   "rotY": 90,
-   "label": "turquoise spellbook"
+   "label": "scroll labeled PRIRUTSENIE"
   },
   {
-   "item": "spellbook of drain life",
+   "item": "scroll of light",
    "pos": [
-    -135,
+    -50,
     0,
-    -315
+    -250
    ],
-   "rotY": 90,
-   "label": "velvet spellbook"
+   "label": "scroll labeled VERR YED HORRE"
   },
   {
-   "item": "spellbook of command undead",
+   "item": "scroll of food detection",
    "pos": [
-    -45,
+    50,
     0,
-    -315
+    -250
    ],
-   "rotY": 90,
-   "label": "dark spellbook"
+   "label": "scroll labeled YUM YUM"
   },
   {
-   "item": "spellbook of summon undead",
+   "item": "scroll of gold detection",
    "pos": [
-    45,
+    150,
     0,
-    -315
+    -250
    ],
-   "rotY": 90,
-   "label": "black spellbook"
+   "label": "scroll labeled THARR"
   },
   {
-   "item": "spellbook of stone to flesh",
+   "item": "scroll of identify",
    "pos": [
-    135,
+    250,
     0,
-    -315
+    -250
    ],
-   "rotY": 90,
-   "label": "thick spellbook"
+   "label": "scroll labeled KERNOD WEL"
   },
   {
-   "item": "spellbook of healing",
+   "item": "scroll of magic mapping",
    "pos": [
-    225,
+    -250,
     0,
-    -315
+    -150
    ],
-   "rotY": 90,
-   "label": "white spellbook"
+   "label": "scroll labeled ELAM EBOW"
   },
   {
-   "item": "spellbook of cure blindness",
+   "item": "scroll of confuse monster",
    "pos": [
-    315,
+    -150,
     0,
-    -315
+    -150
    ],
-   "rotY": 90,
-   "label": "yellow spellbook"
+   "label": "scroll labeled NR 9"
   },
   {
-   "item": "spellbook of cure sickness",
+   "item": "scroll of scare monster",
    "pos": [
-    -315,
+    -50,
     0,
-    -225
+    -150
    ],
-   "rotY": 90,
-   "label": "indigo spellbook"
+   "label": "scroll labeled XIXAXA XOXAXA XUXAXA"
   },
   {
-   "item": "spellbook of extra healing",
+   "item": "scroll of enchant weapon",
    "pos": [
-    -225,
+    50,
     0,
-    -225
+    -150
    ],
-   "rotY": 90,
-   "label": "plaid spellbook"
+   "label": "scroll labeled DAIYEN FOOELS"
   },
   {
-   "item": "spellbook of restore ability",
+   "item": "scroll of enchant armor",
    "pos": [
-    -135,
+    150,
     0,
-    -225
+    -150
    ],
-   "rotY": 90,
-   "label": "light brown spellbook"
+   "label": "scroll labeled ZELGO MER"
   },
   {
-   "item": "spellbook of create familiar",
+   "item": "scroll of remove curse",
    "pos": [
-    -45,
+    250,
     0,
-    -225
+    -150
    ],
-   "rotY": 90,
-   "label": "glittering spellbook"
+   "label": "scroll labeled PRATYAVAYAH"
   },
   {
-   "item": "spellbook of light",
+   "item": "scroll of teleportation",
    "pos": [
-    45,
+    -250,
     0,
-    -225
+    -50
    ],
-   "rotY": 90,
-   "label": "cloth spellbook"
+   "label": "scroll labeled VENZAR BORGAVVE"
   },
   {
-   "item": "spellbook of detect monsters",
+   "item": "scroll of fire",
    "pos": [
-    135,
+    -150,
     0,
-    -225
+    -50
    ],
-   "rotY": 90,
-   "label": "leather spellbook"
+   "label": "scroll labeled ANDOVA BEGARIN"
   },
   {
-   "item": "spellbook of detect food",
+   "item": "scroll of earth",
    "pos": [
-    225,
+    -50,
     0,
-    -225
+    -50
    ],
-   "rotY": 90,
-   "label": "cyan spellbook"
+   "label": "scroll labeled KIRJE"
   },
   {
-   "item": "spellbook of clairvoyance",
+   "item": "scroll of destroy armor",
    "pos": [
-    315,
+    50,
     0,
-    -225
+    -50
    ],
-   "rotY": 90,
-   "label": "dark blue spellbook"
+   "label": "scroll labeled JUYED AWK YACC"
   },
   {
-   "item": "spellbook of detect unseen",
+   "item": "scroll of amnesia",
    "pos": [
-    -315,
+    150,
     0,
-    -135
+    -50
    ],
-   "rotY": 90,
-   "label": "violet spellbook"
+   "label": "scroll labeled DUAM XNAHT"
   },
   {
-   "item": "spellbook of identify",
+   "item": "scroll of charging",
    "pos": [
-    -225,
+    250,
     0,
-    -135
+    -50
    ],
-   "rotY": 90,
-   "label": "bronze spellbook"
+   "label": "scroll labeled HACKEM MUCHE"
   },
   {
-   "item": "spellbook of detect treasure",
+   "item": "scroll of genocide",
    "pos": [
-    -135,
+    -250,
     0,
-    -135
+    50
    ],
-   "rotY": 90,
-   "label": "gray spellbook"
+   "label": "scroll labeled ELBIB YLOH"
   },
   {
-   "item": "spellbook of magic mapping",
+   "item": "scroll of punishment",
    "pos": [
-    -45,
+    -150,
     0,
-    -135
+    50
    ],
-   "rotY": 90,
-   "label": "dusty spellbook"
+   "label": "scroll labeled VE FORBRYDERNE"
   },
   {
-   "item": "spellbook of confuse monster",
+   "item": "scroll of stinking cloud",
    "pos": [
-    45,
+    -50,
     0,
-    -135
+    50
    ],
-   "rotY": 90,
-   "label": "orange spellbook"
+   "label": "scroll labeled VELOX NEB"
   },
   {
-   "item": "spellbook of slow monster",
+   "item": "scroll of FOOBIE BLETCH",
    "pos": [
-    135,
+    50,
     0,
-    -135
+    50
    ],
-   "rotY": 90,
-   "label": "light green spellbook"
+   "label": "scroll labeled FOOBIE BLETCH"
   },
   {
-   "item": "spellbook of cause fear",
+   "item": "scroll of TEMOV",
    "pos": [
-    225,
+    150,
     0,
-    -135
+    50
    ],
-   "rotY": 90,
-   "label": "light blue spellbook"
+   "label": "scroll labeled TEMOV"
   },
   {
-   "item": "spellbook of charm monster",
+   "item": "scroll of GARVEN DEH",
    "pos": [
-    315,
+    250,
     0,
-    -135
+    50
    ],
-   "rotY": 90,
-   "label": "magenta spellbook"
+   "label": "scroll labeled GARVEN DEH"
   },
   {
-   "item": "spellbook of enchant weapon",
+   "item": "scroll of READ ME",
    "pos": [
-    -315,
+    -250,
     0,
-    -45
+    150
    ],
-   "rotY": 90,
-   "label": "dull spellbook"
+   "label": "scroll labeled READ ME"
   },
   {
-   "item": "spellbook of enchant armor",
+   "item": "scroll of mail",
    "pos": [
-    -225,
+    -150,
     0,
-    -45
+    150
    ],
-   "rotY": 90,
-   "label": "thin spellbook"
+   "label": "stamped scroll"
   },
   {
-   "item": "spellbook of protection",
+   "item": "scroll of blank paper",
    "pos": [
-    -135,
+    -50,
     0,
-    -45
+    150
    ],
-   "rotY": 90,
-   "label": "wide spellbook"
-  },
-  {
-   "item": "spellbook of resist poison",
-   "pos": [
-    -45,
-    0,
-    -45
-   ],
-   "rotY": 90,
-   "label": "big spellbook"
-  },
-  {
-   "item": "spellbook of resist sleep",
-   "pos": [
-    45,
-    0,
-    -45
-   ],
-   "rotY": 90,
-   "label": "fuzzy spellbook"
-  },
-  {
-   "item": "spellbook of endure cold",
-   "pos": [
-    135,
-    0,
-    -45
-   ],
-   "rotY": 90,
-   "label": "deep spellbook"
-  },
-  {
-   "item": "spellbook of endure heat",
-   "pos": [
-    225,
-    0,
-    -45
-   ],
-   "rotY": 90,
-   "label": "spotted spellbook"
-  },
-  {
-   "item": "spellbook of insulate",
-   "pos": [
-    315,
-    0,
-    -45
-   ],
-   "rotY": 90,
-   "label": "long spellbook"
-  },
-  {
-   "item": "spellbook of remove curse",
-   "pos": [
-    -315,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "wrinkled spellbook"
-  },
-  {
-   "item": "spellbook of turn undead",
-   "pos": [
-    -225,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "copper spellbook"
-  },
-  {
-   "item": "spellbook of jumping",
-   "pos": [
-    -135,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "torn spellbook"
-  },
-  {
-   "item": "spellbook of haste self",
-   "pos": [
-    -45,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "purple spellbook"
-  },
-  {
-   "item": "spellbook of enlighten",
-   "pos": [
-    45,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "faded spellbook"
-  },
-  {
-   "item": "spellbook of invisibility",
-   "pos": [
-    135,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "dark brown spellbook"
-  },
-  {
-   "item": "spellbook of levitation",
-   "pos": [
-    225,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "tan spellbook"
-  },
-  {
-   "item": "spellbook of teleport away",
-   "pos": [
-    315,
-    0,
-    45
-   ],
-   "rotY": 90,
-   "label": "gold spellbook"
-  },
-  {
-   "item": "spellbook of passwall",
-   "pos": [
-    -315,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "ochre spellbook"
-  },
-  {
-   "item": "spellbook of polymorph",
-   "pos": [
-    -225,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "silver spellbook"
-  },
-  {
-   "item": "spellbook of knock",
-   "pos": [
-    -135,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "pink spellbook"
-  },
-  {
-   "item": "spellbook of flame sphere",
-   "pos": [
-    -45,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "canvas spellbook"
-  },
-  {
-   "item": "spellbook of freeze sphere",
-   "pos": [
-    45,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "hardcover spellbook"
-  },
-  {
-   "item": "spellbook of wizard lock",
-   "pos": [
-    135,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "dark green spellbook"
-  },
-  {
-   "item": "spellbook of dig",
-   "pos": [
-    225,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "parchment spellbook"
-  },
-  {
-   "item": "spellbook of cancellation",
-   "pos": [
-    315,
-    0,
-    135
-   ],
-   "rotY": 90,
-   "label": "shining spellbook"
-  },
-  {
-   "item": "spellbook of magic missile",
-   "pos": [
-    -315,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "vellum spellbook"
-  },
-  {
-   "item": "spellbook of fireball",
-   "pos": [
-    -225,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "ragged spellbook"
-  },
-  {
-   "item": "spellbook of cone of cold",
-   "pos": [
-    -135,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "dog eared spellbook"
-  },
-  {
-   "item": "spellbook of sleep",
-   "pos": [
-    -45,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "mottled spellbook"
-  },
-  {
-   "item": "spellbook of finger of death",
-   "pos": [
-    45,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "stained spellbook"
-  },
-  {
-   "item": "spellbook of lightning",
-   "pos": [
-    135,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "rainbow spellbook"
-  },
-  {
-   "item": "spellbook of poison blast",
-   "pos": [
-    225,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "tattered spellbook"
-  },
-  {
-   "item": "spellbook of acid stream",
-   "pos": [
-    315,
-    0,
-    225
-   ],
-   "rotY": 90,
-   "label": "colorful spellbook"
-  },
-  {
-   "item": "spellbook of tartan",
-   "pos": [
-    -315,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "tartan spellbook"
-  },
-  {
-   "item": "spellbook of stylish",
-   "pos": [
-    -225,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "stylish spellbook"
-  },
-  {
-   "item": "spellbook of psychedelic",
-   "pos": [
-    -135,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "psychedelic spellbook"
-  },
-  {
-   "item": "spellbook of spiral-bound",
-   "pos": [
-    -45,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "spiral-bound spellbook"
-  },
-  {
-   "item": "spellbook of left-handed",
-   "pos": [
-    45,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "left-handed spellbook"
-  },
-  {
-   "item": "spellbook of stapled",
-   "pos": [
-    135,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "stapled spellbook"
-  },
-  {
-   "item": "spellbook of blank paper",
-   "pos": [
-    225,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "plain spellbook"
-  },
-  {
-   "item": "Book of the Dead",
-   "pos": [
-    315,
-    0,
-    315
-   ],
-   "rotY": 90,
-   "label": "papyrus spellbook"
+   "label": "unlabeled scroll"
   }
  ]
 }
