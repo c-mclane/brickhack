@@ -15,8 +15,13 @@ const strobing = []; // [material, part number]
 const tick = () => {
   uTime.value = (performance.now() - t0) / 1000;
   for (const [m, i] of strobing) { m.color.setHex(strobeHex(i, uTime.value)); m.emissive.copy(m.color); }
+  for (const m of hueing) m.color.setHSL((uTime.value * 0.15) % 1, 0.85, 0.5); // (a magic marker: round the colour wheel)
+  const lit = (uTime.value % 1.1) < 0.35; // (a land mine's light: a flash, then dark)
+  for (const m of blinking) { m.emissiveIntensity = lit ? 2.2 : 0.05; m.opacity = lit ? 0.95 : 0.55; }
   requestAnimationFrame(tick);
 };
+const hueing = new Set(); // materials whose colour goes round the wheel (addHueShift)
+const blinking = new Set(); // materials that blink on and off (addBlink)
 const startTicking = () => { if (!ticking) { ticking = true; tick(); } };
 
 const STROBE = [0xc91a09, 0xffffff, 0xf2cd37, 0x0055bf]; // brick red, white, yellow, blue
@@ -333,5 +338,32 @@ export function addEffects(THREE, root) {
   const vp = new THREE.Vector2(); // (the height drawn to, in pixels, for the size above: on the material, shared by every copy)
   mat.onBeforeRender = (r) => { const t = r.getRenderTarget(); mat.uniforms.uVH.value = t ? t.height : r.getDrawingBufferSize(vp).y; };
   root.add(points);
+  startTicking();
+}
+
+// An item whose colour shifts round the colour wheel (a magic marker:
+// tools/build_items.py "hue", in its model's extras): every part of it
+export function addHueShift(THREE, root) {
+  let on = false;
+  root.traverse((o) => { if (o.userData && o.userData.hue) on = true; });
+  if (!on) return;
+  root.traverse((o) => { if (o.isMesh) hueing.add(o.material); });
+  startTicking();
+}
+
+// A part that blinks (a land mine's light: tools/build_items.py "blink":
+// {joint}, in its model's extras): its node's materials flash on and off
+export function addBlink(THREE, root) {
+  let b = null;
+  root.traverse((o) => { if (!b && o.userData && o.userData.blink) b = o.userData.blink; });
+  const node = b && root.getObjectByName(b.joint);
+  if (!node) return;
+  node.traverse((o) => {
+    if (!o.isMesh) return;
+    if (!o.material.emissive) return;
+    o.material.emissive = o.material.color.clone();
+    o.material.transparent = true;
+    blinking.add(o.material);
+  });
   startTicking();
 }

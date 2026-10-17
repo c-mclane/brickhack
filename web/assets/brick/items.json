@@ -6465,15 +6465,15 @@
   "upright": true
  },
  "gold piece": {
-  "brick": "A little pile of brick coins in metallic gold",
+  "brick": "A little pile of brick coins in shining chrome gold",
   "parts": [
    {
     "part": "96904",
-    "color": 82
+    "color": 334
    },
    {
     "part": "96904",
-    "color": 82,
+    "color": 334,
     "pos": [
      6,
      -4,
@@ -6482,7 +6482,7 @@
    },
    {
     "part": "96904",
-    "color": 82,
+    "color": 334,
     "pos": [
      -3,
      -8,
@@ -6491,7 +6491,7 @@
    },
    {
     "part": "96904",
-    "color": 82,
+    "color": 334,
     "pos": [
      -14,
      0,
@@ -10440,5 +10440,1500 @@
    }
   ],
   "oc": "wand"
+ },
+ "large box": {
+  "brick": "A reddish brown 2 x 2 x 2 crate, a reddish brown 2 x 2 tile on its studs for a lid (a large box)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "61780",
+    "color": 70
+   },
+   {
+    "part": "3068b",
+    "color": 70,
+    "pos": [
+     0,
+     -48,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "chest": {
+  "brick": "The treasure chest and its lid, reddish brown (a chest)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "4738a",
+    "color": 70
+   },
+   {
+    "part": "4739a",
+    "color": 70,
+    "pos": [
+     0,
+     -18,
+     0
+    ],
+    "joint": "lid"
+   }
+  ],
+  "upright": true,
+  "hinge": {
+   "joint": "lid",
+   "pivot": [
+    0,
+    4,
+    16
+   ],
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "open": 100
+  }
+ },
+ "ice box": {
+  "brick": "A white 2 x 2 x 2 crate, a white 2 x 2 tile on its studs for a lid (an ice box)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "61780",
+    "color": 15
+   },
+   {
+    "part": "3068b",
+    "color": 15,
+    "pos": [
+     0,
+     -48,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "sack": {
+  "brick": "The minifig sack with a hand grab, tan (a bag)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "10169",
+    "color": 19
+   }
+  ]
+ },
+ "oilskin sack": {
+  "brick": "The minifig sack with a hand grab, tan (a bag)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "10169",
+    "color": 19
+   }
+  ]
+ },
+ "bag of holding": {
+  "brick": "The minifig sack with a hand grab, tan (a bag)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "10169",
+    "color": 19
+   }
+  ]
+ },
+ "bag of tricks": {
+  "brick": "The minifig sack with a hand grab, tan (a bag)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "10169",
+    "color": 19
+   }
+  ]
+ },
+ "skeleton key": {
+  "brick": "The classic minifig key in flat silver (a key)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "40359a",
+    "color": 179
+   }
+  ]
+ },
+ "lock pick": {
+  "brick": "A thin screwdriver, dark grey (a lock pick)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "55298",
+    "color": 72
+   }
+  ]
+ },
+ "credit card": {
+  "brick": "A 1 x 2 tile printed as a blue credit card (a credit card)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "3069b",
+    "color": 1,
+    "decal": {
+     "image": "../decals/tool-credit-card.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      20
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "upright": true
+ },
+ "tallow candle": {
+  "brick": "A white round 1 x 1 brick, a candle flame on its hollow stud (a candle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "37775",
+    "color": 46,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "wax candle": {
+  "brick": "A white round 1 x 1 brick, a candle flame on its hollow stud (a candle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "37775",
+    "color": 46,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "magic candle": {
+  "brick": "A white round 1 x 1 brick, a candle flame on its hollow stud (a candle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "37775",
+    "color": 46,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "oil lamp": {
+  "brick": "The minifig teapot in pearl gold: a genie's lamp (a lamp)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "23986",
+    "color": 297
+   }
+  ],
+  "upright": true
+ },
+ "brass lantern": {
+  "brick": "The minifig lantern in pearl gold, a trans yellow round 1 x 1 brick glowing inside (a brass lantern)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "37776",
+    "color": 297
+   },
+   {
+    "part": "3062b",
+    "color": 46,
+    "pos": [
+     0,
+     20,
+     0
+    ]
+   }
+  ]
+ },
+ "magic lamp": {
+  "brick": "The minifig teapot in pearl gold: a genie's lamp (a lamp)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "23986",
+    "color": 297
+   }
+  ],
+  "upright": true
+ },
+ "tin whistle": {
+  "brick": "A round 1 x 1 plate with a bar, flat silver (a whistle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "32828",
+    "color": 179
+   }
+  ]
+ },
+ "magic whistle": {
+  "brick": "A round 1 x 1 plate with a bar, flat silver (a whistle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "32828",
+    "color": 179
+   }
+  ]
+ },
+ "wooden flute": {
+  "brick": "A 4L bar in reddish brown, a row of black holes along it (a flute)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "30374",
+    "color": 70,
+    "decal": {
+     "image": "../decals/tool-flute-holes.png",
+     "center": [
+      0,
+      40,
+      -4.1
+     ],
+     "size": [
+      8,
+      80
+     ],
+     "side": "front"
+    }
+   }
+  ]
+ },
+ "magic flute": {
+  "brick": "A 4L bar in reddish brown, a row of black holes along it (a flute)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "30374",
+    "color": 70,
+    "decal": {
+     "image": "../decals/tool-flute-holes.png",
+     "center": [
+      0,
+      40,
+      -4.1
+     ],
+     "size": [
+      8,
+      80
+     ],
+     "side": "front"
+    }
+   }
+  ]
+ },
+ "tooled horn": {
+  "brick": "A tan cow horn (a horn)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "13564",
+    "color": 19
+   }
+  ]
+ },
+ "frost horn": {
+  "brick": "A tan cow horn (a horn)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "13564",
+    "color": 19
+   }
+  ]
+ },
+ "fire horn": {
+  "brick": "A tan cow horn (a horn)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "13564",
+    "color": 19
+   }
+  ]
+ },
+ "horn of plenty": {
+  "brick": "A tan cow horn (a horn)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "13564",
+    "color": 19
+   }
+  ]
+ },
+ "wooden harp": {
+  "brick": "The samurai helmet's horn in chrome gold strung as a lyre: a gold crossbar, five silver strings (a harp)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "71591",
+    "color": 334
+   },
+   {
+    "part": "4-4cyli",
+    "color": 334,
+    "pos": [
+     -13,
+     -19.5,
+     0
+    ],
+    "mat": [
+     0,
+     26,
+     0,
+     0.7,
+     0,
+     0,
+     0,
+     0,
+     0.7
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     -8,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     -4,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     0,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     4,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     8,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   }
+  ]
+ },
+ "magic harp": {
+  "brick": "The samurai helmet's horn in chrome gold strung as a lyre: a gold crossbar, five silver strings (a harp)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "71591",
+    "color": 334
+   },
+   {
+    "part": "4-4cyli",
+    "color": 334,
+    "pos": [
+     -13,
+     -19.5,
+     0
+    ],
+    "mat": [
+     0,
+     26,
+     0,
+     0.7,
+     0,
+     0,
+     0,
+     0,
+     0.7
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     -8,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     -4,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     0,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     4,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 179,
+    "pos": [
+     8,
+     -19,
+     0
+    ],
+    "mat": [
+     0.35,
+     0,
+     0,
+     0,
+     15,
+     0,
+     0,
+     0,
+     0.35
+    ]
+   }
+  ]
+ },
+ "bell": {
+  "brick": "A bell-shaped flower in pearl gold (a bell)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "6017",
+    "color": 297
+   }
+  ]
+ },
+ "bugle": {
+  "brick": "The minifig bugle in pearl gold (a bugle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "71342",
+    "color": 297
+   }
+  ]
+ },
+ "leather drum": {
+  "brick": "A red round 2 x 2 brick, a white round 2 x 2 tile on top, two drumsticks crossed on it (a drum)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "3941",
+    "color": 4
+   },
+   {
+    "part": "4150",
+    "color": 15,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 68,
+    "pos": [
+     -15.01,
+     -10.6,
+     -7.981
+    ],
+    "mat": [
+     -0.7042,
+     30.0202,
+     0,
+     0,
+     0,
+     1.5,
+     1.3244,
+     15.962,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 15,
+    "pos": [
+     15.01,
+     -10.6,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     3.5318,
+     0,
+     0,
+     0,
+     2.6,
+     2.2957,
+     1.8779,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     15.01,
+     -10.6,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     2.2957,
+     0.4695,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     18.542,
+     -10.6,
+     9.859
+    ],
+    "mat": [
+     -1.2206,
+     0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     2.2957,
+     0.4695,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 68,
+    "pos": [
+     15.01,
+     -12.1,
+     -7.981
+    ],
+    "mat": [
+     -0.7042,
+     -30.0202,
+     0,
+     0,
+     0,
+     1.5,
+     -1.3244,
+     15.962,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 15,
+    "pos": [
+     -15.01,
+     -12.1,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     -3.5318,
+     0,
+     0,
+     0,
+     2.6,
+     -2.2957,
+     1.8779,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     -15.01,
+     -12.1,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     -0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     -2.2957,
+     0.4695,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     -18.542,
+     -12.1,
+     9.859
+    ],
+    "mat": [
+     -1.2206,
+     -0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     -2.2957,
+     0.4695,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "drum of earthquake": {
+  "brick": "A red round 2 x 2 brick, a white round 2 x 2 tile on top, two drumsticks crossed on it (a drum)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "3941",
+    "color": 4
+   },
+   {
+    "part": "4150",
+    "color": 15,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 68,
+    "pos": [
+     -15.01,
+     -10.6,
+     -7.981
+    ],
+    "mat": [
+     -0.7042,
+     30.0202,
+     0,
+     0,
+     0,
+     1.5,
+     1.3244,
+     15.962,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 15,
+    "pos": [
+     15.01,
+     -10.6,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     3.5318,
+     0,
+     0,
+     0,
+     2.6,
+     2.2957,
+     1.8779,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     15.01,
+     -10.6,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     2.2957,
+     0.4695,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     18.542,
+     -10.6,
+     9.859
+    ],
+    "mat": [
+     -1.2206,
+     0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     2.2957,
+     0.4695,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 68,
+    "pos": [
+     15.01,
+     -12.1,
+     -7.981
+    ],
+    "mat": [
+     -0.7042,
+     -30.0202,
+     0,
+     0,
+     0,
+     1.5,
+     -1.3244,
+     15.962,
+     0
+    ]
+   },
+   {
+    "part": "4-4cyli",
+    "color": 15,
+    "pos": [
+     -15.01,
+     -12.1,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     -3.5318,
+     0,
+     0,
+     0,
+     2.6,
+     -2.2957,
+     1.8779,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     -15.01,
+     -12.1,
+     7.981
+    ],
+    "mat": [
+     -1.2206,
+     -0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     -2.2957,
+     0.4695,
+     0
+    ]
+   },
+   {
+    "part": "4-4disc",
+    "color": 15,
+    "pos": [
+     -18.542,
+     -12.1,
+     9.859
+    ],
+    "mat": [
+     -1.2206,
+     -0.8829,
+     0,
+     0,
+     0,
+     2.6,
+     -2.2957,
+     0.4695,
+     0
+    ]
+   }
+  ],
+  "upright": true
+ },
+ "land mine": {
+  "brick": "A dark grey inverted 2 x 2 dish, a trans red light on top, blinking (a land mine)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "4740",
+    "color": 72
+   },
+   {
+    "part": "6141",
+    "color": 36,
+    "pos": [
+     0,
+     -8,
+     0
+    ],
+    "joint": "light"
+   }
+  ],
+  "upright": true,
+  "blink": {
+   "joint": "light"
+  }
+ },
+ "beartrap": {
+  "brick": "Two fanged lower jaws in dark grey, one turned to face the other, their teeth interlocking (a beartrap)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "2576",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     -3
+    ]
+   },
+   {
+    "part": "2576",
+    "color": 72,
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ],
+    "pos": [
+     0,
+     0,
+     3
+    ]
+   }
+  ]
+ },
+ "expensive camera": {
+  "brick": "The minifig snapshot camera, black (an expensive camera)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "30089a",
+    "color": 0
+   }
+  ],
+  "upright": true
+ },
+ "mirror": {
+  "brick": "The hand mirror in chrome silver (a looking glass)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "96488",
+    "color": 383
+   }
+  ]
+ },
+ "crystal ball": {
+  "brick": "A Bionicle ball, 16.5 mm, in clear glass (a glass orb)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "54821",
+    "color": 47
+   }
+  ]
+ },
+ "lenses": {
+  "brick": "Sunglasses in trans clear (lenses)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "18854",
+    "color": 47
+   }
+  ]
+ },
+ "blindfold": {
+  "brick": "Black sunglasses (a blindfold)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "18854",
+    "color": 0
+   }
+  ]
+ },
+ "towel": {
+  "brick": "A white cloth wrap (a towel)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "18927",
+    "color": 15
+   }
+  ],
+  "upright": true
+ },
+ "saddle": {
+  "brick": "The horse saddle, reddish brown (a saddle)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "4491b",
+    "color": 70
+   }
+  ],
+  "upright": true
+ },
+ "leash": {
+  "brick": "A 6L minifig chain, reddish brown (a leash)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "30104k01",
+    "color": 70,
+    "pos": [
+     0,
+     0,
+     100
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 70,
+    "pos": [
+     0,
+     1.5,
+     80.84
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 70,
+    "pos": [
+     0,
+     1.5,
+     67.207
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 70,
+    "pos": [
+     0,
+     1.5,
+     53.574
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 70,
+    "pos": [
+     0,
+     1.5,
+     39.941
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 70,
+    "pos": [
+     0,
+     1.5,
+     26.308
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k01",
+    "color": 70,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "stethoscope": {
+  "brick": "The stethoscope, black (a stethoscope)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "98393a",
+    "color": 0
+   }
+  ]
+ },
+ "tinning kit": {
+  "brick": "A dark grey minifig suitcase (a tinning kit)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "4449-f1",
+    "color": 72
+   }
+  ],
+  "upright": true
+ },
+ "medical kit": {
+  "brick": "A white minifig briefcase, a red cross on its front (a leather bag: a medical kit)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "4449-f1",
+    "color": 15,
+    "decal": {
+     "image": "../decals/tool-red-cross.png",
+     "center": [
+      0,
+      14,
+      -8.1
+     ],
+     "size": [
+      22,
+      22
+     ],
+     "side": "front"
+    }
+   }
+  ]
+ },
+ "tin opener": {
+  "brick": "A spanner in flat silver (a tin opener)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "4006",
+    "color": 179
+   }
+  ]
+ },
+ "can of grease": {
+  "brick": "The minifig oilcan, dark grey (a can of grease)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "604548",
+    "color": 72
+   }
+  ],
+  "upright": true
+ },
+ "figurine": {
+  "brick": "The minifig statuette in stone grey (a figurine)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "90398",
+    "color": 71
+   }
+  ],
+  "upright": true
+ },
+ "magic marker": {
+  "brick": "A pen whose colour shifts round the rainbow (a magic marker)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "98393j",
+    "color": 4
+   }
+  ],
+  "hue": true
+ },
+ "bandage": {
+  "brick": "A white wrapped bandage (a bandage)",
+  "oc": "tool",
+  "parts": [
+   {
+    "part": "30924",
+    "color": 15
+   }
+  ]
+ },
+ "phial": {
+  "brick": "A big jug in clear glass, a clear syringe lying beside it (a phial)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "4429",
+    "color": 47
+   },
+   {
+    "part": "87989",
+    "color": 47,
+    "pos": [
+     28,
+     49.5,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ]
+ },
+ "Candelabrum of Invocation": {
+  "brick": "The three-armed candelabra in pearl gold, a flame burning in each cup (the Candelabrum of Invocation)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "73117",
+    "color": 297
+   },
+   {
+    "part": "37775",
+    "color": 46,
+    "pos": [
+     -20,
+     -2,
+     0
+    ]
+   },
+   {
+    "part": "37775",
+    "color": 46,
+    "pos": [
+     20,
+     -2,
+     0
+    ]
+   },
+   {
+    "part": "37775",
+    "color": 46,
+    "pos": [
+     0,
+     6,
+     0
+    ]
+   }
+  ]
+ },
+ "Bell of Opening": {
+  "brick": "A bell-shaped flower in chrome silver (a silver bell)",
+  "oc": "tool",
+  "upright": true,
+  "parts": [
+   {
+    "part": "6017",
+    "color": 383
+   }
+  ]
+ },
+ "Master Key of Thievery": {
+  "brick": "The ornate key in chrome gold (Master Key of Thievery)",
+  "parts": [
+   {
+    "part": "19118",
+    "color": 334
+   }
+  ]
+ },
+ "Key of Law": {
+  "brick": "The ornate key in pearl white (Key of Law)",
+  "parts": [
+   {
+    "part": "19118",
+    "color": 183
+   }
+  ]
+ },
+ "Key of Neutrality": {
+  "brick": "The ornate key in pearl grey (Key of Neutrality)",
+  "parts": [
+   {
+    "part": "19118",
+    "color": 135
+   }
+  ]
+ },
+ "Key of Chaos": {
+  "brick": "The ornate key in pearl black (Key of Chaos)",
+  "parts": [
+   {
+    "part": "19118",
+    "color": 83
+   }
+  ]
  }
 }

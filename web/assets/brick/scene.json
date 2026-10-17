@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   24,
-   18
+   34,
+   26
   ],
   "target": [
    0,
    0,
-   1
+   0
   ]
  },
  "objects": [
@@ -22,301 +22,382 @@
    ]
   },
   {
-   "item": "wand of light",
+   "item": "large box",
    "pos": [
-    -350,
+    -330,
     0,
-    -240
+    -330
    ],
-   "label": "glass wand"
+   "label": "large box"
   },
   {
-   "item": "wand of nothing",
+   "item": "chest",
    "pos": [
-    -210,
+    -220,
     0,
-    -240
+    -330
    ],
-   "label": "oak wand"
+   "label": "chest"
   },
   {
-   "item": "wand of enlightenment",
+   "item": "ice box",
    "pos": [
-    -70,
+    -110,
     0,
-    -240
+    -330
    ],
-   "label": "crystal wand"
+   "label": "ice box"
   },
   {
-   "item": "wand of healing",
+   "item": "sack",
    "pos": [
-    70,
     0,
-    -240
+    0,
+    -330
    ],
-   "label": "bamboo wand"
+   "label": "bag"
   },
   {
-   "item": "wand of locking",
+   "item": "skeleton key",
    "pos": [
-    210,
+    110,
     0,
-    -240
+    -330
    ],
-   "label": "aluminum wand"
+   "label": "key"
   },
   {
-   "item": "wand of make invisible",
+   "item": "lock pick",
    "pos": [
-    350,
+    220,
     0,
-    -240
+    -330
    ],
-   "label": "marble wand"
+   "label": "lock pick"
   },
   {
-   "item": "wand of opening",
+   "item": "credit card",
    "pos": [
-    -350,
+    330,
     0,
-    -160
+    -330
    ],
-   "label": "zinc wand"
+   "label": "credit card"
   },
   {
-   "item": "wand of probing",
+   "item": "tallow candle",
    "pos": [
-    -210,
+    -330,
     0,
-    -160
+    -220
    ],
-   "label": "uranium wand"
+   "label": "candle"
   },
   {
-   "item": "wand of secret door detection",
+   "item": "oil lamp",
    "pos": [
-    -70,
+    -220,
     0,
-    -160
+    -220
    ],
-   "label": "balsa wand"
+   "label": "lamp"
   },
   {
-   "item": "wand of slow monster",
+   "item": "brass lantern",
    "pos": [
-    70,
+    -110,
     0,
-    -160
+    -220
    ],
-   "label": "tin wand"
+   "label": "brass lantern"
   },
   {
-   "item": "wand of speed monster",
+   "item": "tin whistle",
    "pos": [
-    210,
     0,
-    -160
+    0,
+    -220
    ],
-   "label": "brass wand"
+   "label": "whistle"
   },
   {
-   "item": "wand of striking",
+   "item": "wooden flute",
    "pos": [
-    350,
+    110,
     0,
-    -160
+    -220
    ],
-   "label": "ebony wand"
+   "label": "flute"
   },
   {
-   "item": "wand of undead turning",
+   "item": "tooled horn",
    "pos": [
-    -350,
+    220,
     0,
-    -80
+    -220
    ],
-   "label": "copper wand"
+   "label": "horn"
   },
   {
-   "item": "wand of draining",
+   "item": "wooden harp",
    "pos": [
-    -210,
+    330,
     0,
-    -80
+    -220
    ],
-   "label": "ceramic wand"
+   "label": "harp"
   },
   {
-   "item": "wand of cancellation",
+   "item": "bell",
    "pos": [
-    -70,
+    -330,
     0,
-    -80
+    -110
    ],
-   "label": "platinum wand"
+   "label": "bell"
   },
   {
-   "item": "wand of create monster",
+   "item": "bugle",
    "pos": [
-    70,
+    -220,
     0,
-    -80
+    -110
    ],
-   "label": "maple wand"
+   "label": "bugle"
   },
   {
-   "item": "wand of fear",
+   "item": "leather drum",
    "pos": [
-    210,
+    -110,
     0,
-    -80
+    -110
    ],
-   "label": "rusty wand"
+   "label": "drum"
   },
   {
-   "item": "wand of polymorph",
+   "item": "land mine",
    "pos": [
-    350,
     0,
-    -80
+    0,
+    -110
    ],
-   "label": "silver wand"
+   "label": "land mine"
   },
   {
-   "item": "wand of teleportation",
+   "item": "beartrap",
    "pos": [
-    -350,
+    110,
+    0,
+    -110
+   ],
+   "label": "beartrap"
+  },
+  {
+   "item": "expensive camera",
+   "pos": [
+    220,
+    0,
+    -110
+   ],
+   "label": "expensive camera"
+  },
+  {
+   "item": "mirror",
+   "pos": [
+    330,
+    0,
+    -110
+   ],
+   "label": "looking glass"
+  },
+  {
+   "item": "crystal ball",
+   "pos": [
+    -330,
     0,
     0
    ],
-   "label": "iridium wand"
+   "label": "glass orb"
   },
   {
-   "item": "wand of create horde",
+   "item": "lenses",
    "pos": [
-    -210,
+    -220,
     0,
     0
    ],
-   "label": "black wand"
+   "label": "lenses"
   },
   {
-   "item": "wand of extra healing",
+   "item": "blindfold",
    "pos": [
-    -70,
+    -110,
     0,
     0
    ],
-   "label": "bronze wand"
+   "label": "blindfold"
   },
   {
-   "item": "wand of wishing",
+   "item": "towel",
    "pos": [
-    70,
+    0,
     0,
     0
    ],
-   "label": "pine wand"
+   "label": "towel"
   },
   {
-   "item": "wand of digging",
+   "item": "saddle",
    "pos": [
-    210,
+    110,
     0,
     0
    ],
-   "label": "iron wand"
+   "label": "saddle"
   },
   {
-   "item": "wand of magic missile",
+   "item": "leash",
    "pos": [
-    350,
+    220,
     0,
     0
    ],
-   "label": "steel wand"
+   "label": "leash"
   },
   {
-   "item": "wand of fire",
+   "item": "stethoscope",
    "pos": [
-    -350,
+    330,
     0,
-    80
+    0
    ],
-   "label": "hexagonal wand"
+   "label": "stethoscope"
   },
   {
-   "item": "wand of cold",
+   "item": "tinning kit",
    "pos": [
-    -210,
+    -330,
     0,
-    80
+    110
    ],
-   "label": "short wand"
+   "label": "tinning kit"
   },
   {
-   "item": "wand of sleep",
+   "item": "medical kit",
    "pos": [
-    -70,
+    -220,
     0,
-    80
+    110
    ],
-   "label": "runed wand"
+   "label": "leather bag"
   },
   {
-   "item": "wand of death",
+   "item": "tin opener",
    "pos": [
-    70,
+    -110,
     0,
-    80
+    110
    ],
-   "label": "long wand"
+   "label": "tin opener"
   },
   {
-   "item": "wand of lightning",
+   "item": "can of grease",
    "pos": [
-    210,
     0,
-    80
+    0,
+    110
    ],
-   "label": "curved wand"
+   "label": "can of grease"
   },
   {
-   "item": "wand of fireball",
+   "item": "figurine",
    "pos": [
-    350,
+    110,
     0,
-    80
+    110
    ],
-   "label": "octagonal wand"
+   "label": "figurine"
   },
   {
-   "item": "wand of forked",
+   "item": "magic marker",
    "pos": [
-    -350,
+    220,
     0,
-    160
+    110
    ],
-   "label": "forked wand"
+   "label": "magic marker"
   },
   {
-   "item": "wand of spiked",
+   "item": "bandage",
    "pos": [
-    -210,
+    330,
     0,
-    160
+    110
    ],
-   "label": "spiked wand"
+   "label": "bandage"
   },
   {
-   "item": "wand of jeweled",
+   "item": "phial",
    "pos": [
-    -70,
+    -330,
     0,
-    160
+    220
    ],
-   "label": "jeweled wand"
+   "label": "phial"
+  },
+  {
+   "item": "Candelabrum of Invocation",
+   "pos": [
+    -220,
+    0,
+    220
+   ],
+   "label": "candelabrum"
+  },
+  {
+   "item": "Bell of Opening",
+   "pos": [
+    -110,
+    0,
+    220
+   ],
+   "label": "silver bell"
+  },
+  {
+   "item": "Master Key of Thievery",
+   "pos": [
+    -130,
+    0,
+    430
+   ],
+   "label": "Master Key of Thievery"
+  },
+  {
+   "item": "Key of Law",
+   "pos": [
+    -40,
+    0,
+    430
+   ],
+   "label": "Key of Law"
+  },
+  {
+   "item": "Key of Neutrality",
+   "pos": [
+    50,
+    0,
+    430
+   ],
+   "label": "Key of Neutrality"
+  },
+  {
+   "item": "Key of Chaos",
+   "pos": [
+    140,
+    0,
+    430
+   ],
+   "label": "Key of Chaos"
   }
  ]
 }

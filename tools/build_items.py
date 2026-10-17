@@ -36,7 +36,12 @@ def held_ldr(item):
         R = minifig.rot_axis((0, 1, 0), a) @ R
     c = np.array(info['center'], float)
     out = ''
+    jointed = any(p.get('joint') for p in item['parts'])   # (a part that moves on its own: a chest's lid)
+    group = None
     for p in item['parts']:
+        if jointed and (p.get('joint') or 'body') != group:
+            group = p.get('joint') or 'body'
+            out += f'0 !BRICKHACK GROUP {group}\n'
         M = np.array(p['mat'], float).reshape(3, 3) if 'mat' in p else np.eye(3)   # a whole turn, as LDraw writes one (rows)
         for r in p.get('rot', []):   # turns, in order: {"axis": [x, y, z], "deg": d}
             M = minifig.rot_axis(r['axis'], np.radians(r['deg'])) @ M
@@ -46,6 +51,16 @@ def held_ldr(item):
             out += minifig.decal_line(p, pos, R @ M, OUT) + '\n'
         out += minifig.line(p.get('color', 16), pos, R @ M, part) + '\n'
     return out
+
+
+def held_point(item, point):
+    """A point given in the item's own parts' frame, where held_ldr puts it."""
+    info = minifig.held_info(item['parts'][0]['part'])
+    R = minifig.frame(info['up']).T
+    if 'face' in info:
+        f = R @ minifig.unit(info['face'])
+        R = minifig.rot_axis((0, 1, 0), np.arctan2(f[2], f[0])) @ R
+    return R @ (np.array(point, float) - np.array(info['center'], float))
 
 
 def boot_parts(boots):
@@ -110,7 +125,14 @@ def main():
         if isinstance(aura, dict) and 'tip' in aura:
             aura = dict(aura, tip=dict({'dir': [0, 1, 0]}, **aura['tip']))
         extras = dict({'aura': aura} if aura else {}, **({'lightning': True} if item.get('lightning') else {}),
-                      **({'fx': item['fx']} if item.get('fx') else {})) or None   # (its element in particles: mist.js addEffects)
+                      **({'fx': item['fx']} if item.get('fx') else {}), **({'hue': True} if item.get('hue') else {})) or None   # (its element in particles: mist.js addEffects)
+        hinge = item.get('hinge')   # a part that swings on a hinge (a chest's lid): {joint, pivot, axis (LDraw), open (degrees)}
+        if hinge:   # (in the model's units and axes, as ldraw2glb writes it: studs, Y up, Z to the front)
+            hp = held_point(item, hinge['pivot'])
+            extras = dict(extras or {}, hinge={'joint': hinge['joint'], 'pivot': [round(hp[0] / 20, 5), round(-hp[1] / 20, 5), round(-hp[2] / 20, 5)],
+                                               'axis': [hinge['axis'][0], -hinge['axis'][1], -hinge['axis'][2]], 'open': hinge.get('open', 100)})
+        if item.get('blink'):   # a part that blinks (a land mine's light): {joint} (mist.js addBlink)
+            extras = dict(extras or {}, blink=item['blink'])
         glow = item.get('glow')   # its tip glowing: {"fraction": of its length from the tip, "color": a translucent one}
         if glow:   # (held, its tip is up: -Y)
             ldr = f"0 !BRICKHACK GLOW 0 -1 0 {glow['fraction']} {glow['color']}\n" + ldr
@@ -120,7 +142,8 @@ def main():
         glb, src, keyfile = (os.path.join(OUT, slug + ext) for ext in ('.glb', '.ldr', '.key'))
         if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):
             open(src, 'w').write(ldr)
-            print(f'  {name}: {ldraw2glb.to_glb(ldraw2glb.glowing(lib.parse(src), ldr), colors, 71, glb, extras)} tris')
+            geom = ldraw2glb.figure_geom(lib, src, ldr) if '!BRICKHACK GROUP' in ldr else ldraw2glb.glowing(lib.parse(src), ldr)   # (in joints: a node each)
+            print(f'  {name}: {ldraw2glb.to_glb(geom, colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
         built[name] = {'url': f'assets/brick/items/{slug}.glb?v={key}', 'brick': item.get('brick', '')}
         # its class (a potion, a ring...): a name can be more than one object (a potion and a ring

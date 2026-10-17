@@ -112,6 +112,22 @@ def main(scene_path):
         if 'tile' in obj:   # (drawn by the viewer itself)
             built.append({'tile': tile_index(obj['tile']), 'pos': obj.get('pos', [0, 0, 0]), 'label': obj.get('label')})
             continue
+        if 'item' in obj and any(p.get('joint') for p in items.get(obj['item'], {}).get('parts', [])):
+            # an item with a part that moves (a chest's lid, a mine's light): the game's own
+            # model (tools/build_items.py), standing as the game sets it down, its foot on the studs
+            item = items[obj['item']]
+            pts = []
+            for l in build_items.held_ldr(item).splitlines():
+                if l.startswith('1 '):
+                    t = l.split()
+                    pos, mat = np.array([float(v) for v in t[2:5]]), np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+                    for _, _, arr, _ in lib.parse(' '.join(t[14:])):
+                        pts.append(arr.reshape(-1, 3) @ mat.T + pos)
+            foot = float(np.concatenate(pts)[:, 1].max())   # (LDraw's down is +Y)
+            url = json.load(open(os.path.join(ASSETS, 'items.built.json')))[obj['item']]['url']
+            x, y, z = obj.get('pos', [0, 0, 0])
+            built.append({'url': url, 'pos': [x, y - foot - 4, z], 'rotY': obj.get('rotY', 0), 'label': obj.get('label')})
+            continue
         if 'item' in obj:
             item = {'parts': obj['parts']} if 'parts' in obj else items[obj['item']]   # (or its own parts: a variant)
             if 'parts' not in item and item.get('wear', {}).get('boots'):   # (boots: their parts made from the bands)
@@ -124,6 +140,8 @@ def main(scene_path):
                 text = '0 !BRICKHACK AURA' + (' ' + json.dumps(aura) if isinstance(aura, dict) else '') + '\n' + text
             if item.get('lightning'):   # lightning crackling over it (mist.js addLightning)
                 text = '0 !BRICKHACK LIGHTNING\n' + text
+            if item.get('hue'):   # its colour going round the wheel (mist.js addHueShift)
+                text = '0 !BRICKHACK HUE\n' + text
             if item.get('fx'):   # its element in particles (mist.js addEffects)
                 text = f"0 !BRICKHACK FX {item['fx']}\n" + text
             if item.get('glow'):   # its tip glowing (ldraw2glb.glowing): the tip is up when it stands, +X lying down

@@ -17,8 +17,8 @@ html,body{margin:0;height:100%;background:#8fb8de;overflow:hidden;font:13px syst
 // rebuilds the scene whenever it changes, keeping the camera where it is.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects } from './js/mist.js';
-import { FigureAnimator, figureJoints, poseJoints, ATTACK_TIME } from './js/minifig-anim.js';
+import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects, addHueShift, addBlink } from './js/mist.js';
+import { FigureAnimator, figureJoints, poseJoints, setHinge, ATTACK_TIME } from './js/minifig-anim.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { gradientEnvironment } from './js/envmap.js';
 
@@ -54,11 +54,17 @@ function model(url) {
       if (quantumPart(o.material) !== null) strobify(o);
       // translucent brick (flames, ice) glows, as in the game
       if (o.material.transparent && o.material.map) o.castShadow = false; // (printed see-through plastic: solid ink, its own alpha)
-      else if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
+      else if (o.material.transparent) {
+        // translucent plastic glows in its colour; clear plastic is glass: barely glowing, more see-through
+        const c = o.material.color, clear = c.r > 0.8 && c.g > 0.8 && c.b > 0.8;
+        o.material.emissive = c.clone(); o.material.emissiveIntensity = clear ? 0.12 : 0.7; o.material.opacity = clear ? 0.4 : 0.78; o.castShadow = false;
+      }
     });
     addAura(THREE, g.scene); // an angel's glow
     addLightning(THREE, g.scene); // Mjollnir's crackle
     addEffects(THREE, g.scene); // an artifact's element: fire, meteors, frost
+    addHueShift(THREE, g.scene); // a magic marker's shifting colour
+    addBlink(THREE, g.scene); // a land mine's blinking light
     res(g.scene);
   }, undefined, rej)));
   return models.get(url);
@@ -68,7 +74,7 @@ const root = new THREE.Group(); scene.add(root);
 // the figures come alive (minifig-anim.js): each breathes and looks about;
 // W: everyone walks (on the spot), Space: everyone attacks, R: stretch again,
 // 1-9: hold everyone's slash at 10%-90% of the way through (to look at it), 0: let go
-let animated = [], walking = false, freeze = null;
+let animated = [], walking = false, freeze = null, hinged = [];
 const status = document.getElementById('status');
 let version = null, camKey = null;
 
@@ -137,6 +143,7 @@ async function apply(data) {
     return m;
   }));
   root.clear(); objs.forEach(m => root.add(m));
+  hinged = objs.filter((m) => setHinge(THREE, m, 0) !== false); // (a chest: its lid swings on a loop)
   animated = objs.map((m, i) => { const j = figureJoints(m); if (!j) return null; const a = new FigureAnimator(j.rig, { phase: i * 0.77 }); a.spawn(); return { j, a }; }).filter(Boolean);
   const ck = JSON.stringify(data.camera);
   if (data.camera && ck !== camKey) {
@@ -198,6 +205,9 @@ let last = performance.now();
     if (freeze != null) x.a.attackT0 = x.a.t - freeze * ATTACK_TIME;
     poseJoints(x.j, x.a.update(dt, { moving: walking }));
   }
+  // hinged parts: open, a pause, shut, a pause (as a chest is looted in the game)
+  const k = ((now || last) / 1000) % 4, u = k < 1 ? k : k < 2 ? 1 : k < 3 ? 3 - k : 0, e = u * u * (3 - 2 * u);
+  for (const m of hinged) { const max = setHinge(THREE, m, 0); setHinge(THREE, m, -max * e); }
   ctl.update(); r.render(scene, cam); placeTags();
 })();
 addEventListener('resize', () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); });

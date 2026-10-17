@@ -92,6 +92,7 @@ export class FigureAnimator {
     this.t = opts.phase || 0; // seconds (offset so a crowd doesn't breathe in step)
     this.spawnT0 = -1e9;
     this.attackT0 = -1e9;
+    this.attackSide = 'R'; // which arm swings (a throw: the left)
     this.walk = 0; // 0..1: how much the figure is walking
     this.stride = 0; // the walk cycle's phase (radians)
     this.headYaw = 0; this.headPitch = 0;
@@ -101,7 +102,7 @@ export class FigureAnimator {
   }
 
   spawn() { this.spawnT0 = this.t; }
-  attack() { this.attackT0 = this.t; }
+  attack(side = 'R') { this.attackT0 = this.t; this.attackSide = side; }
 
   // state: {moving (bool), speed (stride cycles per second, default 1.75),
   //   holdsR, holdsL (bool: something's in that hand now, whatever the figure was built holding),
@@ -133,10 +134,13 @@ export class FigureAnimator {
     // breathing (deeper during the stretch)
     const breath = 0.012 * Math.sin((t / 3.6) * Math.PI * 2) + 0.03 * up;
     const waist = rig.waist ? rig.waist.pivot : [0, -1.6, 0];
-    const slashing = atk >= 0 && atk < (state.twoweap ? 1.25 : 1);
-    const slash = atk >= 0 && atk < 1 ? slashAt(atk, this.arm.R) : null;
-    // the upper body: breathing, and twisting into a slash
-    const B = mul(slash ? turnAbout(waist, [0, -1, 0], slash.twist) : ident(), swellY(waist[1], 1 + breath));
+    const lefty = this.attackSide === 'L'; // (a throw: the left arm swings, the body twisting the other way)
+    const slash = atk >= 0 && atk < 1 ? slashAt(atk, this.arm[lefty ? 'L' : 'R']) : null;
+    // walking: a little waddle, the upper body rocking over whichever foot is down
+    // (so a short figure's steps don't look like gliding)
+    const waddle = turnAbout(waist, [0, 0, 1], Math.sin(this.stride) * this.walk * 4 * DEG);
+    // the upper body: breathing, twisting into a slash, waddling
+    const B = mul(waddle, mul(slash ? turnAbout(waist, [0, -1, 0], lefty ? -slash.twist : slash.twist) : ident(), swellY(waist[1], 1 + breath)));
 
     const P = this.poses;
     P.body = B;
@@ -158,8 +162,8 @@ export class FigureAnimator {
       let a = approach(this.arm[side], target, 10, dt);
       let out = 0;
       // (fighting with two weapons, the left slashes too, a moment after the right)
-      const slashL = side === 'L' && state.twoweap && atk >= 0.25 && atk < 1.25 ? slashAt(atk - 0.25, this.arm.L) : null;
-      if (side === 'R' && slash) { a = slash.swing; out = slash.out; }
+      const slashL = side === 'L' && !lefty && state.twoweap && atk >= 0.25 && atk < 1.25 ? slashAt(atk - 0.25, this.arm.L) : null;
+      if (slash && side === (lefty ? 'L' : 'R')) { a = slash.swing; out = slash.out; }
       else if (slashL) { a = slashL.swing; out = slashL.out; }
       else this.arm[side] = a;
       // (as a shoulder does it: the arm first thrown out sideways (about the figure's
@@ -180,7 +184,7 @@ export class FigureAnimator {
       const j = rig['arm' + side];
       if (!j) continue;
       let sw = swing * (side === 'R' ? 4 : -4) + Math.sin(t * 1.7 + (side === 'L' ? 1 : 0)) * 1.2, out = 0;
-      const k = side === 'R' ? atk : state.twoweap ? atk - 0.25 : -1;
+      const k = side === this.attackSide ? atk : side === 'L' && state.twoweap ? atk - 0.25 : -1;
       if (k >= 0 && k < 1) {
         // (seen from behind your own arm, swing + brings the blade down toward the
         // middle, out + carries the fist in toward the middle) a wind-up back and
@@ -302,4 +306,23 @@ export function wristMatrix(rig, side) {
   const [px, py, pz] = h.pivot;
   const t = [px - 0.3 * ax, py - 0.3 * ay, pz - 0.3 * az]; // (centre at pivot - 0.1 axis; the ring's own middle is 0.2 up it)
   return [R[0][0], R[1][0], R[2][0], 0, R[0][1], R[1][1], R[2][1], 0, R[0][2], R[1][2], R[2][2], 0, t[0], t[1], t[2], 1];
+}
+
+// A hinged part (a chest's lid: tools/build_items.py "hinge", in the model's
+// extras) swung open by `deg` degrees about its hinge. root: a loaded model
+// (or a clone); its hinged node is posed by matrix from then on.
+export function setHinge(THREE, root, deg) {
+  let h = null;
+  root.traverse((o) => { if (!h && o.userData && o.userData.hinge) h = o.userData.hinge; });
+  if (!h) return false;
+  const part = root.getObjectByName(h.joint);
+  if (!part) return false;
+  const p = new THREE.Vector3(...h.pivot), ax = new THREE.Vector3(...h.axis).normalize();
+  const m = new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)
+    .multiply(new THREE.Matrix4().makeRotationAxis(ax, (deg * Math.PI) / 180))
+    .multiply(new THREE.Matrix4().makeTranslation(-p.x, -p.y, -p.z));
+  part.matrixAutoUpdate = false;
+  part.matrix.copy(m);
+  part.matrixWorldNeedsUpdate = true;
+  return h.open;
 }

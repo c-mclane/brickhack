@@ -8,8 +8,8 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects } from './mist.js';
-import { figureJoints, poseJoints, wristMatrix } from './minifig-anim.js';
+import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects, addHueShift, addBlink } from './mist.js';
+import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
 import { gradientEnvironment } from './envmap.js';
@@ -80,11 +80,17 @@ export class BrickWorld {
           if (quantumPart(o.material) !== null) strobify(o);
           // translucent brick (flames, ice) glows
           if (o.material.transparent && o.material.map) o.castShadow = false; // (printed see-through plastic: solid ink, its own alpha)
-          else if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.7; o.material.opacity = 0.78; o.castShadow = false; }
+          else if (o.material.transparent) {
+            // translucent plastic glows in its colour; clear plastic is glass: barely glowing, more see-through
+            const c = o.material.color, clear = c.r > 0.8 && c.g > 0.8 && c.b > 0.8;
+            o.material.emissive = c.clone(); o.material.emissiveIntensity = clear ? 0.12 : 0.7; o.material.opacity = clear ? 0.4 : 0.78; o.castShadow = false;
+          }
         });
         addAura(THREE, g.scene); // an angel's glow
         addLightning(THREE, g.scene); // Mjollnir's crackle
         addEffects(THREE, g.scene); // an artifact's element: fire, meteors, frost
+        addHueShift(THREE, g.scene); // a magic marker's shifting colour
+        addBlink(THREE, g.scene); // a land mine's blinking light
         res(g.scene);
       }, undefined, rej)));
     return this.models.get(url);
@@ -334,6 +340,7 @@ export class BrickWorld {
           const c = box.getCenter(new THREE.Vector3());
           lay.position.set(-c.x, -box.min.y, -c.z); // centred on the square, its underside at the group's height
           g.add(lay);
+          g.userData.lay = lay; // (a chest: its lid swings open, setLids)
           g.userData.thick = (box.max.y - box.min.y) * MODEL_SCALE;
           this.restack(g.userData.square);
         });
@@ -357,6 +364,25 @@ export class BrickWorld {
     for (const [key, g] of [...this.items]) {
       const [gx, gz, , ...gu] = key.split(',');
       if (+gx === +x && +gz === +z && gu.join(',') === url) { this.world.remove(g); this.items.delete(key); }
+    }
+  }
+
+  // a chest on square (x, z) opened (looted) or shut: its lid swings to match, over a moment (tickLids)
+  setLid(x, z, open) {
+    this.lids = this.lids || new Map();
+    this.lids.set(`${x},${z}`, { open, at: this.lids.get(`${x},${z}`)?.at ?? 0 });
+  }
+  tickLids(dt) {
+    if (!this.lids) return;
+    for (const [sq, l] of this.lids) {
+      l.at = Math.max(0, Math.min(1, l.at + (l.open ? dt : -dt) / 0.45));
+      const e = l.at * l.at * (3 - 2 * l.at); // (eased: it creaks open, settles back)
+      for (const g of this.items.values())
+        if (g.userData.square === sq && g.userData.lay) {
+          const max = setHinge(THREE, g.userData.lay, 0);
+          if (max !== false) setHinge(THREE, g.userData.lay, -max * e);
+        }
+      if (!l.open && l.at === 0) this.lids.delete(sq);
     }
   }
 
@@ -436,6 +462,9 @@ export class BrickWorld {
   // sun's shadows following `focus` (the hero)
   render(proj, view, w, h, focus) {
     const r = this.r;
+    const tLid = performance.now();
+    this.tickLids(Math.min(0.1, (tLid - (this.lastT || tLid)) / 1000));
+    this.lastT = tLid;
     r.resetState();
     r.setSize(w, h, false);
     this.cam.projectionMatrix.fromArray(proj);

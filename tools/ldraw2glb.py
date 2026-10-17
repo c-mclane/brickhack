@@ -77,6 +77,8 @@ def figure_extras(ldr_text):
     fx = next((l.split()[3] for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK FX ')), None)
     if fx:   # its element in particles: fire, meteors, frost (mist.js addEffects)
         ex['fx'] = fx
+    if '0 !BRICKHACK HUE' in ldr_text:   # its colour going round the wheel (mist.js addHueShift)
+        ex['hue'] = True
     rig = figure_rig(ldr_text)
     if rig:
         ex['rig'] = rig

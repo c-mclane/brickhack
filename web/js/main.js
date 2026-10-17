@@ -615,6 +615,7 @@ function handle(m) {
     case 'throw': { // the hero threw something: flown in an arc, to bounce and tumble to rest (throwfx.js)
       const l = brickItemForTile(m.tile);
       if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty);
+      if (m.by !== 'monster' && hero3d.anim) hero3d.anim.attack('L'); // (you threw it: a swing of your left arm)
       break;
     }
     case 'shatter': { // something broke there: shards
@@ -1568,6 +1569,7 @@ function openChest(tgt) {
 
 function beginLoot(op) {
   Object.assign(chest, { active: true, op, sawMenu: false, x: world.hero.x, y: world.hero.y });
+  if (renderer.brick) renderer.brick.setLid(chest.x, chest.y, true); // (a chest model there: its lid swings open)
   if (ui.chestOpen) ui.setChestBusy(true);
   releaseLock();
   game.pendingExt = 'loot';
@@ -1576,6 +1578,7 @@ function beginLoot(op) {
 
 function closeChestScreen() {
   chest.active = false;
+  if (renderer.brick) renderer.brick.setLid(chest.x, chest.y, false); // (...and shut)
   ui.closeChest();
   relock();
 }
