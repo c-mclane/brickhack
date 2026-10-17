@@ -22,6 +22,10 @@ EXTRA = os.path.join(os.path.dirname(__file__), '..', 'ldraw-extra')
 SCALE = 1.0 / 20.0
 
 
+# a colour's finish beyond plain plastic (LDConfig: PEARLESCENT, METAL; CHROME goes by its name)
+FINISH = {}
+
+
 def load_colors(root):
     colors = {}
     for line in open(os.path.join(root, 'LDConfig.ldr'), encoding='utf-8', errors='replace'):
@@ -32,6 +36,9 @@ def load_colors(root):
             rgb = [int(hexv[i:i + 2], 16) / 255 for i in (0, 2, 4)]
             alpha = int(t[t.index('ALPHA') + 1]) / 255 if 'ALPHA' in t else 1.0
             colors[code] = (rgb, alpha, t[2])
+            for fin in ('PEARLESCENT', 'METAL'):
+                if fin in t:
+                    FINISH[code] = fin
     # ours: a doppelganger's other half, a misty liquid green (the renderers make it shimmer)
     colors[MIST] = ([0.45, 1.0, 0.55], 0.5, 'Doppel_Mist')
     # and a quantum mechanic's parts, each its own colour so each can flash on its own
@@ -472,6 +479,10 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
             pbr = {'baseColorFactor': [srgb_to_linear(c) for c in rgb] + [alpha], 'metallicFactor': 0.0, 'roughnessFactor': 0.35}
             if cname.startswith('Chrome_'):   # chrome: a mirror of what's round it (the renderers give metal an environment: envmap.js)
                 pbr.update(metallicFactor=1.0, roughnessFactor=0.12)
+            elif FINISH.get(code) == 'PEARLESCENT':   # pearl plastic (pearl gold, pearl white: the bricks' metallic white): a satin metal sheen
+                pbr.update(metallicFactor=0.6, roughnessFactor=0.3)
+            elif FINISH.get(code) == 'METAL':   # metallic plastic: more metal than pearl
+                pbr.update(metallicFactor=0.85, roughnessFactor=0.25)
             if tex:
                 png, (w, h) = decal_png(tex, rgb, alpha=alpha)
                 pad = 2

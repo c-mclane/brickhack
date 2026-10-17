@@ -2,8 +2,8 @@
  "camera": {
   "pos": [
    0,
-   16,
-   14
+   24,
+   18
   ],
   "target": [
    0,
@@ -22,247 +22,301 @@
    ]
   },
   {
-   "item": "scroll of create monster",
+   "item": "wand of light",
    "pos": [
-    -250,
+    -350,
     0,
-    -250
+    -240
    ],
-   "label": "scroll labeled LEP GEX VEN ZEA"
+   "label": "glass wand"
   },
   {
-   "item": "scroll of taming",
+   "item": "wand of nothing",
    "pos": [
-    -150,
+    -210,
     0,
-    -250
+    -240
    ],
-   "label": "scroll labeled PRIRUTSENIE"
+   "label": "oak wand"
   },
   {
-   "item": "scroll of light",
+   "item": "wand of enlightenment",
    "pos": [
-    -50,
+    -70,
     0,
-    -250
+    -240
    ],
-   "label": "scroll labeled VERR YED HORRE"
+   "label": "crystal wand"
   },
   {
-   "item": "scroll of food detection",
+   "item": "wand of healing",
    "pos": [
-    50,
+    70,
     0,
-    -250
+    -240
    ],
-   "label": "scroll labeled YUM YUM"
+   "label": "bamboo wand"
   },
   {
-   "item": "scroll of gold detection",
+   "item": "wand of locking",
    "pos": [
-    150,
+    210,
     0,
-    -250
+    -240
    ],
-   "label": "scroll labeled THARR"
+   "label": "aluminum wand"
   },
   {
-   "item": "scroll of identify",
+   "item": "wand of make invisible",
    "pos": [
-    250,
+    350,
     0,
-    -250
+    -240
    ],
-   "label": "scroll labeled KERNOD WEL"
+   "label": "marble wand"
   },
   {
-   "item": "scroll of magic mapping",
+   "item": "wand of opening",
    "pos": [
-    -250,
+    -350,
     0,
-    -150
+    -160
    ],
-   "label": "scroll labeled ELAM EBOW"
+   "label": "zinc wand"
   },
   {
-   "item": "scroll of confuse monster",
+   "item": "wand of probing",
    "pos": [
-    -150,
+    -210,
     0,
-    -150
+    -160
    ],
-   "label": "scroll labeled NR 9"
+   "label": "uranium wand"
   },
   {
-   "item": "scroll of scare monster",
+   "item": "wand of secret door detection",
    "pos": [
-    -50,
+    -70,
     0,
-    -150
+    -160
    ],
-   "label": "scroll labeled XIXAXA XOXAXA XUXAXA"
+   "label": "balsa wand"
   },
   {
-   "item": "scroll of enchant weapon",
+   "item": "wand of slow monster",
    "pos": [
-    50,
+    70,
     0,
-    -150
+    -160
    ],
-   "label": "scroll labeled DAIYEN FOOELS"
+   "label": "tin wand"
   },
   {
-   "item": "scroll of enchant armor",
+   "item": "wand of speed monster",
    "pos": [
-    150,
+    210,
     0,
-    -150
+    -160
    ],
-   "label": "scroll labeled ZELGO MER"
+   "label": "brass wand"
   },
   {
-   "item": "scroll of remove curse",
+   "item": "wand of striking",
    "pos": [
-    250,
+    350,
     0,
-    -150
+    -160
    ],
-   "label": "scroll labeled PRATYAVAYAH"
+   "label": "ebony wand"
   },
   {
-   "item": "scroll of teleportation",
+   "item": "wand of undead turning",
    "pos": [
-    -250,
+    -350,
     0,
-    -50
+    -80
    ],
-   "label": "scroll labeled VENZAR BORGAVVE"
+   "label": "copper wand"
   },
   {
-   "item": "scroll of fire",
+   "item": "wand of draining",
    "pos": [
-    -150,
+    -210,
     0,
-    -50
+    -80
    ],
-   "label": "scroll labeled ANDOVA BEGARIN"
+   "label": "ceramic wand"
   },
   {
-   "item": "scroll of earth",
+   "item": "wand of cancellation",
    "pos": [
-    -50,
+    -70,
     0,
-    -50
+    -80
    ],
-   "label": "scroll labeled KIRJE"
+   "label": "platinum wand"
   },
   {
-   "item": "scroll of destroy armor",
+   "item": "wand of create monster",
    "pos": [
-    50,
+    70,
     0,
-    -50
+    -80
    ],
-   "label": "scroll labeled JUYED AWK YACC"
+   "label": "maple wand"
   },
   {
-   "item": "scroll of amnesia",
+   "item": "wand of fear",
    "pos": [
-    150,
+    210,
     0,
-    -50
+    -80
    ],
-   "label": "scroll labeled DUAM XNAHT"
+   "label": "rusty wand"
   },
   {
-   "item": "scroll of charging",
+   "item": "wand of polymorph",
    "pos": [
-    250,
+    350,
     0,
-    -50
+    -80
    ],
-   "label": "scroll labeled HACKEM MUCHE"
+   "label": "silver wand"
   },
   {
-   "item": "scroll of genocide",
+   "item": "wand of teleportation",
    "pos": [
-    -250,
+    -350,
     0,
-    50
+    0
    ],
-   "label": "scroll labeled ELBIB YLOH"
+   "label": "iridium wand"
   },
   {
-   "item": "scroll of punishment",
+   "item": "wand of create horde",
    "pos": [
-    -150,
+    -210,
     0,
-    50
+    0
    ],
-   "label": "scroll labeled VE FORBRYDERNE"
+   "label": "black wand"
   },
   {
-   "item": "scroll of stinking cloud",
+   "item": "wand of extra healing",
    "pos": [
-    -50,
+    -70,
     0,
-    50
+    0
    ],
-   "label": "scroll labeled VELOX NEB"
+   "label": "bronze wand"
   },
   {
-   "item": "scroll of FOOBIE BLETCH",
+   "item": "wand of wishing",
    "pos": [
-    50,
+    70,
     0,
-    50
+    0
    ],
-   "label": "scroll labeled FOOBIE BLETCH"
+   "label": "pine wand"
   },
   {
-   "item": "scroll of TEMOV",
+   "item": "wand of digging",
    "pos": [
-    150,
+    210,
     0,
-    50
+    0
    ],
-   "label": "scroll labeled TEMOV"
+   "label": "iron wand"
   },
   {
-   "item": "scroll of GARVEN DEH",
+   "item": "wand of magic missile",
    "pos": [
-    250,
+    350,
     0,
-    50
+    0
    ],
-   "label": "scroll labeled GARVEN DEH"
+   "label": "steel wand"
   },
   {
-   "item": "scroll of READ ME",
+   "item": "wand of fire",
    "pos": [
-    -250,
+    -350,
     0,
-    150
+    80
    ],
-   "label": "scroll labeled READ ME"
+   "label": "hexagonal wand"
   },
   {
-   "item": "scroll of mail",
+   "item": "wand of cold",
    "pos": [
-    -150,
+    -210,
     0,
-    150
+    80
    ],
-   "label": "stamped scroll"
+   "label": "short wand"
   },
   {
-   "item": "scroll of blank paper",
+   "item": "wand of sleep",
    "pos": [
-    -50,
+    -70,
     0,
-    150
+    80
    ],
-   "label": "unlabeled scroll"
+   "label": "runed wand"
+  },
+  {
+   "item": "wand of death",
+   "pos": [
+    70,
+    0,
+    80
+   ],
+   "label": "long wand"
+  },
+  {
+   "item": "wand of lightning",
+   "pos": [
+    210,
+    0,
+    80
+   ],
+   "label": "curved wand"
+  },
+  {
+   "item": "wand of fireball",
+   "pos": [
+    350,
+    0,
+    80
+   ],
+   "label": "octagonal wand"
+  },
+  {
+   "item": "wand of forked",
+   "pos": [
+    -350,
+    0,
+    160
+   ],
+   "label": "forked wand"
+  },
+  {
+   "item": "wand of spiked",
+   "pos": [
+    -210,
+    0,
+    160
+   ],
+   "label": "spiked wand"
+  },
+  {
+   "item": "wand of jeweled",
+   "pos": [
+    -70,
+    0,
+    160
+   ],
+   "label": "jeweled wand"
   }
  ]
 }

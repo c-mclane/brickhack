@@ -10050,5 +10050,395 @@
     }
    }
   ]
+ },
+ "wand of light": {
+  "brick": "The long-handled star wand in clear glass (a glass wand)",
+  "parts": [
+   {
+    "part": "6124b",
+    "color": 47
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of nothing": {
+  "brick": "A 3L bar with white ends, in oak brown: a wand (a oak wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 70
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of enlightenment": {
+  "brick": "The long-handled star wand in trans light blue crystal (a crystal wand)",
+  "parts": [
+   {
+    "part": "6124b",
+    "color": 43
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of healing": {
+  "brick": "A 3L bar with white ends, in bamboo green: a wand (a bamboo wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 326
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of locking": {
+  "brick": "A minifig wand in pale aluminium grey (a aluminum wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 503
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of make invisible": {
+  "brick": "The long-handled star wand in white marble (a marble wand)",
+  "parts": [
+   {
+    "part": "6124b",
+    "color": 15
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of opening": {
+  "brick": "A minifig wand in zinc grey (a zinc wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 71
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of probing": {
+  "brick": "The long-handled star wand in trans neon green (a uranium wand)",
+  "oc": "wand",
+  "parts": [
+   {
+    "part": "6124b",
+    "color": 42
+   }
+  ]
+ },
+ "wand of secret door detection": {
+  "brick": "A 3L bar with white ends, in pale balsa: a wand (a balsa wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 68
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of slow monster": {
+  "brick": "A minifig wand in tin (a tin wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 151
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of speed monster": {
+  "brick": "A minifig wand in antique brass (a brass wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 60
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of striking": {
+  "brick": "A 3L bar with white ends, in ebony: a wand (a ebony wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 308
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of undead turning": {
+  "brick": "A minifig wand in copper (a copper wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 134
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of draining": {
+  "brick": "A minifig wand in glazed ceramic (a ceramic wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 78
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of cancellation": {
+  "brick": "A minifig wand in pearl platinum (a platinum wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 183
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of create monster": {
+  "brick": "A 3L bar with white ends, in maple: a wand (a maple wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 84
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of fear": {
+  "brick": "A minifig wand in rust (a rusty wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 216
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of polymorph": {
+  "brick": "The long-handled star wand in chrome silver (a silver wand)",
+  "parts": [
+   {
+    "part": "6124b",
+    "color": 383
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of teleportation": {
+  "brick": "A 3L bar with white ends, in iridium lilac: a wand (a iridium wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 85
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of create horde": {
+  "brick": "A black wand, its tip glowing blue (a black wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 0
+   }
+  ],
+  "oc": "wand",
+  "glow": {
+   "fraction": 0.15,
+   "color": 43
+  }
+ },
+ "wand of extra healing": {
+  "brick": "A minifig wand in pearl gold bronze (a bronze wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 297
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of wishing": {
+  "brick": "A 3L bar with white ends, in pine: a wand (a pine wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 19
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of digging": {
+  "brick": "A minifig wand in dark iron grey (a iron wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 72
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of magic missile": {
+  "brick": "A minifig wand in pearl steel (a steel wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 179
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of fire": {
+  "brick": "A gold wand, a red jewel on its tip (a hexagonal wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 297
+   },
+   {
+    "part": "30153",
+    "color": 36,
+    "pos": [
+     0,
+     -58,
+     0
+    ]
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of cold": {
+  "brick": "A 3L bar with white ends, in black: a wand (a short wand)",
+  "parts": [
+   {
+    "part": "87994p01",
+    "color": 0
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of sleep": {
+  "brick": "A minifig staff with a spherical end, in chrome gold (a runed wand)",
+  "parts": [
+   {
+    "part": "95049",
+    "color": 334
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of death": {
+  "brick": "Vitruvius's staff: a reddish brown 4L bar up into a round 1 x 1 plate, a trans bright green moonstone on its stud (a long wand)",
+  "oc": "wand",
+  "parts": [
+   {
+    "part": "30374",
+    "color": 70
+   },
+   {
+    "part": "6141",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "10178",
+    "color": 35,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ]
+ },
+ "wand of lightning": {
+  "brick": "A minifig staff with a crescent end, in pearl gold (a curved wand)",
+  "parts": [
+   {
+    "part": "95050",
+    "color": 297
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of fireball": {
+  "brick": "A magenta wand capped with a faceted gold gem (an octagonal wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 26
+   },
+   {
+    "part": "30153",
+    "color": 297,
+    "pos": [
+     0,
+     -58,
+     0
+    ]
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of forked": {
+  "brick": "The Pharaoh's staff with its forked end, in pearl gold (a forked wand)",
+  "parts": [
+   {
+    "part": "93252",
+    "color": 297
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of spiked": {
+  "brick": "A black wand, a finned spike in its tip (a spiked wand)",
+  "parts": [
+   {
+    "part": "102498",
+    "color": 0
+   },
+   {
+    "part": "24482",
+    "color": 72,
+    "pos": [
+     0,
+     -54,
+     0
+    ]
+   }
+  ],
+  "oc": "wand"
+ },
+ "wand of jeweled": {
+  "brick": "The Duplo star wand, seven points, shrunk to half (Duplo's twice a minifig's scale), in medium azure (a jeweled wand)",
+  "parts": [
+   {
+    "part": "42077",
+    "color": 322,
+    "mat": [
+     0.5,
+     0,
+     0,
+     0,
+     0.5,
+     0,
+     0,
+     0,
+     0.5
+    ]
+   }
+  ],
+  "oc": "wand"
  }
 }
