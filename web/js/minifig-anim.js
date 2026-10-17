@@ -98,6 +98,7 @@ export class FigureAnimator {
     this.headYaw = 0; this.headPitch = 0;
     this.look = { yaw: 0, pitch: 0, next: 1 + Math.random() * 2 };
     this.arm = { R: 0, L: 0 }; // the arms' current swing, degrees
+    this.act = { lean: 0, reach: 0, lookUp: 0, heavy: 0, hop: 0 }; // what the body's doing, eased (state: lean...)
     this.poses = {};
   }
 
@@ -106,7 +107,11 @@ export class FigureAnimator {
 
   // state: {moving (bool), speed (stride cycles per second, default 1.75),
   //   holdsR, holdsL (bool: something's in that hand now, whatever the figure was built holding),
-  //   twoweap (bool: fighting with both: the left slashes too, just after the right)}
+  //   twoweap (bool: fighting with both: the left slashes too, just after the right),
+  //   lean (radians: the body bent forward at the waist, as into a push), reach (0..1: both arms
+  //   out in front, pushing), lookUp (0..1: gazing up at something tall), heavy (0..1: lugging
+  //   something far too heavy in both arms: leaning back, arms shaking, staggering), hop (0..1:
+  //   in the air, a little jump: arms flung up, knees up)}
   update(dt, state = {}) {
     const rig = this.rig;
     if (!rig) return null;
@@ -119,6 +124,10 @@ export class FigureAnimator {
     const stretch = Math.min(1, (t - this.spawnT0) / STRETCH_TIME);
     const up = stretch < 1 ? bump(stretch, 0.08, 0.42, 0.62, 0.95) : 0; // arms overhead
     const atk = (t - this.attackT0) / ATTACK_TIME;
+    const A = this.act;
+    for (const k of ['lean', 'reach', 'lookUp', 'heavy']) A[k] = approach(A[k], state[k] || 0, 6, dt);
+    A.hop = state.hop || 0; // (follows the jump exactly)
+    const heavy = A.heavy, shake = heavy * Math.sin(t * 31) * 2.5; // (degrees: arms trembling under the weight)
 
     // the head: looks about when standing, ahead when walking, back during the stretch
     if (t > this.look.next) {
@@ -129,7 +138,7 @@ export class FigureAnimator {
     }
     const lookYaw = this.walk > 0.3 ? 0 : this.look.yaw, lookPitch = this.walk > 0.3 ? 0 : this.look.pitch;
     this.headYaw = approach(this.headYaw, lookYaw * (1 - up), 5, dt);
-    this.headPitch = approach(this.headPitch, lookPitch * (1 - up) - 0.35 * up, 5, dt);
+    this.headPitch = approach(this.headPitch, (lookPitch * (1 - up) - 0.35 * up) * (1 - A.lookUp) - 0.55 * A.lookUp + 0.15 * heavy, 5, dt);
 
     // breathing (deeper during the stretch)
     const breath = 0.012 * Math.sin((t / 3.6) * Math.PI * 2) + 0.03 * up;
@@ -138,9 +147,12 @@ export class FigureAnimator {
     const slash = atk >= 0 && atk < 1 ? slashAt(atk, this.arm[lefty ? 'L' : 'R']) : null;
     // walking: a little waddle, the upper body rocking over whichever foot is down
     // (so a short figure's steps don't look like gliding)
-    const waddle = turnAbout(waist, [0, 0, 1], Math.sin(this.stride) * this.walk * 4 * DEG);
+    // (lugging something heavy: a stagger, side to side)
+    const waddle = turnAbout(waist, [0, 0, 1], Math.sin(this.stride) * this.walk * 4 * (1 + 2.5 * heavy) * DEG);
+    // bent forward into a push; leaning back under a weight
+    const bend = turnAbout(waist, [1, 0, 0], A.lean - 0.14 * heavy);
     // the upper body: breathing, twisting into a slash, waddling
-    const B = mul(waddle, mul(slash ? turnAbout(waist, [0, -1, 0], lefty ? -slash.twist : slash.twist) : ident(), swellY(waist[1], 1 + breath)));
+    const B = mul(bend, mul(waddle, mul(slash ? turnAbout(waist, [0, -1, 0], lefty ? -slash.twist : slash.twist) : ident(), swellY(waist[1], 1 + breath))));
 
     const P = this.poses;
     P.body = B;
@@ -159,6 +171,11 @@ export class FigureAnimator {
       target += swing * (side === 'R' ? -1 : 1) * (holding ? 10 : 22);
       // the stretch: both arms up overhead
       target = target * (1 - up) + -165 * up;
+      // pushing: both arms out in front, flat against what's pushed; lugging: both low in front,
+      // round the weight, shaking; in a hop: flung up
+      target = target * (1 - A.reach) - 88 * A.reach;
+      target = target * (1 - heavy) + (-52 + shake * (side === 'R' ? 1 : -1)) * heavy;
+      target += -55 * A.hop;
       let a = approach(this.arm[side], target, 10, dt);
       let out = 0;
       // (fighting with two weapons, the left slashes too, a moment after the right)
@@ -202,9 +219,9 @@ export class FigureAnimator {
 
     // the legs: stride, opposite each other
     if (rig.legs) {
-      const a = swing * 32 * DEG;
-      P.legR = turnAbout(rig.legs.pivot, rig.legs.axis, a);
-      P.legL = turnAbout(rig.legs.pivot, rig.legs.axis, -a);
+      const a = swing * 32 * (1 - 0.5 * heavy) * DEG, tuck = -40 * A.hop * DEG; // (heavy: short steps; a hop: knees up)
+      P.legR = turnAbout(rig.legs.pivot, rig.legs.axis, a + tuck);
+      P.legL = turnAbout(rig.legs.pivot, rig.legs.axis, -a + tuck);
     }
     return P;
   }

@@ -12,10 +12,12 @@ import { NameTags, nameTagEntries } from './nametags.js';
 import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
-import { figureMatrix, FIG_HEIGHT } from './brick.js';
+import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H } from './brick.js';
+import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
+import { perchSpot, cameFrom } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
-import { loadBrickItems, brickItemForTile, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
+import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -614,13 +616,29 @@ function handle(m) {
       break;
     case 'throw': { // the hero threw something: flown in an arc, to bounce and tumble to rest (throwfx.js)
       const l = brickItemForTile(m.tile);
-      if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty);
+      if (l && renderer.brickOn && renderer.brick) {
+        const spit = / venom$/.test(l.name); // (spit: straight and dripping, and it splats where it reaches)
+        renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit });
+        if (spit) renderer.brick.fx.shatter(l.url, m.tx, m.ty, 'venom');
+      }
+      if (m.by === 'monster') spitAt.set(`${m.fx},${m.fy}`, performance.now()); // (a creature there lunges: brickMonFigures)
       if (m.by !== 'monster' && hero3d.anim) hero3d.anim.attack('L'); // (you threw it: a swing of your left arm)
       break;
     }
     case 'shatter': { // something broke there: shards
       const l = brickItemForTile(m.tile);
       if (l && renderer.brickOn && renderer.brick) renderer.brick.fx.shatter(l.url, m.x, m.y, l.oc === 'potion'); // (a potion splashes too)
+      break;
+    }
+    case 'push': { // the hero pushed a boulder: it rolls and tumbles into the next square (boulderfx.js)
+      const l = brickItemForTile(m.tile);
+      if (l && renderer.brickOn && renderer.brick) renderer.brick.boulderPush(l.url, m.fx, m.fy, m.tx, m.ty);
+      hero3d.pushT0 = performance.now(); // (a lean into it: heroPose)
+      break;
+    }
+    case 'crumble': { // a boulder broke into rocks: it bursts, grit and rocks flying
+      const l = brickItemForTile(m.tile), rock = brickItemByName('rock');
+      if (l && rock && renderer.brickOn && renderer.brick) renderer.brick.boulderBreak(l.url, m.x, m.y, rock.url);
       break;
     }
     case 'rip': game.rip = m; break;
@@ -1190,6 +1208,19 @@ const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.
 // figure keeps what it was built holding). The left hand only while fighting
 // with two weapons (the "alt" weapon); otherwise it's left as built (a shield...).
 const heldPrims = new Map(); // url -> the item's prims for brick.js (loading: null)
+// Punished: an iron chain beside you (chains are only ever the punished hero's), and the heavy iron
+// ball nearest it (or in your arms): {chain, ball (its floor item, or null: carried)}, or null
+function punishment() {
+  const h = world.hero, drops = world.brickDrops || [];
+  const chain = drops.find((d) => d.name === 'iron chain' && Math.abs(d.x - h.x) <= 1 && Math.abs(d.z - h.y) <= 1);
+  if (!chain) return null;
+  if (heavyBall()) return { chain, ball: null };
+  let best = null;
+  for (const d of drops) if (d.name === 'heavy iron ball') { const r = Math.hypot(d.x - chain.x, d.z - chain.z); if (r <= 2.5 && (!best || r < best.r)) best = { d, r }; }
+  return best ? { chain, ball: best.d } : null;
+}
+// the heavy iron ball, if you're carrying it (punished, you can pick it up: the hardest thing you'll ever carry)
+const heavyBall = () => game.inv.find((i) => { const l = brickItemForTile(i.t); return l && l.name === 'heavy iron ball'; });
 function heroHold() {
   const wep = game.inv.find((i) => i.w === 'weapon');
   const two = !!(ui.stat && ui.stat.twoweap);
@@ -1197,6 +1228,9 @@ function heroHold() {
   const as = (it) => { const l = brickItemForTile(it.t); return l ? l.url : undefined; };
   const isRing = (it) => it && it.c === '=';
   const hold = { R: wep && !isRing(wep) ? as(wep) : null, L: alt && !isRing(alt) ? as(alt) : undefined, two };
+  const ball = heavyBall();
+  if (ball) { hold.R = null; hold.L = null; hold.two = false; hold.hug = punishment() ? undefined : as(ball); } // (lugging the ball: weapons put away, it held before you: on its chain, the chain's own ball)
+  if (statuePerch(performance.now())) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free)
   // rings: worn as bracelets round the wrists, the right ring on the right
   // (and a ring wielded: on the wrist too, not in the fist)
   const worn = (slot) => game.inv.find((i) => i.w === slot);
@@ -1234,14 +1268,26 @@ function heroPose(dt, now) {
     hero3d.jabT0 = fx.jabT0;
   }
   const hold = hero3d.hold || {};
+  // a statue: the hop up onto its ledge, and gazing up at it; a boulder: a lean into the push;
+  // the ball: lugged, as if it were the hardest thing in the world
+  const pp = statuePerch(now), push = Math.max(0, 1 - (now - (hero3d.pushT0 ?? -1e9)) / 700);
   return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround),
-    holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two });
+    holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two,
+    hop: pp ? pp.hop : 0, lookUp: pp ? pp.lookUp : 0, lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: heavyBall() ? 1 : 0 });
+}
+
+// ---- standing at a statue: up on its ledge, gazing at it (perch.js)
+const perchFrom = { x: 0, y: 0, cur: null }; // the square you came from
+function statuePerch(now) {
+  cameFrom(perchFrom, world.hero);
+  return perchSpot(world.hero, perchFrom, motion.heroPos(now), world.brickDrops);
 }
 
 // ---- monsters made in brick (web/assets/brick/monsters.json, built by
 // tools/build_roster.py): drawn as their minifig in place of their sprite,
 // alive as the hero is (breathing, looking about, walking, swinging what
 // they hold when they lunge at you), always facing you
+const spitAt = new Map(); // x,y -> when a monster there last threw or spat something (its creature lunges)
 const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, anim, lungeT0, last}
 async function loadBrickMonsters() {
   const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
@@ -1249,7 +1295,8 @@ async function loadBrickMonsters() {
   (tiles.names || []).forEach((n, i) => {
     const m = mons[n];
     if (!m) return;
-    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, anim: null, lungeT0: null, last: null };
+    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, anim: null, lungeT0: null, last: null,
+      creature: m.creature, slither: m.slither, lift: m.lift || 0 };
     brickMons.set(i, e);
     renderer.figRender.model(m.url).then((p) => { e.prims = p; e.anim = p && p.rig ? new FigureAnimator(p.rig) : null; if (e.anim) e.anim.spawn(); })
       .catch((err) => console.warn('brick monster:', n, err));
@@ -1268,8 +1315,25 @@ function brickMonFigures(sprites, dt, now) {
     if (e.anim && f && f.kind === 'lunge' && f.t0 !== e.lungeT0) { e.lungeT0 = f.t0; e.anim.attack(); }
     const moving = !!e.last && Math.hypot(s.x - e.last[0], s.z - e.last[1]) > 0.002 && !(f && f.kind === 'lunge');
     e.last = [s.x, s.z];
-    const pose = e.anim ? e.anim.update(dt, { moving, holdsR: !!e.hold }) : null;
     const yaw = Math.atan2(hx - s.x, -(hz - s.z)); // (the game's yaw: 0 looks north, -Z)
+    if (e.creature) { // (a creature: no joints, the whole of it moving: creature.js)
+      const spat = spitAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
+      if (spat && spat > (e.spatT0 || 0)) { e.spatT0 = spat; e.lungeAt = now / 1000; }
+      if (f && f.kind === 'lunge' && f.t0 !== e.lungeT0) { e.lungeT0 = f.t0; e.lungeAt = now / 1000; }
+      const local = creatureLocal(e.creature, now / 1000, { moving, lungeT: e.lungeAt ?? -1e9 });
+      out.push({ prims: e.prims, url: e.url, matrix: mul4(partMatrix(s.x + 0.5, (s.lift || 0) + STUD_H, s.z + 0.5, Math.PI - yaw), local), shade: s.shade, pose: null, hold: {} });
+      continue;
+    }
+    // (a naga: spitting, it leans in, arms out, and its coils lunge; moving, it slithers)
+    const spat = spitAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
+    if (spat && spat > (e.spatT0 || 0)) { e.spatT0 = spat; e.spitAt = now / 1000; }
+    const spitting = e.spitAt != null && now / 1000 - e.spitAt < LUNGE_TIME;
+    const pose = e.anim ? e.anim.update(dt, { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0 }) : null;
+    if (e.slither) {
+      const m = mul4(figureMatrix(s.x + 0.5, (s.lift || 0) + e.lift, s.z + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: e.spitAt ?? -1e9 }));
+      out.push({ prims: e.prims, url: e.url, matrix: m, shade: s.shade, pose, hold: { R: e.hold } });
+      continue;
+    }
     out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(s.x + 0.5, s.lift || 0, s.z + 0.5, yaw), shade: s.shade, pose, hold: { R: e.hold } });
   }
   return out;
@@ -1403,12 +1467,13 @@ function updateCamera(now) {
 function updateCameraBase(now) {
   // follow the hero's animated position (see motion.js)
   [cam.x, cam.z] = motion.heroPos(now);
-  const tx = cam.x + 0.5, tz = cam.z + 0.5;
+  const pp = statuePerch(now); // (up on a statue's ledge: the view goes with you)
+  const tx = cam.x + 0.5 + (pp ? pp.dx : 0), tz = cam.z + 0.5 + (pp ? pp.dz : 0), up = pp ? pp.lift : 0;
   const heroH = motion.heroHeight();
   const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
   const f = [Math.sin(cam.yaw) * cp, sp, -Math.cos(cam.yaw) * cp];
   if (opts.camera === 0) {
-    cam.eye = [tx, (world.heroLift ?? phys.y) + heroH * 0.9, tz]; // Steve's eyes are at 1.62
+    cam.eye = [tx, (world.heroLift ?? phys.y) + up + heroH * 0.9, tz]; // Steve's eyes are at 1.62
     cam.vyaw = cam.yaw;
     cam.vpitch = cam.pitch;
     return;
@@ -1425,7 +1490,7 @@ function updateCameraBase(now) {
   const sign = opts.camera === 1 ? -1 : 1;
   // (a minifig is taller than Steve: the camera stands further back, and looks over the helmet)
   const fig = !!motion.figHeight && heroH === motion.figHeight;
-  const target = [tx, (world.heroLift ?? phys.y) + heroH * (fig ? 1.0 : 0.85), tz];
+  const target = [tx, (world.heroLift ?? phys.y) + up + heroH * (fig ? 1.0 : 0.85), tz];
   let dist = 4.2 * Math.max(1, heroH / 1.8);
   let overHaze = false;
   for (let t = 0.3; t < dist; t += 0.05) {
@@ -1925,7 +1990,11 @@ function frame(t) {
     world.spriteScale = FIG_HEIGHT / 2.0; // a human-sized monster stands as tall as you
     world.camYaw = cam.vyaw; // creatures face the way they walk, as seen from here
     const sprites = world.sprites(opts.camera !== 0 && !doll3d && !fig3d, motion, t, fx);
-    renderer.brickItems = world.brickDrops || [];
+    // punished: the ball and chain drawn on your ankle, in physics (brickworld.setPunished), not lying as items
+    const pun = renderer.brickOn && renderer.brick && brickChainLink() ? punishment() : null;
+    const ballItem = brickItemByName('heavy iron ball');
+    if (renderer.brick) renderer.brick.setPunished(pun && ballItem ? { ball: pun.ball ? [pun.ball.x, pun.ball.z] : null, ballUrl: ballItem.url, linkUrl: brickChainLink() } : null);
+    renderer.brickItems = pun ? (world.brickDrops || []).filter((d) => d !== pun.chain && d !== pun.ball) : world.brickDrops || [];
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
     if (game.playing) {
       const [hx, hz] = motion.heroPos(t);
@@ -1936,7 +2005,9 @@ function frame(t) {
     const rig = hero3d.prims && hero3d.prims.rig;
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
-      const m = figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
+      const pp = statuePerch(t); // (on a statue's square: up on its ledge, looking at it)
+      const m = pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
+        : figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
       renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL }) : [])];

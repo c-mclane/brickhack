@@ -1,0 +1,15 @@
+{
+ "label": "guardian naga",
+ "name": "guardian naga",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 19,
+ "head": "98150",
+ "headColor": 288,
+ "shortLegs": {
+  "part": "98140",
+  "color": 288
+ },
+ "headY": 0
+}

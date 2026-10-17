@@ -101,6 +101,15 @@ def tile_index(name):
     return None
 
 
+def part_url(lib, colors, part, color):
+    """A library part on its own, in one colour, as a model (cached): its url."""
+    key = f'{part}_{color}'
+    glb = os.path.join(CACHE, key + '.glb')
+    if not os.path.exists(glb):
+        print(f'  converting {key}: {ldraw2glb.to_glb(lib.parse(part + ".dat"), colors, color, glb, None)} tris')
+    return f'assets/brick/cache/{key}.glb?v={int(os.path.getmtime(glb))}'
+
+
 def main(scene_path):
     os.makedirs(CACHE, exist_ok=True)
     scene = json.load(open(scene_path))
@@ -183,7 +192,22 @@ def main(scene_path):
             print(f'  converting {key}: {ldraw2glb.to_glb(geom, colors, color if color != 16 else 71, glb, extras)} tris')
         built.append({'url': f'assets/brick/cache/{key}.glb?v={int(os.path.getmtime(glb))}',
                       'pos': obj.get('pos', [0, 0, 0]), 'rotY': obj.get('rotY', 0), 'label': obj.get('label')})
+        if obj.get('boulders'):   # a figure pushing a boulder, then breaking it with its pick (web/js/boulderfx.js)
+            ib = json.load(open(os.path.join(ASSETS, 'items.built.json')))
+            built[-1]['boulders'] = {'boulder': ib['boulder']['url'], 'rock': ib['rock']['url']}
+        if obj.get('chained'):   # punished: a ball and chain on its ankle, walking it round (web/js/ballchain.js)
+            c = obj['chained']
+            built[-1]['chain'] = {'ball': json.load(open(os.path.join(ASSETS, 'items.built.json')))['heavy iron ball']['url'],
+                                  'link': part_url(lib, colors, '30104k02', c.get('color', 87)),
+                                  'links': c.get('links', 12), 'path': c.get('path', 5)}
+    if scene.get('level'):   # the test dungeon (web/js/testbed.js): its room, what lies where, and a chain's link
+        for b, obj in zip(built, scene['objects']):
+            if obj.get('hero'):
+                b['hero'] = True
     out = {'objects': built, 'camera': scene.get('camera')}
+    if scene.get('level'):
+        out['level'] = scene['level']
+        out['chainLink'] = part_url(lib, colors, '30104k02', 87)
     out['version'] = hashlib.sha1(json.dumps(out, sort_keys=True).encode()).hexdigest()[:12]
     json.dump(out, open(os.path.join(ASSETS, 'scene.built.json'), 'w'), indent=1)
     print(f"scene: {len(built)} objects, version {out['version']}")

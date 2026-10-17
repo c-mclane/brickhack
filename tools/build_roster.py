@@ -36,8 +36,9 @@ DUNGEON_PARTS = {
 """,
     'doorway': f"""1 {FRAME} 0 0 0 1 0 0 0 1 0 0 0 1 60596.dat
 """,
-    # the dungeon itself: a green 4x4 plate for each floor square, grey 2x4 bricks for the walls
-    'plate4x4': """1 2 0 0 0 1 0 0 0 1 0 0 0 1 3031.dat
+    # the dungeon itself: a grey 4x4 plate for each floor square, grey 2x4 bricks for the walls
+    # (the floor the grey of the walls' top course)
+    'plate4x4': """1 71 0 0 0 1 0 0 0 1 0 0 0 1 3031.dat
 """,
     'brick2x4': """1 71 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
 """,
@@ -89,8 +90,30 @@ def main():
     json.dump(built, open(os.path.join(ASSETS, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
     mons = {}
+    def creature(mon, m):
+        """A monster that isn't a minifig (a cobra): its parts ({part, color, pos, mat}), scaled down to fit
+        its square ("scale"), its middle over the origin and its underside on it; facing +Z as a figure
+        does (its head to LDraw's -Z). Animated whole by the client (web/js/creature.js)."""
+        s = m.get('scale', 1)
+        ldr = f'0 {mon}\n' + ''.join(f"1 {p['color']} " + ' '.join(str(round(v * s, 3)) for v in p.get('pos', [0, 0, 0]))
+                                      + ' ' + ' '.join(str(round(v * s, 4)) for v in p.get('mat', [1, 0, 0, 0, 1, 0, 0, 0, 1]))
+                                      + f" {p['part']}.dat\n" for p in m['parts'])
+        name = 'mon-' + mon.replace(' ', '-')
+        key = hashlib.sha1(ldr.encode()).hexdigest()[:12]
+        glb, ldr_path, keyfile = (os.path.join(OUT, name + ext) for ext in ('.glb', '.ldr', '.key'))
+        if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):
+            open(ldr_path, 'w').write(ldr)
+            print(f'  {name}: {ldraw2glb.to_glb(lib.parse(ldr_path), colors, 71, glb, None)} tris')
+            open(keyfile, 'w').write(key)
+        return f'assets/brick/roster/{name}.glb?v={key}'
+
     for mon, m in json.load(open(os.path.join(ASSETS, 'monsters.json'))).items():
-        mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold')}
+        if m.get('creature'):
+            mons[mon] = {'url': creature(mon, m), 'creature': m['creature']}
+            continue
+        mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold'),
+                     # a serpent's tail for legs (a naga): it slithers (web/js/creature.js slitherLocal), lifted so its coils rest on the floor
+                     **({'slither': True} if m.get('slither') else {}), **({'lift': m['lift']} if m.get('lift') else {})}
     json.dump(mons, open(os.path.join(ASSETS, 'monsters.built.json'), 'w'), indent=1)
     print(f'monsters in brick: {len(mons)}')
     os.makedirs(PARTS, exist_ok=True)

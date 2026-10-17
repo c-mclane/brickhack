@@ -2,19 +2,19 @@
  "camera": {
   "pos": [
    0,
-   34,
-   26
+   9,
+   10
   ],
   "target": [
    0,
    0,
-   0
+   0.5
   ]
  },
  "objects": [
   {
    "part": "4186",
-   "color": 2,
+   "color": 71,
    "pos": [
     0,
     0,
@@ -22,382 +22,121 @@
    ]
   },
   {
-   "item": "large box",
+   "item": "amulet of change",
    "pos": [
-    -330,
-    0,
-    -330
-   ],
-   "label": "large box"
-  },
-  {
-   "item": "chest",
-   "pos": [
-    -220,
-    0,
-    -330
-   ],
-   "label": "chest"
-  },
-  {
-   "item": "ice box",
-   "pos": [
-    -110,
-    0,
-    -330
-   ],
-   "label": "ice box"
-  },
-  {
-   "item": "sack",
-   "pos": [
-    0,
-    0,
-    -330
-   ],
-   "label": "bag"
-  },
-  {
-   "item": "skeleton key",
-   "pos": [
-    110,
-    0,
-    -330
-   ],
-   "label": "key"
-  },
-  {
-   "item": "lock pick",
-   "pos": [
-    220,
-    0,
-    -330
-   ],
-   "label": "lock pick"
-  },
-  {
-   "item": "credit card",
-   "pos": [
-    330,
-    0,
-    -330
-   ],
-   "label": "credit card"
-  },
-  {
-   "item": "tallow candle",
-   "pos": [
-    -330,
-    0,
-    -220
-   ],
-   "label": "candle"
-  },
-  {
-   "item": "oil lamp",
-   "pos": [
-    -220,
-    0,
-    -220
-   ],
-   "label": "lamp"
-  },
-  {
-   "item": "brass lantern",
-   "pos": [
-    -110,
-    0,
-    -220
-   ],
-   "label": "brass lantern"
-  },
-  {
-   "item": "tin whistle",
-   "pos": [
-    0,
-    0,
-    -220
-   ],
-   "label": "whistle"
-  },
-  {
-   "item": "wooden flute",
-   "pos": [
-    110,
-    0,
-    -220
-   ],
-   "label": "flute"
-  },
-  {
-   "item": "tooled horn",
-   "pos": [
-    220,
-    0,
-    -220
-   ],
-   "label": "horn"
-  },
-  {
-   "item": "wooden harp",
-   "pos": [
-    330,
-    0,
-    -220
-   ],
-   "label": "harp"
-  },
-  {
-   "item": "bell",
-   "pos": [
-    -330,
+    -150,
     0,
     -110
    ],
-   "label": "bell"
+   "label": "square"
   },
   {
-   "item": "bugle",
+   "item": "amulet of drain resistance",
    "pos": [
-    -220,
+    -50,
     0,
     -110
    ],
-   "label": "bugle"
+   "label": "warped"
   },
   {
-   "item": "leather drum",
-   "pos": [
-    -110,
-    0,
-    -110
-   ],
-   "label": "drum"
-  },
-  {
-   "item": "land mine",
-   "pos": [
-    0,
-    0,
-    -110
-   ],
-   "label": "land mine"
-  },
-  {
-   "item": "beartrap",
-   "pos": [
-    110,
-    0,
-    -110
-   ],
-   "label": "beartrap"
-  },
-  {
-   "item": "expensive camera",
-   "pos": [
-    220,
-    0,
-    -110
-   ],
-   "label": "expensive camera"
-  },
-  {
-   "item": "mirror",
-   "pos": [
-    330,
-    0,
-    -110
-   ],
-   "label": "looking glass"
-  },
-  {
-   "item": "crystal ball",
-   "pos": [
-    -330,
-    0,
-    0
-   ],
-   "label": "glass orb"
-  },
-  {
-   "item": "lenses",
-   "pos": [
-    -220,
-    0,
-    0
-   ],
-   "label": "lenses"
-  },
-  {
-   "item": "blindfold",
-   "pos": [
-    -110,
-    0,
-    0
-   ],
-   "label": "blindfold"
-  },
-  {
-   "item": "towel",
-   "pos": [
-    0,
-    0,
-    0
-   ],
-   "label": "towel"
-  },
-  {
-   "item": "saddle",
-   "pos": [
-    110,
-    0,
-    0
-   ],
-   "label": "saddle"
-  },
-  {
-   "item": "leash",
-   "pos": [
-    220,
-    0,
-    0
-   ],
-   "label": "leash"
-  },
-  {
-   "item": "stethoscope",
-   "pos": [
-    330,
-    0,
-    0
-   ],
-   "label": "stethoscope"
-  },
-  {
-   "item": "tinning kit",
-   "pos": [
-    -330,
-    0,
-    110
-   ],
-   "label": "tinning kit"
-  },
-  {
-   "item": "medical kit",
-   "pos": [
-    -220,
-    0,
-    110
-   ],
-   "label": "leather bag"
-  },
-  {
-   "item": "tin opener",
-   "pos": [
-    -110,
-    0,
-    110
-   ],
-   "label": "tin opener"
-  },
-  {
-   "item": "can of grease",
-   "pos": [
-    0,
-    0,
-    110
-   ],
-   "label": "can of grease"
-  },
-  {
-   "item": "figurine",
-   "pos": [
-    110,
-    0,
-    110
-   ],
-   "label": "figurine"
-  },
-  {
-   "item": "magic marker",
-   "pos": [
-    220,
-    0,
-    110
-   ],
-   "label": "magic marker"
-  },
-  {
-   "item": "bandage",
-   "pos": [
-    330,
-    0,
-    110
-   ],
-   "label": "bandage"
-  },
-  {
-   "item": "phial",
-   "pos": [
-    -330,
-    0,
-    220
-   ],
-   "label": "phial"
-  },
-  {
-   "item": "Candelabrum of Invocation",
-   "pos": [
-    -220,
-    0,
-    220
-   ],
-   "label": "candelabrum"
-  },
-  {
-   "item": "Bell of Opening",
-   "pos": [
-    -110,
-    0,
-    220
-   ],
-   "label": "silver bell"
-  },
-  {
-   "item": "Master Key of Thievery",
-   "pos": [
-    -130,
-    0,
-    430
-   ],
-   "label": "Master Key of Thievery"
-  },
-  {
-   "item": "Key of Law",
-   "pos": [
-    -40,
-    0,
-    430
-   ],
-   "label": "Key of Law"
-  },
-  {
-   "item": "Key of Neutrality",
+   "item": "amulet of ESP",
    "pos": [
     50,
     0,
-    430
+    -110
    ],
-   "label": "Key of Neutrality"
+   "label": "circular"
   },
   {
-   "item": "Key of Chaos",
+   "item": "amulet of flying",
    "pos": [
-    140,
+    150,
     0,
-    430
+    -110
    ],
-   "label": "Key of Chaos"
+   "label": "convex"
+  },
+  {
+   "item": "amulet of life saving",
+   "pos": [
+    -150,
+    0,
+    -10
+   ],
+   "label": "spherical"
+  },
+  {
+   "item": "amulet of magical breathing",
+   "pos": [
+    -50,
+    0,
+    -10
+   ],
+   "label": "octagonal"
+  },
+  {
+   "item": "amulet of reflection",
+   "pos": [
+    50,
+    0,
+    -10
+   ],
+   "label": "hexagonal"
+  },
+  {
+   "item": "amulet of restful sleep",
+   "pos": [
+    150,
+    0,
+    -10
+   ],
+   "label": "triangular"
+  },
+  {
+   "item": "amulet of strangulation",
+   "pos": [
+    -150,
+    0,
+    90
+   ],
+   "label": "oval"
+  },
+  {
+   "item": "amulet of unchanging",
+   "pos": [
+    -50,
+    0,
+    90
+   ],
+   "label": "concave"
+  },
+  {
+   "item": "amulet versus poison",
+   "pos": [
+    50,
+    0,
+    90
+   ],
+   "label": "pyramidal"
+  },
+  {
+   "item": "amulet versus stone",
+   "pos": [
+    150,
+    0,
+    90
+   ],
+   "label": "lunate"
+  },
+  {
+   "item": "Amulet of Yendor",
+   "pos": [
+    0,
+    0,
+    200
+   ],
+   "label": "Amulet of Yendor"
   }
  ]
 }

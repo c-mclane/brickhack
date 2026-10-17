@@ -282,7 +282,9 @@ export function addEffects(THREE, root) {
   root.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
   const pts = [], v = new THREE.Vector3();
-  root.traverse((o) => {
+  // (fxJoint: only that part burns: a statue's torch flame, not the statue)
+  const src = (host.userData.fxJoint && root.getObjectByName(host.userData.fxJoint)) || root;
+  src.traverse((o) => {
     if (!o.isMesh) return;
     const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), a = o.geometry.attributes.position;
     for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m); pts.push(v.clone()); }

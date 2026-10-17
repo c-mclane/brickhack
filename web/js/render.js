@@ -577,8 +577,8 @@ export class Renderer {
     const wallLayer = (l, topTile) => (l === WALL_H - 1 || T.wallBrick == null ? topTile : T.wallBrick);
     const hx = world.hero.x, hy = world.hero.y;
     const WALL_TILE = wallTile();
-    // dungeon levels are a brick maze out in the open: green studded floors on a
-    // green baseplate, grey brick walls (and the rock you've seen round the
+    // dungeon levels are a brick maze out in the open: grey studded floors (the
+    // grey of the walls' tops) on a grey baseplate, grey brick walls (and the rock you've seen round the
     // corridors: walled lanes), wooden brick doors, and haze over everything
     // not yet explored (a path you haven't followed yet fades into it)
     const brickLevel = true; // (every level is: the dungeon, Ascend's baseplate)

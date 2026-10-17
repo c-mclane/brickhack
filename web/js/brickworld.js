@@ -12,15 +12,21 @@ import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffec
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
+import { BoulderFX } from './boulderfx.js';
+import { BallChain, ankleAnchor } from './ballchain.js';
+
+// where a figure holds something lugged in both arms: before its belly, clear of it (the model's units: studs)
+export const HUG = new THREE.Vector3(0, -1.05, 1.45); // (high, the hands sunk into it)
+const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
 
 const PIECES = {
-  plate: 'assets/brick/parts/plate4x4.glb', // a floor square: a green 4x4 plate, origin at its top middle
+  plate: 'assets/brick/parts/plate4x4.glb', // a floor square: a grey 4x4 plate, origin at its top middle
   brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
 };
-const WALL_GREY = 0xa0a5a9, GROUND_GREEN = 0x00852b;
+const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
 // how many courses higher the Castle's walls rise: [none, its outer walls, its corner towers]
 const RISE_COURSES = [0, 9, 16];
 
@@ -56,6 +62,8 @@ export class BrickWorld {
     this.doors = new Map(); // where -> the door's group
     this.items = new Map(); // where + what -> a brick item lying on the floor
     this.fx = new ThrowFX(this); // thrown things, flying and tumbling (throwfx.js)
+    this.boulders = null; // boulders rolling and bursting (boulderfx.js: made with the world)
+    this.keptRocks = new Map(); // x,z,url -> rocks flung from a broken boulder, lying where they fell (while its rocks are there)
     this.env = gradientEnvironment(THREE, r); // what metal reflects (envmap.js; plastic is lit as ever)
     this.data = null;
     this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => { this.pieces[k] = await this.partsOf(url); }))
@@ -63,7 +71,7 @@ export class BrickWorld {
     // solid boxes for the wall courses under the top one (their studs are hidden anyway), and the ground
     const box = new THREE.BoxGeometry(1, 1, 1).translate(0.5, 0.5, 0.5);
     this.pieces.course = [{ geometry: box, material: new THREE.MeshStandardMaterial({ color: WALL_GREY, roughness: 0.35, flatShading: true }) }];
-    this.pieces.ground = [{ geometry: box, material: new THREE.MeshStandardMaterial({ color: GROUND_GREEN, roughness: 0.35, flatShading: true }) }];
+    this.pieces.ground = [{ geometry: box, material: new THREE.MeshStandardMaterial({ color: GROUND_GREY, roughness: 0.35, flatShading: true }) }];
   }
 
   // a .glb, set up as the viewer sets it up
@@ -316,13 +324,15 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
+        const turn = it.name === 'statue' ? 0 // (a statue stands square to its square: perch.js climbs its sides)
+          : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
         g.scale.setScalar(MODEL_SCALE);
         g.userData = { square: `${it.x},${it.z}`, level, thick: 0 };
         this.world.add(g);
         if (this.fx.isIncoming(it.x, it.z, it.url)) g.visible = false; // (still in the air: it lands, then shows: throwfx.js)
+        if (this.keptRocks.has(`${it.x},${it.z},${it.url}`)) g.visible = false; // (a broken boulder's rocks: the flung ones lying there are its pile)
         const pose = this.fx.poseFor(it.x, it.z, it.url);
         this.model(it.url).then((m) => {
           const lay = m.clone();
@@ -356,6 +366,91 @@ export class BrickWorld {
       if (!list.some((it) => it.x === +x && it.z === +z && it.url === url)) this.fx.poses.delete(k);
     }
     for (const sq of touched) this.restack(sq);
+    for (const [k, kept] of this.keptRocks) { // (a broken boulder's flung rocks: gone with its rocks)
+      const [x, z, ...u] = k.split(','), url = u.join(',');
+      if (this.fx.isIncoming(+x, +z, url) || list.some((it) => it.x === +x && it.z === +z && it.url === url)) continue;
+      for (const r of kept) this.boulders.remove(r);
+      this.keptRocks.delete(k);
+    }
+  }
+
+  // where a floor item lies (its model's middle, its turn), if it's drawn: {p, q, g}
+  lying(x, z, url) {
+    for (const [key, g] of this.items) {
+      const [gx, gz, , ...gu] = key.split(',');
+      if (+gx !== x || +gz !== z || gu.join(',') !== url || !g.children.length) continue;
+      g.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(g);
+      return { p: box.getCenter(new THREE.Vector3()), q: g.quaternion.clone(), g };
+    }
+    return null;
+  }
+  boulderFX() { return (this.boulders = this.boulders || new BoulderFX(this.world)); }
+
+  // the hero pushed a boulder (its model) from square (fx, fz) into (tx, tz): it rolls there,
+  // tumbling (boulderfx.js), hidden on the floor till it comes to rest, then lies as it came to rest
+  async boulderPush(url, fx, fz, tx, tz) {
+    const k = `${tx},${tz},${url}`, t = this.fx;
+    t.incoming.set(k, (t.incoming.get(k) || 0) + 1);
+    this.redrawItems(k);
+    const at = this.lying(fx, fz, url);
+    if (at) at.g.visible = false; // (gone from where it was: the map catches up)
+    t.forget(fx, fz, url);
+    let m;
+    try { m = await this.model(url); } catch { t.land(k); return; }
+    const fxb = this.boulderFX(), b = fxb.place(m, fx, fz, at);
+    await fxb.push(b, tx, tz);
+    t.poses.set(k, { p: b.p.clone(), q: b.q.clone(), c: b.c.clone() });
+    t.land(k);
+    setTimeout(() => fxb.remove(b), 150); // (till the floor's own model of it is drawn there: no blink)
+  }
+
+  // a boulder (its model) at (x, z) broke into rocks (rockUrl): it bursts, grit and rocks flying;
+  // a few of the flung ones stay, lying about the square where they fell: they're the rocks the
+  // engine left there (its pile not drawn while they lie there), gone when its rocks are
+  async boulderBreak(url, x, z, rockUrl) {
+    const k = `${x},${z},${rockUrl}`, t = this.fx;
+    t.incoming.set(k, (t.incoming.get(k) || 0) + 1);
+    this.redrawItems(k);
+    const at = this.lying(x, z, url);
+    if (at) at.g.visible = false;
+    let m, rock;
+    try { [m, rock] = await Promise.all([this.model(url), this.model(rockUrl)]); } catch { t.land(k); return; }
+    const fxb = this.boulderFX(), b = fxb.place(m, x, z, at);
+    for (const r of this.keptRocks.get(k) || []) fxb.remove(r);
+    const kept = await fxb.shatter(b, rock, 5);
+    this.keptRocks.set(k, kept);
+    t.land(k);
+  }
+
+  // Punished: the ball and chain on the hero's ankle (ballchain.js), drawn in physics in place of
+  // the two floor items ({ball: [x, z] (its square) or null (carried: held before you), ballUrl,
+  // linkUrl}), or null. The hero: the first figure (setFigures)
+  setPunished(p) { this.punished = p; }
+  stepChain(dt) {
+    const p = this.punished, g = this.figObjs && this.figObjs[0], j = g && g.userData.joints;
+    if (this.chain && (!p || this.chain.joints !== j)) { if (this.chain.bc) this.chain.bc.dispose(); this.chain = null; }
+    if (!p || !j) return;
+    this.figures.updateMatrixWorld(true);
+    if (!this.chain) {
+      const c = (this.chain = { joints: j, bc: null });
+      Promise.all([this.model(p.ballUrl), this.model(p.linkUrl)]).then(([ball, link]) => {
+        if (this.chain !== c) return;
+        const anchor = ankleAnchor(j.joints, this.world), a = anchor();
+        const b = this.punished && this.punished.ball;
+        c.bc = new BallChain({ link, ball, anchor, parent: this.world, links: 10, floor: STUD_H, scale: MODEL_SCALE,
+          dir: b ? new THREE.Vector3(b[0] + 0.5 - a.x, 0, b[1] + 0.5 - a.z) : new THREE.Vector3(0, 0, 1) });
+      }).catch(() => {});
+      return;
+    }
+    const bc = this.chain.bc;
+    if (!bc) return;
+    const body = j.joints.body;
+    bc.carry(!p.ball && body ? () => HUG.clone().applyMatrix4(body.matrixWorld) : null); // (carried: before you, as hold.hug holds it)
+    if (p.ball) bc.home(p.ball[0] + 0.5, p.ball[1] + 0.5);
+    const at = new THREE.Vector3().setFromMatrixPosition(g.matrixWorld);
+    bc.keepOut({ x: at.x, z: at.z, r: HERO_R }); // (set down, it rolls to your feet: never into you)
+    bc.step(dt);
   }
 
   // a thrown item landed (or burst): its square's items made again (with its pose, shown)
@@ -442,6 +537,26 @@ export class BrickWorld {
       held[side] = { url: want, obj };
       this.model(want).then((m) => { if (held[side] && held[side].obj === obj) obj.add(m.clone()); });
     }
+    // something lugged in both arms, held before you at the belly (hold.hug: its url: the heavy iron ball)
+    {
+      const want = hold.hug, body = j.joints.body, cur = held.hug;
+      if (!(cur && cur.url === want)) {
+        if (cur) { cur.obj.parent && cur.obj.parent.remove(cur.obj); delete held.hug; }
+        if (want && body) {
+          const obj = new THREE.Group();
+          obj.position.copy(HUG);
+          body.add(obj);
+          held.hug = { url: want, obj };
+          this.model(want).then((m) => {
+            if (!(held.hug && held.hug.obj === obj)) return;
+            const c = m.clone();
+            c.updateMatrixWorld(true);
+            c.position.sub(new THREE.Box3().setFromObject(c).getCenter(new THREE.Vector3())); // (held by its middle)
+            obj.add(c);
+          });
+        }
+      }
+    }
     // rings worn as bracelets, round the wrists (hold.ringR, ringL: a ring's url)
     for (const side of ['R', 'L']) {
       const want = hold['ring' + side], key = 'ring' + side, hand = j.joints['hand' + side], cur = held[key];
@@ -464,6 +579,7 @@ export class BrickWorld {
     const r = this.r;
     const tLid = performance.now();
     this.tickLids(Math.min(0.1, (tLid - (this.lastT || tLid)) / 1000));
+    this.stepChain(Math.min(0.1, (tLid - (this.lastT || tLid)) / 1000)); // (the punished: ball and chain)
     this.lastT = tLid;
     r.resetState();
     r.setSize(w, h, false);
@@ -478,6 +594,7 @@ export class BrickWorld {
       this.sun.target.updateMatrixWorld();
     }
     this.fx.step(); // thrown things in flight
+    if (this.boulders) this.boulders.step(); // boulders rolling, rocks flying
     const now = performance.now() / 1000;
     if (this.hazeMat) this.hazeMat.uniforms.uTime.value = now;
     if (this.flowMat) this.flowMat.uniforms.uTime.value = now;

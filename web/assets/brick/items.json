@@ -6455,11 +6455,11 @@
   "upright": true
  },
  "rock": {
-  "brick": "The brick rock nugget in dark grey",
+  "brick": "The brick rock nugget in reddish brown (a chip off a boulder)",
   "parts": [
    {
     "part": "35646",
-    "color": 72
+    "color": 70
    }
   ],
   "upright": true
@@ -11963,6 +11963,1519 @@
    {
     "part": "19118",
     "color": 83
+   }
+  ]
+ },
+ "Wallet of Perseus": {
+  "brick": "The minifig sack with a hand grab in chrome gold, a soft golden glow (the Wallet of Perseus)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "10169",
+    "color": 334
+   }
+  ],
+  "aura": {
+   "color": [
+    1,
+    0.85,
+    0.4
+   ],
+   "scale": 0.4,
+   "strength": 0.35,
+   "layers": 1
+  }
+ },
+ "Orb of Detection": {
+  "brick": "A Bionicle ball in trans light blue glass, a blue aura (the Orb of Detection)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "54821",
+    "color": 43
+   }
+  ],
+  "aura": {
+   "color": [
+    0.4,
+    0.7,
+    1
+   ],
+   "scale": 0.5,
+   "strength": 0.5,
+   "layers": 2
+  }
+ },
+ "Orb of Fate": {
+  "brick": "A Bionicle ball in trans purple glass, a violet aura (the Orb of Fate)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "54821",
+    "color": 52
+   }
+  ],
+  "aura": {
+   "color": [
+    0.7,
+    0.3,
+    1
+   ],
+   "scale": 0.5,
+   "strength": 0.5,
+   "layers": 2
+  }
+ },
+ "Candle of Eternal Flame": {
+  "brick": "A white round 1 x 1 brick, an orange flame burning on it that never goes out (the Candle of Eternal Flame)",
+  "upright": true,
+  "fx": "fire",
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "37775",
+    "color": 57,
+    "pos": [
+     0,
+     -4,
+     0
+    ]
+   }
+  ]
+ },
+ "Storm Whistle": {
+  "brick": "A round 1 x 1 plate with a bar in chrome silver, lightning crackling over it (the Storm Whistle)",
+  "parts": [
+   {
+    "part": "32828",
+    "color": 383
+   }
+  ],
+  "lightning": true
+ },
+ "Magic Mirror of Merlin": {
+  "brick": "The hand mirror in chrome gold, a faint white aura (the Magic Mirror of Merlin)",
+  "parts": [
+   {
+    "part": "96488",
+    "color": 334
+   }
+  ],
+  "aura": {
+   "color": [
+    1,
+    1,
+    1
+   ],
+   "scale": 0.4,
+   "strength": 0.35,
+   "layers": 1
+  }
+ },
+ "Eyes of the Overworld": {
+  "brick": "Sunglasses in trans purple, a faint glow (the Eyes of the Overworld)",
+  "parts": [
+   {
+    "part": "18854",
+    "color": 52
+   }
+  ],
+  "aura": {
+   "color": [
+    0.7,
+    0.4,
+    1
+   ],
+   "scale": 0.3,
+   "strength": 0.35,
+   "layers": 1
+  }
+ },
+ "Platinum Yendorian Express Card": {
+  "brick": "A 1 x 2 tile printed as a platinum card, YENDORIAN EXPRESS (the Platinum Yendorian Express Card)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3069b",
+    "color": 179,
+    "decal": {
+     "image": "../decals/tool-platinum-card.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      20
+     ],
+     "side": "top"
+    }
+   }
+  ]
+ },
+ "Gauntlets of Defense": {
+  "brick": "Hands in chrome silver (the Gauntlets of Defense)",
+  "parts": [
+   {
+    "part": "3820",
+    "color": 383,
+    "pos": [
+     -8,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 383,
+    "pos": [
+     8,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     }
+    ]
+   }
+  ],
+  "slot": "gloves",
+  "wear": {
+   "handColor": 383
+  }
+ },
+ "Whisperfeet": {
+  "brick": "Pale sand blue boots, soles white (Whisperfeet)",
+  "slot": "boots",
+  "wear": {
+   "boots": {
+    "bands": [
+     [
+      12,
+      15
+     ],
+     [
+      26.5,
+      379
+     ]
+    ]
+   }
+  }
+ },
+ "Eye of the Beholder": {
+  "brick": "A white round 2 x 2 brick, a round 2 x 2 tile on it printed with a bloodshot eye, a purple glow (the Eye of the Beholder)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3941",
+    "color": 15
+   },
+   {
+    "part": "4150",
+    "color": 15,
+    "pos": [
+     0,
+     -8,
+     0
+    ],
+    "decal": {
+     "image": "../decals/tool-beholder-eye.png",
+     "center": [
+      0,
+      -0.1,
+      0
+     ],
+     "size": [
+      40,
+      40
+     ],
+     "side": "top"
+    }
+   }
+  ],
+  "aura": {
+   "color": [
+    0.6,
+    0.2,
+    0.8
+   ],
+   "scale": 0.5,
+   "strength": 0.5,
+   "layers": 2
+  }
+ },
+ "Hand of Vecna": {
+  "brick": "A minifig hand in dark purple, a sickly green aura (the Hand of Vecna)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3820",
+    "color": 85
+   }
+  ],
+  "aura": {
+   "color": [
+    0.4,
+    0.9,
+    0.3
+   ],
+   "scale": 0.5,
+   "strength": 0.5,
+   "layers": 2
+  }
+ },
+ "Heart of Ahriman": {
+  "brick": "A faceted gem in trans dark red, a red glow (the Heart of Ahriman)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30153",
+    "color": 36
+   }
+  ],
+  "aura": {
+   "color": [
+    1,
+    0.15,
+    0.1
+   ],
+   "scale": 0.5,
+   "strength": 0.6,
+   "layers": 2
+  }
+ },
+ "Eye of the Aethiopica": {
+  "brick": "A pearl gold round 1 x 1 plate, the eye tile on it, glowing faintly green (the Eye of the Aethiopica)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "6141",
+    "color": 297
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "aura": {
+   "color": [
+    0.4,
+    1,
+    0.6
+   ],
+   "scale": 0.4,
+   "strength": 0.4,
+   "layers": 1
+  }
+ },
+ "boulder": {
+  "brick": "A 4 x 4 x 3 rock in reddish brown, a whole square of it (a boulder)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30294c01",
+    "color": 70
+   }
+  ]
+ },
+ "statue": {
+  "brick": "A minifig all in light grey, raising a torch (a telescope, wide end up, a feather plume in translucent orange for the flame), standing on a basin atop a short fluted column of grooved bricks, scroll corbels round its head (a statue)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "973",
+    "color": 71,
+    "pos": [
+     0.0,
+     -72.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3818",
+    "color": 71,
+    "pos": [
+     -15.552,
+     -63.0,
+     0.0
+    ],
+    "mat": [
+     0.985,
+     -0.1202,
+     -0.1203,
+     0.17,
+     0.6965,
+     0.6968,
+     0.0,
+     -0.7068,
+     0.7071
+    ]
+   },
+   {
+    "part": "3819",
+    "color": 71,
+    "pos": [
+     15.552,
+     -63.0,
+     0.0
+    ],
+    "mat": [
+     0.985,
+     0.17,
+     0.0,
+     -0.17,
+     0.985,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 71,
+    "pos": [
+     -21.5586,
+     -57.5779,
+     -20.3628
+    ],
+    "mat": [
+     0.9995,
+     -0.0138,
+     -0.0,
+     0.0138,
+     0.9995,
+     0.0002,
+     -0.0,
+     0.0002,
+     0.9996
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 71,
+    "pos": [
+     23.6904,
+     -45.226,
+     -9.8982
+    ],
+    "mat": [
+     0.985,
+     0.1202,
+     -0.1202,
+     -0.17,
+     0.6964,
+     -0.6964,
+     0.0,
+     0.707,
+     0.707
+    ]
+   },
+   {
+    "part": "3626c",
+    "color": 71,
+    "pos": [
+     0.0,
+     -96.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3815",
+    "color": 71,
+    "pos": [
+     0.0,
+     -40.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3816",
+    "color": 71,
+    "pos": [
+     0.0,
+     -28.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3817",
+    "color": 71,
+    "pos": [
+     0.0,
+     -28.0,
+     0.0
+    ]
+   },
+   {
+    "part": "35394",
+    "color": 71,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "4216",
+    "color": 71,
+    "pos": [
+     0.0,
+     16.0,
+     -10.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "4216",
+    "color": 71,
+    "pos": [
+     0.0,
+     16.0,
+     10.0
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     -10.0,
+     16.0,
+     -30.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     10.0,
+     16.0,
+     -30.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     -30.0,
+     16.0,
+     10.0
+    ],
+    "mat": [
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     -1.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     -30.0,
+     16.0,
+     -10.0
+    ],
+    "mat": [
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     -1.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     10.0,
+     16.0,
+     30.0
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     -10.0,
+     16.0,
+     30.0
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     30.0,
+     16.0,
+     -10.0
+    ],
+    "mat": [
+     -0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0
+    ]
+   },
+   {
+    "part": "20310",
+    "color": 71,
+    "pos": [
+     30.0,
+     16.0,
+     10.0
+    ],
+    "mat": [
+     -0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     -0.0
+    ]
+   },
+   {
+    "part": "4216",
+    "color": 71,
+    "pos": [
+     -10.0,
+     40.0,
+     0.0
+    ],
+    "mat": [
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     -1.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "4216",
+    "color": 71,
+    "pos": [
+     10.0,
+     40.0,
+     0.0
+    ],
+    "mat": [
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "64644",
+    "color": 71,
+    "pos": [
+     -21.7347,
+     -44.8498,
+     -26.7576
+    ],
+    "mat": [
+     0.9995,
+     0.0134,
+     -0.0034,
+     0.0138,
+     -0.9678,
+     0.2497,
+     -0.0,
+     -0.2501,
+     -0.9678
+    ]
+   },
+   {
+    "part": "87694",
+    "color": 57,
+    "pos": [
+     -21.1984,
+     -83.5636,
+     -36.7627
+    ],
+    "mat": [
+     0.9995,
+     -0.0134,
+     0.0034,
+     0.0138,
+     0.9678,
+     -0.2497,
+     -0.0,
+     0.2501,
+     0.9678
+    ],
+    "joint": "flame"
+   }
+  ],
+  "fx": "fire",
+  "fxJoint": "flame"
+ },
+ "heavy iron ball": {
+  "brick": "The Technic ball 19 mm in metallic dark grey (a heavy iron ball)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "52629",
+    "color": 87
+   }
+  ]
+ },
+ "iron chain": {
+  "brick": "A 6L minifig chain in metallic dark grey (an iron chain)",
+  "parts": [
+   {
+    "part": "30104k01",
+    "color": 87,
+    "pos": [
+     0,
+     0,
+     100
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 87,
+    "pos": [
+     0,
+     1.5,
+     80.84
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 87,
+    "pos": [
+     0,
+     1.5,
+     67.207
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 87,
+    "pos": [
+     0,
+     1.5,
+     53.574
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 87,
+    "pos": [
+     0,
+     1.5,
+     39.941
+    ],
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 87,
+    "pos": [
+     0,
+     1.5,
+     26.308
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "30104k01",
+    "color": 87,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "acid venom": {
+  "brick": "A small rock nugget in trans neon purple: a gob of acid (acid venom)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "35646",
+    "color": 365
+   }
+  ]
+ },
+ "blinding venom": {
+  "brick": "A small rock nugget in trans green: a gob of blinding venom (blinding venom)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "35646",
+    "color": 34
+   }
+  ]
+ },
+ "corpse": {
+  "brick": "Four minifig steaks on the bone, tossed in a heap on the ground, the meat piled up and the bones sticking out (a corpse)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "98372",
+    "color": 320,
+    "pos": [
+     8.8925,
+     0.0,
+     24.432
+    ],
+    "mat": [
+     0.9397,
+     0.342,
+     0.0,
+     0.0,
+     0.0,
+     -1.0,
+     -0.342,
+     0.9397,
+     0.0
+    ]
+   },
+   {
+    "part": "98372",
+    "color": 320,
+    "pos": [
+     23.564,
+     -3.0,
+     -10.9881
+    ],
+    "mat": [
+     -0.4216,
+     0.9044,
+     -0.0654,
+     -0.0698,
+     -0.1043,
+     -0.9921,
+     -0.9041,
+     -0.4137,
+     0.1071
+    ]
+   },
+   {
+    "part": "98372",
+    "color": 320,
+    "pos": [
+     -10.9881,
+     -8.0,
+     -23.564
+    ],
+    "mat": [
+     -0.9029,
+     -0.4075,
+     -0.137,
+     0.0872,
+     0.1386,
+     -0.9865,
+     0.421,
+     -0.9026,
+     -0.0897
+    ]
+   },
+   {
+    "part": "98372",
+    "color": 320,
+    "pos": [
+     -22.5167,
+     -13.0,
+     13.0
+    ],
+    "mat": [
+     0.4951,
+     -0.8408,
+     0.2189,
+     0.1392,
+     -0.172,
+     -0.9752,
+     0.8576,
+     0.5133,
+     0.0319
+    ]
+   }
+  ]
+ },
+ "meat ring": {
+  "brick": "The brick ring in sand red: a ring of meat (a meat ring)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "11010",
+    "color": 335
+   }
+  ]
+ },
+ "amulet of change": {
+  "brick": "A 1 x 1 tile in silver: square, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3070b",
+    "color": 383
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -13
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of drain resistance": {
+  "brick": "A faceted gem in trans purple: warped, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30153",
+    "color": 52
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -13
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of ESP": {
+  "brick": "A 1 x 1 round tile in gold: circular, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "98138",
+    "color": 334
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -13
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of flying": {
+  "brick": "A 2 x 2 dish, dome up, in pearl gold: convex, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "4740",
+    "color": 297
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -23
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of life saving": {
+  "brick": "A ball in trans red: spherical, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "32474",
+    "color": 36
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -16
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of magical breathing": {
+  "brick": "A faceted octagonal tile in trans light blue: octagonal, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "65092",
+    "color": 43
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -12
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of reflection": {
+  "brick": "A hexagonal plate, small, in flat silver: hexagonal, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "27255",
+    "color": 179,
+    "pos": [
+     0,
+     0,
+     -3
+    ],
+    "mat": [
+     0.25,
+     0.0,
+     0.0,
+     0.0,
+     0.25,
+     0.0,
+     0.0,
+     0.0,
+     0.25
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -15
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of restful sleep": {
+  "brick": "A 2 x 2 triangle tile in trans orange: triangular, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "35787",
+    "color": 182,
+    "mat": [
+     -1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     -1
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of strangulation": {
+  "brick": "A 1 x 2 round-ended tile in dark purple: oval, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "1126",
+    "color": 85,
+    "mat": [
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -23
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet of unchanging": {
+  "brick": "A 2 x 2 dish, bowl up, in silver: concave, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "4740",
+    "color": 383,
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     -1
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -23
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet versus poison": {
+  "brick": "A 1 x 1 slope, four-sided, in pearl gold: pyramidal, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "22388",
+    "color": 297
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -13
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "amulet versus stone": {
+  "brick": "A crescent blade, small, in gold: lunate, on a gold chain link (an amulet)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3757",
+    "color": 334,
+    "pos": [
+     0,
+     0,
+     6
+    ],
+    "mat": [
+     0.6,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.6,
+     0.0,
+     -0.6,
+     0.0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -12
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "Amulet of Yendor": {
+  "brick": "A 2 x 2 round tile in gold with a faceted ruby on it: the Amulet of Yendor (the real one, or a cheap plastic imitation: they look the same)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "14769",
+    "color": 334
+   },
+   {
+    "part": "30153",
+    "color": 36,
+    "pos": [
+     0,
+     -6,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -23
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ]
+ },
+ "cheap plastic imitation of the Amulet of Yendor": {
+  "brick": "A 2 x 2 round tile in gold with a faceted ruby on it: the Amulet of Yendor (the real one, or a cheap plastic imitation: they look the same)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "14769",
+    "color": 334
+   },
+   {
+    "part": "30153",
+    "color": 36,
+    "pos": [
+     0,
+     -6,
+     0
+    ]
+   },
+   {
+    "part": "30104k02",
+    "color": 334,
+    "pos": [
+     0,
+     -1,
+     -23
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
    }
   ]
  }

@@ -125,7 +125,7 @@ def main():
         if isinstance(aura, dict) and 'tip' in aura:
             aura = dict(aura, tip=dict({'dir': [0, 1, 0]}, **aura['tip']))
         extras = dict({'aura': aura} if aura else {}, **({'lightning': True} if item.get('lightning') else {}),
-                      **({'fx': item['fx']} if item.get('fx') else {}), **({'hue': True} if item.get('hue') else {})) or None   # (its element in particles: mist.js addEffects)
+                      **({'fx': item['fx']} if item.get('fx') else {}), **({'fxJoint': item['fxJoint']} if item.get('fxJoint') else {}), **({'hue': True} if item.get('hue') else {})) or None   # (its element in particles: mist.js addEffects)
         hinge = item.get('hinge')   # a part that swings on a hinge (a chest's lid): {joint, pivot, axis (LDraw), open (degrees)}
         if hinge:   # (in the model's units and axes, as ldraw2glb writes it: studs, Y up, Z to the front)
             hp = held_point(item, hinge['pivot'])
@@ -165,6 +165,12 @@ def main():
         if item.get('variant'):   # a look for some of an item (holy water): the game sends it as this tile, its base item's sprite otherwise
             built[name]['vtile'] = VARIANT_TILE + item['variant']['n']
             built[name]['base'] = item['variant']['of']
+    # one link of a minifig chain, on its own (along +Y from its pin), for the punished hero's chain:
+    # the ball and chain drawn in physics, link by link (web/js/ballchain.js)
+    glb = os.path.join(OUT, 'chain-link.glb')
+    if not os.path.exists(glb):
+        ldraw2glb.to_glb(lib.parse('30104k02.dat'), colors, 87, glb, None)
+    built['_chain link'] = {'url': f'assets/brick/items/chain-link.glb?v={int(os.path.getmtime(glb))}', 'brick': 'One link of a 6L minifig chain, metallic dark grey'}
     json.dump(built, open(os.path.join(ASSETS, 'items.built.json'), 'w'), indent=1)
     # every artifact, for the client: its tile, its name, its base item (shown when it has no look of its own)
     json.dump({str(ART_TILE + n): {'name': name, 'base': base} for n, (name, base) in sorted(arts.items())},

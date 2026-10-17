@@ -395,6 +395,19 @@ edit("src/mthrowu.c", [("	if (sym) tmp_at(DISP_FLASH, obj_to_glyph(singleobj));\
                         "	{ extern void FDECL(web_mthrow_end, (int, int)); web_mthrow_end(bhitpos.x, bhitpos.y); } /* WEB_HOOK_MTHROW */\n"
                         "\n	if (blindinc) {\n")],
      "WEB_HOOK_MTHROW")
+# BrickHack: boulders roll in the client's physics: a push is sent as an event
+# (winweb.c web_boulder_push: from, to), the boulder rolling and tumbling into
+# the next square; a boulder broken into rocks is sent too (web_boulder_break),
+# to burst into grit and rocks
+edit("src/hack.c", [("	    /* Move the boulder *after* the message. */\n",
+                     "	    /* Move the boulder *after* the message. */\n"
+                     "	    { extern void FDECL(web_boulder_push, (struct obj *, int, int, int, int)); /* WEB_HOOK_BOULDER */\n"
+                     "	      web_boulder_push(otmp, sx, sy, rx, ry); }\n")],
+     "WEB_HOOK_BOULDER")
+edit("src/zap.c", [("	if (obj->otyp == BOULDER && In_sokoban(&u.uz) && !flags.mon_moving)\n	    change_luck(-1);\n",
+                    "	if (obj->otyp == BOULDER && In_sokoban(&u.uz) && !flags.mon_moving)\n	    change_luck(-1);\n"
+                    "	if (obj->otyp == BOULDER) { extern void FDECL(web_boulder_break, (struct obj *)); web_boulder_break(obj); } /* WEB_HOOK_BOULDER */\n")],
+     "WEB_HOOK_BOULDER")
 # ---- The One Ring: Sauron's, a ring of invisibility, never made at random (for
 # now it turns up nowhere: the dev command "give The One Ring"). Its burden is
 # crushing (inv_weight): whoever carries it can't move, unless a hobbit (the

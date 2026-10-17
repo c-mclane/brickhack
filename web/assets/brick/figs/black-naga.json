@@ -1,0 +1,15 @@
+{
+ "label": "black naga",
+ "name": "black naga",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "head": "98154",
+ "headColor": 0,
+ "shortLegs": {
+  "part": "98140",
+  "color": 0
+ },
+ "headY": 0
+}

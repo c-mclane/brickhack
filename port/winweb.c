@@ -2070,6 +2070,31 @@ web_shatter(struct obj *obj, int x, int y)
     endmsg();
 }
 
+/* hack.c moverock: the hero pushed a boulder from (sx, sy) to (rx, ry): the
+   client rolls it there, tumbling, in its physics (seen, if you can see either
+   square) */
+void
+web_boulder_push(struct obj *obj, int sx, int sy, int rx, int ry)
+{
+    if (!out || !(cansee(sx, sy) || cansee(rx, ry)))
+        return;
+    fprintf(out, "{\"t\":\"push\",\"tile\":%d,\"fx\":%d,\"fy\":%d,\"tx\":%d,\"ty\":%d",
+            web_obj_tile(obj, obj_to_glyph(obj)), sx, sy, rx, ry);
+    endmsg();
+}
+
+/* zap.c fracture_rock: a boulder lying at (x, y) broke into rocks (a pick-axe,
+   force bolt, striking): the client bursts it, grit and rocks flying */
+void
+web_boulder_break(struct obj *obj)
+{
+    if (!out || obj->where != OBJ_FLOOR || !cansee(obj->ox, obj->oy))
+        return;
+    fprintf(out, "{\"t\":\"crumble\",\"tile\":%d,\"x\":%d,\"y\":%d",
+            web_obj_tile(obj, obj_to_glyph(obj)), obj->ox, obj->oy);
+    endmsg();
+}
+
 static void
 #ifdef WEB_NH34
 web_print_glyph(winid id, XCHAR_P x, XCHAR_P y, int glyph)

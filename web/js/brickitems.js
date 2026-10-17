@@ -38,6 +38,11 @@ export const brickItemForTile = (t) => {
   }
   return byTile.get(t) || null;
 };
+// one link of a chain (the ball and chain: ballchain.js), its model's url
+let chainLinkUrl = null;
+export const brickChainLink = () => chainLinkUrl;
+// a brick item by its real name ("rock"), or null
+export const brickItemByName = (name) => { for (const it of byTile.values()) if (it.name === name) return it; return null; };
 export const brickIconForTile = (t) => {
   if (isStart(t)) { const p = pieces.get(startSlot(t)); return (p && p.icon) || brickIconForTile(startBase(t)); }
   const icon = icons.get(t);
@@ -77,6 +82,7 @@ export function loadBrickItems() {
       fetch('assets/slashem/tiles.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : { names: [] })),
       fetch('assets/brick/artifacts.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]).then(async ([items, tiles, arts]) => {
+      if (items['_chain link']) chainLinkUrl = items['_chain link'].url; // (the punished hero's chain, link by link)
       const tileOf = new Map(); // an item's real name (lower case) -> its game tile
       (tiles.names || []).forEach((n, i) => {
         const real = n.split(' / ').pop();

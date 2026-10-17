@@ -2,5 +2,139 @@
  "King Skelly III": {
   "fig": "king-skelly-iii",
   "hold": "Dagger of Destruction"
+ },
+ "cobra": {
+  "parts": [
+   {
+    "part": "38801p01",
+    "color": 1,
+    "pos": [
+     0,
+     0,
+     3
+    ]
+   }
+  ],
+  "scale": 0.55,
+  "creature": "snake"
+ },
+ "spitting beetle": {
+  "parts": [
+   {
+    "part": "30238",
+    "color": 70
+   },
+   {
+    "part": "30367a",
+    "color": 70,
+    "pos": [
+     0,
+     -34,
+     -4
+    ]
+   }
+  ],
+  "scale": 0.9,
+  "creature": "bug"
+ },
+ "acid worm": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 27,
+    "pos": [
+     0,
+     0,
+     -18
+    ]
+   }
+  ],
+  "scale": 0.75,
+  "creature": "snake"
+ },
+ "black naga": {
+  "fig": "black-naga",
+  "slither": true,
+  "lift": 0.1
+ },
+ "guardian naga": {
+  "fig": "guardian-naga",
+  "slither": true,
+  "lift": 0.1
+ },
+ "Juiblex": {
+  "parts": [
+   {
+    "part": "18675",
+    "color": 34,
+    "pos": [
+     0,
+     -16,
+     0
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     -1
+    ]
+   },
+   {
+    "part": "1744",
+    "color": 35,
+    "pos": [
+     0,
+     -88,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     -12,
+     -62,
+     -31
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     12,
+     -62,
+     -31
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 0.62,
+  "creature": "blob"
  }
 }

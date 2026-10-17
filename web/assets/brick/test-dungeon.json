@@ -1,0 +1,88 @@
+{
+ "level": {
+  "w": 16,
+  "h": 10,
+  "start": [
+   2,
+   3
+  ],
+  "items": [
+   {
+    "item": "statue",
+    "at": [
+     6,
+     3
+    ]
+   },
+   {
+    "item": "boulder",
+    "at": [
+     9,
+     5
+    ]
+   },
+   {
+    "item": "heavy iron ball",
+    "at": [
+     4,
+     7
+    ]
+   }
+  ],
+  "monsters": [
+   {
+    "monster": "cobra",
+    "at": [
+     13,
+     2
+    ]
+   },
+   {
+    "monster": "guardian naga",
+    "at": [
+     12,
+     4
+    ]
+   },
+   {
+    "monster": "black naga",
+    "at": [
+     12,
+     7
+    ],
+    "venom": "acid venom"
+   },
+   {
+    "monster": "acid worm",
+    "at": [
+     9,
+     7
+    ],
+    "venom": "acid venom"
+   },
+   {
+    "monster": "spitting beetle",
+    "at": [
+     2,
+     6
+    ],
+    "venom": "acid venom"
+   },
+   {
+    "monster": "Juiblex",
+    "at": [
+     10,
+     1
+    ],
+    "venom": "acid venom"
+   }
+  ]
+ },
+ "objects": [
+  {
+   "fig": "archaeologist-f",
+   "hero": true,
+   "label": "hero"
+  }
+ ]
+}

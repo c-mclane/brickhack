@@ -21,6 +21,9 @@ import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffec
 import { FigureAnimator, figureJoints, poseJoints, setHinge, ATTACK_TIME } from './js/minifig-anim.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { gradientEnvironment } from './js/envmap.js';
+import { BallChain, ankleAnchor } from './js/ballchain.js';
+import { BoulderFX } from './js/boulderfx.js';
+import { MODEL_SCALE } from './js/brick.js';
 
 const r = new THREE.WebGLRenderer({ antialias: true });
 r.setSize(innerWidth, innerHeight); r.setPixelRatio(devicePixelRatio);
@@ -74,7 +77,7 @@ const root = new THREE.Group(); scene.add(root);
 // the figures come alive (minifig-anim.js): each breathes and looks about;
 // W: everyone walks (on the spot), Space: everyone attacks, R: stretch again,
 // 1-9: hold everyone's slash at 10%-90% of the way through (to look at it), 0: let go
-let animated = [], walking = false, freeze = null, hinged = [];
+let animated = [], walking = false, freeze = null, hinged = [], chained = [], pushers = [];
 const status = document.getElementById('status');
 let version = null, camKey = null;
 
@@ -121,6 +124,41 @@ function placeTags() {
   }
 }
 
+// a chained figure's walk: round its circle (angle th), facing the way it goes
+function walkTo(c, th) {
+  c.th = th;
+  c.m.position.set(c.centre.x + c.R * Math.cos(th), c.centre.y, c.centre.z + c.R * Math.sin(th));
+  c.m.rotation.y = Math.atan2(-Math.sin(th), Math.cos(th));
+}
+// a pusher's loop, by the clock: stand behind the boulder; step into its square (it rolls on into the
+// next); again; swing the pick three times (the third breaks it: grit, and rocks, four of which stay); rest
+const FIG_Y = 72 / 80; // (its shoulders over its feet, in squares)
+const PUSH_AT = [0.8, 2.6], SWING_AT = [4.4, 5.2, 6.0], LOOP = 10;
+function runPusher(p, now, dt) {
+  if (p.t0 === null) p.t0 = now;
+  let t = now - p.t0;
+  if (t >= LOOP) { p.t0 = now; t = 0; }
+  if (t < p.last || p.last === undefined) { // (a new loop: the boulder back where it was, the rocks gone)
+    p.fx.clear();
+    p.sq = 0;
+    p.b = p.fx.place(p.boulder, 1, 0);
+  }
+  for (const [k, at] of PUSH_AT.entries()) if (p.last < at && t >= at) { p.fx.push(p.b, 2 + k, 0); p.walk = { from: p.sq, at }; }
+  for (const [k, at] of SWING_AT.entries()) if (p.last < at && t >= at) {
+    p.a.attack();
+    if (k === SWING_AT.length - 1) setTimeout(() => { p.fx.shatter(p.b, p.rock, 4); p.b = null; }, ATTACK_TIME * 450);
+  }
+  p.last = t;
+  // walking a square behind the boulder: 0.6 s a step
+  let moving = false;
+  if (p.walk) {
+    const u = (t - p.walk.at) / 0.6;
+    if (u >= 1 || u < 0) { p.sq = p.walk.from + 1; p.walk = null; } else { p.sq = p.walk.from + u; moving = true; }
+  }
+  p.m.position.set(p.sq + 0.5, FIG_Y, 0.5);
+  poseJoints(p.j, p.a.update(dt, { moving }));
+  p.fx.step();
+}
 async function apply(data) {
   for (const t of tags) t.el.remove();
   tags = [];
@@ -143,8 +181,43 @@ async function apply(data) {
     return m;
   }));
   root.clear(); objs.forEach(m => root.add(m));
+  // punished: a figure walking a circle, its ball and chain dragging after it (ballchain.js)
+  for (const c of chained) c.bc.dispose();
+  chained = [];
+  await Promise.all(data.objects.map(async (o, i) => {
+    if (!o.chain) return;
+    const m = objs[i], j = figureJoints(m);
+    if (!j) return;
+    const [link, ball] = await Promise.all([model(o.chain.link), model(o.chain.ball)]);
+    const a = new FigureAnimator(j.rig, { phase: 0.3 }); a.spawn();
+    const centre = m.position.clone(), R = o.chain.path;
+    const c = { m, j, a, centre, R, th: 0 };
+    walkTo(c, 0);
+    poseJoints(j, a.update(0, { moving: true }));
+    c.bc = new BallChain({ link, ball, anchor: ankleAnchor(j.joints, root), parent: root, links: o.chain.links, floor: 0.2, dir: new THREE.Vector3(1, 0, 0) });
+    chained.push(c);
+  }));
+  // a boulder pushed and broken (boulderfx.js): in squares, as the game has it (a square: 4 studs)
+  for (const p of pushers) root.remove(p.world);
+  pushers = [];
+  await Promise.all(data.objects.map(async (o, i) => {
+    if (!o.boulders) return;
+    const m = objs[i], j = figureJoints(m);
+    if (!j) return;
+    const [boulder, rock] = await Promise.all([model(o.boulders.boulder), model(o.boulders.rock)]);
+    const world = new THREE.Group();
+    world.scale.setScalar(1 / MODEL_SCALE);
+    world.position.set(m.position.x, 0, m.position.z);
+    root.add(world);
+    root.remove(m); world.add(m);
+    m.scale.setScalar(MODEL_SCALE);
+    m.rotation.y = Math.PI / 2; // (facing +x: the way it pushes)
+    m.position.set(0.5, FIG_Y, 0.5); // (standing behind the boulder, from the first frame)
+    const a = new FigureAnimator(j.rig, { phase: 0.5 }); a.spawn();
+    pushers.push({ m, j, a, world, fx: new BoulderFX(world), boulder, rock, t0: null, step: -1 });
+  }));
   hinged = objs.filter((m) => setHinge(THREE, m, 0) !== false); // (a chest: its lid swings on a loop)
-  animated = objs.map((m, i) => { const j = figureJoints(m); if (!j) return null; const a = new FigureAnimator(j.rig, { phase: i * 0.77 }); a.spawn(); return { j, a }; }).filter(Boolean);
+  animated = objs.map((m, i) => { if (data.objects[i].chain || data.objects[i].boulders) return null; const j = figureJoints(m); if (!j) return null; const a = new FigureAnimator(j.rig, { phase: i * 0.77 }); a.spawn(); return { j, a }; }).filter(Boolean);
   const ck = JSON.stringify(data.camera);
   if (data.camera && ck !== camKey) {
     cam.position.set(...data.camera.pos); ctl.target.set(...data.camera.target);
@@ -155,6 +228,16 @@ async function apply(data) {
 async function poll() {
   try {
     const data = await (await fetch('assets/brick/scene.built.json', { cache: 'no-store' })).json();
+    if (data.level) { // the test dungeon (testbed.js): the game's own renderer, a scripted hero
+      if (version === null) {
+        version = data.version;
+        r.domElement.style.display = 'none'; btn.style.display = 'none'; document.body.style.background = '#0b0d14';
+        status.textContent = 'test dungeon · drag to look, wheel to zoom, P to pause';
+        (await import('./js/testbed.js')).runTestbed(data);
+      } else if (data.version !== version) location.reload();
+      setTimeout(poll, 1000);
+      return;
+    }
     if (data.version !== version) {
       const first = version === null;
       version = data.version;
@@ -205,6 +288,15 @@ let last = performance.now();
     if (freeze != null) x.a.attackT0 = x.a.t - freeze * ATTACK_TIME;
     poseJoints(x.j, x.a.update(dt, { moving: walking }));
   }
+  // the punished walk on a while, stop a while (so the ball comes to rest), and walk on
+  for (const c of chained) {
+    const k = ((now || last) / 1000) % 7, moving = k < 5;
+    if (moving) walkTo(c, c.th + dt * 1.4 / c.R);
+    poseJoints(c.j, c.a.update(dt, { moving }));
+    c.bc.step(dt);
+  }
+  // the boulder: pushed a square, pushed again, then hacked at till it breaks; and again
+  for (const p of pushers) runPusher(p, (now || last) / 1000, dt);
   // hinged parts: open, a pause, shut, a pause (as a chest is looted in the game)
   const k = ((now || last) / 1000) % 4, u = k < 1 ? k : k < 2 ? 1 : k < 3 ? 3 - k : 0, e = u * u * (3 - 2 * u);
   for (const m of hinged) { const max = setHinge(THREE, m, 0); setHinge(THREE, m, -max * e); }

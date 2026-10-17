@@ -5,7 +5,8 @@
 // inside the one it was thrown to, it hits the far wall, bounces off and
 // tumbles down, and comes to rest wherever it comes to rest. It stays so (its
 // pose: poseFor) until it's picked up. Something that breaks (web_shatter)
-// bursts into shards of its own colours as it lands; a potion splashes too.
+// bursts into shards of its own colours as it lands; a potion splashes too; a
+// gob of venom (a monster's spit) only splats.
 //
 // The body: a box the size of its model (its eight corners are what touch),
 // with mass 1 and a box's inertia; contacts are impulses at the corners against
@@ -20,6 +21,10 @@ const HAND = 0.55; // the hero's hand, above the floor
 const E_FLOOR = 0.28, E_WALL = 0.4, FRICTION = 0.55;
 const REST_V = 0.06, REST_W = 0.35, REST_TIME = 0.3, MAX_TIME = 6;
 const SHARDS = 36, SHARD_LIFE = 1.6;
+const SPIT_H = 0.32; // a spit leaves the mouth this high (a cobra's raised head)
+const DRIPS = 40; // the most a spit's trail lets fall
+// venom glows a little in its own colour (acid green, blinding purple), gob, drips and splat alike
+const venomGlow = (c) => c.clone().lerp(new THREE.Color(0xffffff), 0.15).multiplyScalar(1.6);
 
 const key = (x, z, url) => `${x},${z},${url}`;
 
@@ -38,8 +43,10 @@ export class ThrowFX {
   isIncoming(x, z, url) { return (this.incoming.get(key(x, z, url)) || 0) > 0; }
   forget(x, z, url) { this.poses.delete(key(x, z, url)); }
 
-  // the hero threw (the item's model url) from square (fx, fz) to (tx, tz)
-  async launch(url, fx, fz, tx, tz) {
+  // the hero threw (the item's model url) from square (fx, fz) to (tx, tz); opts.spit: a gob of
+  // venom spat (straight and quick from the mouth, not lofted or tumbling, dripping as it goes,
+  // and it splats on whatever it reaches)
+  async launch(url, fx, fz, tx, tz, opts = {}) {
     const k = key(tx, tz, url);
     this.incoming.set(k, (this.incoming.get(k) || 0) + 1);
     // in the air from now on (its model still loading): a break reported straight after finds it;
@@ -68,16 +75,24 @@ export class ThrowFX {
     // the arc: from the hand, lofted, to high on the far wall of the square it was thrown to
     const dx = tx - fx, dz = tz - fz, dist = Math.hypot(dx, dz);
     const dir = dist ? new THREE.Vector3(dx / dist, 0, dz / dist) : new THREE.Vector3(0, 0, 1);
-    const p = new THREE.Vector3(fx + 0.5, STUD_H + HAND, fz + 0.5).addScaledVector(dir, 0.25);
-    const aim = new THREE.Vector3(tx + 0.5, STUD_H + 0.75, tz + 0.5).addScaledVector(dir, 0.6);
-    const T = 0.7 + 0.13 * dist; // (slow: you can watch it go)
+    const spit = !!opts.spit;
+    const p = spit ? new THREE.Vector3(fx + 0.5, STUD_H + SPIT_H, fz + 0.5).addScaledVector(dir, 0.3)
+      : new THREE.Vector3(fx + 0.5, STUD_H + HAND, fz + 0.5).addScaledVector(dir, 0.25);
+    const aim = spit ? new THREE.Vector3(tx + 0.5, STUD_H + 0.42, tz + 0.5) // (a spit: straight at you, chest high)
+      : new THREE.Vector3(tx + 0.5, STUD_H + 0.75, tz + 0.5).addScaledVector(dir, 0.6);
+    const T = spit ? 0.28 + 0.1 * dist : 0.7 + 0.13 * dist; // (slow: you can watch it go; a spit, quick)
     const v = aim.clone().sub(p).divideScalar(T);
     v.y -= 0.5 * G * T;
-    // end over end, about the axis across its flight, and a little of everything
+    // end over end, about the axis across its flight, and a little of everything (a spit: barely turning)
     const across = new THREE.Vector3(-dir.z, 0, dir.x);
-    const w = across.multiplyScalar(6 + Math.random() * 6).add(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(3));
+    const w = spit ? across.multiplyScalar(1.5)
+      : across.multiplyScalar(6 + Math.random() * 6).add(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(3));
     const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(-dir.z, dir.x));
-    Object.assign(b, { holder, m, c, corners, inertia, p, v, q, w, t: 0, rest: 0, grounded: false, loading: false });
+    Object.assign(b, { holder, m, c, corners, inertia, p, v, q, w, t: 0, rest: 0, grounded: false, loading: false, spit, T });
+    if (spit) { // (venom glows a little green)
+      m.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.emissive = venomGlow(o.material.color); o.material.emissiveIntensity = 0.55; } });
+      b.trail = this.trail(m);
+    }
   }
 
   // something broke at (x, z): if it's flying there, it bursts as it lands; else now.
@@ -118,6 +133,15 @@ export class ThrowFX {
   // one step of a body; true when it's done (at rest, or burst)
   integrate(b, dt) {
     b.t += dt;
+    if (b.spit) { // a spit: drips falling from it as it flies; and it splats on reaching you
+      b.trail.due -= dt;
+      if (b.trail.due <= 0 && b.trail.parts.length < DRIPS) {
+        b.trail.due = 0.022;
+        b.trail.parts.push({ p: b.p.clone(), v: b.v.clone().multiplyScalar(0.12).add(new THREE.Vector3((Math.random() - 0.5) * 0.3, 0, (Math.random() - 0.5) * 0.3)),
+          q: new THREE.Quaternion(), w: new THREE.Vector3(), s: 0.5 + Math.random() * 0.6, stick: true });
+      }
+      if (b.t >= b.T) { b.breaks = true; this.finish(b, true); return true; }
+    }
     b.v.y += G * dt;
     b.p.addScaledVector(b.v, dt);
     const wq = new THREE.Quaternion(b.w.x * dt * 0.5, b.w.y * dt * 0.5, b.w.z * dt * 0.5, 0).multiply(b.q);
@@ -210,6 +234,7 @@ export class ThrowFX {
     const colors = [], transparent = [];
     model.traverse((o) => { if (o.isMesh && o.material && o.material.color) { colors.push(o.material.color); transparent.push(!!o.material.transparent); } });
     if (!colors.length) colors.push(new THREE.Color(0xcccccc));
+    if (splash === 'venom') { this.splash(colors, p, v, true); return; } // (a gob of spit: no shards, it just splats, glowing)
     const glassy = transparent.some((t) => t);
     const geo = new THREE.TetrahedronGeometry(0.035);
     const mat = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.1, transparent: glassy, opacity: glassy ? 0.75 : 1 });
@@ -226,10 +251,11 @@ export class ThrowFX {
   }
 
   // a drink spilt: droplets flung low and wide that stick where they land, and a puddle spreading
-  splash(colors, p, v) {
+  splash(colors, p, v, glow = false) {
     const drink = colors.reduce((best, c) => (c.r + c.g + c.b < best.r + best.g + best.b ? best : c), colors[0]).clone(); // (its brightest colour: the drink)
     const geo = new THREE.IcosahedronGeometry(0.022, 0);
-    const mat = new THREE.MeshStandardMaterial({ color: drink, roughness: 0.1, metalness: 0, transparent: true, opacity: 0.85 });
+    const lit = glow ? { emissive: venomGlow(drink), emissiveIntensity: 0.5 } : {}; // (venom: glowing a little, in its colour)
+    const mat = new THREE.MeshStandardMaterial({ color: drink, roughness: 0.1, metalness: 0, transparent: true, opacity: 0.85, ...lit });
     const n = 40, mesh = new THREE.InstancedMesh(geo, mat, n), parts = [];
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2, s = 0.8 + Math.random() * 1.8;
@@ -238,7 +264,7 @@ export class ThrowFX {
     }
     this.brick.world.add(mesh);
     this.shards.push({ mesh, parts, t: 0, life: 2.4 });
-    const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshStandardMaterial({ color: drink, roughness: 0.05, transparent: true, opacity: 0.7, depthWrite: false }));
+    const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshStandardMaterial({ color: drink, roughness: 0.05, transparent: true, opacity: 0.7, depthWrite: false, ...lit }));
     puddle.rotation.x = -Math.PI / 2;
     puddle.position.set(p.x, STUD_H + 0.004, p.z);
     puddle.scale.setScalar(0.01);
@@ -247,7 +273,22 @@ export class ThrowFX {
     this.puddles.push({ mesh: puddle, t: 0, size: 0.28 + Math.random() * 0.12 });
   }
 
+  // a spit's trail: drips of its colour, let fall as it flies (integrate), each sticking where it lands
+  trail(model) {
+    const colors = [];
+    model.traverse((o) => { if (o.isMesh && o.material && o.material.color) colors.push(o.material.color); });
+    const mat = new THREE.MeshStandardMaterial({ color: (colors[0] || new THREE.Color(0x88cc44)).clone(), roughness: 0.1, metalness: 0, transparent: true, opacity: 0.85,
+      emissive: venomGlow(colors[0] || new THREE.Color(0x88cc44)), emissiveIntensity: 0.5 });
+    const mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.016, 0), mat, DRIPS);
+    mesh.count = 0;
+    this.brick.world.add(mesh);
+    const t = { mesh, parts: [], t: 0, life: 3, due: 0 };
+    this.shards.push(t);
+    return t;
+  }
+
   stepShards(s, dt) {
+    if (s.mesh.count !== undefined && s.parts.length < s.mesh.instanceMatrix.count) s.mesh.count = s.parts.length; // (a trail: as many drips as have fallen)
     s.t += dt;
     const life = s.life || SHARD_LIFE;
     const m4 = new THREE.Matrix4(), fade = Math.max(0, Math.min(1, (life - s.t) / 0.6));
