@@ -293,7 +293,7 @@ const fx = new CombatFX();
 // ---- Ascend (the engine's "dreamland" option): a blank baseplate, drawn as
 // any brick level is (render.js): its floor, grey plates, and nothing on it
 const SKY_FOG = [0.62, 0.80, 1.0]; // bright daytime haze
-const ASCEND_FAR = 100; // how far Ascend's baseplate is drawn (squares): half the dungeon's
+const ASCEND_FAR = 50; // how far Ascend's baseplate is drawn (squares): a quarter of the dungeon's
 const DUNGEON_FOG = [0.04, 0.04, 0.06];
 // BrickHack's dungeon is a brick maze out in the open, under a blue sky
 function setSky() {
@@ -1363,8 +1363,8 @@ function updateDoll(dt, now) {
   if (walking) doll.phase += dt * 11;
   const target = walking ? Math.sin(doll.phase) : 0;
   doll.swing += (target - doll.swing) * Math.min(1, dt * 12);
-  // the body turns toward where you look
-  let d = cam.yaw - doll.yaw;
+  // the body turns the way it walks (standing, it stays as it was; in first person, where you look)
+  let d = (freeWalk.moving ? freeWalk.heading : opts.camera === 0 ? cam.yaw : doll.yaw) - doll.yaw;
   d = Math.atan2(Math.sin(d), Math.cos(d));
   doll.yaw += d * Math.min(1, dt * 10);
 }
@@ -1931,36 +1931,130 @@ document.addEventListener('mouseup', () => {});
 
 $('#controls [data-act=done]')?.addEventListener('click', () => { if (returnTo === null) { show(null); relock(); } });
 
-function processMovement(now) {
-  if (!game.playing || !game.ready || game.mode || modalOpen() || anyScreen() || game.raw || phys.climb != null) return;
-  // take the next step just before the hero reaches the centre of its square,
-  // so holding W walks continuously
-  if (motion.heroRemaining(now) > 40) return;
-  if (now - lastMove < 60) return;
-  const f = (held.has('w') ? 1 : 0) - (held.has('s') ? 1 : 0);
-  const r = (held.has('d') ? 1 : 0) - (held.has('a') ? 1 : 0);
-  const d = relDir(f, r);
-  if (!d) return;
-  const tx = world.hero.x + d[0], tz = world.hero.y + d[1];
-  if (tx < 1 || tz < 0 || tx >= world.w || tz >= world.h) return;
-  const cl = world.classAt(tx, tz);
-  // on the floor and nothing built there: NetHack's own rules (doors, monsters, ...)
-  const plain = phys.y < 0.01 && phys.y > -0.5 && !blocks.hasColumn(tx, tz) && !(cl && (cl.type === 'wall' || cl.type === 'rock'));
-  let shift = window.__shift;
-  if (motion.mobAt(tx, tz)) fx.attack(tx, tz, now); // walking into a monster attacks it
-  if (!plain && !motion.mobAt(tx, tz)) {
-    // climbing onto blocks / walking on walls: the client decides, the engine is told
+// ---- walking: free, as in a world of bricks. You walk anywhere, any way, at your own pace
+// (W A S D, as the camera faces), never waiting on the engine: what stops you is what's solid
+// (walls, rock, a closed door, a boulder, a monster, blocks you can't climb), and you slide
+// along it. The squares are still there: each time your middle crosses into another, that move
+// is sent to the engine (queued, in order), and only that takes a turn. Pushing into a monster
+// attacks it, into a boulder pushes it, into a closed door tries it. Should the engine not put
+// you where you went (a step refused, a teleport), you walk to where it says you are (or are
+// there at once, if it's far). motion.free: where you are.
+const FREE_SPEED = 3.2; // squares a second
+const BODY_R = 0.2; // (half the hero's body, across: how near a wall its middle comes)
+const BUMP_MS = 450; // (pushing on into a monster, a door, a boulder: tried again this often)
+let bumpT = 0;
+const walk = { moving: false, heading: 0, at: null, sent: [], settle: false };
+const freeWalk = walk;
+
+// what's at square (x, z), walking into it: 'floor', 'climb' (blocks: stepped up onto), or
+// what stops you: 'solid', 'mob', 'door' (closed), 'boulder'
+function squareIs(x, z) {
+  if (x < 1 || z < 0 || x >= world.w || z >= world.h) return 'solid';
+  if (motion.mobAt(x, z) && !(x === walk.at.x && z === walk.at.z)) return 'mob';
+  const cl = world.classAt(x, z);
+  if (cl && cl.type === 'door') return 'door';
+  if ((world.brickDrops || []).some((o) => o.x === x && o.z === z && o.name === 'boulder')) return 'boulder';
+  const plain = phys.y < 0.01 && phys.y > -0.5 && !blocks.hasColumn(x, z) && !(cl && (cl.type === 'wall' || cl.type === 'rock'));
+  if (plain) return 'floor';
+  return world.landingAt(x, z, phys.y, onRoof()) == null ? 'solid' : 'climb';
+}
+
+// pushing into what stops you, toward square (x, z) from yours: a monster attacked, a boulder
+// pushed, a door tried (once in a while, as you keep pushing)
+function bump(kind, x, z, now) {
+  if (now - bumpT < BUMP_MS || walk.sent.length || !game.ready) return;
+  const d = [Math.sign(x - walk.at.x), Math.sign(z - walk.at.z)];
+  if (!d[0] && !d[1]) return;
+  bumpT = now;
+  if (kind === 'mob') fx.attack(x, z, now);
+  game.sendKeys(dirKey(d));
+}
+
+// you crossed from your square into the one beside it (d): the engine is told
+function crossed(d) {
+  const tx = walk.at.x + d[0], tz = walk.at.z + d[1];
+  if (squareIs(tx, tz) === 'climb') { // climbing onto blocks: the client decides, the engine is told
     const land = world.landingAt(tx, tz, phys.y, onRoof());
-    if (land == null) return; // something solid in the way
     post(`A ${tx} ${tz}`);
-    const onLadder = world.ladderTop(world.hero.x, world.hero.y) > 0;
-    if (world.ladderTop(tx, tz) && land > phys.y + 0.05) phys.climb = land; // climb up the ladder
-    else if (onLadder && land < phys.y - 1.05) phys.climb = land; // climb down it
-    else if (land > phys.y + 0.05) phys.climb = land; // step up onto it
-    shift = false;
+    const onLadder = world.ladderTop(walk.at.x, walk.at.z) > 0;
+    if (world.ladderTop(tx, tz) && land > phys.y + 0.05) phys.climb = land;
+    else if (onLadder && land < phys.y - 1.05) phys.climb = land;
+    else if (land > phys.y + 0.05) phys.climb = land;
   }
-  lastMove = now;
-  game.sendKeys(shift ? dirKey(d).toUpperCase() : dirKey(d));
+  walk.at = { x: tx, z: tz };
+  walk.sent.push(dirKey(d));
+}
+
+function processMovement(now, dt) {
+  if (!game.playing) { motion.free = null; walk.at = null; walk.sent = []; return; }
+  const sq = { x: world.hero.x, z: world.hero.y };
+  if (!motion.free || !walk.at) { motion.free = { ...sq }; walk.at = { ...sq }; walk.sent = []; }
+  const F = motion.free;
+  walk.moving = false;
+  // the engine, kept up with: the next step sent as soon as it's ready for one; and where it
+  // says you are checked against where you went
+  if (game.ready) {
+    if (walk.sent.length && !game.mode && !modalOpen()) {
+      lastMove = now;
+      game.sendKeys(walk.sent.shift());
+    } else if (!walk.sent.length && now - lastMove > 300 && (sq.x !== walk.at.x || sq.z !== walk.at.z)) {
+      // (all answered, and a moment gone by: it hasn't put you where you went (a step refused), or
+      // it's moved you itself (travel, a trap, a teleport): where it says)
+      walk.at = { ...sq }; walk.settle = true;
+    }
+  }
+  if (Math.max(Math.abs(F.x - walk.at.x), Math.abs(F.z - walk.at.z)) > 2.5) { F.x = walk.at.x; F.z = walk.at.z; walk.settle = false; return; }
+  // settling: walked back into your square (the engine put you there), or onto a statue's ledge
+  const statue = (world.brickDrops || []).some((o) => o.x === walk.at.x && o.z === walk.at.z && o.name === 'statue');
+  const able = game.playing && !game.mode && !modalOpen() && !anyScreen() && !game.raw && phys.climb == null && !walk.settle;
+  const f = able ? (held.has('w') ? 1 : 0) - (held.has('s') ? 1 : 0) : 0;
+  const r = able ? (held.has('d') ? 1 : 0) - (held.has('a') ? 1 : 0) : 0;
+  if (walk.settle || (statue && !f && !r)) {
+    const inner = 0.5 - BODY_R;
+    const tx = statue ? walk.at.x : Math.max(walk.at.x - inner, Math.min(walk.at.x + inner, F.x));
+    const tz = statue ? walk.at.z : Math.max(walk.at.z - inner, Math.min(walk.at.z + inner, F.z));
+    const dx = tx - F.x, dz = tz - F.z, d = Math.hypot(dx, dz);
+    if (d > 1e-3) {
+      const st = Math.min(d, FREE_SPEED * dt);
+      F.x += (dx / d) * st; F.z += (dz / d) * st;
+      walk.moving = true; walk.heading = Math.atan2(dx, -dz);
+    } else walk.settle = false;
+    motion.freeMoving = walk.moving;
+    return;
+  }
+  const [fx0, fz0] = forward();
+  let vx = fx0 * f - fz0 * r, vz = fz0 * f + fx0 * r;
+  const n = Math.hypot(vx, vz);
+  if (!n) { motion.freeMoving = false; return; }
+  vx /= n; vz /= n;
+  // moved one way and then the other, each stopped by whatever's solid in its way (the body a
+  // square 2 BODY_R across): sliding along walls; pushing into a monster, door or boulder bumps it
+  const solidAt = (x, z) => { const k = squareIs(x, z); return k === 'floor' || k === 'climb' ? null : k; };
+  const step = (axis, v) => {
+    const cur = axis === 'x' ? F.x : F.z, other = axis === 'x' ? F.z : F.x;
+    let nxt = cur + v * FREE_SPEED * dt;
+    const edge = nxt + Math.sign(v) * BODY_R, cell = Math.round(edge);
+    if (v && cell !== Math.round(cur + Math.sign(v) * BODY_R * 0.999)) { // (the body's front reaches another row of squares)
+      for (const o of [Math.round(other - BODY_R + 1e-3), Math.round(other + BODY_R - 1e-3)]) {
+        const [x, z] = axis === 'x' ? [cell, o] : [o, cell];
+        const k = solidAt(x, z);
+        if (k) {
+          if (k !== 'solid') bump(k, x, z, now);
+          nxt = v > 0 ? Math.min(nxt, cell - 0.5 - BODY_R) : Math.max(nxt, cell + 0.5 + BODY_R); // (up against it)
+          break;
+        }
+      }
+    }
+    if (axis === 'x') F.x = nxt; else F.z = nxt;
+  };
+  const ox = F.x, oz = F.z;
+  step('x', vx);
+  step('z', vz);
+  if (F.x !== ox || F.z !== oz) { walk.moving = true; walk.heading = Math.atan2(vx, -vz); }
+  motion.freeMoving = walk.moving;
+  // your middle crossed into another square: that's the move (diagonal, if both ways at once)
+  const cx = Math.round(F.x), cz = Math.round(F.z);
+  if (cx !== walk.at.x || cz !== walk.at.z) crossed([Math.sign(cx - walk.at.x), Math.sign(cz - walk.at.z)]);
 }
 window.addEventListener('keydown', (e) => (window.__shift = e.shiftKey), true);
 window.addEventListener('keyup', (e) => (window.__shift = e.shiftKey), true);
@@ -1992,7 +2086,7 @@ function frame(t) {
       world.dirty = false;
       lastWall = opts.wallStyle;
     }
-    processMovement(t);
+    processMovement(t, dt);
     if (game.playing) { updatePhysics(dt, t); updateDoll(dt, t); }
     updateCamera(t);
     const fig3d = showFigure();

@@ -10,7 +10,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects, addHueShift, addBlink } from './mist.js';
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
-import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
+import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H, DOOR_TOP } from './brick.js';
 import { ThrowFX } from './throwfx.js';
 import { BoulderFX } from './boulderfx.js';
 import { BallChain, ankleAnchor } from './ballchain.js';
@@ -27,6 +27,9 @@ const PIECES = {
   brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
 };
 const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
+// a wall: this many courses of bricks, and a course of real bricks, studs and all, on top (about
+// three blocks: the walls' height, WALL_H)
+const WALL_COURSES = 8;
 // how many courses higher the Castle's walls rise: [none, its outer walls, its corner towers]
 const RISE_COURSES = [0, 9, 16];
 
@@ -149,11 +152,22 @@ export class BrickWorld {
       if (f.studs) plates.push([M().makeTranslation(f.x + 0.5, 0, f.z + 0.5).scale(new THREE.Vector3(S, S, S)), f.shade]);
       else smooth.push([M().makeTranslation(f.x, -PLATE_H, f.z).scale(new THREE.Vector3(1, PLATE_H, 1)), f.shade]); // a printed tile goes on top
     }
+    // over a doorway, the wall carried on above the door's frame: its courses, and the studded top
+    for (const w of data.lintels || []) {
+      const from = Math.round(DOOR_TOP / BRICK_H), TOP = (WALL_COURSES + 1) * BRICK_H;
+      for (let l = from; l < WALL_COURSES; l++)
+        for (const half of [0, 0.5])
+          courses.push([l % 2 === 0
+            ? M().makeTranslation(w.x, l * BRICK_H, w.z + half).scale(new THREE.Vector3(1, BRICK_H, 0.5))
+            : M().makeTranslation(w.x + half, l * BRICK_H, w.z).scale(new THREE.Vector3(0.5, BRICK_H, 1)), w.shade]);
+      for (const half of [0.25, 0.75])
+        bricks.push([M().makeTranslation(w.x + half, TOP, w.z + 0.5).multiply(M().makeRotationY(Math.PI / 2)).scale(new THREE.Vector3(S, S, S)), w.shade]);
+    }
     for (const w of data.walls) {
-      // under the wall, the floor's plate; then five courses of two 2x4 bricks, crossing each course
+      // under the wall, the floor's plate; then WALL_COURSES courses of two 2x4 bricks, crossing each course
       // (the Castle's: its outer walls RISE_COURSES[1] more, its towers [2], every other
       // square a course higher again: the battlements)
-      const n = 5 + (w.rise ? RISE_COURSES[w.rise] + ((w.x + w.z) % 2 === 0 ? 1 : 0) : 0);
+      const n = WALL_COURSES + (w.rise ? RISE_COURSES[w.rise] + ((w.x + w.z) % 2 === 0 ? 1 : 0) : 0);
       const TOP = (n + 1) * BRICK_H;
       courses.push([M().makeTranslation(w.x, -PLATE_H, w.z).scale(new THREE.Vector3(1, PLATE_H, 1)), w.shade]);
       for (let l = 0; l < n; l++)
@@ -259,7 +273,9 @@ export class BrickWorld {
 
     // the streams: a sheet along each edge it pours over, following the
     // fog's path (out from the edge, height), streaks flowing along it
-    const OVER = [[-0.3, T - 0.45], [0.0, 1.97], [0.5, 1.94], [0.98, 1.92], [1.07, 1.72], [1.1, 1.35], [1.12, 0.95]];
+    // (over the wall's studded top, and down its inside face a good way before it fades: about two blocks)
+    const WT = (WALL_COURSES + 1) * BRICK_H + 0.17;
+    const OVER = [[-0.3, T - 0.45], [0.0, WT], [0.5, WT - 0.03], [0.98, WT - 0.05], [1.07, WT - 0.25], [1.1, WT - 0.72], [1.12, WT - 1.3], [1.13, WT - 1.97]];
     const SLUMP = [[-0.25, 1.5], [0.1, 0.9], [0.35, 0.35], [0.7, 0.14], [1.3, 0.12], [2.0, 0.12]];
     const fp = [], fu = [], fs = [], fv = [];
     const sheet = (c, dx, dz, path, lift) => {
@@ -627,7 +643,7 @@ export class BrickWorld {
 }
 
 // ---- the haze
-const HAZE_TOP = 2.6; // (a little over the walls)
+const HAZE_TOP = 3.5; // (a little over the walls)
 const HAZE_COLOR = 'vec3(0.80, 0.84, 0.89)';
 // faint, slow noise: the haze is alive, not painted on
 const NOISE = `

@@ -32,6 +32,8 @@ export class Motion {
 
   reset() {
     this.hero = track(0, 0);
+    this.free = null; // walking freely: {x, z}, where you are (main.js processMovement)
+    this.freeMoving = false;
     this.heroSize = 2;
     this.heroPoly = false;
     this.mobs = new Map(); // monster id -> track + {size, fly}
@@ -48,11 +50,13 @@ export class Motion {
   }
 
   heroPos(now) {
+    if (this.free) return [this.free.x, this.free.z, 1]; // (walking freely: main.js processMovement)
     return posAt(this.hero, now);
   }
 
   // time left until the hero reaches the centre of its square
   heroRemaining(now) {
+    if (this.free) return this.freeMoving ? 1 : 0; // (walking freely: moving or not)
     return Math.max(0, this.hero.t0 + this.hero.dur - now);
   }
 
