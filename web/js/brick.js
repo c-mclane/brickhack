@@ -129,8 +129,10 @@ function studMesh(sides = 8) {
   for (let i = 0; i < sides; i++) {
     const [x0, z0] = P(i), [x1, z1] = P(i + 1);
     const a = ((i + 0.5) / sides) * Math.PI * 2 + Math.PI / sides, n = [Math.cos(a), 0, Math.sin(a)];
-    for (const p of [[x0, 0, z0], [x1, 0, z1], [x1, 1, z1], [x0, 0, z0], [x1, 1, z1], [x0, 1, z0]]) { pos.push(...p); nrm.push(...n); }
-    for (const p of [[0, 1, 0], [x0, 1, z0], [x1, 1, z1]]) { pos.push(...p); nrm.push(0, 1, 0); }
+    // (wound counter-clockwise seen from outside: front faces, lit as their normals say; the other
+    // way round they're back faces, lit from behind, and a stud's top looks dark)
+    for (const p of [[x0, 0, z0], [x1, 1, z1], [x1, 0, z1], [x0, 0, z0], [x0, 1, z0], [x1, 1, z1]]) { pos.push(...p); nrm.push(...n); }
+    for (const p of [[0, 1, 0], [x1, 1, z1], [x0, 1, z0]]) { pos.push(...p); nrm.push(0, 1, 0); }
   }
   return { pos, nrm };
 }
