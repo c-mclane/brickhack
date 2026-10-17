@@ -1610,7 +1610,7 @@ void
 web_dreamland_intro(void)
 {
     static const char *story[] = {
-        "You find yourself standing on a wide green baseplate, under an",
+        "You find yourself standing on a wide grey baseplate, under an",
         "endless blue sky.",
         "",
         "Nothing has been built here yet.",

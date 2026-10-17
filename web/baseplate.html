@@ -168,16 +168,21 @@ async function apply(data) {
       m.position.set(o.pos[0] / 20, -o.pos[1] / 20 + 0.01, -o.pos[2] / 20);
       return m;
     }
+    let tag = null;
     if (o.label) {
       const el = document.createElement('div'); el.className = 'tag'; el.textContent = o.label; document.body.appendChild(el);
-      // (a figure's name over its head; an item's at its feet, toward you)
-      const fig = /\/fig_/.test(o.url || '');
-      tags.push({ el, at: fig ? new THREE.Vector3(o.pos[0] / 20, -o.pos[1] / 20 + 3.4, -o.pos[2] / 20) : new THREE.Vector3(o.pos[0] / 20, 0.3, -o.pos[2] / 20 + 0.75) });
+      // (an item's at its feet, toward you; a figure's over its head, once it's loaded: below)
+      tag = { el, at: new THREE.Vector3(o.pos[0] / 20, 0.3, -o.pos[2] / 20 + 0.75) };
+      tags.push(tag);
     }
     const m = (await model(o.url)).clone();
     // LDraw units -> studs, LDraw's -Y up -> +Y up (the .glb itself is already converted)
     m.position.set(o.pos[0] / 20, -o.pos[1] / 20, -o.pos[2] / 20);
     m.rotation.y = (o.rotY || 0) * Math.PI / 180;
+    if (tag && /\/fig_/.test(o.url || '')) { // (a figure's name just over the top of its head, however tall it stands)
+      m.updateMatrixWorld(true);
+      tag.at.set(m.position.x, new THREE.Box3().setFromObject(m).max.y + 0.5, m.position.z);
+    }
     return m;
   }));
   root.clear(); objs.forEach(m => root.add(m));

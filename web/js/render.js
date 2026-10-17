@@ -882,10 +882,11 @@ export class Renderer {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = Math.floor(c.clientWidth * dpr), h = Math.floor(c.clientHeight * dpr);
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
-    this.proj = mat4Perspective((this.fov * Math.PI) / 180, w / h, 0.05, 200);
+    this.proj = mat4Perspective((this.fov * Math.PI) / 180, w / h, 0.05, this.far || 200); // (how far is drawn: less in Ascend)
     this.view = mat4View(eye, yaw, pitch);
     if (this.brickOn) {
       // a brick level: the BrickWorld draws the world (and clears to its sky blue); our pass draws on top
+      this.brick.setDistance(this.far && this.far < 200 ? this.far : 0); // (drawn less far: hazing out at the end)
       this.brick.setFigures(this.brickFigures.filter((f) => f.url));
       this.brick.setItems(this.brickItems || []);
       this.brick.render(this.proj, this.view, w, h, this.focus);

@@ -291,8 +291,9 @@ const fx = new CombatFX();
 }
 
 // ---- Ascend (the engine's "dreamland" option): a blank baseplate, drawn as
-// any brick level is (render.js): its floor, green plates, and nothing on it
+// any brick level is (render.js): its floor, grey plates, and nothing on it
 const SKY_FOG = [0.62, 0.80, 1.0]; // bright daytime haze
+const ASCEND_FAR = 100; // how far Ascend's baseplate is drawn (squares): half the dungeon's
 const DUNGEON_FOG = [0.04, 0.04, 0.06];
 // BrickHack's dungeon is a brick maze out in the open, under a blue sky
 function setSky() {
@@ -1244,7 +1245,7 @@ function heroHold() {
   const am = worn('amulet'), aml = am && brickItemForTile(am.t);
   const fake = am && /cheap plastic imitation/.test(am.n) && brickBuilt('_plastic Amulet of Yendor');
   hold.amulet = fake ? fake.worn : aml && aml.worn ? aml.worn : undefined;
-  for (const url of [hold.R, hold.L, hold.ringR, hold.ringL])
+  for (const url of [hold.R, hold.L, hold.ringR, hold.ringL, hold.amulet])
     if (url && !heldPrims.has(url)) {
       heldPrims.set(url, null);
       renderer.figRender.model(url).then((p) => heldPrims.set(url, p)).catch(() => {});
@@ -1261,6 +1262,9 @@ function heldEntries(hold, rig, matrix, hands) {
     const ring = hold['ring' + side] && heldPrims.get(hold['ring' + side]), w = ring && hands[side] && wristMatrix(rig, side);
     if (w) out.push({ prims: ring, matrix: mul4(matrix, mul4(hands[side], new Float32Array(w))), shade: 1 }); // (a bracelet)
   }
+  // an amulet: on the chest, 12 LDU below the neck (the rig's: a dwarf's is lower), moving with the body
+  const am = hold.amulet && heldPrims.get(hold.amulet), neck = rig.head && rig.head.pivot;
+  if (am && neck && hands.body) out.push({ prims: am, matrix: mul4(matrix, mul4(hands.body, new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, neck[1] - 12 / 20, 10 / 20, 1]))), shade: 1 });
   return out;
 }
 const skipped = (hold) => ['R', 'L'].filter((s) => hold[s] !== undefined).map((s) => 'item' + s);
@@ -2017,7 +2021,7 @@ function frame(t) {
         : figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
       renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
-        ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL }) : [])];
+        ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL, body: pose.body }) : [])];
     } else renderer.brickFigures = [];
     renderer.brickFigures.push(...brickMonFigures(sprites, dt, t)); // (King Skelly...)
     // first person: your own brick arm, and what it holds, in the corner of the
@@ -2046,7 +2050,11 @@ function frame(t) {
     updateHeld(t);
     fx.updateLabels(t, project);
     updateNameTags(t);
-    renderer.fogRange = [1e4, 2e4]; // (no fog on brick levels, as in the viewer)
+    // (no fog on brick levels, as in the viewer; but Ascend's baseplate is drawn only half as far,
+    // hazing into the sky over its last stretch)
+    const ascend = !!(ui.stat && ui.stat.dname === 'the Baseplate');
+    renderer.far = ascend ? ASCEND_FAR : 200;
+    renderer.fogRange = ascend ? [ASCEND_FAR * 0.7, ASCEND_FAR] : [1e4, 2e4];
     let outline = null, color = [0, 0, 0, 1], cracks = null;
     if (game.playing) {
       if (game.mode === 'getpos' && game.cursor) {

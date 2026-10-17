@@ -6,7 +6,7 @@
 // menu's layout is unchanged); the other menus see the plate from the same
 // camera, so the studs look the same everywhere.
 
-import { BrickRenderer, perspective, BRICK_H, STUD_H, STUD_R, PLATE_H } from './brick.js';
+import { BrickRenderer, perspective, lookAt, BRICK_H, STUD_H, STUD_R, PLATE_H } from './brick.js';
 
 const FONT = {
   A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
@@ -21,9 +21,10 @@ const STUD = 0.25; // one stud, in the game's units (a map square is 4x4 studs)
 const LAYERS = 2; // bricks per letter pixel
 const WHITE = [0.95, 0.95, 0.95];
 const PLATE = [0.424, 0.431, 0.408]; // dark bluish grey
-const PLATE_SHADE = 0.85;
+const PLATE_SHADE = 0.8, STUD_SHADE = 1.12; // (a stud's top a little brighter than the plate round it)
 const GAP = 0.003;
 const FOVY = (24 * Math.PI) / 180;
+const TILT = (30 * Math.PI) / 180; // (seen a little from the front, not straight down: the studs stand up, lit on one side)
 
 // canvas: fills the screen behind the menus; slot: the title's logo slot;
 // state(): {plate, title}: is a menu with the plate showing, is it the title
@@ -71,24 +72,28 @@ export function menuPlate(canvas, slot, state, text = 'BRICKHACK') {
     if (!cam) cam = { h: 12, cx: 0, cz: 0 };
     const { h, cx, cz } = cam;
     // the baseplate: studs on the same grid as the letters, over all the plate in view
-    const hw = h * tanH * aspect + STUD, hd = h * tanH + STUD;
+    // (tilted, the plate runs further back up the screen: drawn generously that way)
+    const hw = h * tanH * aspect * 1.6 + STUD, hd = h * tanH + STUD;
     const inst = title ? { box: [...letters.box], stud: [...letters.stud] } : { box: [], stud: [] };
     const i0 = Math.floor((cx - hw) / STUD), i1 = Math.ceil((cx + hw) / STUD);
-    const j0 = Math.floor((cz - hd) / STUD), j1 = Math.ceil((cz + hd) / STUD);
+    const j0 = Math.floor((cz - hd - h * 1.1) / STUD), j1 = Math.ceil((cz + hd) / STUD);
     inst.box.push(i0 * STUD, -PLATE_H, j0 * STUD, PLATE_SHADE, (i1 - i0) * STUD, PLATE_H, (j1 - j0) * STUD, ...PLATE);
     for (let i = i0; i < i1; i++)
       for (let j = j0; j < j1; j++)
         if (!title || !cells.has(`${i},${j}`))
-          inst.stud.push((i + 0.5) * STUD, 0, (j + 0.5) * STUD, PLATE_SHADE, STUD_R, STUD_H, STUD_R, ...PLATE);
+          inst.stud.push((i + 0.5) * STUD, 0, (j + 0.5) * STUD, STUD_SHADE, STUD_R, STUD_H, STUD_R, ...PLATE); // (catching the light)
     brick.setInstances(brick.box, inst.box);
     brick.setInstances(brick.stud, inst.stud);
-    // looking straight down, north up the screen
-    const view = new Float32Array([1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, -cx, cz, -h, 1]);
+    // looking down at the same spot from the same distance, tipped toward you (north up the screen)
+    const D = h - TOP, eye = [cx, TOP + D * Math.cos(TILT), cz + D * Math.sin(TILT)];
+    const lift = LD * 0.35; // (tipped, the letters' fronts show below them: aimed a little nearer, so they sit up in their slot)
+    eye[2] += lift;
+    const view = lookAt(eye, [cx, TOP, cz + lift]);
     gl.viewport(0, 0, cw, ch);
     gl.clearColor(PLATE[0] * 0.5, PLATE[1] * 0.5, PLATE[2] * 0.5, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
-    brick.draw(perspective(FOVY, aspect, 0.1, h + 10), view, []);
+    brick.draw(perspective(FOVY, aspect, 0.1, h * 4 + 10), view, []);
   };
   // redrawn only when something changes: which menu is up, or the window's size
   let last = '';

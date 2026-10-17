@@ -423,6 +423,14 @@ export class BrickWorld {
     t.land(k);
   }
 
+  // how far the world is drawn (squares; 0: as far as the camera sees), hazing into the sky over
+  // its last 30% (Ascend: half the dungeon's)
+  setDistance(far) {
+    if (far === this.far) return;
+    this.far = far;
+    this.scene.fog = far ? new THREE.Fog(SKY, far * 0.7, far) : null;
+  }
+
   // Punished: the ball and chain on the hero's ankle (ballchain.js), drawn in physics in place of
   // the two floor items ({ball: [x, z] (its square) or null (carried: held before you), ballUrl,
   // linkUrl}), or null. The hero: the first figure (setFigures)
