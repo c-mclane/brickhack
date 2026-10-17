@@ -557,6 +557,21 @@ export class BrickWorld {
         }
       }
     }
+    // an amulet worn (hold.amulet: its worn model's url, build_items.worn_ldr): its origin on the
+    // middle of the chest's front, 12 LDU below the neck (the rig's: a dwarf's is lower), on the body
+    {
+      const want = hold.amulet, body = j.joints.body, cur = held.amulet, neck = j.rig.head && j.rig.head.pivot;
+      if (!(cur && cur.url === want)) {
+        if (cur) { cur.obj.parent && cur.obj.parent.remove(cur.obj); delete held.amulet; }
+        if (want && body && neck) {
+          const obj = new THREE.Group();
+          obj.position.set(0, neck[1] - 12 / 20, 10 / 20);
+          body.add(obj);
+          held.amulet = { url: want, obj };
+          this.model(want).then((m) => { if (held.amulet && held.amulet.obj === obj) obj.add(m.clone()); });
+        }
+      }
+    }
     // rings worn as bracelets, round the wrists (hold.ringR, ringL: a ring's url)
     for (const side of ['R', 'L']) {
       const want = hold['ring' + side], key = 'ring' + side, hand = j.joints['hand' + side], cur = held[key];

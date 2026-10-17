@@ -156,6 +156,7 @@ export class FigureAnimator {
 
     const P = this.poses;
     P.body = B;
+    P.amulet = B; // (an amulet worn: on the chest, moving with it)
     const hp = rig.head ? rig.head.pivot : [0, 0, 0];
     P.head = mul(B, mul(turnAbout(hp, [0, 1, 0], this.headYaw), turnAbout(hp, [1, 0, 0], this.headPitch)));
 

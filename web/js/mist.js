@@ -155,7 +155,8 @@ export function addAura(THREE, root) {
   root.traverse((o) => { if (!angel && o.userData && o.userData.aura) angel = o; });
   if (!angel) return;
   const cfg = typeof angel.userData.aura === 'object' ? angel.userData.aura : {};
-  const parts = angel.userData.rig && angel.children.some((c) => c.name) ? angel.children.filter((c) => c.name) : [root];
+  const only = angel.userData.fxJoint && root.getObjectByName(angel.userData.fxJoint); // (just that part glows: an amulet on a figure)
+  const parts = only ? [only] : angel.userData.rig && angel.children.some((c) => c.name) ? angel.children.filter((c) => c.name) : [root];
   root.updateMatrixWorld(true);
   startTicking();
   for (const part of parts) auraOf(THREE, part, cfg);
@@ -203,7 +204,9 @@ export function addLightning(THREE, root) {
   root.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
   const pts = [], v = new THREE.Vector3();
-  root.traverse((o) => {
+  // (fxJoint: only that part crackles: an amulet on a figure)
+  const src = (host.userData.fxJoint && root.getObjectByName(host.userData.fxJoint)) || root;
+  src.traverse((o) => {
     if (!o.isMesh) return;
     const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), a = o.geometry.attributes.position;
     for (let i = 0; i < a.count; i += 3) { v.fromBufferAttribute(a, i).applyMatrix4(m); pts.push(v.clone()); }

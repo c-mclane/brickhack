@@ -598,19 +598,13 @@ def build(spec, base_dir='.'):
             if item.get('decal'):
                 out.append(decal_line(item, pos, mat, base_dir))
             out.append(line(item.get('color', 16), pos, mat, item['part']))
-    dy = 0
-    if spec.get('dress'):
-        # the dress brick (48 LDU) is 8 taller than hips and legs (40): lift everything so she still stands on the floor
-        dy = -(48 - 40)
-    elif skel:
+    dy = body_dy(spec)
+    if skel:
         # a skeleton: its torso has its pelvis built in; the bone legs clip onto its axle
         for g, x in (('legR', -10), ('legL', 10)):
             G(g)
             out.append(line(spec.get('legColor', 15), (x, SKEL_HIP, 0), I, spec.get(g, '6266')))
         rig['legs'] = {'pivot': [0.0, SKEL_HIP, 0.0], 'axis': [1.0, 0.0, 0.0]}
-    elif spec.get('shortLegs'):
-        # short legs end 16 LDU higher than legs: lower everything so the feet are on the floor
-        dy = 16
     out = [shift(l, dy) for l in out]
     # the joints, for the animation: shoulders, hips, neck (LDraw units, the figure's frame)
     rig['head'] = {'pivot': [0.0, 0.0, 0.0], 'axis': [0.0, 1.0, 0.0]}   # turns about the neck
@@ -705,6 +699,19 @@ def piece(spec, slot, base_dir='.'):
     else:
         return None
     return '\n'.join(out) + '\n'
+
+
+def body_dy(spec):
+    """How far the whole figure is moved (LDraw Y) to stand on the floor: a dress brick (48 LDU)
+    is 8 taller than hips and legs (40), so she's lifted; short legs end 16 higher, so a dwarf
+    or a child is lowered. (Its neck, then, is at (0, dy, 0).)"""
+    if spec.get('dress'):
+        return -(48 - 40)
+    if spec.get('skeleton'):
+        return 0
+    if spec.get('shortLegs'):
+        return 16
+    return 0
 
 
 def shift(l, dy):

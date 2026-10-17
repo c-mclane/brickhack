@@ -1312,8 +1312,10 @@ build_inventory(void)
     fputs("{\"t\":\"inv\",\"items\":[", out);
     for (o = invent; o; o = o->nobj) {
         fputs(n++ ? "," : "", out);
-        fprintf(out, "{\"l\":\"%c\",\"t\":%d,\"q\":%ld,\"c\":\"%c\",\"n\":",
-                o->invlet, web_obj_tile(o, OBJ_GLYPH(o)), o->quan, OC_SYM(o->oclass));
+        fprintf(out, "{\"l\":\"%c\",\"t\":%d,\"q\":%ld,\"c\":\"%s%c\",\"n\":",
+                o->invlet, web_obj_tile(o, OBJ_GLYPH(o)), o->quan,
+                (OC_SYM(o->oclass) == '"' || OC_SYM(o->oclass) == '\\') ? "\\" : "", /* (an amulet's class is a quote) */
+                OC_SYM(o->oclass));
         jstr(doname(o));
         fputs(",\"w\":", out);
         jstr(worn_slot(o));

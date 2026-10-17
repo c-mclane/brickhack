@@ -21,6 +21,27 @@ ASSETS = os.path.join(HERE, '..', 'web', 'assets', 'brick')
 OUT = os.path.join(ASSETS, 'items')
 
 
+# An amulet worn: just as it lies (items.json "parts"), a gold neck ribbon (99250) round the
+# neck, its badge (items.json "badge") where the ribbon's medal hangs, facing out, at the size it
+# has there ("wornScale"), moved as it is there ("badgeOffset"). The origin: the middle of the
+# chest's front (a figure's (0, 12, -10), LDraw).
+WEAR_FACE = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]], float)   # (lying face up -> facing front, its top up)
+CHEST = np.array([0.0, 12, -10])   # (from the neck, where the ribbon sits)
+MEDAL = np.array([0.0, 16.5, -10.5])   # (the medal's back, on the ribbon, from the neck: the badge sunk to it, swallowing the medal)
+
+
+def worn_ldr(item):
+    s = item.get('wornScale', 0.6)
+    lines = []
+    for p in item['badge']:
+        M = np.array(p['mat'], float).reshape(3, 3) if 'mat' in p else np.eye(3)
+        lines.append((p.get('color', 16), WEAR_FACE @ np.array(p.get('pos', [0, 0, 0]), float) * s, WEAR_FACE @ M * s, p['part']))
+    box = np.concatenate([arr.reshape(-1, 3) @ M.T + pos for _, pos, M, part in lines for _, _, arr, _ in LIB.parse(part + '.dat')])
+    shift = MEDAL + item.get('badgeOffset', [0, 0, 0]) - np.array([(box[:, 0].min() + box[:, 0].max()) / 2, (box[:, 1].min() + box[:, 1].max()) / 2, box[:, 2].max()])   # (badgeOffset: out toward you, lower...)
+    out = minifig.line(334, -CHEST, np.eye(3), '99250') + '\n'
+    return out + ''.join(minifig.line(c, pos + shift - CHEST, M, part) + '\n' for c, pos, M, part in lines)
+
+
 def held_ldr(item):
     """The item as held: its main (first) part's grip (minifig.HELD) centred
     on the origin, the end that leaves the top of a fist up (-Y), the flat of
@@ -109,6 +130,8 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     colors = ldraw2glb.load_colors(ldraw2glb.LDRAW)
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
+    global LIB
+    LIB = lib
     built = {}
     arts = artifacts()
     classes = {}   # an object's name -> its classes (objclasses.py)
@@ -146,6 +169,16 @@ def main():
             print(f'  {name}: {ldraw2glb.to_glb(geom, colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
         built[name] = {'url': f'assets/brick/items/{slug}.glb?v={key}', 'brick': item.get('brick', '')}
+        if item.get('badge'):   # an amulet: as worn, on its ribbon round the neck (worn_ldr)
+            wldr = worn_ldr(item)
+            wkey = hashlib.sha1((wldr + json.dumps(extras)).encode()).hexdigest()[:12]
+            wglb, wsrc = os.path.join(OUT, slug + '-worn.glb'), os.path.join(OUT, slug + '-worn.ldr')
+            wkeyfile = os.path.join(OUT, slug + '-worn.key')
+            if not (os.path.exists(wglb) and os.path.exists(wkeyfile) and open(wkeyfile).read() == wkey):
+                open(wsrc, 'w').write(wldr)
+                open(wkeyfile, 'w').write(wkey)
+                print(f'  {name} (worn): {ldraw2glb.to_glb(lib.parse(wsrc), colors, 71, wglb, extras)} tris')   # (its effects too: the Amulet of Yendor's)
+            built[name]['worn'] = f'assets/brick/items/{slug}-worn.glb?v={wkey}'
         # its class (a potion, a ring...): a name can be more than one object (a potion and a ring
         # of see invisible); the client gives a tile only an item of its own class (tiles.json "classes")
         oc = item.get('class') or (next(iter(classes[name])) if len(classes.get(name, ())) == 1 else None)

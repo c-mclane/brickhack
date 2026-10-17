@@ -101,6 +101,12 @@ def tile_index(name):
     return None
 
 
+def shift(line, d):
+    """An LDraw part line moved by d."""
+    t = line.split()
+    return ' '.join(t[:2] + [f'{float(t[2 + i]) + d[i]:g}' for i in range(3)] + t[5:])
+
+
 def part_url(lib, colors, part, color):
     """A library part on its own, in one colour, as a model (cached): its url."""
     key = f'{part}_{color}'
@@ -115,6 +121,7 @@ def main(scene_path):
     scene = json.load(open(scene_path))
     colors = ldraw2glb.load_colors(ldraw2glb.LDRAW)
     lib = ldraw2glb.Library(ldraw2glb.LDRAW)
+    build_items.LIB = lib   # (an amulet worn: build_items.worn_ldr sizes its badge)
     built = []
     items = json.load(open(os.path.join(ASSETS, 'items.json')))
     for obj in scene['objects']:
@@ -172,6 +179,18 @@ def main(scene_path):
             ldr_text = minifig.build(spec, os.path.dirname(recipe))
             if obj.get('hold'):
                 ldr_text = hold_item(ldr_text, items[obj['hold']])
+            if obj.get('amulet'):   # wearing an amulet: on its ribbon round the neck, the badge on the chest (build_items.worn_ldr)
+                am = items[obj['amulet']]   # (its own part, so its effects come off it alone: the Amulet of Yendor's)
+                if am.get('aura'):
+                    ldr_text = '0 !BRICKHACK AURA' + (' ' + json.dumps(am['aura']) if isinstance(am['aura'], dict) else '') + '\n' + ldr_text
+                if am.get('lightning'):
+                    ldr_text = '0 !BRICKHACK LIGHTNING\n' + ldr_text
+                if am.get('fx'):
+                    ldr_text = f"0 !BRICKHACK FX {am['fx']}\n" + ldr_text
+                if am.get('aura') or am.get('lightning') or am.get('fx'):
+                    ldr_text = '0 !BRICKHACK FXJOINT amulet\n' + ldr_text
+                ldr_text += '0 !BRICKHACK GROUP amulet\n' + ''.join(
+                    shift(l, (0, 12 + minifig.body_dy(spec), -10)) + '\n' for l in build_items.worn_ldr(items[obj['amulet']]).splitlines())   # (at its neck: a dwarf's is lower)
             # decal images are part of the model too: changing one rebuilds it
             stamp = ldr_text + ''.join(str(os.path.getmtime(l.rsplit(' ', 1)[1])) for l in ldr_text.splitlines() if '!TEXMAP' in l)
             key = 'fig_' + obj['fig'] + '_' + hashlib.sha1(stamp.encode()).hexdigest()[:10]

@@ -17,7 +17,7 @@ import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { perchSpot, cameFrom } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
-import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
+import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -526,7 +526,9 @@ function connect() {
   es = new EventSource(`/api/stream?sid=${sid}`);
   es.onmessage = (e) => {
     let m;
-    try { m = JSON.parse(e.data); } catch { return; }
+    // (an amulet's class is a double quote, which an engine built before winweb.c escaped it sends
+    // bare in the inventory; mended, or the whole inventory would be lost)
+    try { m = JSON.parse(e.data); } catch { try { m = JSON.parse(e.data.replace(/"c":"""/g, '"c":"\\""')); } catch { return; } }
     if (heldReplies.length || performance.now() < holdUntil) { heldReplies.push(m); return; } // (an attack's outcome waits for the blade)
     handle(m);
   };
@@ -1237,6 +1239,11 @@ function heroHold() {
   const ringR = worn('ringr') || (isRing(wep) ? wep : null), ringL = worn('ringl') || (isRing(alt) ? alt : null);
   hold.ringR = ringR ? as(ringR) : undefined;
   hold.ringL = ringL ? as(ringL) : undefined;
+  // an amulet: worn on the chest, on its ribbon round the neck. The Amulet of Yendor glows,
+  // crackles and flares, real or not, until a fake is known for what it is: then it's just plastic
+  const am = worn('amulet'), aml = am && brickItemForTile(am.t);
+  const fake = am && /cheap plastic imitation/.test(am.n) && brickBuilt('_plastic Amulet of Yendor');
+  hold.amulet = fake ? fake.worn : aml && aml.worn ? aml.worn : undefined;
   for (const url of [hold.R, hold.L, hold.ringR, hold.ringL])
     if (url && !heldPrims.has(url)) {
       heldPrims.set(url, null);

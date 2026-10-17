@@ -38,6 +38,9 @@ export const brickItemForTile = (t) => {
   }
   return byTile.get(t) || null;
 };
+// any built item by its name in items.json, tiles or not ("_plastic Amulet of Yendor"), or null
+let builtItems = {};
+export const brickBuilt = (name) => builtItems[name] || null;
 // one link of a chain (the ball and chain: ballchain.js), its model's url
 let chainLinkUrl = null;
 export const brickChainLink = () => chainLinkUrl;
@@ -83,6 +86,7 @@ export function loadBrickItems() {
       fetch('assets/brick/artifacts.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]).then(async ([items, tiles, arts]) => {
       if (items['_chain link']) chainLinkUrl = items['_chain link'].url; // (the punished hero's chain, link by link)
+      builtItems = items;
       const tileOf = new Map(); // an item's real name (lower case) -> its game tile
       (tiles.names || []).forEach((n, i) => {
         const real = n.split(' / ').pop();

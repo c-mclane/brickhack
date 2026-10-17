@@ -2,13 +2,13 @@
  "camera": {
   "pos": [
    0,
-   9,
-   10
+   15,
+   17
   ],
   "target": [
    0,
-   0,
-   0.5
+   1.2,
+   -0.5
   ]
  },
  "objects": [
@@ -22,119 +22,132 @@
    ]
   },
   {
-   "item": "amulet of change",
+   "fig": "plain",
+   "amulet": "amulet of change",
    "pos": [
     -150,
-    0,
-    -110
+    -72,
+    -65
    ],
    "label": "square"
   },
   {
-   "item": "amulet of drain resistance",
+   "fig": "plain",
+   "amulet": "amulet of drain resistance",
    "pos": [
     -50,
-    0,
-    -110
+    -72,
+    -65
    ],
    "label": "warped"
   },
   {
-   "item": "amulet of ESP",
+   "fig": "plain",
+   "amulet": "amulet of ESP",
    "pos": [
     50,
-    0,
-    -110
+    -72,
+    -65
    ],
    "label": "circular"
   },
   {
-   "item": "amulet of flying",
+   "fig": "plain",
+   "amulet": "amulet of flying",
    "pos": [
     150,
-    0,
-    -110
+    -72,
+    -65
    ],
    "label": "convex"
   },
   {
-   "item": "amulet of life saving",
+   "fig": "plain",
+   "amulet": "amulet of life saving",
    "pos": [
     -150,
-    0,
-    -10
+    -72,
+    35
    ],
    "label": "spherical"
   },
   {
-   "item": "amulet of magical breathing",
+   "fig": "plain",
+   "amulet": "amulet of magical breathing",
    "pos": [
     -50,
-    0,
-    -10
+    -72,
+    35
    ],
    "label": "octagonal"
   },
   {
-   "item": "amulet of reflection",
+   "fig": "plain",
+   "amulet": "amulet of reflection",
    "pos": [
     50,
-    0,
-    -10
+    -72,
+    35
    ],
    "label": "hexagonal"
   },
   {
-   "item": "amulet of restful sleep",
+   "fig": "plain",
+   "amulet": "amulet of restful sleep",
    "pos": [
     150,
-    0,
-    -10
+    -72,
+    35
    ],
    "label": "triangular"
   },
   {
-   "item": "amulet of strangulation",
+   "fig": "plain",
+   "amulet": "amulet of strangulation",
    "pos": [
     -150,
-    0,
-    90
+    -72,
+    135
    ],
    "label": "oval"
   },
   {
-   "item": "amulet of unchanging",
+   "fig": "plain",
+   "amulet": "amulet of unchanging",
    "pos": [
     -50,
-    0,
-    90
+    -72,
+    135
    ],
    "label": "concave"
   },
   {
-   "item": "amulet versus poison",
+   "fig": "plain",
+   "amulet": "amulet versus poison",
    "pos": [
     50,
-    0,
-    90
+    -72,
+    135
    ],
    "label": "pyramidal"
   },
   {
-   "item": "amulet versus stone",
+   "fig": "plain",
+   "amulet": "amulet versus stone",
    "pos": [
     150,
-    0,
-    90
+    -72,
+    135
    ],
    "label": "lunate"
   },
   {
-   "item": "Amulet of Yendor",
+   "fig": "plain",
+   "amulet": "Amulet of Yendor",
    "pos": [
     0,
-    0,
-    200
+    -72,
+    235
    ],
    "label": "Amulet of Yendor"
   }
