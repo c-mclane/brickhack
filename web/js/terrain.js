@@ -5,7 +5,7 @@
 // brick dungeon levels: rooms and corridors are platforms of 4x4-stud squares,
 // walls six bricks (1.8 blocks: 2 for walking and the camera) and doors real
 // 1x4x6 brick doors, as tall as the wall.
-export const WALL_H = 3; // wall height in blocks (open air above for building)
+export const WALL_H = 2; // wall height in blocks (open air above for building)
 export const DOOR_H = 2; // doors and doorways
 
 export const CM = {

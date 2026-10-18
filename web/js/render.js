@@ -583,7 +583,7 @@ export class Renderer {
     // not yet explored (a path you haven't followed yet fades into it)
     const brickLevel = true; // (every level is: the dungeon, Ascend's baseplate)
     // what the BrickWorld builds: floor plates, walls, doors, fog
-    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], lintels: [], fog: [] };
+    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [] };
     // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
     const passable = (xx, yy) => {
       const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
@@ -609,11 +609,8 @@ export class Renderer {
     // a door piece in its square, across the wall it stands in; on a row of the
     // floor's studs (a 4x4 plate: studs at 1/8, 3/8...; the frame's one stud deep,
     // so an eighth off the middle, across the wall)
-    // (and over it, the wall carried on: stone up to the wall's top)
-    const doorPiece = (x, y, name, alongZ, shade) => {
+    const doorPiece = (x, y, name, alongZ, shade) =>
       bricks.doors.push({ url: PARTS[name], matrix: partMatrix(x + 0.5 + (alongZ ? 0.125 : 0), DOOR_TOP, y + 0.5 + (alongZ ? 0 : 0.125), alongZ ? Math.PI / 2 : 0), shade });
-      bricks.lintels.push({ x, z: y, shade });
-    };
     const wallAt = (xx, yy) => { const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx]; return !!n && n.type === 'wall'; };
     // a doorway's wall runs north-south when it has wall north or south of it
     const doorAlongZ = (x, y, c) => (c.cmap === CM.vcdoor || c.cmap === CM.vodoor ? true

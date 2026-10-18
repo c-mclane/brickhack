@@ -90,10 +90,10 @@ export class BoulderFX {
     // (turned by how far it's come over its radius), riding up and down over its own lumps (always
     // resting on its lowest point), and settles there as it lies
     const to = new THREE.Vector3(tx + 0.5, 0, tz + 0.5), from = b.p.clone(), d = to.clone().sub(from).setY(0);
-    const r = (b.size.x + b.size.y + b.size.z) / 6;
     Object.assign(b, { tx, tz, pull: false, t: 0, rest: 0, done: false,
-      slide: { from, d, q0: b.q.clone(), axis: d.clone().normalize().cross(new THREE.Vector3(0, -1, 0)), roll: d.length() / r, T: SLIDE_TIME } });
-    return new Promise((res) => { b.onRest = res; this.bodies.push(b); });
+      slide: { from, d, q0: b.q.clone(), axis: d.clone().normalize().cross(new THREE.Vector3(0, -1, 0)), roll: Math.PI / 2, T: SLIDE_TIME } }); // (rolled a quarter turn over a square: square to its square again)
+    if (b.onRest) { const done = b.onRest; b.onRest = null; done(b); } // (pushed on mid-slide: the last push is over)
+    return new Promise((res) => { b.onRest = res; if (!this.bodies.includes(b)) this.bodies.push(b); });
   }
   // a boulder's slide, this moment; true when it's there
   slideStep(b, dt) {

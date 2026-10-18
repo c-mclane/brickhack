@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Generate Ascend's level (the "dreamland" option, level dreamlnd): a blank
 baseplate. A small open, lit square of floor (ROOM x ROOM) in the middle of
-the map, nothing on it: no monsters, no objects, no stairs; all round it solid
-stone that can't be dug, which the client draws as fog: nowhere else to go.
+the map, no monsters, no stairs, and a few things to try out (a statue,
+boulders, a scroll of punishment); all round it solid stone that can't be dug,
+which the client draws as fog: nowhere else to go.
 You start in the middle of it.
 
   <des>   SLASH'EM special level
@@ -30,6 +31,11 @@ des = [
     # level 1 has no up stairs of its own: the dungeon's exit (where you
     # start) is the branch, so pin it to the middle of the plate
     f"BRANCH:({START[0]},{START[1]},{START[0]},{START[1]}),(0,0,0,0)",
+    # things to try out, round the room: a statue (to climb), boulders (to push, and to break with
+    # a pick), and a scroll of punishment by where you start (uncursed: read, the ball and chain)
+    f"CONTAINER:'`',\"statue\",({X0 + 2},{Y0 + 2})",
+    *(f"OBJECT:'`',\"boulder\",({X0 + dx},{Y0 + dy})" for dx, dy in ((7, 3), (7, 7), (3, 7))),
+    f"OBJECT:'?',\"punishment\",({START[0] + 1},{START[1]}),uncursed,0",
 ]
 open(sys.argv[1], "w").write("\n".join(des) + "\n")
 if len(sys.argv) > 2:

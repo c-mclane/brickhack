@@ -111,7 +111,7 @@ export class World {
           let level = 0;
           for (let i = pile.length - 1; i >= 0; i--) {
             const brick = brickItemForTile(pile[i]);
-            if (brick) this.brickDrops.push({ x, z: y, url: brick.url, level: level++, upright: !!brick.upright, name: brick.name });
+            if (brick) this.brickDrops.push({ x, z: y, url: brick.url, level: level++, upright: !!brick.upright, name: brick.name, colliders: brick.colliders });
           }
         }
         switch (c.k) {

@@ -28,6 +28,31 @@ const venomGlow = (c) => c.clone().lerp(new THREE.Color(0xffffff), 0.15).multipl
 
 const key = (x, z, url) => `${x},${z},${url}`;
 
+// a body's box (oriented: b.p, b.q, half extents b.h) against an upright box [x0,y0,z0,x1,y1,z1]:
+// where they overlap least (separating axes), the way out {n (out of the box), depth, r (the body's
+// point that's in, from its centre)}; or null
+function boxTouch(b, [x0, y0, z0, x1, y1, z1]) {
+  const A = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)].map((a) => a.applyQuaternion(b.q));
+  const W = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
+  const h = [b.h.x, b.h.y, b.h.z], e = [(x1 - x0) / 2, (y1 - y0) / 2, (z1 - z0) / 2];
+  const d = new THREE.Vector3((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2).sub(b.p);
+  const axes = [...W, ...A];
+  for (const a of A) for (const w of W) { const c = a.clone().cross(w); if (c.lengthSq() > 1e-6) axes.push(c.normalize()); }
+  let best = null;
+  for (const L of axes) {
+    const ra = h[0] * Math.abs(A[0].dot(L)) + h[1] * Math.abs(A[1].dot(L)) + h[2] * Math.abs(A[2].dot(L));
+    const rb = e[0] * Math.abs(L.x) + e[1] * Math.abs(L.y) + e[2] * Math.abs(L.z);
+    const dist = d.dot(L), over = ra + rb - Math.abs(dist);
+    if (over <= 0) return null;
+    if (!best || over < best.depth) best = { n: L.clone().multiplyScalar(dist > 0 ? -1 : 1), depth: over };
+  }
+  // the body's point deepest in: its corner (or edge, or face, where it lies flat) furthest along -n
+  const r = new THREE.Vector3();
+  for (let i = 0; i < 3; i++) { const k = A[i].dot(best.n); if (Math.abs(k) > 0.15) r.addScaledVector(A[i], -Math.sign(k) * h[i]); }
+  best.r = r;
+  return best;
+}
+
 export class ThrowFX {
   constructor(brick) {
     this.brick = brick;
@@ -95,6 +120,39 @@ export class ThrowFX {
     }
   }
 
+  // something come to lie at square (x, z) (the item's model url) let fall there from above, from
+  // height `top` (just over whoever dropped it: the hero, a monster that died), a little off the
+  // middle, turning a little: it falls, knocks against whatever's there (the hero, a statue: the
+  // brick world's colliders), rolls off it, and comes to rest where it comes to rest, as it lies
+  async drop(url, x, z, top, at) {
+    const k = key(x, z, url);
+    this.incoming.set(k, (this.incoming.get(k) || 0) + 1);
+    const b = { k, url, tx: x, tz: z, breaks: false, loading: true, drop: true };
+    this.flying.push(b);
+    this.brick.redrawItems(k);
+    let m;
+    try { m = (await this.brick.model(url)).clone(); } catch { this.flying.splice(this.flying.indexOf(b), 1); this.land(k); return; }
+    m.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(m);
+    const c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()).multiplyScalar(MODEL_SCALE);
+    m.position.sub(c);
+    const holder = new THREE.Group();
+    holder.scale.setScalar(MODEL_SCALE);
+    holder.add(m);
+    this.brick.world.add(holder);
+    const h = size.clone().multiplyScalar(0.5), corners = [];
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) corners.push(new THREE.Vector3(sx * h.x, sy * h.y, sz * h.z));
+    const inertia = new THREE.Vector3((size.y ** 2 + size.z ** 2) / 12 || 0.01, (size.x ** 2 + size.z ** 2) / 12 || 0.01, (size.x ** 2 + size.y ** 2) / 12 || 0.01);
+    const jit = () => (Math.random() - 0.5) * 0.12;
+    // over whoever dropped it (at: where they're drawn), kept within its square
+    const M = 0.12, cl = (v, a) => Math.min(a + 1 - M, Math.max(a + M, v));
+    const p = new THREE.Vector3(cl((at ? at.x : x + 0.5) + jit(), x), top + Math.max(h.x, h.y, h.z) + 0.04, cl((at ? at.z : z + 0.5) + jit(), z));
+    const v = new THREE.Vector3(jit() * 2, 0, jit() * 2);
+    const w = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(4);
+    const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.random() * Math.PI * 2);
+    Object.assign(b, { holder, m, c, corners, h, inertia, p, v, q, w, t: 0, rest: 0, grounded: false, loading: false });
+  }
+
   // something broke at (x, z): if it's flying there, it bursts as it lands; else now.
   // splash: a potion (its drink splashes out too, and pools)
   shatter(url, x, z, splash) {
@@ -152,14 +210,33 @@ export class ThrowFX {
     if (inSquare)
       planes.push([new THREE.Vector3(1, 0, 0), b.tx, E_WALL, false], [new THREE.Vector3(-1, 0, 0), -(b.tx + 1), E_WALL, false],
         [new THREE.Vector3(0, 0, 1), b.tz, E_WALL, false], [new THREE.Vector3(0, 0, -1), -(b.tz + 1), E_WALL, false]);
+    // what else it knocks against (the hero, a statue's bricks: brickworld.colliders): boxes and spheres
+    const solids = b.drop && this.brick.colliders ? this.brick.colliders(b.tx, b.tz) : [];
     const R = new THREE.Matrix3().setFromMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(b.q));
     const Iinv = R.clone().multiply(new THREE.Matrix3().set(1 / b.inertia.x, 0, 0, 0, 1 / b.inertia.y, 0, 0, 0, 1 / b.inertia.z)).multiply(R.clone().transpose());
     let hit = false;
-    for (const [n, d, e, floor] of planes) {
-      for (const c0 of b.corners) {
-        const r = c0.clone().applyQuaternion(b.q);
-        const depth = d - (b.p.x + r.x) * n.x - (b.p.y + r.y) * n.y - (b.p.z + r.z) * n.z;
-        if (depth <= 0) continue;
+    b.onHero = false;
+    const touches = []; // [n, depth, r, e, floor]
+    for (const c0 of b.corners) {
+      const r = c0.clone().applyQuaternion(b.q), P = b.p.clone().add(r);
+      for (const [n, d, e, floor] of planes) {
+        const depth = d - P.x * n.x - P.y * n.y - P.z * n.z;
+        if (depth > 0) touches.push([n, depth, r, e, floor]);
+      }
+    }
+    for (const o of solids) if (o.sphere) { // the hero's head: things roll off it (its nearest point to the body, wholly)
+      const C = new THREE.Vector3(o.sphere[0], o.sphere[1], o.sphere[2]), rad = o.sphere[3];
+      const qi = b.q.clone().invert(), l = C.clone().sub(b.p).applyQuaternion(qi);
+      l.set(Math.max(-b.h.x, Math.min(b.h.x, l.x)), Math.max(-b.h.y, Math.min(b.h.y, l.y)), Math.max(-b.h.z, Math.min(b.h.z, l.z)));
+      const r = l.applyQuaternion(b.q), dv = b.p.clone().add(r).sub(C), dl = dv.length();
+      if (dl < rad) { touches.push([dl > 1e-6 ? dv.divideScalar(dl) : new THREE.Vector3(0, 1, 0), rad - dl, r, 0.25, false]); b.onHero = true; }
+    }
+    for (const o of solids) if (o.box) { // a brick's box (the hero's body, a statue's bricks): wholly, not only at its corners
+      const t = boxTouch(b, o.box);
+      if (t) { touches.push([t.n, t.depth, t.r, 0.2, t.n.y > 0.5]); if (o.hero) b.onHero = true; } // (never left lying against you)
+    }
+    {
+      for (const [n, depth, r, e, floor] of touches) {
         hit = true;
         b.p.addScaledVector(n, depth * 0.9);   // out of the plane
         const vc = b.v.clone().add(b.w.clone().cross(r));
@@ -183,9 +260,16 @@ export class ThrowFX {
         if (floor) b.grounded = true;
       }
     }
+    if (b.drop && touches.length) b.grounded = true;
+    if (b.onHero && b.t > 1) { // (caught on you a while, wedged: it's eased off you, sideways, past your shoulder)
+      const hs = solids.find((o) => o.sphere), dx = b.p.x - hs.sphere[0], dz = b.p.z - hs.sphere[2], dl = Math.hypot(dx, dz);
+      const [ox, oz] = dl > 0.01 ? [-dz / dl, dx / dl] : [1, 0];
+      b.v.x += ox * 2.5 * dt; b.v.z += oz * 2.5 * dt;
+    }
     if (hit && b.breaks) { this.finish(b, true); return true; }
     if (b.grounded) { b.w.multiplyScalar(1 - 1.5 * dt); b.v.x *= 1 - 0.8 * dt; b.v.z *= 1 - 0.8 * dt; }
-    if (b.grounded && b.v.length() < REST_V && b.w.length() < REST_W) b.rest += dt; else b.rest = 0;
+    const slow = b.drop && b.t > 2 ? 2 : 1; // (a drop wedged among bricks, barely trembling, is let lie)
+    if (b.grounded && !b.onHero && b.v.length() < REST_V * slow && b.w.length() < REST_W * slow) b.rest += dt; else b.rest = 0; // (never at rest on your head)
     if (b.rest > REST_TIME || b.t > MAX_TIME) { this.finish(b, false); return true; }
     return false;
   }
@@ -197,6 +281,13 @@ export class ThrowFX {
     this.brick.world.remove(b.holder);
     if (burst) {
       this.burst(b.m, b.p.clone(), b.v.clone(), b.splash);
+      this.land(b.k);
+      return;
+    }
+    if (b.drop) { // (dropped: it stays just as it came to rest: on the floor, on a statue's ledge...)
+      b.p.x = Math.min(Math.max(b.p.x, b.tx + 0.04), b.tx + 0.96);
+      b.p.z = Math.min(Math.max(b.p.z, b.tz + 0.04), b.tz + 0.96);
+      this.poses.set(b.k, { p: b.p.clone(), q: b.q.clone(), c: b.c.clone() });
       this.land(b.k);
       return;
     }

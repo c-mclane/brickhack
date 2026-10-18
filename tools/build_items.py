@@ -191,6 +191,8 @@ def main():
             print(f'  {name}: more than one object has this name ({", ".join(sorted(classes[name]))}): say which ("class")')
         if item.get('upright'):   # set down the right way up (food: a cheese, a pie), not on its side as a blade is
             built[name]['upright'] = True
+        if item.get('colliders'):   # its solid parts, for things falling onto it (brickworld.js colliders)
+            built[name]['colliders'] = item['colliders']
         if item.get('wear'):   # worn on a minifig (a helm): the figure worker dresses the hero in it
             built[name]['wear'] = True
         if name in art_num:   # an artifact with a look of its own (the game sends it as this tile: winweb.c web_obj_tile)

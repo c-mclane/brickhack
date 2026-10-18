@@ -12294,7 +12294,7 @@
   ]
  },
  "statue": {
-  "brick": "A minifig all in light grey, raising a torch (a telescope, wide end up, a feather plume in translucent orange for the flame), standing on a basin atop a short fluted column of grooved bricks, scroll corbels round its head (a statue)",
+  "brick": "A minifig all in light grey, raising a torch (a telescope, wide end up, a feather plume in translucent orange for the flame), standing on a basin atop a single course of grooved bricks for its column, scroll corbels round its head (a statue)",
   "upright": true,
   "parts": [
    {
@@ -12632,46 +12632,6 @@
     ]
    },
    {
-    "part": "4216",
-    "color": 71,
-    "pos": [
-     -10.0,
-     40.0,
-     0.0
-    ],
-    "mat": [
-     0.0,
-     0.0,
-     1.0,
-     0.0,
-     1.0,
-     0.0,
-     -1.0,
-     0.0,
-     0.0
-    ]
-   },
-   {
-    "part": "4216",
-    "color": 71,
-    "pos": [
-     10.0,
-     40.0,
-     0.0
-    ],
-    "mat": [
-     0.0,
-     0.0,
-     -1.0,
-     0.0,
-     1.0,
-     0.0,
-     1.0,
-     0.0,
-     0.0
-    ]
-   },
-   {
     "part": "64644",
     "color": 71,
     "pos": [
@@ -12714,7 +12674,57 @@
    }
   ],
   "fx": "fire",
-  "fxJoint": "flame"
+  "fxJoint": "flame",
+  "colliders": [
+   [
+    -20,
+    0,
+    -60,
+    20,
+    32,
+    60
+   ],
+   [
+    -60,
+    0,
+    -20,
+    60,
+    32,
+    20
+   ],
+   [
+    -35,
+    32,
+    -35,
+    35,
+    40,
+    35
+   ],
+   [
+    -20,
+    40,
+    -10,
+    20,
+    72,
+    11
+   ],
+   [
+    -29,
+    72,
+    -10,
+    31,
+    104,
+    37
+   ],
+   [
+    -29,
+    104,
+    -13,
+    20,
+    144,
+    45
+   ]
+  ]
  },
  "heavy iron ball": {
   "brick": "The Technic ball 19 mm in metallic dark grey (a heavy iron ball)",

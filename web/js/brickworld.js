@@ -10,7 +10,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects, addHueShift, addBlink } from './mist.js';
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
-import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H, DOOR_TOP } from './brick.js';
+import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
 import { BoulderFX } from './boulderfx.js';
 import { BallChain, ankleAnchor } from './ballchain.js';
@@ -26,10 +26,11 @@ const PIECES = {
   plate: 'assets/brick/parts/plate4x4.glb', // a floor square: a grey 4x4 plate, origin at its top middle
   brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
 };
+const CHUNK = 8; // (squares a side: the map in pieces, each drawn only when in view)
 const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
-// a wall: this many courses of bricks, and a course of real bricks, studs and all, on top (about
-// three blocks: the walls' height, WALL_H)
-const WALL_COURSES = 8;
+// a wall: this many courses of bricks, and a course of real bricks, studs and all, on top (six
+// bricks: as tall as a door's frame; about two blocks, the walls' height, WALL_H)
+const WALL_COURSES = 5;
 // how many courses higher the Castle's walls rise: [none, its outer walls, its corner towers]
 const RISE_COURSES = [0, 9, 16];
 
@@ -61,11 +62,12 @@ export class BrickWorld {
     this.loader = new GLTFLoader();
     this.models = new Map(); // url -> Promise<Object3D>
     this.pieces = {}; // name -> [{geometry, material}] for instancing
-    this.inst = {}; // name -> [InstancedMesh]
+    this.inst = {}; // name -> chunk -> {meshes: [InstancedMesh], sig} (place)
     this.doors = new Map(); // where -> the door's group
     this.items = new Map(); // where + what -> a brick item lying on the floor
     this.fx = new ThrowFX(this); // thrown things, flying and tumbling (throwfx.js)
     this.boulders = null; // boulders rolling and bursting (boulderfx.js: made with the world)
+    this.rolling = new Map(); // x,z,url -> a pushed boulder sliding into that square, or just come to rest there
     this.keptRocks = new Map(); // x,z,url -> rocks flung from a broken boulder, lying where they fell (while its rocks are there)
     this.env = gradientEnvironment(THREE, r); // what metal reflects (envmap.js; plastic is lit as ever)
     this.data = null;
@@ -116,29 +118,51 @@ export class BrickWorld {
     return out;
   }
 
-  // fill the instances of a piece: list of [Matrix4, shade]
+  // fill the instances of a piece: list of [Matrix4, shade]. In chunks of the map (CHUNK squares a
+  // side), each its own instanced mesh knowing its bounds: only what's in view (the camera's, the
+  // sun's for its shadows) is drawn; and a chunk just as it was isn't sent again
   place(name, list) {
     const parts = this.pieces[name];
     if (!parts) return;
-    let meshes = this.inst[name];
-    if (!meshes || meshes[0].instanceMatrix.count < list.length) {
-      if (meshes) meshes.forEach((m) => { this.world.remove(m); m.dispose(); });
-      const cap = Math.max(64, Math.ceil(list.length * 1.5));
-      meshes = this.inst[name] = parts.map(({ geometry, material }) => {
-        const im = new THREE.InstancedMesh(geometry, material, cap);
-        im.castShadow = im.receiveShadow = true;
-        im.frustumCulled = false;
-        this.world.add(im);
-        return im;
-      });
+    const chunks = new Map();
+    for (const e of list) {
+      const el = e[0].elements, big = Math.abs(el[0]) > CHUNK || Math.abs(el[10]) > CHUNK; // (the ground under it all: one piece)
+      const key = big ? 'all' : `${Math.floor(el[12] / CHUNK)},${Math.floor(el[14] / CHUNK)}`;
+      if (!chunks.has(key)) chunks.set(key, []);
+      chunks.get(key).push(e);
     }
+    const had = this.inst[name] || new Map(), now = (this.inst[name] = new Map());
+    const shadows = name !== 'plate' && name !== 'ground'; // (the floor casts no shadow: nothing's under it to fall on)
     const c = new THREE.Color();
-    for (const im of meshes) {
-      list.forEach(([m, shade], i) => { im.setMatrixAt(i, m); im.setColorAt(i, c.setScalar(shade)); });
-      im.count = list.length;
-      im.instanceMatrix.needsUpdate = true;
-      if (im.instanceColor) im.instanceColor.needsUpdate = true;
+    for (const [key, es] of chunks) {
+      let sig = es.length;
+      for (const [m, shade] of es) { const el = m.elements; sig = (sig * 31 + el[12] * 977 + el[13] * 131 + el[14] * 7919 + el[0] * 17 + el[2] * 23 + shade * 101) % 1e12; }
+      let ch = had.get(key);
+      had.delete(key);
+      if (ch && ch.sig === sig) { now.set(key, ch); continue; }
+      if (!ch || ch.meshes[0].instanceMatrix.count < es.length) {
+        if (ch) ch.meshes.forEach((m) => { this.world.remove(m); m.dispose(); });
+        const cap = Math.max(16, Math.ceil(es.length * 1.5));
+        ch = { meshes: parts.map(({ geometry, material }) => {
+          const im = new THREE.InstancedMesh(geometry, material, cap);
+          im.castShadow = shadows;
+          im.receiveShadow = true;
+          im.frustumCulled = key !== 'all';
+          this.world.add(im);
+          return im;
+        }) };
+      }
+      ch.sig = sig;
+      for (const im of ch.meshes) {
+        es.forEach(([m, shade], i) => { im.setMatrixAt(i, m); im.setColorAt(i, c.setScalar(shade)); });
+        im.count = es.length;
+        im.instanceMatrix.needsUpdate = true;
+        if (im.instanceColor) im.instanceColor.needsUpdate = true;
+        im.computeBoundingSphere();
+      }
+      now.set(key, ch);
     }
+    for (const ch of had.values()) ch.meshes.forEach((m) => { this.world.remove(m); m.dispose(); }); // (chunks with nothing left in them)
   }
 
   // The dungeon, from the game's terrain builder:
@@ -151,17 +175,6 @@ export class BrickWorld {
     for (const f of data.floors) {
       if (f.studs) plates.push([M().makeTranslation(f.x + 0.5, 0, f.z + 0.5).scale(new THREE.Vector3(S, S, S)), f.shade]);
       else smooth.push([M().makeTranslation(f.x, -PLATE_H, f.z).scale(new THREE.Vector3(1, PLATE_H, 1)), f.shade]); // a printed tile goes on top
-    }
-    // over a doorway, the wall carried on above the door's frame: its courses, and the studded top
-    for (const w of data.lintels || []) {
-      const from = Math.round(DOOR_TOP / BRICK_H), TOP = (WALL_COURSES + 1) * BRICK_H;
-      for (let l = from; l < WALL_COURSES; l++)
-        for (const half of [0, 0.5])
-          courses.push([l % 2 === 0
-            ? M().makeTranslation(w.x, l * BRICK_H, w.z + half).scale(new THREE.Vector3(1, BRICK_H, 0.5))
-            : M().makeTranslation(w.x + half, l * BRICK_H, w.z).scale(new THREE.Vector3(0.5, BRICK_H, 1)), w.shade]);
-      for (const half of [0.25, 0.75])
-        bricks.push([M().makeTranslation(w.x + half, TOP, w.z + 0.5).multiply(M().makeRotationY(Math.PI / 2)).scale(new THREE.Vector3(S, S, S)), w.shade]);
     }
     for (const w of data.walls) {
       // under the wall, the floor's plate; then WALL_COURSES courses of two 2x4 bricks, crossing each course
@@ -222,20 +235,28 @@ export class BrickWorld {
     const T = HAZE_TOP, B = -0.05; // (a hair below the floor, so no seam shows at its foot)
 
     // the haze: its top in 3x3 pieces a square (to billow), and how far each
-    // point is in from the haze's edge (0 at the edge: it sags and thins there)
+    // point is in from the haze's edge (0 at the edge: it sags and thins there).
+    // (by where the point is, not whose square it's in: a corner shared by
+    // squares sags the same in each, so the top never cracks open between them)
     const pos = [], edge = [];
     const N = 3;
+    const insets = new Map();
+    const inset = (vx, vz) => {
+      const k = Math.round(vx * N) * 4096 + Math.round(vz * N); // (each point of the 3x3s worked out once)
+      if (insets.has(k)) return insets.get(k);
+      let d = 0.67;
+      for (let cz = Math.floor(vz) - 2; cz <= Math.floor(vz) + 1; cz++)
+        for (let cx = Math.floor(vx) - 2; cx <= Math.floor(vx) + 1; cx++) {
+          if (isFog(cx, cz)) continue;
+          const dx = Math.max(cx - vx, 0, vx - (cx + 1)), dz = Math.max(cz - vz, 0, vz - (cz + 1));
+          d = Math.min(d, Math.hypot(dx, dz));
+        }
+      insets.set(k, Math.min(1, d / 0.67));
+      return insets.get(k);
+    };
     for (const c of cells) {
       const { x, z } = c;
       const open = [!isFog(x - 1, z), !isFog(x + 1, z), !isFog(x, z - 1), !isFog(x, z + 1)];
-      const inset = (vx, vz) => {
-        let d = 1;
-        if (open[0]) d = Math.min(d, vx - x);
-        if (open[1]) d = Math.min(d, x + 1 - vx);
-        if (open[2]) d = Math.min(d, vz - z);
-        if (open[3]) d = Math.min(d, z + 1 - vz);
-        return Math.min(1, d / 0.67);
-      };
       const tv = (vx, vz) => { pos.push(vx, T, vz); edge.push(inset(vx, vz)); };
       for (let i = 0; i < N; i++)
         for (let j = 0; j < N; j++) {
@@ -247,12 +268,13 @@ export class BrickWorld {
       // and its floor, so what shows through it is more haze, not the baseplate
       const F = B - 0.01;
       side([x, F, z], [x + 1, F, z], [x + 1, F, z + 1], [x, F, z + 1]);
-      // (a hair inside its own square: never in the same plane as a wall's face, where they'd flicker)
-      const I = 0.03;
-      if (open[2]) side([x, B, z + I], [x + 1, B, z + I], [x + 1, T, z + I], [x, T, z + I]);
-      if (open[3]) side([x, B, z + 1 - I], [x + 1, B, z + 1 - I], [x + 1, T, z + 1 - I], [x, T, z + 1 - I]);
-      if (open[0]) side([x + I, B, z], [x + I, B, z + 1], [x + I, T, z + 1], [x + I, T, z]);
-      if (open[1]) side([x + 1 - I, B, z], [x + 1 - I, B, z + 1], [x + 1 - I, T, z + 1], [x + 1 - I, T, z]);
+      // (a hair inside its own square: never in the same plane as a wall's face, where they'd flicker;
+      // and run on a hair past its ends, so where two sides meet in a corner they close it, no crack)
+      const I = 0.03, a = -I, b = 1 + I;
+      if (open[2]) side([x + a, B, z + I], [x + b, B, z + I], [x + b, T, z + I], [x + a, T, z + I]);
+      if (open[3]) side([x + a, B, z + 1 - I], [x + b, B, z + 1 - I], [x + b, T, z + 1 - I], [x + a, T, z + 1 - I]);
+      if (open[0]) side([x + I, B, z + a], [x + I, B, z + b], [x + I, T, z + b], [x + I, T, z + a]);
+      if (open[1]) side([x + 1 - I, B, z + a], [x + 1 - I, B, z + b], [x + 1 - I, T, z + b], [x + 1 - I, T, z + a]);
     }
     if (!this.hazeMesh) {
       this.hazeMat = new THREE.ShaderMaterial({
@@ -273,9 +295,9 @@ export class BrickWorld {
 
     // the streams: a sheet along each edge it pours over, following the
     // fog's path (out from the edge, height), streaks flowing along it
-    // (over the wall's studded top, and down its inside face a good way before it fades: about two blocks)
+    // (over the wall's studded top, and down its inside face a good way before it fades: about a block)
     const WT = (WALL_COURSES + 1) * BRICK_H + 0.17;
-    const OVER = [[-0.3, T - 0.45], [0.0, WT], [0.5, WT - 0.03], [0.98, WT - 0.05], [1.07, WT - 0.25], [1.1, WT - 0.72], [1.12, WT - 1.3], [1.13, WT - 1.97]];
+    const OVER = [[-0.3, T - 0.45], [0.0, WT], [0.5, WT - 0.03], [0.98, WT - 0.05], [1.07, WT - 0.25], [1.1, WT - 0.62], [1.12, WT - 1.02]];
     const SLUMP = [[-0.25, 1.5], [0.1, 0.9], [0.35, 0.35], [0.7, 0.14], [1.3, 0.12], [2.0, 0.12]];
     const fp = [], fu = [], fs = [], fv = [];
     const sheet = (c, dx, dz, path, lift) => {
@@ -340,12 +362,12 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' ? 0 // (a statue stands square to its square: perch.js climbs its sides)
+        const turn = it.name === 'statue' || it.name === 'boulder' ? 0 // (a statue, a boulder: square to its square, filling it, its edges its square's)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
         g.scale.setScalar(MODEL_SCALE);
-        g.userData = { square: `${it.x},${it.z}`, level, thick: 0 };
+        g.userData = { square: `${it.x},${it.z}`, level, thick: 0, colliders: it.colliders || null };
         this.world.add(g);
         if (this.fx.isIncoming(it.x, it.z, it.url)) g.visible = false; // (still in the air: it lands, then shows: throwfx.js)
         if (this.keptRocks.has(`${it.x},${it.z},${it.url}`)) g.visible = false; // (a broken boulder's rocks: the flung ones lying there are its pile)
@@ -403,22 +425,55 @@ export class BrickWorld {
   }
   boulderFX() { return (this.boulders = this.boulders || new BoulderFX(this.world)); }
 
+  // what a dropped thing falling into square (x, z) knocks against (throwfx.js drop): the hero, if
+  // near (heroBody, set every frame: a rounded head things roll off, a body under it), and the solid
+  // parts of whatever lies near that has any (items.json "colliders": a statue's column, corbels,
+  // basin, figure: boxes in LDraw units, up from its foot, out from its middle); in world units
+  colliders(x, z) {
+    const out = [], h = this.heroBody;
+    if (h && Math.abs(h.x - (x + 0.5)) < 1.5 && Math.abs(h.z - (z + 0.5)) < 1.5) {
+      out.push({ sphere: [h.x, h.top - 0.2, h.z, 0.2] });
+      out.push({ box: [h.x - 0.18, h.y0, h.z - 0.12, h.x + 0.18, h.top - 0.3, h.z + 0.12], hero: true });
+    }
+    for (const g of this.items.values()) {
+      const cl = g.userData.colliders;
+      if (!cl || !g.visible) continue;
+      const [gx, gz] = g.userData.square.split(',').map(Number);
+      if (Math.abs(gx - x) > 1 || Math.abs(gz - z) > 1) continue;
+      const P = g.position, L = 1 / 80;
+      for (const [x0, y0, z0, x1, y1, z1] of cl) out.push({ box: [P.x + x0 * L, P.y + y0 * L, P.z + z0 * L, P.x + x1 * L, P.y + y1 * L, P.z + z1 * L] });
+    }
+    return out;
+  }
+
   // the hero pushed a boulder (its model) from square (fx, fz) into (tx, tz): it rolls there,
   // tumbling (boulderfx.js), hidden on the floor till it comes to rest, then lies as it came to rest
   async boulderPush(url, fx, fz, tx, tz) {
-    const k = `${tx},${tz},${url}`, t = this.fx;
+    const k = `${tx},${tz},${url}`, from = `${fx},${fz},${url}`, t = this.fx, fxb = this.boulderFX();
     t.incoming.set(k, (t.incoming.get(k) || 0) + 1);
     this.redrawItems(k);
+    // the boulder still sliding there, or only just come to rest, is the one pushed on (never a
+    // second one made beside it); else it's made where it lies
+    let b = this.rolling.get(from);
+    if (b) { this.rolling.delete(from); clearTimeout(b.gone); }
     const at = this.lying(fx, fz, url);
     if (at) at.g.visible = false; // (gone from where it was: the map catches up)
     t.forget(fx, fz, url);
-    let m;
-    try { m = await this.model(url); } catch { t.land(k); return; }
-    const fxb = this.boulderFX(), b = fxb.place(m, fx, fz, at);
+    if (!b) {
+      let m;
+      try { m = await this.model(url); } catch { t.land(k); return; }
+      b = fxb.place(m, fx, fz, at);
+    }
+    const id = (b.pushId = (b.pushId || 0) + 1);
+    this.rolling.set(k, b);
     await fxb.push(b, tx, tz);
+    if (b.pushId !== id) { t.land(k); return; } // (pushed on before it came to rest: that push has it now)
     t.poses.set(k, { p: b.p.clone(), q: b.q.clone(), c: b.c.clone() });
     t.land(k);
-    setTimeout(() => fxb.remove(b), 150); // (till the floor's own model of it is drawn there: no blink)
+    b.gone = setTimeout(() => { // (till the floor's own model of it is drawn there: no blink)
+      if (this.rolling.get(k) === b) this.rolling.delete(k);
+      fxb.remove(b);
+    }, 150);
   }
 
   // a boulder (its model) at (x, z) broke into rocks (rockUrl): it bursts, grit and rocks flying;
@@ -643,7 +698,7 @@ export class BrickWorld {
 }
 
 // ---- the haze
-const HAZE_TOP = 3.5; // (a little over the walls)
+const HAZE_TOP = 2.6; // (a little over the walls)
 const HAZE_COLOR = 'vec3(0.80, 0.84, 0.89)';
 // faint, slow noise: the haze is alive, not painted on
 const NOISE = `
@@ -669,6 +724,8 @@ void main() {
   if (p.y > ${HAZE_TOP} - 0.01) p.y += (billow(p.xz, uTime) - 0.12) * (0.4 + 0.6 * aEdge) - (1.0 - aEdge) * 0.45;
   vW = p; vEdge = aEdge;
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+  // (never cut off by how far the view reaches (Ascend's is short): held just inside it, it fills on to its end)
+  if (gl_Position.w > 0.0) gl_Position.z = min(gl_Position.z, gl_Position.w * 0.99999);
 }`;
 const HAZE_FS = `
 uniform float uTime;

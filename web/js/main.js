@@ -3,7 +3,8 @@ import { Renderer } from './render.js';
 import { World } from './world.js';
 import { UI, setAtlas, itemActions, SLOT_LETTERS, tileIcon } from './ui.js';
 import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H } from './terrain.js';
-import { Motion } from './motion.js';
+import { Motion, sizeHeight } from './motion.js';
+import * as THREE3 from 'three'; // (measuring models: modelTop)
 import { BlockWorld, BLOCKS, BUILD_LIMIT, breakTime, minedAs } from './blocks.js';
 import { buildTextures } from './textures.js';
 import { ACTION_GROUPS, recommend } from './actions.js';
@@ -12,9 +13,9 @@ import { NameTags, nameTagEntries } from './nametags.js';
 import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music } from './music.js';
-import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H } from './brick.js';
+import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { perchSpot, cameFrom } from './perch.js';
+import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, STATUE_OUT } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
@@ -70,6 +71,7 @@ const game = {
   lastAct: 0,
 
   sendKeys(s) {
+    if (s[0] === 'a') this.lastApplyT = performance.now(); // (an apply: a pick-axe it wields is put away again after: tool swap)
     post('K' + hex(s));
     this.ready = false;
     if (this.mode === 'yn' || this.mode === 'dir') this.endPrompt();
@@ -558,7 +560,14 @@ function handle(m) {
       if (m.cm) { setCmap(m.cm, m.cmapTiles); rebuildTextures(); }
       break;
     case 'clear': world.reset(); motion.mobs.clear(); break;
-    case 'mons': motion.setMobs(m, performance.now()); break;
+    case 'mons': { // (any monster gone since: where it was, and how tall, for what it drops: dropTop)
+      const before = new Map([...motion.mobs].map(([id, mob]) => [id, { x: mob.tx, z: mob.tz, size: mob.size }]));
+      motion.setMobs(m, performance.now());
+      const now = performance.now();
+      for (const [id, b] of before) if (!motion.mobs.has(id)) gone.push({ x: b.x, z: b.z, top: mobTop(id, b.size), t: now });
+      while (gone.length && now - gone[0].t > 3000) gone.shift();
+      break;
+    }
     case 'map': world.applyMap(m.c); break;
     case 'vis': world.setVis(m.v, m.w, m.h); break;
     case 'piles': world.applyPiles(m.p); break;
@@ -594,11 +603,27 @@ function handle(m) {
       cam.snap = false;
       ui.updateStatus(m);
       break;
-    case 'inv': game.setInventory(m.items); redressHero(); break;
+    case 'inv': {
+      // applying a digging tool wields it in place of your weapon: that weapon taken up again, the
+      // digging done (toolSwap)
+      const was = game.inv.find((i) => i.w === 'weapon');
+      game.setInventory(m.items);
+      const now = game.inv.find((i) => i.w === 'weapon');
+      if (was && now && was.l !== now.l && DIGGER.test(now.n) && performance.now() - (game.lastApplyT || 0) < 5000 && !toolSwap.back)
+        toolSwap.back = was.l;
+      redressHero();
+      break;
+    }
     case 'msg':
       if (m.raw) console.log('[slashem]', m.s);
       if (/For instructions type a \?/.test(m.s)) { game.mode = 'getpos'; break; }
       fx.onMessage(m.s, motion, world.hero, performance.now());
+      // digging (a boulder, a statue, rock, down): a blow for each the engine tells of, each landing
+      // before what comes after it (fx.attack holds the replies: the boulder bursts after the last)
+      if (DIG_MSG.test(m.s)) {
+        const d = ui.stat && ui.stat.dig, yaw = doll.yaw;
+        fx.attack(d ? d[0] : world.hero.x + Math.round(Math.sin(yaw)), d ? d[1] : world.hero.y - Math.round(Math.cos(yaw)), performance.now());
+      }
       ui.chat(m.s);
       break;
     case 'key': onKeyRequest(m); break;
@@ -1287,11 +1312,57 @@ function heroPose(dt, now) {
     hop: pp ? pp.hop : 0, lookUp: pp ? pp.lookUp : 0, lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: heavyBall() ? 1 : 0 });
 }
 
-// ---- standing at a statue: up on its ledge, gazing at it (perch.js)
-const perchFrom = { x: 0, y: 0, cur: null }; // the square you came from
+// ---- things dropped fall. What newly lies at your feet (dropped), or where a monster has just
+// died (its corpse, its things), appears in the air just over whoever dropped it and falls there,
+// knocking against you, a statue... and comes to rest as it lies (throwfx.js drop). How high it
+// starts: dropTop, from the dropper's own model (a monster's measured as drawn: modelTop), so
+// nothing ever starts inside the one it fell from, whatever it looks like.
+const gone = []; // monsters gone: {x, z, top, t}
+const mobModel = new Map(); // monster id -> {url, lift}: its brick model, as drawn
+const urlTop = new Map(); // a model's url -> its height (world units), once measured
+function modelTop(url) {
+  if (!urlTop.has(url) && renderer && renderer.brick) {
+    urlTop.set(url, null);
+    renderer.brick.model(url).then((m) => { const b = new THREE3.Box3().setFromObject(m); urlTop.set(url, (b.max.y - b.min.y) * MODEL_SCALE); }).catch(() => {});
+  }
+  return urlTop.get(url) ?? null;
+}
+function mobTop(id, size) {
+  const mm = mobModel.get(id), h = mm && modelTop(mm.url);
+  return h != null ? mm.lift + h : sizeHeight(size) * (world.spriteScale || 1); // (drawn as a sprite: its height)
+}
+function dropTop(x, z, now) {
+  const h = renderer && renderer.brick && renderer.brick.heroBody;
+  if (h && world.hero.x === x && world.hero.y === z) return { top: h.top + 0.08, at: { x: h.x, z: h.z } }; // (at your feet: from just over your head)
+  for (const [id, m] of motion.mobs) if (m.tx === x && m.tz === z) return { top: mobTop(id, m.size) + 0.08 }; // (a monster there, letting it go)
+  for (let i = gone.length - 1; i >= 0; i--) if (gone[i].x === x && gone[i].z === z && now - gone[i].t < 2500) return { top: gone[i].top + 0.08 }; // (one just killed there)
+  return null;
+}
+const dropSeen = { level: null, counts: new Map() };
+function dropFalls(list, now) {
+  const counts = new Map();
+  for (const d of list) { const k = `${d.x},${d.z},${d.url}`; counts.set(k, (counts.get(k) || 0) + 1); }
+  const lvl = ui.stat ? `${ui.stat.dname}:${ui.stat.depth}` : null;
+  if (lvl !== dropSeen.level) { dropSeen.level = lvl; dropSeen.counts = counts; return; } // (a level arrived on: all just there)
+  const brick = renderer && renderer.brickOn && renderer.brick;
+  if (brick) for (const [k, n] of counts) {
+    if (n <= (dropSeen.counts.get(k) || 0)) continue;
+    const [x, z, ...u] = k.split(','), url = u.join(',');
+    if (brick.fx.isIncoming(+x, +z, url)) continue; // (thrown, or a boulder rolled: it's on its way there)
+    const d = dropTop(+x, +z, now);
+    if (d) brick.fx.drop(url, +x, +z, d.top, d.at);
+  }
+  dropSeen.counts = counts;
+}
+
+// ---- standing at a statue: up on its ledge, gazing at it (perch.js; walk.perch: processMovement)
+// where you're drawn, off where you are: {k, dx, dz, lift, yaw, hop, lookUp}, or null
 function statuePerch(now) {
-  cameFrom(perchFrom, world.hero);
-  return perchSpot(world.hero, perchFrom, motion.heroPos(now), world.brickDrops);
+  const p = walk.perch, F = motion.free;
+  if (!p || !F) return null;
+  const u = (now - p.t0) / 1000;
+  const pose = p.phase === 'on' ? hopOn(p.from, p.side, u / HOP_ON) : p.phase === 'off' ? hopOff(p.side, p.out, p.dest, u) : perched(p.side);
+  return { k: 1, dx: p.x + pose.x - F.x, dz: p.z + pose.z - F.z, lift: pose.lift, yaw: pose.yaw, hop: pose.hop, lookUp: pose.lookUp };
 }
 
 // ---- monsters made in brick (web/assets/brick/monsters.json, built by
@@ -1321,6 +1392,7 @@ function brickMonFigures(sprites, dt, now) {
   for (let i = sprites.length - 1; i >= 0; i--) {
     const s = sprites[i], e = s.mon && brickMons.get(s.tile);
     if (!e || !e.prims) continue;
+    if (s.mob) mobModel.set(s.mob.id, { url: e.url, lift: (s.lift || 0) + (e.lift || 0) }); // (how tall it stands: dropTop)
     sprites.splice(i, 1);
     const f = s.mob && fx.mobFX && fx.mobFX.get(s.mob.id);
     if (e.anim && f && f.kind === 'lunge' && f.t0 !== e.lungeT0) { e.lungeT0 = f.t0; e.anim.attack(); }
@@ -1502,7 +1574,7 @@ function updateCameraBase(now) {
   // (a minifig is taller than Steve: the camera stands further back, and looks over the helmet)
   const fig = !!motion.figHeight && heroH === motion.figHeight;
   const target = [tx, (world.heroLift ?? phys.y) + up + heroH * (fig ? 1.0 : 0.85), tz];
-  let dist = 4.2 * Math.max(1, heroH / 1.8);
+  let dist = 5.4 * Math.max(1, heroH / 1.8);
   let overHaze = false;
   for (let t = 0.3; t < dist; t += 0.05) {
     const p = [target[0] + f[0] * t * sign, target[1] + f[1] * t * sign, target[2] + f[2] * t * sign];
@@ -1511,6 +1583,10 @@ function updateCameraBase(now) {
     if (p[1] < HAZE_CLEAR && world.isHaze(vx, vz)) overHaze = true;
   }
   cam.eye = [target[0] + f[0] * dist * sign, target[1] + f[1] * dist * sign, target[2] + f[2] * dist * sign];
+  // (nor where the haze is near enough to be clipped by the view: over it, or right beside it)
+  if (cam.eye[1] < HAZE_CLEAR)
+    for (const [ox, oz] of [[0, 0], [-0.4, -0.4], [0.4, -0.4], [-0.4, 0.4], [0.4, 0.4]])
+      if (world.isHaze(Math.floor(cam.eye[0] + ox), Math.floor(cam.eye[2] + oz))) overHaze = true;
   cam.vyaw = opts.camera === 1 ? cam.yaw : cam.yaw + Math.PI;
   cam.vpitch = opts.camera === 1 ? cam.pitch : -cam.pitch;
   // the camera never goes into the haze over the unexplored: where it would,
@@ -1522,7 +1598,7 @@ function updateCameraBase(now) {
     cam.vpitch = Math.atan2(d[1], Math.hypot(d[0], d[2]));
   }
 }
-const HAZE_CLEAR = 3.2; // (over the haze's billowing top, brickworld.js HAZE_TOP)
+const HAZE_CLEAR = 3.2; // (over the haze's billowing top, at its highest: brickworld.js HAZE_TOP 2.6, and its billow)
 
 function crosshairTarget() {
   if (!renderer) return null;
@@ -1704,6 +1780,29 @@ function chestDone() {
     onPut: (it) => beginLoot({ kind: 'put', letter: it.l }),
     onClose: closeChestScreen,
   });
+}
+
+// Digging (a pick-axe or mattock applied: a wall, rock, a boulder, a statue): the hero swings
+// it, again and again, as the work goes on (the engine's progress: ui.stat.dig); and once it's
+// done, the weapon it took the place of is wielded again
+const DIGGER = /pick-axe|mattock/;
+const DIG_MSG = /^You (start|continue) (digging|hitting|chipping)|^You hit the .* with all your might|^You dig a (pit|hole)|^You make an opening|^You succeed in cutting away/;
+const toolSwap = { back: null, effort: -1, swingT: 0, digT: 0 };
+function digSwings(now) {
+  const d = game.playing && ui.stat && ui.stat.dig;
+  if (d) {
+    toolSwap.digT = now;
+    if (d[2] !== toolSwap.effort && now - toolSwap.swingT > ATTACK_TIME * 1100) { // (progress: a blow)
+      toolSwap.swingT = now;
+      CombatFX.prototype.attack.call(fx, d[0], d[1], now); // (the swing alone: the engine digs on, not waiting for it)
+    }
+    toolSwap.effort = d[2];
+  } else toolSwap.effort = -1;
+  if (toolSwap.back && game.ready && !game.mode && !modalOpen() && !d && now - toolSwap.digT > 600) {
+    const w = game.inv.find((i) => i.l === toolSwap.back);
+    if (w && w.w !== 'weapon') game.sendKeys('w' + toolSwap.back);
+    toolSwap.back = null;
+  }
 }
 
 // start NetHack's own digging toward an adjacent wall (apply pick-axe, direction)
@@ -1943,7 +2042,7 @@ const FREE_SPEED = 3.2; // squares a second
 const BODY_R = 0.2; // (half the hero's body, across: how near a wall its middle comes)
 const BUMP_MS = 450; // (pushing on into a monster, a door, a boulder: tried again this often)
 let bumpT = 0;
-const walk = { moving: false, heading: 0, at: null, sent: [], settle: false };
+const walk = { moving: false, heading: 0, at: null, sent: [], settle: false, perch: null, bumped: false };
 const freeWalk = walk;
 
 // what's at square (x, z), walking into it: 'floor', 'climb' (blocks: stepped up onto), or
@@ -1968,6 +2067,7 @@ function bump(kind, x, z, now) {
   bumpT = now;
   if (kind === 'mob') fx.attack(x, z, now);
   game.sendKeys(dirKey(d));
+  walk.bumped = true; // (held where you are till the engine answers: a boulder pushed moves you too)
 }
 
 // you crossed from your square into the one beside it (d): the engine is told
@@ -1985,8 +2085,53 @@ function crossed(d) {
   walk.sent.push(dirKey(d));
 }
 
+// what the body is kept out of, beyond whole squares: the posts of door frames (as they stand in
+// their squares: brickworld.js, render.js doorPiece) and boulders still sliding (as they're drawn);
+// [x0, z0, x1, z1] in the squares' units (a square's middle at its coordinates)
+const DOOR_OPEN = 30 / 80; // (half a doorway's opening, between the frame's posts)
+function obstacles(F) {
+  const out = [], sx = Math.round(F.x), sz = Math.round(F.z);
+  for (let z = sz - 1; z <= sz + 1; z++)
+    for (let x = sx - 1; x <= sx + 1; x++) {
+      const c = world.classAt(x, z);
+      if (!c || !(c.type === 'odoor' || c.cmap === CM.ndoor)) continue;
+      const wallAt = (xx, zz) => { const n = world.classAt(xx, zz); return !!n && n.type === 'wall'; };
+      const alongZ = c.cmap === CM.vodoor ? true : c.cmap === CM.hodoor ? false : wallAt(x, z - 1) || wallAt(x, z + 1);
+      // (the frame: a stud deep, an eighth off the middle across the wall; a post at each end along it)
+      for (const s of [-1, 1])
+        out.push(alongZ ? [x, z + s * DOOR_OPEN, x + 0.25, z + s * 0.5] : [x + s * DOOR_OPEN, z, x + s * 0.5, z + 0.25]);
+    }
+  // (a statue's foot: its scroll corbels, a cross reaching a quarter into the squares beside it, and
+  // its basin; touched, it's hopped up onto)
+  for (const o of world.brickDrops || [])
+    if (o.name === 'statue' && Math.abs(o.x - sx) <= 1 && Math.abs(o.z - sz) <= 1 && !(walk.at && o.x === walk.at.x && o.z === walk.at.z)) {
+      const w = 20 / 80, R = STATUE_OUT, C = 35 / 80; // (and the basin over its middle)
+      out.push([o.x - w, o.z - R, o.x + w, o.z + R, o], [o.x - R, o.z - w, o.x + R, o.z + w, o], [o.x - C, o.z - C, o.x + C, o.z + C, o]);
+    }
+  const bfx = renderer && renderer.brick && renderer.brick.boulders;
+  if (bfx) for (const b of bfx.all)
+    if (b.slide && b.holder.parent) {
+      const h = Math.min(0.5, Math.max(b.size.x, b.size.z) / 2), cx = b.p.x - 0.5, cz = b.p.z - 0.5;
+      out.push([cx - h, cz - h, cx + h, cz + h]);
+    }
+  return out.map(([a, b, c, d, statue]) => [Math.min(a, c), Math.min(b, d), Math.max(a, c), Math.max(b, d), statue]);
+}
+// the body (a square BODY_R each way of its middle) out of anything it's come into: put back to just
+// touching it, the shortest way out. The statue it's come up against, if one
+function keepClear(F) {
+  let statue = null;
+  for (const [x0, z0, x1, z1, st] of obstacles(F)) {
+    const px = Math.min(F.x + BODY_R - x0, x1 - (F.x - BODY_R)), pz = Math.min(F.z + BODY_R - z0, z1 - (F.z - BODY_R));
+    if (px <= 0 || pz <= 0) continue;
+    if (px < pz) F.x += F.x < (x0 + x1) / 2 ? -px : px;
+    else F.z += F.z < (z0 + z1) / 2 ? -pz : pz;
+    if (st) statue = st;
+  }
+  return statue;
+}
+
 function processMovement(now, dt) {
-  if (!game.playing) { motion.free = null; walk.at = null; walk.sent = []; return; }
+  if (!game.playing) { motion.free = null; walk.at = null; walk.sent = []; walk.perch = null; walk.bumped = false; return; }
   const sq = { x: world.hero.x, z: world.hero.y };
   if (!motion.free || !walk.at) { motion.free = { ...sq }; walk.at = { ...sq }; walk.sent = []; }
   const F = motion.free;
@@ -1994,31 +2139,72 @@ function processMovement(now, dt) {
   // the engine, kept up with: the next step sent as soon as it's ready for one; and where it
   // says you are checked against where you went
   if (game.ready) {
+    if (walk.bumped && !walk.sent.length) { // (the push answered: where the engine has you now, at once)
+      walk.bumped = false;
+      if (sq.x !== walk.at.x || sq.z !== walk.at.z) { walk.at = { ...sq }; walk.settle = true; }
+    }
     if (walk.sent.length && !game.mode && !modalOpen()) {
       lastMove = now;
       game.sendKeys(walk.sent.shift());
-    } else if (!walk.sent.length && now - lastMove > 300 && (sq.x !== walk.at.x || sq.z !== walk.at.z)) {
+    } else if (walk.perch && walk.perch.phase !== 'off' && Math.max(Math.abs(sq.x - walk.at.x), Math.abs(sq.z - walk.at.z)) === 1
+      && walk.perch.x === walk.at.x && walk.perch.z === walk.at.z && !walk.sent.length) {
+      // (moved off the statue by the engine (an attack on thin air, a step it took for you): the
+      // dismount played, that way, landing where it has you)
+      const p = walk.perch, d = [sq.x - walk.at.x, sq.z - walk.at.z], reach = STATUE_OUT + BODY_R + 0.02, n = Math.hypot(d[0], d[1]);
+      Object.assign(p, { phase: 'off', t0: now, out: sideToward(d[0], d[1]), dest: [(d[0] / n) * reach * (n > 1 ? Math.SQRT2 : 1), (d[1] / n) * reach * (n > 1 ? Math.SQRT2 : 1)], moved: true });
+    } else if (!walk.sent.length && now - lastMove > 300 && (sq.x !== walk.at.x || sq.z !== walk.at.z) && !(walk.perch && walk.perch.moved)) {
       // (all answered, and a moment gone by: it hasn't put you where you went (a step refused), or
       // it's moved you itself (travel, a trap, a teleport): where it says)
       walk.at = { ...sq }; walk.settle = true;
     }
   }
   if (Math.max(Math.abs(F.x - walk.at.x), Math.abs(F.z - walk.at.z)) > 2.5) { F.x = walk.at.x; F.z = walk.at.z; walk.settle = false; return; }
-  // settling: walked back into your square (the engine put you there), or onto a statue's ledge
   const statue = (world.brickDrops || []).some((o) => o.x === walk.at.x && o.z === walk.at.z && o.name === 'statue');
   const able = game.playing && !game.mode && !modalOpen() && !anyScreen() && !game.raw && phys.climb == null && !walk.settle;
   const f = able ? (held.has('w') ? 1 : 0) - (held.has('s') ? 1 : 0) : 0;
   const r = able ? (held.has('d') ? 1 : 0) - (held.has('a') ? 1 : 0) : 0;
-  if (walk.settle || (statue && !f && !r)) {
+  // a statue's square: a hop up onto its ledge on the side you came in by; up there till you go,
+  // then round the ledge and a jump off the way you go (each timed: perch.js); you're at its middle
+  if (walk.perch && (walk.perch.x !== walk.at.x || walk.perch.z !== walk.at.z)) walk.perch = null; // (moved off it by the engine)
+  // (once begun, the perch has you till it's done: up, stood there, round and off, input or no; even
+  // should the statue drop out of the floor's list a moment while you stand on it)
+  if ((statue || walk.perch) && !walk.settle) {
+    const at = walk.at, t = (now - (walk.perch ? walk.perch.t0 : now)) / 1000;
+    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: sideToward(F.x - at.x, F.z - at.z) };
+    const p = walk.perch;
+    F.x = at.x; F.z = at.z;
+    motion.freeMoving = false;
+    if (p.phase === 'on' && t >= HOP_ON) p.phase = 'up';
+    if (p.phase === 'up' && (f || r)) { // (off, the way you go: the square there, if you can go there)
+      const [fx1, fz1] = forward();
+      const vx = fx1 * f - fz1 * r, vz = fz1 * f + fx1 * r;
+      const d = OCT[((Math.round(Math.atan2(vz, vx) / (Math.PI / 4)) % 8) + 8) % 8];
+      const k = squareIs(at.x + d[0], at.z + d[1]);
+      if (k === 'floor' || k === 'climb') {
+        const reach = STATUE_OUT + BODY_R + 0.02, n = Math.hypot(d[0], d[1]);
+        Object.assign(p, { phase: 'off', t0: now, out: sideToward(d[0], d[1]), dest: [(d[0] / n) * reach * Math.SQRT2 ** (n > 1 ? 1 : 0), (d[1] / n) * reach * Math.SQRT2 ** (n > 1 ? 1 : 0)] });
+      } else if (k !== 'solid') bump(k, at.x + d[0], at.z + d[1], now);
+    }
+    if (p.phase === 'off' && t >= offTime(p.side, p.out)) { // (landed: just into the next square; that's the move)
+      F.x = at.x + p.dest[0]; F.z = at.z + p.dest[1];
+      walk.perch = null;
+      if (p.moved) walk.at = { x: Math.round(F.x), z: Math.round(F.z) }; // (the engine moved you: already there)
+      else crossed([Math.sign(Math.round(F.x) - at.x), Math.sign(Math.round(F.z) - at.z)]);
+    }
+    return;
+  }
+  // settling: walked back into your square (the engine put you there)
+  if (walk.settle) {
     const inner = 0.5 - BODY_R;
-    const tx = statue ? walk.at.x : Math.max(walk.at.x - inner, Math.min(walk.at.x + inner, F.x));
-    const tz = statue ? walk.at.z : Math.max(walk.at.z - inner, Math.min(walk.at.z + inner, F.z));
+    const tx = Math.max(walk.at.x - inner, Math.min(walk.at.x + inner, F.x));
+    const tz = Math.max(walk.at.z - inner, Math.min(walk.at.z + inner, F.z));
     const dx = tx - F.x, dz = tz - F.z, d = Math.hypot(dx, dz);
     if (d > 1e-3) {
       const st = Math.min(d, FREE_SPEED * dt);
       F.x += (dx / d) * st; F.z += (dz / d) * st;
       walk.moving = true; walk.heading = Math.atan2(dx, -dz);
     } else walk.settle = false;
+    keepClear(F);
     motion.freeMoving = walk.moving;
     return;
   }
@@ -2029,7 +2215,10 @@ function processMovement(now, dt) {
   vx /= n; vz /= n;
   // moved one way and then the other, each stopped by whatever's solid in its way (the body a
   // square 2 BODY_R across): sliding along walls; pushing into a monster, door or boulder bumps it
-  const solidAt = (x, z) => { const k = squareIs(x, z); return k === 'floor' || k === 'climb' ? null : k; };
+  const solidAt = (x, z) => {
+    if (walk.bumped && (x !== walk.at.x || z !== walk.at.z)) return 'solid'; // (a push not yet answered: stay put)
+    const k = squareIs(x, z); return k === 'floor' || k === 'climb' ? null : k;
+  };
   const step = (axis, v) => {
     const cur = axis === 'x' ? F.x : F.z, other = axis === 'x' ? F.z : F.x;
     let nxt = cur + v * FREE_SPEED * dt;
@@ -2050,6 +2239,11 @@ function processMovement(now, dt) {
   const ox = F.x, oz = F.z;
   step('x', vx);
   step('z', vz);
+  const st = keepClear(F);
+  if (st && !walk.sent.length && !walk.bumped) { // (walked up against a statue's foot: that's the step onto it; up you hop)
+    const d = [st.x - walk.at.x, st.z - walk.at.z];
+    if (Math.max(Math.abs(d[0]), Math.abs(d[1])) === 1 && (vx * d[0] + vz * d[1]) / Math.hypot(d[0], d[1]) > 0.3) { crossed(d); motion.freeMoving = walk.moving = true; return; }
+  }
   if (F.x !== ox || F.z !== oz) { walk.moving = true; walk.heading = Math.atan2(vx, -vz); }
   motion.freeMoving = walk.moving;
   // your middle crossed into another square: that's the move (diagonal, if both ways at once)
@@ -2087,6 +2281,7 @@ function frame(t) {
       lastWall = opts.wallStyle;
     }
     processMovement(t, dt);
+    digSwings(t);
     if (game.playing) { updatePhysics(dt, t); updateDoll(dt, t); }
     updateCamera(t);
     const fig3d = showFigure();
@@ -2100,6 +2295,11 @@ function frame(t) {
     const ballItem = brickItemByName('heavy iron ball');
     if (renderer.brick) renderer.brick.setPunished(pun && ballItem ? { ball: pun.ball ? [pun.ball.x, pun.ball.z] : null, ballUrl: ballItem.url, linkUrl: brickChainLink() } : null);
     renderer.brickItems = pun ? (world.brickDrops || []).filter((d) => d !== pun.chain && d !== pun.ball) : world.brickDrops || [];
+    if (renderer.brick) { // (the hero's body, for things falling onto it: brickworld.colliders)
+      const [hx, hz] = motion.heroPos(t), pp = statuePerch(t), lift = (world.heroLift ?? phys.y) + (pp ? pp.lift : 0);
+      renderer.brick.heroBody = game.playing ? { x: hx + 0.5 + (pp ? pp.dx : 0), z: hz + 0.5 + (pp ? pp.dz : 0), y0: lift, top: lift + motion.heroHeight() } : null;
+    }
+    if (game.playing) dropFalls(renderer.brickItems, t);
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
     if (game.playing) {
       const [hx, hz] = motion.heroPos(t);
