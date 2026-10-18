@@ -12291,6 +12291,16 @@
     "part": "30294c01",
     "color": 70
    }
+  ],
+  "halves": [
+   {
+    "part": "30293",
+    "color": 70
+   },
+   {
+    "part": "30294",
+    "color": 70
+   }
   ]
  },
  "statue": {
@@ -12724,7 +12734,8 @@
     144,
     45
    ]
-  ]
+  ],
+  "shatter": true
  },
  "heavy iron ball": {
   "brick": "The Technic ball 19 mm in metallic dark grey (a heavy iron ball)",

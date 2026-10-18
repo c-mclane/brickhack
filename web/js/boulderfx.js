@@ -23,6 +23,8 @@ const E_FLOOR = 0.12, E_WALL = 0.25, FRICTION = 0.7;
 const REST_V = 0.05, REST_W = 0.3, REST_TIME = 0.35, MAX_TIME = 5;
 const SLIDE_TIME = 0.75; // s a pushed boulder takes to slide over into the next square
 const GRIT = 90, GRIT_LIFE = 1.4;
+const CRACK_T = 0.6; // s a cracked boulder's halves fall apart before they burst
+const SHUDDER = 0.35; // s a breaking statue shudders before it comes apart
 
 // the points of a model that can touch: the farthest vertex in each of 26 directions
 function hullPoints(model, centre) {
@@ -61,7 +63,7 @@ function makeBody(model, world) {
   // resting on the floor, as it stands
   let low = Infinity;
   for (const p of points) low = Math.min(low, p.y);
-  return { holder, m, c, points, inertia, size, p: new THREE.Vector3(0, STUD_H - low, 0), v: new THREE.Vector3(), q: new THREE.Quaternion(), w: new THREE.Vector3(), t: 0, rest: 0 };
+  return { holder, m, c, box, points, inertia, size, p: new THREE.Vector3(0, STUD_H - low, 0), v: new THREE.Vector3(), q: new THREE.Quaternion(), w: new THREE.Vector3(), t: 0, rest: 0 };
 }
 
 export class BoulderFX {
@@ -114,7 +116,8 @@ export class BoulderFX {
 
   // broken: the boulder bursts into grit and rocks; `rock`: the rocks' model; `keep`: how many stay
   // (resolves with the ones that stay, at rest, for whoever draws the floor to take over)
-  shatter(b, rock, keep = 4) {
+  // (fade: every rock flung goes once it's come to rest, none kept: the floor's own pile shows instead)
+  shatter(b, rock, keep = 4, sq = null, fade = false) {
     this.world.remove(b.holder);
     this.bodies = this.bodies.filter((o) => o !== b);
     const colors = [];
@@ -129,11 +132,82 @@ export class BoulderFX {
       k.v.set(Math.cos(a) * s, 1 + Math.random() * 1.2, Math.sin(a) * s);
       k.w.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(14);
       k.q.random();
-      Object.assign(k, { tx: Math.floor(b.p.x), tz: Math.floor(b.p.z), pull: false, walls: true, stays: true, t: 0, rest: 0 }); // (kept in its square)
+      Object.assign(k, { tx: sq ? sq[0] : Math.floor(b.p.x), tz: sq ? sq[1] : Math.floor(b.p.z), pull: false, walls: true, stays: !fade, t: 0, rest: 0 }); // (kept in its square)
       rocks.push(k);
       this.bodies.push(k);
     }
     return Promise.all(rocks.map((k) => new Promise((res) => { k.onRest = () => res(k); }))).then((all) => all.filter((k) => k.stays));
+  }
+
+  // broken, a boulder first cracks in half: along its seam, the top half tips off one way and the
+  // bottom rocks back the other, with a puff of chips; a moment later each bursts as a boulder does
+  // (shatter: grit, and rocks, `keep` of them staying). halves: the two halves' models (its top,
+  // then its bottom: tools/build_items.py "halves"), as the boulder's model has them, the bottom
+  // 64 LDU under the top. Resolves with the rocks that stay
+  crack(b, halves, rock, keep = 4, fade = false) {
+    const sq = [Math.floor(b.p.x), Math.floor(b.p.z)];
+    this.world.remove(b.holder);
+    this.bodies = this.bodies.filter((o) => o !== b);
+    this.all.delete(b);
+    // where each half sits in the boulder's model: the two together, lined up with the whole by their bounds
+    const at = [new THREE.Vector3(), new THREE.Vector3(0, -64 / 20, 0)], box = new THREE.Box3(), whole = b.box;
+    const boxes = halves.map((h, i) => { const hb = new THREE.Box3().setFromObject(h); hb.translate(at[i]); box.union(hb); return hb; });
+    const shift = whole.min.clone().sub(box.min);
+    const dir = new THREE.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize(), side = new THREE.Vector3(0, 1, 0).cross(dir);
+    const parts = halves.map((h, i) => {
+      const k = makeBody(h, this.world);
+      this.all.add(k);
+      const c = boxes[i].getCenter(new THREE.Vector3()).add(shift).sub(b.c).multiplyScalar(MODEL_SCALE);
+      k.q.copy(b.q);
+      k.p.copy(b.p).add(c.applyQuaternion(b.q));
+      // the top tips off over its edge; the bottom rocks back
+      if (i === 0) { k.v.copy(dir).multiplyScalar(0.7).setY(1.1); k.w.copy(side).multiplyScalar(-6); }
+      else { k.v.copy(dir).multiplyScalar(-0.25).setY(0.35); k.w.copy(side).multiplyScalar(3); }
+      Object.assign(k, { tx: sq[0], tz: sq[1], pull: false, walls: true, t: 0, rest: 0 });
+      k.holder.position.copy(k.p); k.holder.quaternion.copy(k.q);
+      this.bodies.push(k);
+      return k;
+    });
+    const colors = [];
+    b.m.traverse((o) => { if (o.isMesh && o.material && o.material.color) colors.push(o.material.color); });
+    this.burst(b.p.clone(), colors.length ? colors : [new THREE.Color(0x777777)], 24, 0.45, false);
+    return new Promise((res) => setTimeout(res, CRACK_T * 1000)).then(() => Promise.all(parts.map((k, i) => {
+      this.all.delete(k);
+      return this.shatter(k, rock, i === 0 ? Math.ceil(keep / 2) : Math.floor(keep / 2), sq, fade);
+    }))).then((kept) => kept.flat());
+  }
+
+  // a statue broken: brick by brick. It shudders; the figure on it crumbles, its pieces dropping away
+  // limp, and the bricks under it blow apart in a burst of grit and dust, all tumbling to rest where
+  // they fall. pieces: [{model, pos (where its model's origin is), q (how it's turned), fig (the
+  // figure's: crumbles; else blown apart)}]; centre: the statue's middle at its foot; fade: each piece
+  // goes once it's come to rest
+  crumble(pieces, centre, fade = false) {
+    const colors = [], bodies = pieces.map((pc) => {
+      const k = makeBody(pc.model, this.world);
+      this.all.add(k);
+      k.q.copy(pc.q);
+      k.p.copy(pc.pos).add(k.c.clone().multiplyScalar(MODEL_SCALE).applyQuaternion(pc.q));
+      const out = k.p.clone().sub(centre).setY(0), d = out.length() > 1e-3 ? out.normalize() : new THREE.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
+      d.x += (Math.random() - 0.5) * 0.6; d.z += (Math.random() - 0.5) * 0.6; d.normalize();
+      if (pc.fig) { // (limp: slumping off, a little out, turning over as it goes)
+        k.v.copy(d).multiplyScalar(0.25 + Math.random() * 0.45).setY(Math.random() * 0.5);
+        k.w.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(5);
+        k.hold = SHUDDER + Math.random() * 0.12;
+      } else { // (blown out, and up, spinning hard)
+        const s = 1.3 + Math.random() * 1.6;
+        k.v.copy(d).multiplyScalar(s).setY(1.6 + Math.random() * 1.8);
+        k.w.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(16);
+        k.hold = SHUDDER + 0.12;
+        pc.model.traverse((o) => { if (o.isMesh && o.material && o.material.color && colors.length < 6) colors.push(o.material.color); });
+      }
+      Object.assign(k, { pull: false, walls: false, t: 0, rest: 0, stays: !fade });
+      k.holder.position.copy(k.p); k.holder.quaternion.copy(k.q);
+      this.bodies.push(k);
+      return k;
+    });
+    setTimeout(() => this.burst(centre.clone().setY(centre.y + 0.25), colors.length ? colors : [new THREE.Color(0x999999)]), (SHUDDER + 0.12) * 1000);
+    return Promise.all(bodies.map((k) => new Promise((res) => { k.onRest = () => res(k); })));
   }
 
   // take something away (a boulder or rock: picked up, or the scene reset)
@@ -152,8 +226,13 @@ export class BoulderFX {
     for (const b of [...this.bodies]) {
       if (b.fading != null) { // a rock that doesn't stay: shrinking away
         b.fading += dt;
-        b.holder.scale.setScalar(Math.max(0.001, 1 - b.fading / 0.5));
-        if (b.fading > 0.5) { this.world.remove(b.holder); this.bodies.splice(this.bodies.indexOf(b), 1); }
+        b.holder.scale.setScalar(Math.max(0.001, Math.min(1, 1 - b.fading / 0.5)));
+        if (b.fading > 0.5) { this.world.remove(b.holder); this.bodies.splice(this.bodies.indexOf(b), 1); this.all.delete(b); }
+        continue;
+      }
+      if (b.hold > 0) { // (still in one piece a moment: shuddering where it stands)
+        b.hold -= dt;
+        b.holder.position.copy(b.p).add(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.025));
         continue;
       }
       if (b.slide) this.slideStep(b, dt);
@@ -214,7 +293,7 @@ export class BoulderFX {
       this.bodies.splice(this.bodies.indexOf(b), 1);
       b.v.set(0, 0, 0); b.w.set(0, 0, 0);
       b.holder.position.copy(b.p); b.holder.quaternion.copy(b.q);
-      if (b.stays === false) { b.fading = 0; this.bodies.push(b); } // (the engine left fewer rocks than flew: the rest go)
+      if (b.stays === false) { b.fading = -0.8; this.bodies.push(b); } // (not staying: it lies a moment, then shrinks away)
       if (b.onRest) b.onRest(b);
       return true;
     }
@@ -222,18 +301,20 @@ export class BoulderFX {
   }
 
   // grit: little chips of the boulder's colours flung out and falling, fading; and a puff of dust
-  burst(p, colors) {
+  // (n chips, flung `power` as hard; dust: a puff of it too)
+  burst(p, colors, n = GRIT, power = 1, puff = true) {
     const geo = new THREE.TetrahedronGeometry(0.03);
     const mat = new THREE.MeshStandardMaterial({ roughness: 0.9, metalness: 0, transparent: true });
-    const mesh = new THREE.InstancedMesh(geo, mat, GRIT), parts = [];
-    for (let i = 0; i < GRIT; i++) {
+    const mesh = new THREE.InstancedMesh(geo, mat, n), parts = [];
+    for (let i = 0; i < n; i++) {
       mesh.setColorAt(i, colors[i % colors.length].clone().multiplyScalar(0.7 + Math.random() * 0.5));
-      const out = new THREE.Vector3(Math.random() - 0.5, Math.random() * 0.8 + 0.2, Math.random() - 0.5).normalize().multiplyScalar(0.8 + Math.random() * 2.4);
+      const out = new THREE.Vector3(Math.random() - 0.5, Math.random() * 0.8 + 0.2, Math.random() - 0.5).normalize().multiplyScalar((0.8 + Math.random() * 2.4) * power);
       parts.push({ p: p.clone().add(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.4)), v: out,
         q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(30), s: 0.5 + Math.random() * 1.2 });
     }
     this.world.add(mesh);
     this.grit.push({ mesh, parts, t: 0 });
+    if (!puff) return;
     // the dust: soft spheres swelling and thinning out
     const dust = new THREE.Group();
     const dm = new THREE.MeshStandardMaterial({ color: colors[0].clone().lerp(new THREE.Color(0xbbaa99), 0.5), roughness: 1, transparent: true, opacity: 0.5, depthWrite: false });

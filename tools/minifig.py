@@ -21,7 +21,8 @@ anything strapped under the feet (snowshoes; "pos" under the right foot).
 "extras": [{"part", "color", "pos": [x, y, z]}] adds any part (a tiara in the hair...),
 turned by "rot": [{"axis": [x, y, z], "deg": d}, ...] (in order) if given.
 "headRecolor": {"0": "4"} swaps colours in the face's print (black eyes made red...);
-"headY": 0 seats a head whose origin is at its foot, not its top (a serpent's: 98150, 98154);
+"headY": 0 seats a head whose origin is at its foot, not its top (a serpent's: 98150, 98154); "head": null, none at all;
+"hatY": 8 seats the hat lower, a headdress worn down over the whole head to the shoulders (an Anubis jackal's);
 "base": "barbarian-m" starts from another recipe; "ghost": "right" or "left"
 turns that side of the figure (as you face it) to doppelganger mist;
 "quantum": true makes every part plain and flashing (a quantum mechanic);
@@ -540,13 +541,14 @@ def build(spec, base_dir='.'):
             out.append(decal_line(item, np.zeros(3), R, base_dir))
         out.append(line(item.get('color', 16), (0, 0, 0), R, item['part']))
     G('head')
-    out.append(line(spec.get('headColor', 14), (0, spec.get('headY', -24), 0), I, recolored(spec.get('head', '3626bp01'), spec.get('headRecolor'))))
+    if not ('head' in spec and spec['head'] is None):   # ("head": null: none, its headdress the whole head)
+        out.append(line(spec.get('headColor', 14), (0, spec.get('headY', -24), 0), I, recolored(spec.get('head', '3626bp01'), spec.get('headRecolor'))))
     if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
         out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, recolored(spec['hair']['part'], spec['hair'].get('recolor'))))
     if spec.get('hat'):
         if spec.get('hatDecal'):   # a picture on the hat's front ("center"/"size" in the hat's frame)
             out.append(decal_line({'part': spec['hat'], 'decal': spec['hatDecal']}, np.array([0.0, -24, 0]), I, base_dir))
-        out.append(line(spec.get('hatColor', 0), (0, -24, 0), I, spec['hat']))
+        out.append(line(spec.get('hatColor', 0), (0, -24 + spec.get('hatY', 0), 0), I, spec['hat']))   # (hatY: seated lower, a headdress worn down over the whole head)
         plume = spec.get('plume')
         if plume:
             socket = next((v for k, v in PLUME_SOCKETS.items() if spec['hat'].startswith(k)), (0, -15, 0))

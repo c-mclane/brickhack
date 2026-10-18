@@ -77,7 +77,7 @@ const root = new THREE.Group(); scene.add(root);
 // the figures come alive (minifig-anim.js): each breathes and looks about;
 // W: everyone walks (on the spot), Space: everyone attacks, R: stretch again,
 // 1-9: hold everyone's slash at 10%-90% of the way through (to look at it), 0: let go
-let animated = [], walking = false, freeze = null, hinged = [], chained = [], pushers = [];
+let animated = [], walking = false, freeze = null, hinged = [], chained = [], pushers = [], breakers = [];
 const status = document.getElementById('status');
 let version = null, camKey = null;
 
@@ -146,7 +146,7 @@ function runPusher(p, now, dt) {
   for (const [k, at] of PUSH_AT.entries()) if (p.last < at && t >= at) { p.fx.push(p.b, 2 + k, 0); p.walk = { from: p.sq, at }; }
   for (const [k, at] of SWING_AT.entries()) if (p.last < at && t >= at) {
     p.a.attack();
-    if (k === SWING_AT.length - 1) setTimeout(() => { p.fx.shatter(p.b, p.rock, 4); p.b = null; }, ATTACK_TIME * 450);
+    if (k === SWING_AT.length - 1) setTimeout(() => { if (p.halves) p.fx.crack(p.b, p.halves, p.rock, 4, true); else p.fx.shatter(p.b, p.rock, 4, null, true); p.b = null; }, ATTACK_TIME * 450);
   }
   p.last = t;
   // walking a square behind the boulder: 0.6 s a step
@@ -158,6 +158,21 @@ function runPusher(p, now, dt) {
   p.m.position.set(p.sq + 0.5, FIG_Y, 0.5);
   poseJoints(p.j, p.a.update(dt, { moving }));
   p.fx.step();
+}
+// a statue breaking, over and over: standing a moment, then it shudders, the figure crumbles and its
+// bricks blow apart (boulderfx.js crumble); they lie where they fell a while; and it stands again
+const BREAK_AT = 1.5, BREAK_LOOP = 7.5;
+function runBreaker(s, now) {
+  if (s.t0 === null) s.t0 = now;
+  let t = now - s.t0;
+  if (t >= BREAK_LOOP) { s.t0 = now; t = 0; }
+  if (t < s.last || s.last === undefined) { s.fx.clear(); s.m.visible = true; }
+  if (s.last < BREAK_AT && t >= BREAK_AT) {
+    s.m.visible = false;
+    s.fx.crumble(s.pieces.map((pc) => ({ model: pc.model, pos: pc.pos, q: pc.q, fig: pc.fig })), new THREE.Vector3(0, 0.05, 0), true); // (as in the game: gone once at rest)
+  }
+  s.last = t;
+  s.fx.step();
 }
 async function apply(data) {
   for (const t of tags) t.el.remove();
@@ -209,7 +224,8 @@ async function apply(data) {
     if (!o.boulders) return;
     const m = objs[i], j = figureJoints(m);
     if (!j) return;
-    const [boulder, rock] = await Promise.all([model(o.boulders.boulder), model(o.boulders.rock)]);
+    const [boulder, rock, halves] = await Promise.all([model(o.boulders.boulder), model(o.boulders.rock),
+      o.boulders.halves ? Promise.all(o.boulders.halves.map(model)) : null]);
     const world = new THREE.Group();
     world.scale.setScalar(1 / MODEL_SCALE);
     world.position.set(m.position.x, 0, m.position.z);
@@ -219,7 +235,27 @@ async function apply(data) {
     m.rotation.y = Math.PI / 2; // (facing +x: the way it pushes)
     m.position.set(0.5, FIG_Y, 0.5); // (standing behind the boulder, from the first frame)
     const a = new FigureAnimator(j.rig, { phase: 0.5 }); a.spawn();
-    pushers.push({ m, j, a, world, fx: new BoulderFX(world), boulder, rock, t0: null, step: -1 });
+    pushers.push({ m, j, a, world, fx: new BoulderFX(world), boulder, rock, halves, t0: null, step: -1 });
+  }));
+  // an item that breaks brick by brick (boulderfx.js crumble): in squares, as the game has it
+  for (const s of breakers) root.remove(s.world);
+  breakers = [];
+  await Promise.all(data.objects.map(async (o, i) => {
+    if (!o.shatters) return;
+    const m = objs[i], models = await Promise.all(o.shatters.map((b) => model(b.url)));
+    const world = new THREE.Group();
+    world.scale.setScalar(1 / MODEL_SCALE);
+    world.position.set(m.position.x, 0, m.position.z);
+    root.add(world);
+    // each brick where it is in the whole (its model's units: studs), the whole standing where it's drawn
+    const off = new THREE.Vector3(0, -m.position.y, 0);
+    const base = (o.shatters.find((b) => /part-35394-/.test(b.url)) || { pos: [0, 0, 0] }).pos[1];
+    const pieces = o.shatters.map((b, k) => {
+      const M = new THREE.Matrix4().setFromMatrix3(new THREE.Matrix3().set(...b.mat));
+      return { model: models[k], pos: new THREE.Vector3(...b.pos).sub(off).multiplyScalar(MODEL_SCALE),
+        q: new THREE.Quaternion().setFromRotationMatrix(M), fig: b.pos[1] > base + 0.1 };
+    });
+    breakers.push({ m, world, fx: new BoulderFX(world), pieces, t0: null });
   }));
   hinged = objs.filter((m) => setHinge(THREE, m, 0) !== false); // (a chest: its lid swings on a loop)
   animated = objs.map((m, i) => { if (data.objects[i].chain || data.objects[i].boulders) return null; const j = figureJoints(m); if (!j) return null; const a = new FigureAnimator(j.rig, { phase: i * 0.77 }); a.spawn(); return { j, a }; }).filter(Boolean);
@@ -302,6 +338,7 @@ let last = performance.now();
   }
   // the boulder: pushed a square, pushed again, then hacked at till it breaks; and again
   for (const p of pushers) runPusher(p, (now || last) / 1000, dt);
+  for (const s of breakers) runBreaker(s, (now || last) / 1000);
   // hinged parts: open, a pause, shut, a pause (as a chest is looted in the game)
   const k = ((now || last) / 1000) % 4, u = k < 1 ? k : k < 2 ? 1 : k < 3 ? 3 - k : 0, e = u * u * (3 - 2 * u);
   for (const m of hinged) { const max = setHinge(THREE, m, 0); setHinge(THREE, m, -max * e); }

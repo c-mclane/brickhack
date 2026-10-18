@@ -126,6 +126,16 @@ def artifacts():
     return arts
 
 
+def part_glb(lib, colors, part, color):
+    """One library part on its own, in one colour, as a model (made once): its url. (A
+    boulder's two halves, cracking apart; a statue's bricks, flying apart.)"""
+    slug = re.sub(r'[^a-z0-9]+', '-', f'part {part} {color}'.lower()).strip('-')
+    glb = os.path.join(OUT, slug + '.glb')
+    if not os.path.exists(glb):
+        print(f'  part {part} in {color}: {ldraw2glb.to_glb(lib.parse(part + ".dat"), colors, color, glb, None)} tris')
+    return f'assets/brick/items/{slug}.glb?v={int(os.path.getmtime(glb))}'
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     colors = ldraw2glb.load_colors(ldraw2glb.LDRAW)
@@ -191,6 +201,20 @@ def main():
             print(f'  {name}: more than one object has this name ({", ".join(sorted(classes[name]))}): say which ("class")')
         if item.get('upright'):   # set down the right way up (food: a cheese, a pie), not on its side as a blade is
             built[name]['upright'] = True
+        if item.get('halves'):   # what it cracks into before it bursts (a boulder: its two halves; boulderfx.js crack)
+            built[name]['halves'] = [part_glb(lib, colors, h['part'], h['color']) for h in item['halves']]
+        if item.get('shatter'):   # broken, it comes apart brick by brick (a statue: boulderfx.js crumble): each
+            # brick's model and where it sits in the item, as the item's model has it (studs, Y up, Z to the front)
+            D = np.diag([1.0, -1, -1])
+            built[name]['bricks'] = []
+            for l in held_ldr(item).splitlines():
+                if not l.startswith('1 '):
+                    continue
+                t = l.split()
+                pos, mat = np.array([float(v) for v in t[2:5]]), np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+                part, color = ' '.join(t[14:])[:-4], int(t[1])
+                built[name]['bricks'].append({'url': part_glb(lib, colors, part, color if color != 16 else 71),
+                                              'pos': [round(v, 4) for v in (D @ pos / 20)], 'mat': [round(v, 5) for v in (D @ mat @ D).flatten()]})
         if item.get('colliders'):   # its solid parts, for things falling onto it (brickworld.js colliders)
             built[name]['colliders'] = item['colliders']
         if item.get('wear'):   # worn on a minifig (a helm): the figure worker dresses the hero in it

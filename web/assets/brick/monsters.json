@@ -136,5 +136,626 @@
   ],
   "scale": 0.62,
   "creature": "blob"
+ },
+ "jackal": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 28
+   }
+  ],
+  "scale": 0.7,
+  "creature": "beast"
+ },
+ "fox": {
+  "parts": [
+   {
+    "part": "26078p02",
+    "color": 25
+   },
+   {
+    "part": "18277p04",
+    "color": 25,
+    "pos": [
+     0,
+     -22,
+     12
+    ],
+    "mat": [
+     0.7,
+     0,
+     0,
+     0,
+     0.7,
+     0,
+     0,
+     0,
+     0.7
+    ]
+   }
+  ],
+  "scale": 0.75,
+  "creature": "beast"
+ },
+ "coyote": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 484
+   }
+  ],
+  "scale": 0.8,
+  "creature": "beast"
+ },
+ "werejackal": {
+  "fig": "werejackal"
+ },
+ "little dog": {
+  "parts": [
+   {
+    "part": "26078p02",
+    "color": 15
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "dog": {
+  "parts": [
+   {
+    "part": "92586p01",
+    "color": 19
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "large dog": {
+  "parts": [
+   {
+    "part": "92586p01",
+    "color": 19
+   }
+  ],
+  "scale": 1.3,
+  "creature": "beast"
+ },
+ "pit bull": {
+  "parts": [
+   {
+    "part": "29602p01",
+    "color": 15
+   }
+  ],
+  "scale": 1.15,
+  "creature": "beast"
+ },
+ "dingo puppy": {
+  "parts": [
+   {
+    "part": "2889p01",
+    "color": 25
+   }
+  ],
+  "scale": 0.95,
+  "creature": "beast"
+ },
+ "dingo": {
+  "parts": [
+   {
+    "part": "92586p01",
+    "color": 25
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "large dingo": {
+  "parts": [
+   {
+    "part": "92586p01",
+    "color": 25
+   }
+  ],
+  "scale": 1.3,
+  "creature": "beast"
+ },
+ "wolf": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 72
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "death dog": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 0
+   }
+  ],
+  "scale": 1.2,
+  "creature": "beast"
+ },
+ "rabid wolf": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 71
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "werewolf": {
+  "fig": "werewolf"
+ },
+ "warg": {
+  "parts": [
+   {
+    "part": "6649p01",
+    "color": 72
+   }
+  ],
+  "scale": 1.05,
+  "creature": "beast"
+ },
+ "winter wolf cub": {
+  "parts": [
+   {
+    "part": "2889p02",
+    "color": 15
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "winter wolf": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 15
+   }
+  ],
+  "scale": 1.25,
+  "creature": "beast"
+ },
+ "hell hound pup": {
+  "parts": [
+   {
+    "part": "2889p01",
+    "color": 320
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast",
+  "fx": "fire"
+ },
+ "wolverine": {
+  "parts": [
+   {
+    "part": "53075p01",
+    "color": 308
+   }
+  ],
+  "scale": 0.9,
+  "creature": "beast"
+ },
+ "shadow wolf": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 40
+   }
+  ],
+  "scale": 1.1,
+  "creature": "beast"
+ },
+ "mist wolf": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 47
+   }
+  ],
+  "scale": 1.1,
+  "creature": "beast"
+ },
+ "hell hound": {
+  "parts": [
+   {
+    "part": "48812",
+    "color": 320
+   }
+  ],
+  "scale": 1.35,
+  "creature": "beast",
+  "fx": "fire"
+ },
+ "Cerberus": {
+  "parts": [
+   {
+    "part": "112027",
+    "color": 70,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "mat": [
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "7090",
+    "color": 70,
+    "pos": [
+     -30.0,
+     -98.0,
+     16.0
+    ],
+    "mat": [
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "7090",
+    "color": 70,
+    "pos": [
+     4.0,
+     -84.0,
+     30.0
+    ],
+    "mat": [
+     -0.6428,
+     0.0,
+     -0.766,
+     0.0,
+     1.0,
+     0.0,
+     0.766,
+     0.0,
+     -0.6428
+    ]
+   },
+   {
+    "part": "7090",
+    "color": 70,
+    "pos": [
+     -64.0,
+     -84.0,
+     30.0
+    ],
+    "mat": [
+     0.6428,
+     0.0,
+     -0.766,
+     0.0,
+     1.0,
+     0.0,
+     0.766,
+     0.0,
+     0.6428
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "kitten": {
+  "parts": [
+   {
+    "part": "13786p01",
+    "color": 25
+   }
+  ],
+  "scale": 0.75,
+  "creature": "beast"
+ },
+ "housecat": {
+  "parts": [
+   {
+    "part": "13786p03",
+    "color": 72
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "jaguar": {
+  "parts": [
+   {
+    "part": "80672ap02",
+    "color": 14
+   }
+  ],
+  "scale": 0.65,
+  "creature": "beast"
+ },
+ "lynx": {
+  "parts": [
+   {
+    "part": "93089p03",
+    "color": 19
+   }
+  ],
+  "scale": 1.25,
+  "creature": "beast"
+ },
+ "panther": {
+  "parts": [
+   {
+    "part": "80672a",
+    "color": 0
+   }
+  ],
+  "scale": 0.65,
+  "creature": "beast"
+ },
+ "werepanther": {
+  "fig": "werepanther"
+ },
+ "large cat": {
+  "parts": [
+   {
+    "part": "13786p02",
+    "color": 25
+   }
+  ],
+  "scale": 1.35,
+  "creature": "beast"
+ },
+ "kamadan": {
+  "parts": [
+   {
+    "part": "80672ap01",
+    "color": 25
+   }
+  ],
+  "scale": 0.65,
+  "creature": "beast"
+ },
+ "displacer beast": {
+  "parts": [
+   {
+    "part": "80672a",
+    "color": 272
+   }
+  ],
+  "scale": 0.72,
+  "creature": "beast"
+ },
+ "caterwaul": {
+  "parts": [
+   {
+    "part": "13786p07",
+    "color": 22
+   }
+  ],
+  "scale": 1.1,
+  "creature": "beast"
+ },
+ "tiger": {
+  "parts": [
+   {
+    "part": "80672ap01",
+    "color": 25
+   }
+  ],
+  "scale": 0.72,
+  "creature": "beast"
+ },
+ "weretiger": {
+  "fig": "weretiger"
+ },
+ "sabre-toothed cat": {
+  "parts": [
+   {
+    "part": "80672a",
+    "color": 19
+   }
+  ],
+  "scale": 0.78,
+  "creature": "beast"
+ },
+ "hellcat": {
+  "parts": [
+   {
+    "part": "13786p07",
+    "color": 320
+   }
+  ],
+  "scale": 1.15,
+  "creature": "beast",
+  "fx": "fire"
+ },
+ "pony": {
+  "parts": [
+   {
+    "part": "82445p01",
+    "color": 70
+   }
+  ],
+  "scale": 1.15,
+  "creature": "beast"
+ },
+ "horse": {
+  "parts": [
+   {
+    "part": "4493c00",
+    "color": 70
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "warhorse": {
+  "parts": [
+   {
+    "part": "4493c00",
+    "color": 0
+   }
+  ],
+  "scale": 1.1,
+  "creature": "beast"
+ },
+ "white unicorn": {
+  "parts": [
+   {
+    "part": "4493c00",
+    "color": 15
+   },
+   {
+    "part": "89522",
+    "color": 297,
+    "pos": [
+     0,
+     -83,
+     -81
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0.6,
+     -0.8,
+     0,
+     0.8,
+     0.6,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "gray unicorn": {
+  "parts": [
+   {
+    "part": "4493c00",
+    "color": 71
+   },
+   {
+    "part": "89522",
+    "color": 297,
+    "pos": [
+     0,
+     -83,
+     -81
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0.6,
+     -0.8,
+     0,
+     0.8,
+     0.6,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "black unicorn": {
+  "parts": [
+   {
+    "part": "4493c00",
+    "color": 0
+   },
+   {
+    "part": "89522",
+    "color": 297,
+    "pos": [
+     0,
+     -83,
+     -81
+    ],
+    "mat": [
+     0,
+     0,
+     1,
+     0.6,
+     -0.8,
+     0,
+     0.8,
+     0.6,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "Pegasus": {
+  "parts": [
+   {
+    "part": "4493c00",
+    "color": 15
+   },
+   {
+    "part": "11777",
+    "color": 15,
+    "pos": [
+     -6,
+     -28,
+     6
+    ],
+    "mat": [
+     0.5734,
+     -0.4015,
+     0.0,
+     0.4015,
+     0.5734,
+     0.0,
+     0.0,
+     0.0,
+     0.7
+    ]
+   },
+   {
+    "part": "11778",
+    "color": 15,
+    "pos": [
+     6,
+     -28,
+     6
+    ],
+    "mat": [
+     0.5734,
+     0.4015,
+     0.0,
+     -0.4015,
+     0.5734,
+     0.0,
+     0.0,
+     0.0,
+     0.7
+    ]
+   }
+  ],
+  "scale": 1.05,
+  "creature": "beast"
  }
 }

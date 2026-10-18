@@ -14,6 +14,7 @@ Monsters made in brick (web/assets/brick/monsters.json: {"<NetHack name>":
 the same way, listed in web/assets/brick/monsters.built.json for the client.
 """
 import hashlib, json, os, sys
+import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -95,15 +96,26 @@ def main():
         its square ("scale"), its middle over the origin and its underside on it; facing +Z as a figure
         does (its head to LDraw's -Z). Animated whole by the client (web/js/creature.js)."""
         s = m.get('scale', 1)
-        ldr = f'0 {mon}\n' + ''.join(f"1 {p['color']} " + ' '.join(str(round(v * s, 3)) for v in p.get('pos', [0, 0, 0]))
+        shift = np.zeros(3)
+        if m['creature'] == 'beast':   # (an animal: stood on its square, its feet on the floor, its middle over it)
+            pts = []
+            for p in m['parts']:
+                M = np.array(p.get('mat', [1, 0, 0, 0, 1, 0, 0, 0, 1]), float).reshape(3, 3)
+                for _, _, arr, _ in lib.parse(p['part'] + '.dat'):
+                    pts.append(arr.reshape(-1, 3) @ M.T + np.array(p.get('pos', [0, 0, 0]), float))
+            pts = np.concatenate(pts)
+            lo, hi = pts.min(0), pts.max(0)
+            shift = np.array([-(lo[0] + hi[0]) / 2, -hi[1], -(lo[2] + hi[2]) / 2])   # (LDraw's down is +Y)
+        ldr = f'0 {mon}\n' + ''.join(f"1 {p['color']} " + ' '.join(str(round((v + d) * s, 3)) for v, d in zip(p.get('pos', [0, 0, 0]), shift))
                                       + ' ' + ' '.join(str(round(v * s, 4)) for v in p.get('mat', [1, 0, 0, 0, 1, 0, 0, 0, 1]))
                                       + f" {p['part']}.dat\n" for p in m['parts'])
         name = 'mon-' + mon.replace(' ', '-')
-        key = hashlib.sha1(ldr.encode()).hexdigest()[:12]
+        extras = {'fx': m['fx']} if m.get('fx') else None   # (its element in particles all over it: a hell hound's fire, mist.js addEffects)
+        key = hashlib.sha1((ldr + json.dumps(extras)).encode()).hexdigest()[:12]
         glb, ldr_path, keyfile = (os.path.join(OUT, name + ext) for ext in ('.glb', '.ldr', '.key'))
         if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):
             open(ldr_path, 'w').write(ldr)
-            print(f'  {name}: {ldraw2glb.to_glb(lib.parse(ldr_path), colors, 71, glb, None)} tris')
+            print(f'  {name}: {ldraw2glb.to_glb(lib.parse(ldr_path), colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
         return f'assets/brick/roster/{name}.glb?v={key}'
 

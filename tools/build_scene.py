@@ -143,6 +143,8 @@ def main(scene_path):
             url = json.load(open(os.path.join(ASSETS, 'items.built.json')))[obj['item']]['url']
             x, y, z = obj.get('pos', [0, 0, 0])
             built.append({'url': url, 'pos': [x, y - foot - 4, z], 'rotY': obj.get('rotY', 0), 'label': obj.get('label')})
+            if obj.get('shatters'):   # broken brick by brick, again and again (a statue: web/js/boulderfx.js crumble)
+                built[-1]['shatters'] = json.load(open(os.path.join(ASSETS, 'items.built.json')))[obj['item']]['bricks']
             continue
         if 'item' in obj:
             item = {'parts': obj['parts']} if 'parts' in obj else items[obj['item']]   # (or its own parts: a variant)
@@ -213,7 +215,9 @@ def main(scene_path):
                       'pos': obj.get('pos', [0, 0, 0]), 'rotY': obj.get('rotY', 0), 'label': obj.get('label')})
         if obj.get('boulders'):   # a figure pushing a boulder, then breaking it with its pick (web/js/boulderfx.js)
             ib = json.load(open(os.path.join(ASSETS, 'items.built.json')))
-            built[-1]['boulders'] = {'boulder': ib['boulder']['url'], 'rock': ib['rock']['url']}
+            built[-1]['boulders'] = {'boulder': ib['boulder']['url'], 'rock': ib['rock']['url'], 'halves': ib['boulder'].get('halves')}
+        if obj.get('shatters') and 'item' in obj:   # broken brick by brick, again and again (web/js/boulderfx.js crumble)
+            built[-1]['shatters'] = json.load(open(os.path.join(ASSETS, 'items.built.json')))[obj['item']]['bricks']
         if obj.get('chained'):   # punished: a ball and chain on its ankle, walking it round (web/js/ballchain.js)
             c = obj['chained']
             built[-1]['chain'] = {'ball': json.load(open(os.path.join(ASSETS, 'items.built.json')))['heavy iron ball']['url'],

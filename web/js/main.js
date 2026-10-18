@@ -666,7 +666,7 @@ function handle(m) {
     }
     case 'crumble': { // a boulder broke into rocks: it bursts, grit and rocks flying
       const l = brickItemForTile(m.tile), rock = brickItemByName('rock');
-      if (l && rock && renderer.brickOn && renderer.brick) renderer.brick.boulderBreak(l.url, m.x, m.y, rock.url);
+      if (l && rock && renderer.brickOn && renderer.brick) renderer.brick.boulderBreak(l.url, m.x, m.y, rock.url, l.halves);
       break;
     }
     case 'rip': game.rip = m; break;
@@ -1349,10 +1349,22 @@ function dropFalls(list, now) {
     if (n <= (dropSeen.counts.get(k) || 0)) continue;
     const [x, z, ...u] = k.split(','), url = u.join(',');
     if (brick.fx.isIncoming(+x, +z, url)) continue; // (thrown, or a boulder rolled: it's on its way there)
+    if (list.some((d) => d.url === url && d.name === 'statue')) continue; // (a statue isn't dropped: one turned to stone, it's just there)
     const d = dropTop(+x, +z, now);
     if (d) brick.fx.drop(url, +x, +z, d.top, d.at);
   }
   dropSeen.counts = counts;
+}
+
+// a statue broken (dug into with a pick-axe, a force bolt...): it comes apart brick by brick
+// (brickworld.js watchStatues); and should you be up on it, you jump down as it goes
+function statueBreaks(list, now) {
+  const lvl = ui.stat ? `${ui.stat.dname}:${ui.stat.depth}` : null;
+  const broke = renderer.brick.watchStatues(list, lvl, brickItemByName);
+  const p = walk.perch;
+  for (const [x, z] of broke)
+    if (p && p.x === x && p.z === z && p.phase !== 'off') // (straight down off the ledge, where it stood: still on its square)
+      Object.assign(p, { phase: 'off', t0: now, out: p.side, dest: [p.side.wx * 0.42, p.side.wz * 0.42], moved: true });
 }
 
 // ---- standing at a statue: up on its ledge, gazing at it (perch.js; walk.perch: processMovement)
@@ -2299,7 +2311,7 @@ function frame(t) {
       const [hx, hz] = motion.heroPos(t), pp = statuePerch(t), lift = (world.heroLift ?? phys.y) + (pp ? pp.lift : 0);
       renderer.brick.heroBody = game.playing ? { x: hx + 0.5 + (pp ? pp.dx : 0), z: hz + 0.5 + (pp ? pp.dz : 0), y0: lift, top: lift + motion.heroHeight() } : null;
     }
-    if (game.playing) dropFalls(renderer.brickItems, t);
+    if (game.playing && renderer.brickOn && renderer.brick) { statueBreaks(world.brickDrops || [], t); dropFalls(renderer.brickItems, t); }
     if (renderer.slots) sprites.push(...fx.puffSprites(t, renderer.slots.puff));
     if (game.playing) {
       const [hx, hz] = motion.heroPos(t);

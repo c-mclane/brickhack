@@ -4,7 +4,8 @@
 // wiggling side to side; when it strikes or spits (a lunge), it rears back and
 // darts forward, and settles. A bug (the spitting beetle): bobbing, twitching,
 // scuttling; it rears its front to spit. A blob (Juiblex): quivering, squashing
-// and swelling; it swells up and lurches forward to spit.
+// and swelling; it swells up and lurches forward to spit. A beast (a dog, a cat, a horse):
+// breathing and looking about, trotting with a bob and a rock; it draws back and springs in to bite.
 //
 // creatureLocal: the model's own motion this moment, as a column-major 4x4 in
 // the model's units (studs, Y up, its head toward +Z), for its placement matrix
@@ -43,6 +44,17 @@ export function creatureLocal(kind, t, { moving = false, lungeT = -1e9 } = {}) {
       sy *= 1 + 0.18 * swell - 0.15 * spurt; sx *= 1 + 0.1 * swell + 0.08 * spurt; z = 0.4 * spurt;
     }
     return mul(move(0, 0, z), [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sx, 0, 0, 0, 0, 1]);
+  }
+  if (kind === 'beast') { // (a dog, a cat, a horse: breathing at rest, now and then a look round; trotting, bobbing and
+    // rocking nose to tail; to bite or kick, it draws back on its haunches and springs in, nose down, and settles)
+    let m = moving ? mul(move(0, Math.abs(Math.sin(t * 9)) * 0.14, 0), about([0, 0.6, 0], rotX(Math.sin(t * 9) * 0.06)))
+      : mul([1, 0, 0, 0, 0, 1 + Math.sin(t * 2.6) * 0.012, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], rotY(Math.sin(t * 0.37) * 0.09 + Math.sin(t * 0.9) * 0.03));
+    if (striking) {
+      const back = k < 0.35 ? ease(k / 0.35) : k < 0.5 ? 1 - ease((k - 0.35) / 0.15) : 0;
+      const dart = k < 0.35 ? 0 : k < 0.5 ? ease((k - 0.35) / 0.15) : 1 - ease((k - 0.5) / 0.5);
+      m = mul(m, mul(move(0, 0.25 * dart, -0.45 * back + 0.8 * dart), rotX(-0.18 * back + 0.14 * dart)));
+    }
+    return m;
   }
   if (kind !== 'snake') return move(0, 0, 0);
   const TAIL = [0, 0, -3.6]; // (where it pivots, rearing: its coils, behind the raised neck)

@@ -479,19 +479,73 @@ export class BrickWorld {
   // a boulder (its model) at (x, z) broke into rocks (rockUrl): it bursts, grit and rocks flying;
   // a few of the flung ones stay, lying about the square where they fell: they're the rocks the
   // engine left there (its pile not drawn while they lie there), gone when its rocks are
-  async boulderBreak(url, x, z, rockUrl) {
+  // (halves: its two halves' models, if it has them: it cracks in half first, boulderfx.js crack)
+  async boulderBreak(url, x, z, rockUrl, halves) {
     const k = `${x},${z},${rockUrl}`, t = this.fx;
     t.incoming.set(k, (t.incoming.get(k) || 0) + 1);
     this.redrawItems(k);
     const at = this.lying(x, z, url);
     if (at) at.g.visible = false;
-    let m, rock;
+    let m, rock, hv = null;
     try { [m, rock] = await Promise.all([this.model(url), this.model(rockUrl)]); } catch { t.land(k); return; }
+    if (halves && halves.length === 2) hv = await Promise.all(halves.map((u) => this.model(u))).catch(() => null);
     const fxb = this.boulderFX(), b = fxb.place(m, x, z, at);
     for (const r of this.keptRocks.get(k) || []) fxb.remove(r);
-    const kept = await fxb.shatter(b, rock, 5);
-    this.keptRocks.set(k, kept);
+    // (the pieces flung all go once they've come to rest; then the floor's own pile of rocks shows)
+    await (hv ? fxb.crack(b, hv, rock, 5, true) : fxb.shatter(b, rock, 5, null, true));
     t.land(k);
+  }
+
+  // A statue broken (dug into, a force bolt...): the game says so only by the floor's list changing,
+  // a statue fewer on a square and more rocks there than before (not one gone with no rocks: a
+  // statue trap come alive, stone to flesh, one picked up; nor a second statue left standing).
+  // Watched every time the list might have changed (list: world.brickDrops; lvl: which level it's
+  // of, a new one all just there; item(name): a brick item, items.built.json): where one broke, it
+  // comes apart there (statueBreak), and whatever came out of it (its rocks, what was inside it)
+  // shows once the pieces are gone. The squares it happened on: [[x, z]...]
+  watchStatues(list, lvl, item) {
+    const now = new Map(), broke = [];
+    for (const d of list) {
+      const k = `${d.x},${d.z}`, e = now.get(k) || { s: 0, r: 0, u: new Map() };
+      if (d.name === 'statue') e.s++;
+      else if (d.name === 'rock') e.r++;
+      e.u.set(d.url, (e.u.get(d.url) || 0) + 1);
+      now.set(k, e);
+    }
+    const was = this.statuesSeen;
+    if (was && was.lvl === lvl)
+      for (const [k, w] of was.at) {
+        const e = now.get(k) || { s: 0, r: 0, u: new Map() };
+        if (!(e.s < w.s && e.r > w.r)) continue;
+        const st = item('statue'), [x, z] = k.split(',').map(Number);
+        if (!st || !st.bricks) continue;
+        const out = [...e.u].filter(([u, n]) => n > (w.u.get(u) || 0)).map(([u]) => u); // (what wasn't there before)
+        this.statueBreak(st.url, x, z, out, st.bricks);
+        broke.push([x, z]);
+      }
+    this.statuesSeen = { lvl, at: new Map([...now].filter(([, e]) => e.s > 0)) };
+    return broke;
+  }
+
+  // a statue broken at (x, z) (url: its model; bricks: each brick's model and place in it,
+  // items.built.json "bricks"): the figure crumbles and the bricks blow apart (boulderfx.js crumble),
+  // each going once it's at rest; what it left (out: those items' urls: its rocks, its contents)
+  // shows on the floor after
+  async statueBreak(url, x, z, out, bricks) {
+    const ks = out.map((u) => `${x},${z},${u}`), t = this.fx;
+    for (const k of ks) { t.incoming.set(k, (t.incoming.get(k) || 0) + 1); this.redrawItems(k); }
+    const done = () => ks.forEach((k) => t.land(k));
+    let whole, models;
+    try { [whole, models] = await Promise.all([this.model(url), Promise.all(bricks.map((b) => this.model(b.url)))]); } catch { done(); return; }
+    // where each brick is, as the statue stood: centred on its square, its foot on the studs (setItems)
+    const box = new THREE.Box3().setFromObject(whole.clone());
+    const off = new THREE.Vector3((box.min.x + box.max.x) / 2, box.min.y, (box.min.z + box.max.z) / 2);
+    const foot = new THREE.Vector3(x + 0.5, STUD_H, z + 0.5);
+    const base = (bricks.find((b) => /part-35394-/.test(b.url)) || { pos: [0, 0, 0] }).pos[1];
+    const pieces = bricks.map((b, i) => ({ model: models[i], pos: new THREE.Vector3(...b.pos).sub(off).multiplyScalar(MODEL_SCALE).add(foot),
+      q: new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().setFromMatrix3(new THREE.Matrix3().set(...b.mat))), fig: b.pos[1] > base + 0.1 }));
+    await this.boulderFX().crumble(pieces, foot, true);
+    done();
   }
 
   // how far the world is drawn (squares; 0: as far as the camera sees), hazing into the sky over

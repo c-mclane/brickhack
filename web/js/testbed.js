@@ -7,22 +7,27 @@
 //   - onto a statue's square: a hop up onto its ledge, gazing up at it (perch.js)
 //   - behind a boulder: a lean into it, and it rolls and tumbles on a square,
 //     twice (boulderfx.js, as brickworld.boulderPush)
-//   - a pick-axe at it: three swings, and it bursts into grit and rocks
-//     (brickworld.boulderBreak)
+//   - a pick-axe at it: three swings, and it cracks in half and bursts into
+//     grit and rocks, which go (brickworld.boulderBreak)
 //   - every monster that spits (the cobra, the nagas, the acid worm, the
 //     spitting beetle, Juiblex) rears and spits at it in turn: the gob flies, dripping, and splats
 //   - punished: the ball and chain on its ankle (ballchain.js); it picks the
 //     ball up, the weapon put away, and lugs it a few squares, as if it were
 //     the hardest thing it ever carried; and sets it down
-// and again (or just one of them: ?part=statue, boulder, spit or ball). Drag to
-// look round, wheel to zoom, P to pause.
+//   - a statue's odd cases, one after another, each named at the foot of the screen
+// (broken while you stand on it; a statue trap coming alive; one with a spellbook inside; one
+// picked up off rocks already there; two on a square, one broken; stone to flesh), the floor's list
+// changing as the game's would and the game's own watch on it (brickworld.watchStatues) deciding
+// what plays
+// and again (or just one of them: ?part=statue, boulder, spit, ball or statues). Drag to look
+// round, wheel to zoom, P to pause.
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { BrickWorld } from './brickworld.js';
 import { FigureAnimator } from './minifig-anim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
-import { perchSpot, cameFrom } from './perch.js';
+import { perchSpot, cameFrom, hopOff, offTime } from './perch.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul } from './minifig-anim.js';
 
@@ -56,13 +61,20 @@ export async function runTestbed(data) {
   brick.setTerrain({ floors, walls, doors: [], fog: [], w: W, h: H });
   // the room under a dark sky, as deep in the dungeon
   brick.scene.background = new THREE.Color(0x0b0d14);
+  if (level.menagerie) return menagerie(level, brick, cam, ctl, canvas);
 
   // what lies where: [{x, z, url, level, upright, name}] (world.js brickDrops), redone as things move
   const at = (name) => level.items.find((i) => i.item === name);
   let drops = [];
   const lay = (list) => {
-    drops = list.filter(Boolean).map((i) => ({ x: i.at[0], z: i.at[1], url: url(i.item), level: 0, upright: !!(items[i.item] || {}).upright, name: i.item }));
+    const n = new Map(); // (things on one square: stacked, one on another, as world.js has them)
+    drops = list.filter(Boolean).map((i) => { const k = i.at.join(','), level = n.get(k) || 0; n.set(k, level + 1);
+      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, name: i.item }; });
+    // (as the game watches its list: a statue broken comes apart; up on it, you jump down)
+    for (const [x, z] of brick.watchStatues(drops, 'test', (n) => (items[n] ? { name: n, ...items[n] } : null)))
+      if (hero.sq.x === x && hero.sq.y === z && hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz } };
   };
+  const say = (text) => { const el = document.getElementById('status'); if (el) el.textContent = text; };
 
   // the hero
   const anim = { a: null, state: {} };
@@ -84,10 +96,11 @@ export async function runTestbed(data) {
     hero.sq = { x: from.x + dx, y: from.y + dy };
     hero.yaw = Math.atan2(dx, -dy);
     hero.walk = { from, t0: clock };
+    hero.after = null;
     return wait(STEP_TIME);
   };
   const walk = async (path) => { for (const [dx, dy] of path) await step(dx, dy); };
-  const place = (x, y, yaw) => { hero.sq = { x, y }; hero.pos = [x, y]; hero.from = { x, y, cur: null }; hero.yaw = yaw; hero.walk = null; };
+  const place = (x, y, yaw) => { hero.sq = { x, y }; hero.pos = [x, y]; hero.from = { x, y, cur: null }; hero.yaw = yaw; hero.walk = null; hero.after = null; hero.leap = null; };
 
   let punished = null; // the ball and chain, when punished (brickworld.setPunished, as the game sets it)
   // the monsters: creatures (creature.js) facing you
@@ -99,6 +112,59 @@ export async function runTestbed(data) {
     c.anim = new FigureAnimator(rig, { phase: Math.random() * 3 });
     c.anim.spawn();
   });
+  // a statue's odd cases, each on the statue's own square, the hero just west of it
+  async function statueCases([sx, sz]) {
+    const S = { item: 'statue', at: [sx, sz] }, rock = { item: 'rock', at: [sx, sz] };
+    const fresh = async (label, list) => {
+      say(label);
+      brick.boulders && brick.boulders.clear();
+      lay([]); lay(list); // (a fresh start: nothing to compare with)
+      place(sx - 2, sz, Math.PI / 2);
+      hero.hold = { R: url('pick-axe') };
+      await wait(1.2);
+    };
+    const swing = async () => { for (let k = 0; k < 3; k++) { anim.a && anim.a.attack(); await wait(0.6); } };
+    // 1. broken while you stand on it (a monster's force bolt): you jump down off the ledge as it goes
+    await fresh('1/6  broken while you stand on it: you jump down as it comes apart', [S]);
+    await walk([[1, 0], [1, 0]]);
+    await wait(1.5);
+    lay([rock]);
+    await wait(4.5);
+    // 2. a statue trap: it comes alive (no rocks: it doesn't shatter, the monster is just there)
+    await fresh('2/6  a statue trap comes alive: no rocks, so no shatter', [S]);
+    await walk([[1, 0]]);
+    await swing();
+    const mon = Object.keys(mons).find((k) => !mons[k].creature);
+    const trap = mon ? { monster: mon, at: [sx, sz], ...mons[mon], lungeAt: -1e9 } : null;
+    lay([]);
+    if (trap) { cobras.push(trap); brick.model(trap.url).then((m) => { let rig = null; m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; }); trap.anim = new FigureAnimator(rig, { phase: 1 }); trap.anim.spawn(); }); }
+    await wait(3.5);
+    if (trap) cobras.splice(cobras.indexOf(trap), 1);
+    // 3. a spellbook inside: it falls out with the rocks, shown once the pieces have gone
+    await fresh('3/6  a spellbook inside: it shows with the rocks once the pieces are gone', [S]);
+    await walk([[1, 0]]);
+    await swing();
+    lay([rock, { item: 'spellbook of force bolt', at: [sx, sz] }]);
+    await wait(5);
+    // 4. picked up off a square with rocks already on it (no new rocks: no shatter)
+    await fresh('4/6  picked up off rocks already lying there: no shatter', [S, rock]);
+    await walk([[1, 0], [1, 0]]);
+    await wait(1);
+    lay([rock]);
+    await wait(3);
+    // 5. two statues on one square, one broken: that one comes apart, the other still stands
+    await fresh('5/6  two statues on one square, one broken: it shatters, the other stands', [S, { ...S }]);
+    await walk([[1, 0]]);
+    await swing();
+    lay([S, rock]);
+    await wait(5);
+    // 6. stone to flesh: it turns to meat (no rocks: no shatter)
+    await fresh('6/6  stone to flesh: it turns to meat, no shatter', [S]);
+    await wait(1);
+    lay([{ item: 'huge chunk of meat', at: [sx, sz] }]);
+    await wait(3);
+  }
+
   async function script() {
     for (;;) {
       // set out: the room as the level has it, the hero at its start, a pick in hand
@@ -134,7 +200,7 @@ export async function runTestbed(data) {
         // the pick: three swings, and it breaks into rocks
         for (let k = 0; k < 3; k++) { anim.a && anim.a.attack(); await wait(0.75); }
         const rocksAt = [hero.sq.x + 1, hero.sq.y];
-        brick.boulderBreak(url('boulder'), rocksAt[0], rocksAt[1], url('rock'));
+        brick.boulderBreak(url('boulder'), rocksAt[0], rocksAt[1], url('rock'), (items.boulder || {}).halves);
         lay([st, { item: 'rock', at: rocksAt }]);
         await wait(3);
       }
@@ -176,6 +242,9 @@ export async function runTestbed(data) {
         await wait(2);
         punished = null;
       }
+      // a statue's odd cases, one after another, each named
+      if (doing('statues')) await statueCases(st.at);
+      say('test dungeon · drag to look, wheel to zoom, P to pause');
       await wait(1);
     }
   }
@@ -199,7 +268,13 @@ export async function runTestbed(data) {
     }
     if (!hero.walk) hero.pos = [hero.sq.x, hero.sq.y];
     cameFrom(hero.from, hero.sq);
-    const pp = perchSpot(hero.sq, hero.from, hero.pos, drops);
+    let pp = perchSpot(hero.sq, hero.from, hero.pos, drops);
+    if (hero.leap) { // (the statue gone from under you: off the ledge, as the game plays it, perch.js hopOff)
+      const L = hero.leap, dest = [L.side.wx * 0.42, L.side.wz * 0.42], u = clock - L.t0;
+      if (u >= offTime(L.side, L.side)) { hero.leap = null; hero.after = dest; hero.from.perch = null; }
+      else { const o = hopOff(L.side, L.side, dest, u); pp = { k: 1, dx: o.x, dz: o.z, lift: o.lift, yaw: o.yaw, hop: o.hop, lookUp: 0 }; }
+    }
+    if (!pp && hero.after) pp = { k: 0, dx: hero.after[0], dz: hero.after[1], lift: 0, hop: 0, lookUp: 0 };
     const push = Math.max(0, 1 - (clock - (anim.pushT0 ?? -1e9)) / 0.7);
     const pose = anim.a ? anim.a.update(dt, { moving, holdsR: !!hero.hold.R, hop: pp ? pp.hop : 0, lookUp: pp ? pp.lookUp : 0,
       lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: anim.state.heavy || 0, speed: anim.state.heavy ? 1.1 : undefined }) : null;
@@ -226,6 +301,65 @@ export async function runTestbed(data) {
     ctl.update();
     cam.updateMatrixWorld();
     brick.render(cam.projectionMatrix.elements, cam.matrixWorldInverse.elements, w, h, [hero.pos[0] + 0.5, 0, hero.pos[1] + 0.5]);
+  }
+  requestAnimationFrame(frame);
+}
+
+// A menagerie (scene.json "level" with "menagerie": rows of monsters, [{monster, at}] in
+// "monsters"): each in brick as the game draws it (creature.js), named over its head, facing you;
+// each in turn breathing and looking about, trotting, then biting (a lunge), over and over
+async function menagerie(level, brick, cam, ctl, canvas) {
+  const mons = await (await fetch('assets/brick/monsters.built.json', { cache: 'no-store' })).json();
+  const beasts = level.monsters.filter((m) => mons[m.monster]).map((m, i) => ({ ...m, ...mons[m.monster], phase: (i * 0.53) % 7 }));
+  for (const b of beasts) if (!b.creature) brick.model(b.url).then((m) => { // (a minifig monster: alive as the hero is)
+    let rig = null;
+    m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; });
+    b.anim = new FigureAnimator(rig, { phase: b.phase });
+    b.anim.spawn();
+  });
+  const missing = level.monsters.filter((m) => !mons[m.monster]).map((m) => m.monster);
+  const el = document.getElementById('status');
+  if (el) el.textContent = `menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom`;
+  // their names, kept over them on screen
+  const tags = beasts.map((b) => {
+    const t = document.createElement('div');
+    t.className = 'tag'; t.textContent = b.monster;
+    document.body.appendChild(t);
+    return t;
+  });
+  const v = new THREE.Vector3();
+  const PERIOD = 7, TROT = [3, 5.5], BITE = 6;
+  let last = performance.now(), clock = 0;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.1, (now - last) / 1000);
+    last = now;
+    clock += dt;
+    const figs = beasts.map((b) => {
+      const u = (clock + b.phase) % PERIOD, moving = u >= TROT[0] && u < TROT[1];
+      const lungeT = clock - (u - BITE) - (u < BITE ? PERIOD : 0); // (when it last bit, on its own clock)
+      if (!b.creature) { // (a minifig: walking on the spot, then a swing)
+        if (b.anim && b.lastU !== undefined && b.lastU < BITE && u >= BITE) b.anim.attack();
+        b.lastU = u;
+        return { url: b.url, matrix: figureMatrix(b.at[0] + 0.5, b.lift || 0, b.at[1] + 0.5, Math.PI), pose: b.anim ? b.anim.update(dt, { moving }) : null, hold: {} };
+      }
+      return { url: b.url, matrix: mul(partMatrix(b.at[0] + 0.5, STUD_H, b.at[1] + 0.5, 0), creatureLocal(b.creature, clock, { moving, lungeT })), pose: null, hold: {} };
+    });
+    brick.setFigures(figs);
+    brick.setItems([]);
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = w; canvas.height = h;
+    cam.aspect = w / Math.max(1, h);
+    cam.updateProjectionMatrix();
+    ctl.update();
+    cam.updateMatrixWorld();
+    brick.render(cam.projectionMatrix.elements, cam.matrixWorldInverse.elements, w, h, [ctl.target.x, 0, ctl.target.z]);
+    beasts.forEach((b, i) => {
+      v.set(b.at[0] + 0.5, 1.15, b.at[1] + 0.5).project(cam);
+      const show = v.z < 1;
+      tags[i].style.display = show ? '' : 'none';
+      if (show) { tags[i].style.left = ((v.x + 1) / 2 * innerWidth) + 'px'; tags[i].style.top = ((1 - v.y) / 2 * innerHeight) + 'px'; }
+    });
   }
   requestAnimationFrame(frame);
 }
