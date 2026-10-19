@@ -97,7 +97,7 @@ def main():
         does (its head to LDraw's -Z). Animated whole by the client (web/js/creature.js)."""
         s = m.get('scale', 1)
         shift = np.zeros(3)
-        if m['creature'] in ('beast', 'fungus', 'float', 'bat') or m.get('center'):   # (an animal: stood on its square, its feet on the floor, its middle over it)
+        if m['creature'] in ('beast', 'fungus', 'float', 'eye', 'bat') or m.get('center'):   # (an animal: stood on its square, its feet on the floor, its middle over it)
             pts = []
             for p in m['parts']:
                 M = np.array(p.get('mat', [1, 0, 0, 0, 1, 0, 0, 0, 1]), float).reshape(3, 3)

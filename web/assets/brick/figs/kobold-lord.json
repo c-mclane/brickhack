@@ -1,0 +1,18 @@
+{
+ "label": "kobold lord",
+ "name": "kobold lord",
+ "torso": "973",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 320,
+ "legColor": 22,
+ "hipColor": 22,
+ "head": "3626bpc15",
+ "headColor": 320,
+ "hair": {
+  "part": "10066",
+  "color": 320
+ },
+ "hat": "71015",
+ "hatColor": 334
+}

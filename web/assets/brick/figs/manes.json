@@ -1,0 +1,18 @@
+{
+ "label": "manes",
+ "name": "manes",
+ "torso": "973",
+ "torsoColor": 85,
+ "armColor": 85,
+ "handColor": 85,
+ "shortLegs": {
+  "part": "16709",
+  "color": 85
+ },
+ "head": "3626bpc15",
+ "headColor": 85,
+ "hair": {
+  "part": "24230p01",
+  "color": 85
+ }
+}

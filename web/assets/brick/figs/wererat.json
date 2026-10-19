@@ -1,0 +1,16 @@
+{
+ "label": "wererat",
+ "name": "wererat",
+ "torso": "973pdg1",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 72,
+ "legColor": 308,
+ "hipColor": 308,
+ "head": "3626bpc15",
+ "headColor": 72,
+ "hair": {
+  "part": "10066",
+  "color": 72
+ }
+}

@@ -7,7 +7,7 @@
   }
  ],
  "level": {
-  "w": 23,
+  "w": 21,
   "h": 11,
   "start": [
    1,
@@ -16,184 +16,156 @@
   "items": [],
   "monsters": [
    {
-    "monster": "newt",
+    "monster": "iguana",
     "at": [
      2,
      2
     ]
    },
    {
-    "monster": "lichen",
+    "monster": "giant bat",
     "at": [
      4,
      2
     ]
    },
    {
-    "monster": "kobold",
+    "monster": "chicken",
     "at": [
      6,
      2
     ]
    },
    {
-    "monster": "goblin",
+    "monster": "lamb",
     "at": [
      8,
      2
     ]
    },
    {
-    "monster": "rabbit",
+    "monster": "cave spider",
     "at": [
      10,
      2
     ]
    },
    {
-    "monster": "sewer rat",
+    "monster": "garter snake",
     "at": [
      12,
      2
     ]
    },
    {
-    "monster": "grid bug",
+    "monster": "maggot",
     "at": [
      14,
      2
     ]
    },
    {
-    "monster": "kobold zombie",
+    "monster": "echidna",
     "at": [
      16,
      2
     ]
    },
    {
-    "monster": "fox",
+    "monster": "floating eye",
     "at": [
      18,
      2
     ]
    },
    {
-    "monster": "jackal",
-    "at": [
-     20,
-     2
-    ]
-   },
-   {
-    "monster": "gecko",
+    "monster": "wererat",
     "at": [
      2,
      5
     ]
    },
    {
-    "monster": "acid blob",
+    "monster": "gnome",
     "at": [
      4,
      5
     ]
    },
    {
-    "monster": "bat",
+    "monster": "kobold lord",
     "at": [
      6,
      5
     ]
    },
    {
-    "monster": "gas spore",
+    "monster": "hobgoblin",
     "at": [
      8,
      5
     ]
    },
    {
-    "monster": "brown mold",
+    "monster": "dwarf zombie",
     "at": [
      10,
      5
     ]
    },
    {
-    "monster": "green mold",
+    "monster": "orc zombie",
     "at": [
      12,
      5
     ]
    },
    {
-    "monster": "red mold",
+    "monster": "dretch",
     "at": [
      14,
      5
     ]
    },
    {
-    "monster": "yellow mold",
+    "monster": "homunculus",
     "at": [
      16,
      5
     ]
    },
    {
-    "monster": "shrieker",
+    "monster": "manes",
+    "at": [
+     18,
+     5
+    ]
+   },
+   {
+    "monster": "little dog",
     "at": [
      2,
      8
     ]
    },
    {
-    "monster": "hobbit",
+    "monster": "kitten",
     "at": [
      4,
      8
     ]
    },
    {
-    "monster": "large kobold",
+    "monster": "dingo puppy",
     "at": [
      6,
      8
     ]
    },
    {
-    "monster": "giant rat",
+    "monster": "werejackal",
     "at": [
      8,
-     8
-    ]
-   },
-   {
-    "monster": "larva",
-    "at": [
-     10,
-     8
-    ]
-   },
-   {
-    "monster": "gnome zombie",
-    "at": [
-     12,
-     8
-    ]
-   },
-   {
-    "monster": "coyote",
-    "at": [
-     14,
-     8
-    ]
-   },
-   {
-    "monster": "Juiblex",
-    "at": [
-     16,
      8
     ]
    }
@@ -201,16 +173,16 @@
   "menagerie": true,
   "camera": {
    "pos": [
-    11.5,
+    10.5,
     8,
     18
    ],
    "target": [
-    11.5,
+    10.5,
     0,
     5.5
    ]
   },
-  "title": "Dungeon level 1"
+  "title": "Dungeon level 2"
  }
 }

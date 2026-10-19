@@ -1026,5 +1026,125 @@
  },
  "hobbit": {
   "fig": "hobbit"
+ },
+ "iguana": {
+  "parts": [
+   {
+    "part": "15678",
+    "color": 2
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "giant bat": {
+  "parts": [
+   {
+    "part": "30103",
+    "color": 72
+   }
+  ],
+  "scale": 1.5,
+  "creature": "bat"
+ },
+ "chicken": {
+  "parts": [
+   {
+    "part": "95342p01",
+    "color": 15
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "lamb": {
+  "parts": [
+   {
+    "part": "1569p01",
+    "color": 15
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "cave spider": {
+  "parts": [
+   {
+    "part": "30238",
+    "color": 72
+   }
+  ],
+  "scale": 0.7,
+  "creature": "bug",
+  "center": true
+ },
+ "garter snake": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 2
+   }
+  ],
+  "scale": 0.7,
+  "creature": "snake",
+  "center": true
+ },
+ "maggot": {
+  "parts": [
+   {
+    "part": "7443",
+    "color": 18
+   }
+  ],
+  "scale": 0.8,
+  "creature": "snake",
+  "center": true
+ },
+ "echidna": {
+  "parts": [
+   {
+    "part": "98389p01",
+    "color": 19
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "floating eye": {
+  "parts": [
+   {
+    "part": "3005pe1",
+    "color": 15
+   }
+  ],
+  "scale": 2.0,
+  "creature": "eye"
+ },
+ "wererat": {
+  "fig": "wererat"
+ },
+ "gnome": {
+  "fig": "gnome"
+ },
+ "kobold lord": {
+  "fig": "kobold-lord"
+ },
+ "hobgoblin": {
+  "fig": "hobgoblin"
+ },
+ "dwarf zombie": {
+  "fig": "dwarf-zombie"
+ },
+ "orc zombie": {
+  "fig": "orc-zombie"
+ },
+ "dretch": {
+  "fig": "dretch"
+ },
+ "homunculus": {
+  "fig": "homunculus"
+ },
+ "manes": {
+  "fig": "manes"
  }
 }

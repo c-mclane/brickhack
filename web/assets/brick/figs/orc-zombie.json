@@ -1,0 +1,16 @@
+{
+ "label": "orc zombie",
+ "name": "orc zombie",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 378,
+ "handColor": 378,
+ "legColor": 72,
+ "hipColor": 72,
+ "head": "3626bpc15",
+ "headColor": 378,
+ "hair": {
+  "part": "10066",
+  "color": 378
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "label": "homunculus",
+ "name": "homunculus",
+ "torso": "973",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 2,
+ "shortLegs": {
+  "part": "16709",
+  "color": 2
+ },
+ "head": "3626bpc15",
+ "headColor": 2,
+ "neck": [
+  {
+   "part": "10183",
+   "color": 43
+  }
+ ]
+}

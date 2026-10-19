@@ -54,8 +54,9 @@ export function creatureLocal(kind, t, { moving = false, lungeT = -1e9 } = {}) {
     if (striking) { const puff = Math.sin(Math.PI * k); m = mul(m, mul(scale(1 + 0.18 * puff, 1 + 0.12 * puff, 1 + 0.18 * puff), rotZ(Math.sin(k * 40) * 0.08 * (1 - k)))); }
     return m;
   }
-  if (kind === 'float') { // (a gas spore: hanging in the air, bobbing and turning slowly; drifting along; it swells, about to burst)
-    let m = mul(move(0, 2.4 + Math.sin(t * 1.6) * 0.25, 0), rotY(t * 0.3));
+  if (kind === 'float' || kind === 'eye') { // (a gas spore: hanging in the air, bobbing and turning slowly; drifting along; it swells,
+    // about to burst. A floating eye the same, but never turning from you: only a slow look side to side)
+    let m = mul(move(0, 2.4 + Math.sin(t * 1.6) * 0.25, 0), rotY(kind === 'eye' ? Math.sin(t * 0.5) * 0.25 : t * 0.3));
     if (moving) m = mul(m, rotX(0.12));
     if (striking) { const sw = Math.sin(Math.PI * k); m = mul(m, scale(1 + 0.25 * sw, 1 + 0.25 * sw, 1 + 0.25 * sw)); }
     return m;

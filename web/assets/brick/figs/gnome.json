@@ -1,0 +1,22 @@
+{
+ "label": "gnome",
+ "name": "gnome",
+ "torso": "973",
+ "torsoColor": 70,
+ "armColor": 70,
+ "handColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "head": "3626bp01",
+ "headColor": 14,
+ "hat": "12894",
+ "hatColor": 4,
+ "neck": [
+  {
+   "part": "60749",
+   "color": 15
+  }
+ ]
+}
