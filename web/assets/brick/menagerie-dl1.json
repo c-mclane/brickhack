@@ -1,0 +1,209 @@
+{
+ "objects": [
+  {
+   "fig": "archaeologist-f",
+   "hero": true,
+   "label": "hero"
+  }
+ ],
+ "level": {
+  "w": 23,
+  "h": 11,
+  "start": [
+   1,
+   1
+  ],
+  "items": [],
+  "monsters": [
+   {
+    "monster": "newt",
+    "at": [
+     2,
+     2
+    ]
+   },
+   {
+    "monster": "lichen",
+    "at": [
+     4,
+     2
+    ]
+   },
+   {
+    "monster": "kobold",
+    "at": [
+     6,
+     2
+    ]
+   },
+   {
+    "monster": "goblin",
+    "at": [
+     8,
+     2
+    ]
+   },
+   {
+    "monster": "rabbit",
+    "at": [
+     10,
+     2
+    ]
+   },
+   {
+    "monster": "sewer rat",
+    "at": [
+     12,
+     2
+    ]
+   },
+   {
+    "monster": "grid bug",
+    "at": [
+     14,
+     2
+    ]
+   },
+   {
+    "monster": "kobold zombie",
+    "at": [
+     16,
+     2
+    ]
+   },
+   {
+    "monster": "fox",
+    "at": [
+     18,
+     2
+    ]
+   },
+   {
+    "monster": "jackal",
+    "at": [
+     20,
+     2
+    ]
+   },
+   {
+    "monster": "gecko",
+    "at": [
+     2,
+     5
+    ]
+   },
+   {
+    "monster": "acid blob",
+    "at": [
+     4,
+     5
+    ]
+   },
+   {
+    "monster": "bat",
+    "at": [
+     6,
+     5
+    ]
+   },
+   {
+    "monster": "gas spore",
+    "at": [
+     8,
+     5
+    ]
+   },
+   {
+    "monster": "brown mold",
+    "at": [
+     10,
+     5
+    ]
+   },
+   {
+    "monster": "green mold",
+    "at": [
+     12,
+     5
+    ]
+   },
+   {
+    "monster": "red mold",
+    "at": [
+     14,
+     5
+    ]
+   },
+   {
+    "monster": "yellow mold",
+    "at": [
+     16,
+     5
+    ]
+   },
+   {
+    "monster": "shrieker",
+    "at": [
+     2,
+     8
+    ]
+   },
+   {
+    "monster": "hobbit",
+    "at": [
+     4,
+     8
+    ]
+   },
+   {
+    "monster": "large kobold",
+    "at": [
+     6,
+     8
+    ]
+   },
+   {
+    "monster": "giant rat",
+    "at": [
+     8,
+     8
+    ]
+   },
+   {
+    "monster": "larva",
+    "at": [
+     10,
+     8
+    ]
+   },
+   {
+    "monster": "gnome zombie",
+    "at": [
+     12,
+     8
+    ]
+   },
+   {
+    "monster": "coyote",
+    "at": [
+     14,
+     8
+    ]
+   }
+  ],
+  "menagerie": true,
+  "camera": {
+   "pos": [
+    11.5,
+    8,
+    18
+   ],
+   "target": [
+    11.5,
+    0,
+    5.5
+   ]
+  },
+  "title": "Dungeon level 1"
+ }
+}

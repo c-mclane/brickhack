@@ -1,0 +1,41 @@
+{
+ "name": "Knight 13: Utraquist (Hussite) knight, the chalice on his breast and shield",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "torsoDecal": {
+  "image": "../decals/utraquist-chalice.png"
+ },
+ "head": "3626bp01",
+ "headColor": 14,
+ "hat": "30048",
+ "hatColor": 179,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "right": {
+  "part": "3847",
+  "color": 72
+ },
+ "left": {
+  "part": "3846",
+  "color": 4,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ],
+  "decal": {
+   "image": "../decals/utraquist-chalice.png"
+  }
+ },
+ "label": "Utraquist Knight",
+ "god": "Jesus",
+ "kit": "holy wafer:10,holy wine:1"
+}

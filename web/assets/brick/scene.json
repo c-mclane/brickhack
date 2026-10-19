@@ -189,6 +189,13 @@
      14,
      8
     ]
+   },
+   {
+    "monster": "Juiblex",
+    "at": [
+     16,
+     8
+    ]
    }
   ],
   "menagerie": true,
