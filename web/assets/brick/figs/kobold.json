@@ -1,0 +1,18 @@
+{
+ "label": "kobold",
+ "name": "kobold",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 70,
+ "handColor": 70,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "head": "3626bpc15",
+ "headColor": 70,
+ "hair": {
+  "part": "10066",
+  "color": 70
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "label": "large kobold",
+ "name": "large kobold",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 320,
+ "handColor": 320,
+ "legColor": 308,
+ "hipColor": 308,
+ "head": "3626bpc15",
+ "headColor": 320,
+ "hair": {
+  "part": "10066",
+  "color": 320
+ }
+}

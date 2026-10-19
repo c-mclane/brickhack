@@ -150,7 +150,7 @@
  "fox": {
   "parts": [
    {
-    "part": "26078p02",
+    "part": "92586",
     "color": 25
    },
    {
@@ -158,23 +158,23 @@
     "color": 25,
     "pos": [
      0,
-     -22,
-     12
+     10,
+     10
     ],
     "mat": [
-     0.7,
+     0.8,
      0,
      0,
      0,
-     0.7,
+     0.8,
      0,
      0,
      0,
-     0.7
+     0.8
     ]
    }
   ],
-  "scale": 0.75,
+  "scale": 0.7,
   "creature": "beast"
  },
  "coyote": {
@@ -757,5 +757,298 @@
   ],
   "scale": 1.05,
   "creature": "beast"
+ },
+ "newt": {
+  "parts": [
+   {
+    "part": "15678",
+    "color": 14
+   }
+  ],
+  "scale": 0.7,
+  "creature": "beast"
+ },
+ "gecko": {
+  "parts": [
+   {
+    "part": "15678",
+    "color": 322
+   }
+  ],
+  "scale": 0.75,
+  "creature": "beast"
+ },
+ "rabbit": {
+  "parts": [
+   {
+    "part": "33207p01",
+    "color": 19
+   }
+  ],
+  "scale": 0.55,
+  "creature": "beast"
+ },
+ "sewer rat": {
+  "parts": [
+   {
+    "part": "36756p01",
+    "color": 72
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "giant rat": {
+  "parts": [
+   {
+    "part": "36756p01",
+    "color": 70
+   }
+  ],
+  "scale": 1.5,
+  "creature": "beast"
+ },
+ "grid bug": {
+  "parts": [
+   {
+    "part": "30238",
+    "color": 22
+   }
+  ],
+  "scale": 1.0,
+  "creature": "bug",
+  "center": true
+ },
+ "larva": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 15
+   }
+  ],
+  "scale": 1.0,
+  "creature": "snake",
+  "center": true
+ },
+ "bat": {
+  "parts": [
+   {
+    "part": "30103",
+    "color": 0
+   }
+  ],
+  "scale": 1.0,
+  "creature": "bat"
+ },
+ "gas spore": {
+  "parts": [
+   {
+    "part": "22119",
+    "color": 71
+   }
+  ],
+  "scale": 0.45,
+  "creature": "float"
+ },
+ "acid blob": {
+  "parts": [
+   {
+    "part": "3960",
+    "color": 35
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     -11,
+     -2,
+     -34
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     11,
+     -2,
+     -34
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 0.5,
+  "creature": "blob",
+  "center": true
+ },
+ "lichen": {
+  "parts": [
+   {
+    "part": "3960",
+    "color": 378
+   },
+   {
+    "part": "4740",
+    "color": 10,
+    "pos": [
+     -20,
+     -6,
+     8
+    ]
+   },
+   {
+    "part": "4740",
+    "color": 10,
+    "pos": [
+     18,
+     -4,
+     -10
+    ]
+   },
+   {
+    "part": "4740",
+    "color": 378,
+    "pos": [
+     4,
+     -10,
+     16
+    ]
+   }
+  ],
+  "scale": 0.55,
+  "creature": "fungus"
+ },
+ "brown mold": {
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 19
+   },
+   {
+    "part": "4740p02",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "fungus"
+ },
+ "green mold": {
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "4740",
+    "color": 2,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "fungus"
+ },
+ "red mold": {
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "4740p01",
+    "color": 4,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "fungus"
+ },
+ "yellow mold": {
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 15
+   },
+   {
+    "part": "4740",
+    "color": 14,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "fungus"
+ },
+ "shrieker": {
+  "parts": [
+   {
+    "part": "3941",
+    "color": 15
+   },
+   {
+    "part": "3960p0a",
+    "color": 22,
+    "pos": [
+     0,
+     -16,
+     0
+    ]
+   }
+  ],
+  "scale": 0.8,
+  "creature": "fungus"
+ },
+ "kobold": {
+  "fig": "kobold"
+ },
+ "large kobold": {
+  "fig": "large-kobold"
+ },
+ "kobold zombie": {
+  "fig": "kobold-zombie"
+ },
+ "goblin": {
+  "fig": "goblin"
+ },
+ "gnome zombie": {
+  "fig": "gnome-zombie"
+ },
+ "hobbit": {
+  "fig": "hobbit"
  }
 }

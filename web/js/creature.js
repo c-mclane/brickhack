@@ -6,6 +6,8 @@
 // scuttling; it rears its front to spit. A blob (Juiblex): quivering, squashing
 // and swelling; it swells up and lurches forward to spit. A beast (a dog, a cat, a horse):
 // breathing and looking about, trotting with a bob and a rock; it draws back and springs in to bite.
+// A fungus (molds, lichens, shriekers): rooted, breathing, puffing up when it strikes. A float (a
+// gas spore): bobbing in the air, swelling. A bat: fluttering about overhead, diving in to bite.
 //
 // creatureLocal: the model's own motion this moment, as a column-major 4x4 in
 // the model's units (studs, Y up, its head toward +Z), for its placement matrix
@@ -15,6 +17,8 @@ export const LUNGE_TIME = 0.6; // s
 
 const rotY = (a) => { const c = Math.cos(a), s = Math.sin(a); return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]; };
 const rotX = (a) => { const c = Math.cos(a), s = Math.sin(a); return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]; };
+const rotZ = (a) => { const c = Math.cos(a), s = Math.sin(a); return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; };
+const scale = (x, y, z) => [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
 const move = (x, y, z) => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1];
 function mul(a, b) {
   const o = new Array(16).fill(0);
@@ -44,6 +48,23 @@ export function creatureLocal(kind, t, { moving = false, lungeT = -1e9 } = {}) {
       sy *= 1 + 0.18 * swell - 0.15 * spurt; sx *= 1 + 0.1 * swell + 0.08 * spurt; z = 0.4 * spurt;
     }
     return mul(move(0, 0, z), [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sx, 0, 0, 0, 0, 1]);
+  }
+  if (kind === 'fungus') { // (a mold, a lichen, a shrieker: rooted, breathing slow and swaying a little; touched, it puffs up and shudders)
+    let m = mul(scale(1 + Math.sin(t * 1.7) * 0.025, 1 + Math.sin(t * 1.7 + 1) * 0.04, 1 + Math.sin(t * 1.7) * 0.025), rotZ(Math.sin(t * 0.8) * 0.04));
+    if (striking) { const puff = Math.sin(Math.PI * k); m = mul(m, mul(scale(1 + 0.18 * puff, 1 + 0.12 * puff, 1 + 0.18 * puff), rotZ(Math.sin(k * 40) * 0.08 * (1 - k)))); }
+    return m;
+  }
+  if (kind === 'float') { // (a gas spore: hanging in the air, bobbing and turning slowly; drifting along; it swells, about to burst)
+    let m = mul(move(0, 2.4 + Math.sin(t * 1.6) * 0.25, 0), rotY(t * 0.3));
+    if (moving) m = mul(m, rotX(0.12));
+    if (striking) { const sw = Math.sin(Math.PI * k); m = mul(m, scale(1 + 0.25 * sw, 1 + 0.25 * sw, 1 + 0.25 * sw)); }
+    return m;
+  }
+  if (kind === 'bat') { // (a bat: fluttering about in the air, never still, rocking on its wings; it dives in to bite)
+    let m = mul(move(Math.sin(t * 3.1) * 0.35, 3.6 + Math.sin(t * 7) * 0.3 + Math.sin(t * 2.3) * 0.2, Math.cos(t * 2.3) * 0.35), rotZ(Math.sin(t * 19) * 0.18));
+    if (moving) m = mul(m, rotX(0.25));
+    if (striking) { const dive = Math.sin(Math.PI * k); m = mul(m, mul(move(0, -1.6 * dive, 1.2 * dive), rotX(0.5 * dive))); }
+    return m;
   }
   if (kind === 'beast') { // (a dog, a cat, a horse: breathing at rest, now and then a look round; trotting, bobbing and
     // rocking nose to tail; to bite or kick, it draws back on its haunches and springs in, nose down, and settles)

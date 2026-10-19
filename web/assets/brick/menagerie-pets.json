@@ -1,0 +1,348 @@
+{
+ "objects": [
+  {
+   "fig": "archaeologist-f",
+   "hero": true,
+   "label": "hero"
+  }
+ ],
+ "level": {
+  "w": 31,
+  "h": 14,
+  "start": [
+   1,
+   1
+  ],
+  "items": [],
+  "monsters": [
+   {
+    "monster": "little dog",
+    "at": [
+     2,
+     2
+    ]
+   },
+   {
+    "monster": "dog",
+    "at": [
+     4,
+     2
+    ]
+   },
+   {
+    "monster": "large dog",
+    "at": [
+     6,
+     2
+    ]
+   },
+   {
+    "monster": "pit bull",
+    "at": [
+     8,
+     2
+    ]
+   },
+   {
+    "monster": "jackal",
+    "at": [
+     10,
+     2
+    ]
+   },
+   {
+    "monster": "fox",
+    "at": [
+     12,
+     2
+    ]
+   },
+   {
+    "monster": "coyote",
+    "at": [
+     14,
+     2
+    ]
+   },
+   {
+    "monster": "werejackal",
+    "at": [
+     16,
+     2
+    ]
+   },
+   {
+    "monster": "dingo puppy",
+    "at": [
+     18,
+     2
+    ]
+   },
+   {
+    "monster": "dingo",
+    "at": [
+     20,
+     2
+    ]
+   },
+   {
+    "monster": "large dingo",
+    "at": [
+     22,
+     2
+    ]
+   },
+   {
+    "monster": "wolf",
+    "at": [
+     24,
+     2
+    ]
+   },
+   {
+    "monster": "rabid wolf",
+    "at": [
+     2,
+     5
+    ]
+   },
+   {
+    "monster": "death dog",
+    "at": [
+     4,
+     5
+    ]
+   },
+   {
+    "monster": "werewolf",
+    "at": [
+     6,
+     5
+    ]
+   },
+   {
+    "monster": "warg",
+    "at": [
+     8,
+     5
+    ]
+   },
+   {
+    "monster": "winter wolf cub",
+    "at": [
+     10,
+     5
+    ]
+   },
+   {
+    "monster": "winter wolf",
+    "at": [
+     12,
+     5
+    ]
+   },
+   {
+    "monster": "hell hound pup",
+    "at": [
+     14,
+     5
+    ]
+   },
+   {
+    "monster": "hell hound",
+    "at": [
+     16,
+     5
+    ]
+   },
+   {
+    "monster": "Cerberus",
+    "at": [
+     18,
+     5
+    ]
+   },
+   {
+    "monster": "shadow wolf",
+    "at": [
+     20,
+     5
+    ]
+   },
+   {
+    "monster": "mist wolf",
+    "at": [
+     22,
+     5
+    ]
+   },
+   {
+    "monster": "wolverine",
+    "at": [
+     24,
+     5
+    ]
+   },
+   {
+    "monster": "kitten",
+    "at": [
+     2,
+     8
+    ]
+   },
+   {
+    "monster": "housecat",
+    "at": [
+     4,
+     8
+    ]
+   },
+   {
+    "monster": "large cat",
+    "at": [
+     6,
+     8
+    ]
+   },
+   {
+    "monster": "lynx",
+    "at": [
+     8,
+     8
+    ]
+   },
+   {
+    "monster": "caterwaul",
+    "at": [
+     10,
+     8
+    ]
+   },
+   {
+    "monster": "hellcat",
+    "at": [
+     12,
+     8
+    ]
+   },
+   {
+    "monster": "jaguar",
+    "at": [
+     14,
+     8
+    ]
+   },
+   {
+    "monster": "panther",
+    "at": [
+     16,
+     8
+    ]
+   },
+   {
+    "monster": "werepanther",
+    "at": [
+     18,
+     8
+    ]
+   },
+   {
+    "monster": "kamadan",
+    "at": [
+     20,
+     8
+    ]
+   },
+   {
+    "monster": "displacer beast",
+    "at": [
+     22,
+     8
+    ]
+   },
+   {
+    "monster": "tiger",
+    "at": [
+     24,
+     8
+    ]
+   },
+   {
+    "monster": "weretiger",
+    "at": [
+     26,
+     8
+    ]
+   },
+   {
+    "monster": "sabre-toothed cat",
+    "at": [
+     28,
+     8
+    ]
+   },
+   {
+    "monster": "pony",
+    "at": [
+     3,
+     11
+    ]
+   },
+   {
+    "monster": "horse",
+    "at": [
+     6,
+     11
+    ]
+   },
+   {
+    "monster": "warhorse",
+    "at": [
+     9,
+     11
+    ]
+   },
+   {
+    "monster": "white unicorn",
+    "at": [
+     12,
+     11
+    ]
+   },
+   {
+    "monster": "gray unicorn",
+    "at": [
+     15,
+     11
+    ]
+   },
+   {
+    "monster": "black unicorn",
+    "at": [
+     18,
+     11
+    ]
+   },
+   {
+    "monster": "Pegasus",
+    "at": [
+     21,
+     11
+    ]
+   }
+  ],
+  "menagerie": true,
+  "camera": {
+   "pos": [
+    15.5,
+    10,
+    21
+   ],
+   "target": [
+    15.5,
+    0,
+    7.5
+   ]
+  }
+ }
+}

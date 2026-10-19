@@ -1,0 +1,18 @@
+{
+ "label": "hobbit",
+ "name": "hobbit",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 19
+ },
+ "head": "3626bp01",
+ "headColor": 14,
+ "hair": {
+  "part": "10048",
+  "color": 70
+ }
+}

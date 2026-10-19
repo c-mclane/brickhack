@@ -1,0 +1,15 @@
+{
+ "label": "goblin",
+ "name": "goblin",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 330,
+ "handColor": 330,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "head": "42109",
+ "headColor": 330,
+ "headY": 0
+}

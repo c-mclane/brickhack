@@ -319,7 +319,7 @@ async function menagerie(level, brick, cam, ctl, canvas) {
   });
   const missing = level.monsters.filter((m) => !mons[m.monster]).map((m) => m.monster);
   const el = document.getElementById('status');
-  if (el) el.textContent = `menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom`;
+  if (el) el.textContent = `${level.title ? level.title + ' · ' : ''}menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom`;
   // their names, kept over them on screen
   const tags = beasts.map((b) => {
     const t = document.createElement('div');

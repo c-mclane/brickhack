@@ -1,0 +1,18 @@
+{
+ "label": "kobold zombie",
+ "name": "kobold zombie",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 378,
+ "handColor": 378,
+ "shortLegs": {
+  "part": "16709",
+  "color": 72
+ },
+ "head": "3626bpc15",
+ "headColor": 378,
+ "hair": {
+  "part": "10066",
+  "color": 378
+ }
+}
