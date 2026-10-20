@@ -1163,5 +1163,13 @@
  },
  "water nymph": {
   "fig": "water-nymph"
+ },
+ "watchman": {
+  "fig": "watchman",
+  "hold": "halberd"
+ },
+ "watch captain": {
+  "fig": "watch-captain",
+  "hold": "halberd"
  }
 }

@@ -3,7 +3,7 @@ import { Renderer } from './render.js';
 import { World } from './world.js';
 import { UI, setAtlas, itemActions, SLOT_LETTERS, tileIcon } from './ui.js';
 import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H } from './terrain.js';
-import { Motion, sizeHeight } from './motion.js';
+import { Motion, sizeHeight, posAt } from './motion.js';
 import * as THREE3 from 'three'; // (measuring models: modelTop)
 import { BlockWorld, BLOCKS, BUILD_LIMIT, breakTime, minedAs } from './blocks.js';
 import { buildTextures } from './textures.js';
@@ -690,7 +690,7 @@ function handle(m) {
       }
       break;
     case 'swim': // fell into water (from the square you stepped from), or crawling out of it (onto a dry one): swim.js
-      if (m.act === 'fall') hero3d.swim = { from: [m.x, m.y], pool: [m.px, m.py], to: null, t0: performance.now(), fired: 0 };
+      if (m.act === 'fall') hero3d.swim = { from: [m.x, m.y], pool: [m.px, m.py], to: null, t0: performance.now(), fired: 0, lava: !!m.lava };
       else if (hero3d.swim && hero3d.swim.pool[0] === m.px && hero3d.swim.pool[1] === m.py) hero3d.swim.to = [m.x, m.y];
       else hero3d.swim = { from: [m.px, m.py], pool: [m.px, m.py], to: [m.x, m.y], t0: performance.now() - 1e3 * 0.9, fired: 1 }; // (no fall seen: just the crawl)
       break;
@@ -700,6 +700,19 @@ function handle(m) {
       else renderer.brick.gushTo(m.fx, m.fy, m.x, m.y, 0.15 + 0.12 * Math.hypot(m.x - m.fx, m.y - m.fy) + 0.03 * (hero3d.gushN = (hero3d.gushN || 0) + 1));
       break;
     case 'lady': ladyOfTheLake(m); break;
+    case 'trickle': // the fountain's flow reduced to a trickle
+      if (renderer.brickOn && renderer.brick) renderer.brick.fountainTrickle(m.x, m.y);
+      break;
+    case 'warn': { // a watchman yelling at you to stop using the fountain: he brandishes his halberd high at you (a
+      // warning, not a blow: brickMonFigures), a red flash over him
+      const st = monState.get(m.id), mob = motion.mobs.get(m.id);
+      if (st) st.warnAt = performance.now();
+      if (mob && renderer.brickOn && renderer.brick) {
+        const [mx, mz] = posAt(mob, performance.now());
+        renderer.brick.fx.sparkles(new THREE3.Vector3(mx + 0.5, STUD_H + 1.5, mz + 0.5), 24, 0xff3b30, 0.15);
+      }
+      break;
+    }
     case 'bubble': // no water nymph: a great bubble rises out of the fountain and pops
       if (renderer.brickOn && renderer.brick) { const b = brickItemByName('_bubble'); if (b) renderer.brick.fountainBubble(m.x, m.y, b.url); }
       break;
@@ -1385,7 +1398,7 @@ function heroSwim(now) {
     const [, at, n, up] = SWIM_SPLASH[s.fired++], ground = world.heroLift ?? phys.y;
     const w = at === 'pool' ? [s.pool[0] + 0.5, s.pool[1] + 0.5] : [p.x + 0.5, p.z + 0.5];
     renderer.brick.fx.splashStuds(new THREE3.Vector3(w[0], at === 'you' ? ground + 0.45 + p.y : ground + WATER_Y, w[1]), n, up,
-      at === 'you' ? { floor: ground + STUD_H, ring: false } : {});
+      at === 'you' ? { floor: ground + STUD_H, ring: false, lava: s.lava } : { lava: s.lava });
   }
   return p;
 }
@@ -1397,6 +1410,14 @@ function heroSink(dt, t, hx, hz, perched) {
   const cond = (ui.stat && ui.stat.cond) || [];
   const wet = !perched && world.isWater(Math.round(hx), Math.round(hz)) && phys.onGround && !['Lev', 'Fly', 'Ride'].some((c) => cond.includes(c));
   hero3d.sink = (hero3d.sink || 0) + ((wet ? SINK : 0) - (hero3d.sink || 0)) * Math.min(1, dt * 6);
+  // (in lava: smoking, embers flying off you)
+  const lv = wet && world.classAt(Math.round(hx), Math.round(hz)), lava = lv && lv.cmap === CM.lava;
+  if (lava && renderer.brickOn && renderer.brick && t - (hero3d.smokeT || 0) > 450) {
+    hero3d.smokeT = t;
+    const g = (world.heroLift ?? phys.y) + 0.2;
+    renderer.brick.fx.vapor(new THREE3.Vector3(Math.round(hx) + 0.5, g, Math.round(hz) + 0.5), 0x4a4a4a, 1.6);
+    renderer.brick.fx.sparkles(new THREE3.Vector3(Math.round(hx) + 0.5, g, Math.round(hz) + 0.5), 10, 0xff7a1a, 0.3);
+  }
   return hero3d.sink + (wet ? 0.02 * Math.sin(t / 1000 * 2.4) * (hero3d.sink / SINK) : 0);
 }
 
@@ -1698,7 +1719,8 @@ function brickMonFigures(sprites, dt, now) {
     const moving = !!rp || (Math.hypot(step[0], step[1]) > 1.2 * Math.max(dt, 1 / 120) && !(f && f.kind === 'lunge')); // (going somewhere: faster than a flinch or a dodge)
     st.last = [sx, sz];
     // (facing: walking, the way it goes; standing, you; turning between, not snapping)
-    const want = moving && !rp ? Math.atan2(step[0], -step[1]) : Math.atan2(hx - sx, -(hz - sz));
+    const hp = statuePerch(now), ax = hx + (hp ? hp.dx : 0), az = hz + (hp ? hp.dz : 0); // (you as drawn: up on a fountain's rim, not its middle)
+    const want = moving && !rp ? Math.atan2(step[0], -step[1]) : Math.atan2(ax - sx, -(az - sz));
     st.yaw = st.yaw == null ? want : st.yaw + Math.atan2(Math.sin(want - st.yaw), Math.cos(want - st.yaw)) * Math.min(1, dt * 9);
     let yaw = rp ? rp.yaw : st.yaw; // (the game's yaw: 0 looks north, -Z; out of a fountain, the way it goes)
     if (leanYaw != null && e.creature === 'snake') yaw = rp ? yaw + Math.atan2(Math.sin(leanYaw - yaw), Math.cos(leanYaw - yaw)) * lean : leanYaw;
@@ -1716,7 +1738,8 @@ function brickMonFigures(sprites, dt, now) {
     const spat = spitAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
     if (spat && spat > (st.spatT0 || 0)) { st.spatT0 = spat; st.spitAt = now / 1000; }
     const spitting = st.spitAt != null && now / 1000 - st.spitAt < LUNGE_TIME;
-    const pose = st.anim ? st.anim.update(dt, { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0 }) : null;
+    const wt = st.warnAt != null ? (now - st.warnAt) / 1000 : 9, warn = wt < 1.8 ? ease(wt / 0.3) * ease((1.8 - wt) / 0.4) : 0; // (brandishing his weapon at you: a warning)
+    const pose = st.anim ? st.anim.update(dt, { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0, raise: warn }) : null;
     if (e.slither) {
       const m = mul4(figureMatrix(sx + 0.5, slift + e.lift, sz + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: st.spitAt ?? -1e9 }));
       out.push({ prims: e.prims, url: e.url, matrix: m, shade: s.shade, pose, hold: { R: e.hold } });

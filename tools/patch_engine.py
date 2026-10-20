@@ -818,4 +818,22 @@ edit("src/zap.c", [
      "		    { extern void FDECL(web_steam, (int, int)); web_steam(x, y); } /* WEB_HOOK_STEAM */\n"
      "		    if (cansee(x,y))\n			pline(\"Steam billows from the fountain.\");\n"),
 ], "WEB_HOOK_STEAM")
+# ...and into lava (trap.c lava_effects): falling in, as into water (web_swim: the client knows it's lava by
+# the square), its glowing studs flying, smoking
+edit("src/trap.c", [
+    ("	} else\n	    You(\"fall into the lava!\");\n",
+     "	} else {\n	    web_swim(0, u.ux - u.dx, u.uy - u.dy); /* WEB_HOOK_LAVA */\n	    You(\"fall into the lava!\");\n	}\n"),
+    ("	You(\"sink into the lava, but it only burns slightly!\");\n",
+     "	web_swim(0, u.ux - u.dx, u.uy - u.dy); /* WEB_HOOK_LAVA */\n	You(\"sink into the lava, but it only burns slightly!\");\n"),
+], "WEB_HOOK_LAVA")
+# BrickHack: a fountain in town used once too often (fountain.c dryup): a watchman seeing it yells at you
+# (web_warn: which: he raises his halberd at you); none seeing it, the flow reduces to a trickle (web_trickle:
+# the water out of its top thinning)
+edit("src/fountain.c", [
+    ("				verbalize(\"Hey, stop using that fountain!\");\n",
+     "				{ extern void FDECL(web_warn, (struct monst *)); web_warn(mtmp); } /* WEB_HOOK_WARN */\n"
+     "				verbalize(\"Hey, stop using that fountain!\");\n"),
+    ("			if(!mtmp) pline_The(\"flow reduces to a trickle.\");\n",
+     "			if(!mtmp) { extern void FDECL(web_trickle, (int, int)); web_trickle(x, y); pline_The(\"flow reduces to a trickle.\"); }\n"),
+], "WEB_HOOK_WARN")
 print("engine hooks applied:", src)

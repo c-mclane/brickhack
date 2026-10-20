@@ -500,8 +500,8 @@ def build(spec, base_dir='.'):
     out = [f"0 {spec.get('name', 'Minifig')}"]
     if spec.get('ghost'):   # a doppelganger: one side of the figure is mist (ldraw2glb.ghosted)
         out.append(f"0 !BRICKHACK GHOST {1 if spec['ghost'] == 'right' else -1}")
-    if spec.get('aura'):   # an angel: the renderers wrap the figure in a white glow
-        out.append("0 !BRICKHACK AURA")
+    if spec.get('aura'):   # an angel: the renderers wrap the figure in a white glow (or as its "aura" says: {color, strength, scale})
+        out.append("0 !BRICKHACK AURA" + (" " + json.dumps(spec['aura']) if isinstance(spec['aura'], dict) else ""))
     if spec.get('quantum'):   # a quantum mechanic: every part a plain colour, strobing (ldraw2glb.figure_geom)
         out.append("0 !BRICKHACK QUANTUM")
     G = lambda g: out.append(f'0 !BRICKHACK GROUP {g}')   # what follows moves with this joint (animation)

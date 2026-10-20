@@ -2,8 +2,8 @@
  "label": "water nymph",
  "name": "water nymph",
  "torso": "973",
- "torsoColor": 322,
- "armColor": 322,
+ "torsoColor": 43,
+ "armColor": 43,
  "handColor": 78,
  "head": "3626bp09",
  "headColor": 78,
@@ -20,5 +20,14 @@
    "part": "10183",
    "color": 43
   }
- ]
+ ],
+ "aura": {
+  "color": [
+   0.35,
+   0.65,
+   1.0
+  ],
+  "strength": 0.45,
+  "scale": 0.7
+ }
 }

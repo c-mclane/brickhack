@@ -460,10 +460,10 @@ export function addBlink(THREE, root) {
 // popping up out of the heap with a flip. All in the shader, on the one clock; each stud its own by
 // where it lies (its instance's place). In the piece's own units (studs, Y up; its middle a stud's
 // height under its top)
-export function roil(THREE, material) {
+export function roil(THREE, material, { glow = 0.2 } = {}) { // (glow: lit from within: water a little; lava, bright)
   const m = material.clone();
   m.opacity = Math.max(m.opacity, 0.9); // (heaped deep: hardly to be seen through)
-  m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.2); // (so many glowing together wash out white: their blue kept)
+  m.emissiveIntensity = glow > 0.2 ? glow : Math.min(m.emissiveIntensity, glow); // (so many glowing together wash out white: their blue kept)
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uMistTime = uTime;
     const head = `uniform float uMistTime;
@@ -489,6 +489,7 @@ export function roil(THREE, material) {
       .replace('#include <begin_vertex>', 'vec3 transformed = rR * (position - vec3(0.0, -0.1, 0.0)) + vec3(0.0, -0.1, 0.0) + rOff;');
   };
   m.customProgramCacheKey = () => 'roil';
+  m.userData.roil = true;
   startTicking();
   return m;
 }

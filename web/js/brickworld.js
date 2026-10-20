@@ -35,6 +35,8 @@ const PIECES = {
   brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
   pool: 'assets/brick/parts/water_stud.glb', // water: a clear blue 1x1 round plate, origin at its top middle (roiling: mist.js roil)
   poolbed: 'assets/brick/parts/water_bed.glb', // ...and under it, the bottom of its hole: the same plates, still, a square's worth
+  lavapool: 'assets/brick/parts/lava_stud.glb', // lava: the same heap, in clear neon orange, glowing bright
+  lavabed: 'assets/brick/parts/lava_bed.glb', // ...on a bed of clear red
 };
 const CHUNK = 8; // (squares a side: the map in pieces, each drawn only when in view)
 const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
@@ -90,6 +92,8 @@ export class BrickWorld {
       }
       if (k === 'poolbed') this.pieces[k] = this.pieces[k].map(({ geometry, material }) => { // (still, but as the water over it: the same plastic)
         const m = material.clone(); m.opacity = Math.max(m.opacity, 0.9); m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.2); return { geometry, material: m }; });
+      if (k === 'lavapool') { this.lavaStud = { geo: this.pieces[k][0].geometry.clone(), mat: this.pieces[k][0].material }; this.pieces[k] = this.pieces[k].map(({ geometry, material }) => ({ geometry, material: roil(THREE, material, { glow: 1.1 }) })); }
+      if (k === 'lavabed') this.pieces[k] = this.pieces[k].map(({ geometry, material }) => { const m = material.clone(); m.opacity = 0.95; m.emissiveIntensity = 0.9; return { geometry, material: m }; });
     }))
       .then(() => this.data && this.setTerrain(this.data));
     // solid boxes for the wall courses under the top one (their studs are hidden anyway), and the ground
@@ -151,7 +155,7 @@ export class BrickWorld {
       chunks.get(key).push(e);
     }
     const had = this.inst[name] || new Map(), now = (this.inst[name] = new Map());
-    const shadows = !['plate', 'ground', 'pool', 'poolbed'].includes(name); // (the floor casts no shadow: nothing's under it to fall on; nor water)
+    const shadows = !['plate', 'ground', 'pool', 'poolbed', 'lavapool', 'lavabed'].includes(name); // (the floor casts no shadow: nothing's under it to fall on; nor water)
     const c = new THREE.Color();
     for (const [key, es] of chunks) {
       let sig = es.length;
@@ -167,7 +171,7 @@ export class BrickWorld {
           im.castShadow = shadows;
           im.receiveShadow = true;
           im.frustumCulled = key !== 'all';
-          if (name === 'poolbed') im.renderOrder = -1; // (a pool's still bed drawn before the studs heaped over it: they don't hide what's after them)
+          if (name === 'poolbed' || name === 'lavabed') im.renderOrder = -1; // (a pool's still bed drawn before the studs heaped over it: they don't hide what's after them)
           this.world.add(im);
           return im;
         }) };
@@ -227,17 +231,22 @@ export class BrickWorld {
     // (a square a fountain's gushing out to: still its floor, till the water lands there: gushTo)
     const wet = (data.pools || []).concat(held.map(([x, z]) => ({ x, z, shade: 1 }))).filter((p) => !(this.gushing && this.gushing.has(`${p.x},${p.z}`)));
     for (const p of data.pools || []) if (!wet.includes(p)) plates.push([M().makeTranslation(p.x + 0.5, 0, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
-    for (const p of wet) beds.push([M().makeTranslation(p.x + 0.5, -0.09, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
+    const lavas = [], lavaBeds = [];
+    for (const p of wet) (p.lava ? lavaBeds : beds).push([M().makeTranslation(p.x + 0.5, -0.09, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
     const LAYERS = [[0.5, 0.5, 4, 4, -0.035], [1, 1, 3, 3, -0.05], [1, 0.5, 3, 4, -0.065], [0.5, 1, 4, 3, -0.08]]; // [x, z offset, how many across, along, top]
     for (const p of wet)
       for (const [ox, oz, nx, nz, top] of LAYERS)
+        // (lava: the same, in its own glowing plastic)
         for (let i = 0; i < nx; i++)
           for (let j = 0; j < nz; j++) {
             const h = Math.sin((p.x * 4 + i + ox) * 12.9898 + (p.z * 4 + j + oz) * 78.233 + top * 311) * 43758.5453, r = h - Math.floor(h);
-            pools.push([M().makeTranslation(p.x + (i + ox) / 4 + (r - 0.5) * 0.04, top, p.z + (j + oz) / 4 + (((r * 7.3) % 1) - 0.5) * 0.04).scale(new THREE.Vector3(S, S, S)), p.shade]);
+            (p.lava ? lavas : pools).push([M().makeTranslation(p.x + (i + ox) / 4 + (r - 0.5) * 0.04, top, p.z + (j + oz) / 4 + (((r * 7.3) % 1) - 0.5) * 0.04).scale(new THREE.Vector3(S, S, S)), p.shade]);
           }
     this.place('pool', pools);
     this.place('poolbed', beds);
+    this.place('lavapool', lavas);
+    this.lavaSquares = wet.filter((p) => p.lava).map((p) => [p.x, p.z]); // (smoking: stepLavaSmoke)
+    this.place('lavabed', lavaBeds);
     this.place('plate', plates);
     this.place('ground', smooth.concat([[M().makeTranslation(0, -PLATE_H - BRICK_H, 0).scale(new THREE.Vector3(data.w, BRICK_H, data.h)), 0.95]]));
     this.place('course', courses);
@@ -900,6 +909,29 @@ export class BrickWorld {
     })).catch(() => {});
   }
 
+  // lava smoking: now and then a puff of grey smoke rising off a pit near you (focus), here and there across it,
+  // a few embers in it now and again; no more puffs a second however much lava there is
+  stepLavaSmoke(now, focus) {
+    const sq = this.lavaSquares;
+    if (!sq || !sq.length || !focus) return;
+    const near = sq.filter(([x, z]) => Math.abs(x + 0.5 - focus[0]) < 12 && Math.abs(z + 0.5 - focus[2]) < 12);
+    if (!near.length) return;
+    const every = Math.max(0.08, 0.55 / near.length); // (a pit a square: a puff a second or so; a lake: several a second, no more)
+    if (now - (this.smokeT || 0) < every) return;
+    this.smokeT = now;
+    const [x, z] = near[Math.floor(Math.random() * near.length)];
+    const p = new THREE.Vector3(x + 0.2 + Math.random() * 0.6, STUD_H - 0.02, z + 0.2 + Math.random() * 0.6);
+    this.fx.vapor(p, Math.random() < 0.5 ? 0x6a6560 : 0x4a4644, 2.4 + Math.random() * 1.2);
+    if (Math.random() < 0.3) this.fx.sparkles(p, 6, 0xff7a1a, 0.15);
+  }
+
+  // a fountain at (x, z) whose flow has reduced to a trickle: a few of its studs falling out of its top, not a stream
+  fountainTrickle(x, z) {
+    for (const g of this.items.values()) {
+      if (g.userData.square !== `${x},${z}` || !g.userData.lay) continue;
+      g.userData.lay.traverse((o) => { if (o.isInstancedMesh && o.material.onBeforeCompile && !o.material.userData.roil) o.count = Math.min(o.count, 7); });
+    }
+  }
   // the water in a fountain at (fx, fz): its surface, over the middle of its basin (squares)
   fountainWater(fx, fz) { return new THREE.Vector3(fx + 0.5, STUD_H + 0.5, fz + 0.5); }
   // no water nymph: a great bubble (url: its model) swelling up out of the fountain's water, rising, and popping
@@ -1141,6 +1173,7 @@ export class BrickWorld {
     this.fx.step(); // thrown things in flight
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
     this.stepDry(performance.now() / 1000); // ...or drying up
+    this.stepLavaSmoke(performance.now() / 1000, focus); // lava smoking
     if (this.boulders) this.boulders.step(); // boulders rolling, rocks flying
     const now = performance.now() / 1000;
     if (this.hazeMat) this.hazeMat.uniforms.uTime.value = now;

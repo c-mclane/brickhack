@@ -376,8 +376,9 @@ export class ThrowFX {
   // blue studs (mist.js fountainStud) popping up out of it at p (its surface), tumbling, and dropping back in out
   // of sight; and a ring spreading out over it. n: how many; up: how hard (squares/s); floor: where they go out
   // of sight (the water's surface: p's height; drips off someone: the floor), ring: a ring on the water
-  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true } = {}) {
-    const piece = fountainStud();
+  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true, lava = false } = {}) { // (lava: its glowing orange studs, embers flying)
+    const piece = lava ? this.brick.lavaStud : fountainStud();
+    if (lava) this.sparkles(p.clone().setY(p.y + 0.1), Math.round(n * 1.5), 0xff7a1a, 0.3);
     if (piece) {
       const mesh = new THREE.InstancedMesh(piece.geo.clone(), piece.mat.clone(), n), parts = [];
       mesh.frustumCulled = false; mesh.renderOrder = 3;
@@ -390,7 +391,7 @@ export class ThrowFX {
       this.shards.push({ mesh, parts, t: 0, life: 1.4, floor, sink: true });
     }
     if (!rings) return;
-    const ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 32), new THREE.MeshBasicMaterial({ color: 0xdff4ff, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 32), new THREE.MeshBasicMaterial({ color: lava ? 0xffb347 : 0xdff4ff, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
     ring.rotation.x = -Math.PI / 2;
     ring.position.copy(p).y += 0.006;
     ring.scale.setScalar(0.02);

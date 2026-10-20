@@ -666,8 +666,8 @@ export class Renderer {
             if (brickLevel) { bricks.floors.push({ x, z: y, shade, studs: true }); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
             else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)));
             break;
-          case 'liquid': // (brick: water is a hole in the floor heaped with roiling clear blue studs; lava as ever, for now)
-            if (brickLevel && c.cmap !== CM.lava) bricks.pools.push({ x, z: y, shade });
+          case 'liquid': // (brick: water is a hole in the floor heaped with roiling clear blue studs; lava, glowing orange ones)
+            if (brickLevel) bricks.pools.push({ x, z: y, shade, lava: c.cmap === CM.lava });
             else this.floor(out, x, y, -0.12, c.tile, shade);
             break;
           default:

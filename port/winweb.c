@@ -2177,6 +2177,27 @@ web_steam(int x, int y)
     endmsg();
 }
 
+/* fountain.c dryup: a watchman (mtmp) yelling at the hero to stop using the
+   fountain; or, none seeing it, the fountain at (x, y)'s flow reduced to a
+   trickle */
+void
+web_warn(struct monst *mtmp)
+{
+    if (!out || !mtmp)
+        return;
+    fprintf(out, "{\"t\":\"warn\",\"id\":%u", mtmp->m_id);
+    endmsg();
+}
+
+void
+web_trickle(int x, int y)
+{
+    if (!out || !cansee(x, y))
+        return;
+    fprintf(out, "{\"t\":\"trickle\",\"x\":%d,\"y\":%d", x, y);
+    endmsg();
+}
+
 /* fountain.c dryup: the fountain at (x, y) dried up (seen): the client greys
    its water and breaks it apart */
 void
@@ -2195,8 +2216,8 @@ web_swim(int crawl, int x, int y)
 {
     if (!out)
         return;
-    fprintf(out, "{\"t\":\"swim\",\"act\":\"%s\",\"px\":%d,\"py\":%d,\"x\":%d,\"y\":%d",
-            crawl ? "crawl" : "fall", u.ux, u.uy, x, y);
+    fprintf(out, "{\"t\":\"swim\",\"act\":\"%s\",\"px\":%d,\"py\":%d,\"x\":%d,\"y\":%d,\"lava\":%d",
+            crawl ? "crawl" : "fall", u.ux, u.uy, x, y, is_lava(u.ux, u.uy) ? 1 : 0);
     endmsg();
 }
 
