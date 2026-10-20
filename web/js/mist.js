@@ -493,3 +493,34 @@ export function roil(THREE, material, { glow = 0.2 } = {}) { // (glow: lit from 
   startTicking();
   return m;
 }
+
+// Lava smoking (brickworld.js setTerrain): over each pit's studs, little fountains of smoke: from each vent ([x, y,
+// z], world squares) a steady stream of dark specks rising, drifting a little and wavering, swelling and then
+// shrinking away as they go, and up again. All in the shader, on the one clock: one mesh for every pit on the level
+export const SMOKE_PER_VENT = 12;
+export function smokeVents(THREE, vents) {
+  const n = vents.length * SMOKE_PER_VENT, vent = new Float32Array(n * 3), seed = new Float32Array(n * 4);
+  vents.forEach(([x, y, z], v) => {
+    for (let k = 0; k < SMOKE_PER_VENT; k++) {
+      const i = v * SMOKE_PER_VENT + k, a = Math.random() * Math.PI * 2, d = 0.04 + Math.random() * 0.1;
+      vent.set([x, y, z], i * 3);
+      seed.set([k / SMOKE_PER_VENT + Math.random() * 0.05, 0.45 + Math.random() * 0.35, Math.cos(a) * d, Math.sin(a) * d], i * 4);
+    }
+  });
+  const geo = new THREE.BoxGeometry(0.024, 0.024, 0.024);
+  geo.setAttribute('aVent', new THREE.InstancedBufferAttribute(vent, 3));
+  geo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seed, 4));
+  const mat = new THREE.MeshBasicMaterial({ color: 0x2b2826 });
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.uMistTime = uTime;
+    sh.vertexShader = 'attribute vec3 aVent; attribute vec4 aSeed; uniform float uMistTime;\n' + sh.vertexShader.replace('#include <begin_vertex>', `
+      float u = fract(uMistTime * aSeed.y + aSeed.x); // (how far up its rise it is)
+      vec3 at = aVent + vec3(aSeed.z * u + 0.025 * sin(u * 9.0 + aSeed.x * 40.0), u * 0.55, aSeed.w * u + 0.025 * cos(u * 7.0 + aSeed.x * 30.0));
+      vec3 transformed = position * sin(3.1416 * u) * (0.7 + aSeed.y) + at;`);
+  };
+  mat.customProgramCacheKey = () => 'smoke-vents';
+  const mesh = new THREE.InstancedMesh(geo, mat, n);
+  mesh.frustumCulled = false;
+  startTicking();
+  return mesh;
+}

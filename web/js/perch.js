@@ -140,8 +140,41 @@ export function cameFrom(track, hero) {
 
 // at a fountain (drinking from it, dipping something in: minifig-anim.js FOUNT): when the water's broken, s
 // in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
-export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]] };
+// (and a 4th: what's thrown up into it, a tint for its studs)
+export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]],
+  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [] };
 export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;
+
+// the urge to take a bath (minifig-anim.js FOUNT.bath): off the rim on `sd`'s side, a dive in head first to
+// the fountain's middle, sunk to the shoulders, and a jump back out onto the rim, shaking yourself off. t: s
+// in (the shake: facing away from it; then a dusting down, and a turn back). Where you are off its middle ({x, z}), how high your feet, which way you face, how far into a hop; and
+// when the water's broken (BATH_SPLASH: [s, 'mid' (the fountain's middle) | 'you' (dripping off you), how
+// many studs, how hard])
+export const BATH_DEEP = 0.95;
+export const BATH_SPLASH = [[0.85, 'mid', 18, 2.3], [1.75, 'mid', 12, 1.8], [2.5, 'you', 6, 0.8], [2.75, 'you', 6, 0.8], [3.0, 'you', 5, 0.7], [3.6, 'you', 2, 0.3], [3.9, 'you', 2, 0.3], [4.2, 'you', 2, 0.3]];
+export function bathPath(sd, t, pr = STATUE) {
+  const L = STUD_H + pr.H, rx = sd.wx * pr.R, rz = sd.wz * pr.R, yaw = Math.atan2(-sd.wx, sd.wz), under = L - FOUNT_DOWN - BATH_DEEP;
+  if (t < 0.55) return { x: rx, z: rz, lift: L - 0.06 * Math.sin(Math.PI * t / 0.55), yaw, hop: 0 }; // (a crouch)
+  if (t < 1.0) { // (the dive: up and over, in)
+    const u = (t - 0.55) / 0.45, e = smooth(u);
+    return { x: rx * (1 - e), z: rz * (1 - e), lift: L + (under - L) * u * u + 0.45 * Math.sin(Math.PI * Math.min(1, u * 1.4)), yaw, hop: 0 };
+  }
+  if (t < 1.8) { // (under, bobbing up a little)
+    const u = (t - 1.0) / 0.8;
+    return { x: 0, z: 0, lift: under + 0.12 * Math.sin(Math.PI * u) + 0.04 * Math.sin(u * 14), yaw: yaw + 0.5 * Math.sin(u * Math.PI * 2), hop: 0 };
+  }
+  const away = yaw + Math.PI;
+  if (t < 2.35) { // (a jump back out, onto the rim, turning in the air to land facing away from it)
+    const u = (t - 1.8) / 0.55, e = smooth(u);
+    return { x: rx * e, z: rz * e, lift: under + (L - under) * e + 0.55 * Math.sin(Math.PI * u), yaw: yaw + Math.PI * e, hop: Math.sin(Math.PI * u) };
+  }
+  if (t < 3.4) { // (a shake, side to side, dying away)
+    const u = (t - 2.35) / 1.05, k = Math.max(0, 1 - u);
+    return { x: rx, z: rz, lift: L + 0.03 * Math.abs(Math.sin(u * 34)) * k, yaw: away + 0.45 * Math.sin(u * 36) * k, hop: 0 };
+  }
+  if (t < 4.5) return { x: rx, z: rz, lift: L, yaw: away, hop: 0 }; // (dusting yourself down)
+  return { x: rx, z: rz, lift: L, yaw: away + Math.PI * smooth((t - 4.5) / 0.5), hop: 0 }; // (and round again, to face it)
+}
 
 // ---- out of a fountain (a monster made out of it: water moccasins pouring forth): up out of its water on the
 // side it's going, over the rim, and down off it onto its own square. f: the fountain's square, to: the

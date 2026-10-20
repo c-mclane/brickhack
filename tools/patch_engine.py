@@ -836,4 +836,18 @@ edit("src/fountain.c", [
     ("			if(!mtmp) pline_The(\"flow reduces to a trickle.\");\n",
      "			if(!mtmp) { extern void FDECL(web_trickle, (int, int)); web_trickle(x, y); pline_The(\"flow reduces to a trickle.\"); }\n"),
 ], "WEB_HOOK_WARN")
+# BrickHack: odd things at a fountain (fountain.c), each played by the client (web_fountfx): the urge to take a
+# bath (dipping: you dive in and jump out, shaking yourself off; gold lost or not); foul water (you lean
+# into the fountain, retching); contaminated water (poisoned: a purple haze about you)
+B = "{ extern void FDECL(web_fountfx, (const char *)); web_fountfx(\"%s\"); } "
+edit("src/fountain.c", [
+    ("\t\t\tpline(\"An urge to take a bath overwhelms you.\");\n",
+     "\t\t\t" + B % "bath" + "pline(\"An urge to take a bath overwhelms you.\"); /* WEB_HOOK_FOUNTFX */\n"),
+    ("\t\t\tpline(\"An urge to take a bath overwhelms you.\");\n",
+     "\t\t\t" + B % "bath" + "pline(\"An urge to take a bath overwhelms you.\");\n"),
+    ("\t\t\tpline_The(\"water is foul!  You gag and vomit.\");\n",
+     "\t\t\t" + B % "foul" + "pline_The(\"water is foul!  You gag and vomit.\");\n"),
+    ("\t\t\tpline_The(\"water is contaminated!\");\n",
+     "\t\t\t" + B % "poison" + "pline_The(\"water is contaminated!\");\n"),
+], "WEB_HOOK_FOUNTFX")
 print("engine hooks applied:", src)

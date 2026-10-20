@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura, auraOf, addLightning, addEffects, addHueShift, addBlink, roil, setWaterStud } from './mist.js';
+import { isMist, mistify, quantumPart, strobify, addAura, auraOf, addLightning, addEffects, addHueShift, addBlink, roil, setWaterStud, smokeVents } from './mist.js';
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
@@ -23,8 +23,9 @@ const FOUNT_GLOW = new THREE.Color(0x9ff6ff); // (a magic fountain's water, lit 
 export const DRY_GREY = 1.2, DRY_SIT = 1.0;
 export const LADY_T = 4.5; // (the Lady of the Lake: s, her arm risen, the blessing, and sunk again)
 const DRY_STONE = new THREE.Color(0xa0a5a9), DRY_CRUMBLE = 2.9;
-// where things lie in a fountain's pool, off its square's middle (squares): on its water, between column and rim
-export const FOUNT_POOL_SPOT = [0.3, 0.47, -0.3]; // (clear of its vine and its lily pad)
+// where things on a fountain's square lie, off its square's middle (squares): on its rim, on the ledge round its
+// basin (its front-right, between where you'd stand on it), out of the water: a gem pulled out of it, set down by you
+export const FOUNT_RIM_SPOT = [0.6, 0.6, 0.6];
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
@@ -245,7 +246,7 @@ export class BrickWorld {
     this.place('pool', pools);
     this.place('poolbed', beds);
     this.place('lavapool', lavas);
-    this.lavaSquares = wet.filter((p) => p.lava).map((p) => [p.x, p.z]); // (smoking: stepLavaSmoke)
+    this.setLavaSmoke(wet.filter((p) => p.lava).map((p) => [p.x, p.z])); // (smoking)
     this.place('lavabed', lavaBeds);
     this.place('plate', plates);
     this.place('ground', smooth.concat([[M().makeTranslation(0, -PLATE_H - BRICK_H, 0).scale(new THREE.Vector3(data.w, BRICK_H, data.h)), 0.95]]));
@@ -909,20 +910,22 @@ export class BrickWorld {
     })).catch(() => {});
   }
 
-  // lava smoking: now and then a puff of grey smoke rising off a pit near you (focus), here and there across it,
-  // a few embers in it now and again; no more puffs a second however much lava there is
-  stepLavaSmoke(now, focus) {
-    const sq = this.lavaSquares;
-    if (!sq || !sq.length || !focus) return;
-    const near = sq.filter(([x, z]) => Math.abs(x + 0.5 - focus[0]) < 12 && Math.abs(z + 0.5 - focus[2]) < 12);
-    if (!near.length) return;
-    const every = Math.max(0.08, 0.55 / near.length); // (a pit a square: a puff a second or so; a lake: several a second, no more)
-    if (now - (this.smokeT || 0) < every) return;
-    this.smokeT = now;
-    const [x, z] = near[Math.floor(Math.random() * near.length)];
-    const p = new THREE.Vector3(x + 0.2 + Math.random() * 0.6, STUD_H - 0.02, z + 0.2 + Math.random() * 0.6);
-    this.fx.vapor(p, Math.random() < 0.5 ? 0x6a6560 : 0x4a4644, 2.4 + Math.random() * 1.2);
-    if (Math.random() < 0.3) this.fx.sparkles(p, 6, 0xff7a1a, 0.15);
+  // lava smoking (mist.js smokeVents): a couple of vents on each pit square, at its own spots in it, a little
+  // fountain of smoke off each; made again only when the pits change
+  setLavaSmoke(squares) {
+    const key = squares.map((q) => q.join(',')).join(';');
+    if (key === this.smokeKey) return;
+    this.smokeKey = key;
+    if (this.smoke) { this.world.remove(this.smoke); this.smoke.geometry.dispose(); this.smoke.material.dispose(); this.smoke = null; }
+    if (!squares.length) return;
+    const vents = [];
+    for (const [x, z] of squares)
+      for (let k = 0; k < 2; k++) {
+        const h = Math.sin(x * 12.9898 + z * 78.233 + k * 37.7) * 43758.5453, r = h - Math.floor(h), r2 = (r * 7.31) % 1;
+        vents.push([x + 0.2 + r * 0.6, 0.0, z + 0.2 + r2 * 0.6]); // (off the heap's top)
+      }
+    this.smoke = smokeVents(THREE, vents);
+    this.world.add(this.smoke);
   }
 
   // a fountain at (x, z) whose flow has reduced to a trickle: a few of its studs falling out of its top, not a stream
@@ -931,6 +934,21 @@ export class BrickWorld {
       if (g.userData.square !== `${x},${z}` || !g.userData.lay) continue;
       g.userData.lay.traverse((o) => { if (o.isInstancedMesh && o.material.onBeforeCompile && !o.material.userData.roil) o.count = Math.min(o.count, 7); });
     }
+  }
+  // which side of a fountain you're up on (side: {wx, wz}, from its middle), told as you are: what lies on its
+  // square lies on its rim where you stand, a little to your right (rimSpot)
+  setFountainSide(x, z, side) {
+    const sq = `${x},${z}`, was = (this.fountSide = this.fountSide || new Map()).get(sq);
+    if (was && was.wx === side.wx && was.wz === side.wz) return;
+    this.fountSide.set(sq, { wx: side.wx, wz: side.wz });
+    this.restack(sq);
+  }
+  // where on a fountain's rim things on its square lie, off its middle ([x, z], squares)
+  rimSpot(sq) {
+    const side = this.fountSide && this.fountSide.get(sq);
+    if (!side) return [FOUNT_RIM_SPOT[0], FOUNT_RIM_SPOT[2]];
+    const R = 0.86, a = Math.atan2(side.wz, side.wx) - 0.38; // (round the rim from where you stand, to your right as you face the fountain)
+    return [Math.cos(a) * R, Math.sin(a) * R];
   }
   // the water in a fountain at (fx, fz): its surface, over the middle of its basin (squares)
   fountainWater(fx, fz) { return new THREE.Vector3(fx + 0.5, STUD_H + 0.5, fz + 0.5); }
@@ -962,31 +980,14 @@ export class BrickWorld {
       step();
     })).catch(() => {});
   }
-  // a gem found in a fountain's water (url: its model): it leaps up out of the sparkling water, glittering and
-  // turning, and drops to where it lies (to: [x, y, z]: where; the real one shows as it lands: fx incoming)
-  fountainGem(fx, fz, url, to) {
+  // a gem found in a fountain's water (url: its model): the water sparkling where it lies, and the gem kept out of
+  // sight in the pool (fx incoming) while you pull it out and hold it up (main.js 'gem'); show() puts it there
+  fountainGem(fx, fz, url) {
     const k = `${fx},${fz},${url}`, t = this.fx;
     t.incoming.set(k, (t.incoming.get(k) || 0) + 1);
     this.redrawItems(k);
-    const w = this.fountainWater(fx, fz).add(new THREE.Vector3(-0.2, 0, 0.25));
-    this.fx.sparkles(w, 26, 0xbfefff, 0.35);
-    return this.model(url).then((m) => new Promise((res) => {
-      const g = m.clone(), holder = new THREE.Group(), box = new THREE.Box3().setFromObject(g);
-      g.position.copy(box.getCenter(new THREE.Vector3())).negate();
-      holder.add(g); holder.scale.setScalar(MODEL_SCALE * 1.4);
-      this.world.add(holder);
-      const end = new THREE.Vector3(...to), T = 1.3, t0 = performance.now() / 1000;
-      this.fx.splashStuds(w, 8, 1.4);
-      const step = () => {
-        const u = Math.min(1, (performance.now() / 1000 - t0) / T);
-        holder.position.lerpVectors(w, end, u).y += 0.9 * Math.sin(Math.PI * u) + (1 - u) * 0.0;
-        holder.rotation.set(u * 9, u * 13, 0);
-        if (u > 0.3 && !holder.userData.glint) { holder.userData.glint = 1; this.fx.sparkles(holder.position.clone(), 20, 0xfff4c2, 0.15); }
-        if (u >= 1) { this.world.remove(holder); t.land(k); res(); return; }
-        requestAnimationFrame(step);
-      };
-      step();
-    })).catch(() => t.land(k));
+    this.fx.sparkles(this.fountainWater(fx, fz).add(new THREE.Vector3(-0.3, 0, 0.1)), 26, 0xbfefff, 0.3);
+    return { show: () => t.land(k) };
   }
   // a fire ray across a fountain at (x, z): steam billowing up out of its water, all over its basin
   fountainSteam(x, z) {
@@ -1044,12 +1045,12 @@ export class BrickWorld {
   restack(square) {
     const pile = [...this.items.values()].filter((g) => g.userData.square === square && !g.userData.posed).sort((a, b) => a.userData.level - b.userData.level);
     let y = STUD_H;
-    // (things on a fountain's square lie in its pool, on its water between its column and its rim, not on top of it)
+    // (things on a fountain's square lie on its rim, out of the water, not on top of it)
     const fount = pile.length && pile[0].userData.name === 'fountain', [sx, sz] = square.split(',').map(Number);
     for (const g of pile) {
       g.position.y = y;
-      if (fount && g !== pile[0]) { g.position.x = sx + 0.5 + FOUNT_POOL_SPOT[0]; g.position.z = sz + 0.5 + FOUNT_POOL_SPOT[2]; }
-      y = fount && g === pile[0] ? STUD_H + FOUNT_POOL_SPOT[1] : y + g.userData.thick * 0.85; // (they settle into each other a little)
+      if (fount && g !== pile[0]) { const [ox, oz] = this.rimSpot(square); g.position.x = sx + 0.5 + ox; g.position.z = sz + 0.5 + oz; }
+      y = fount && g === pile[0] ? STUD_H + FOUNT_RIM_SPOT[1] : y + g.userData.thick * 0.85; // (they settle into each other a little)
     }
   }
 
@@ -1173,7 +1174,6 @@ export class BrickWorld {
     this.fx.step(); // thrown things in flight
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
     this.stepDry(performance.now() / 1000); // ...or drying up
-    this.stepLavaSmoke(performance.now() / 1000, focus); // lava smoking
     if (this.boulders) this.boulders.step(); // boulders rolling, rocks flying
     const now = performance.now() / 1000;
     if (this.hazeMat) this.hazeMat.uniforms.uTime.value = now;

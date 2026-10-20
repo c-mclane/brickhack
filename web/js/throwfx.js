@@ -376,11 +376,13 @@ export class ThrowFX {
   // blue studs (mist.js fountainStud) popping up out of it at p (its surface), tumbling, and dropping back in out
   // of sight; and a ring spreading out over it. n: how many; up: how hard (squares/s); floor: where they go out
   // of sight (the water's surface: p's height; drips off someone: the floor), ring: a ring on the water
-  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true, lava = false } = {}) { // (lava: its glowing orange studs, embers flying)
+  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true, lava = false, tint = null } = {}) { // (lava: its glowing orange studs, embers flying; tint: studs of that colour)
     const piece = lava ? this.brick.lavaStud : fountainStud();
     if (lava) this.sparkles(p.clone().setY(p.y + 0.1), Math.round(n * 1.5), 0xff7a1a, 0.3);
     if (piece) {
-      const mesh = new THREE.InstancedMesh(piece.geo.clone(), piece.mat.clone(), n), parts = [];
+      const mat = piece.mat.clone();
+      if (tint !== null && mat.color) { mat.color.set(tint); if (mat.emissive) mat.emissive.set(0); }
+      const mesh = new THREE.InstancedMesh(piece.geo.clone(), mat, n), parts = [];
       mesh.frustumCulled = false; mesh.renderOrder = 3;
       for (let i = 0; i < n; i++) {
         const a = Math.random() * Math.PI * 2, s = 0.15 + Math.random() * 0.35;
@@ -454,6 +456,21 @@ export class ThrowFX {
         q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random(), Math.random(), Math.random()).multiplyScalar(9), s: 0.5 + Math.random(), grow: -0.6 });
     this.brick.world.add(mesh);
     this.shards.push({ mesh, parts, t: 0, life: 1.6, rise: true });
+  }
+
+  // poisoned: a purple haze about you, specks drifting up off you and fading. p: your feet, h: how tall you are
+  haze(p, h = 1.2, n = 7, color = 0xa23fe0) {
+    const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.034, 0.034, 0.034),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, depthWrite: false }), n), parts = [];
+    mesh.frustumCulled = false; mesh.renderOrder = 5;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, r = 0.18 + Math.random() * 0.14;
+      parts.push({ p: p.clone().add(new THREE.Vector3(Math.cos(a) * r, 0.15 + Math.random() * h, Math.sin(a) * r)),
+        v: new THREE.Vector3(Math.cos(a) * 0.05, 0.12 + Math.random() * 0.15, Math.sin(a) * 0.05),
+        q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random(), Math.random(), Math.random()).multiplyScalar(4), s: 0.6 + Math.random() * 0.8, grow: -0.4 });
+    }
+    this.brick.world.add(mesh);
+    this.shards.push({ mesh, parts, t: 0, life: 1.3, rise: true });
   }
 
   // a wisp of vapor rising out of a fountain (its magic gone out of it, as it's found): soft white puffs

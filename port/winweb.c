@@ -2177,6 +2177,18 @@ web_steam(int x, int y)
     endmsg();
 }
 
+/* fountain.c: something odd at the fountain the hero's on: "bath" (the urge
+   to take one, dipping), "foul" (foul water drunk: retching into it),
+   "poison" (contaminated water drunk) */
+void
+web_fountfx(const char *act)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"fountfx\",\"act\":\"%s\",\"x\":%d,\"y\":%d", act, u.ux, u.uy);
+    endmsg();
+}
+
 /* fountain.c dryup: a watchman (mtmp) yelling at the hero to stop using the
    fountain; or, none seeing it, the fountain at (x, y)'s flow reduced to a
    trickle */

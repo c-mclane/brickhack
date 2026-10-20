@@ -68,10 +68,10 @@ export class Music {
   }
 }
 
-// Ambience: a sound looped under the music while you're somewhere (a room with a fountain or a pool in
-// it: main.js waterNear), fading in as you come in and out as you leave. Files in the music/ folder
+// Ambience: a sound looped under the music while you're somewhere (a room with a fountain, a pool or lava
+// in it: main.js roomNear), fading in as you come in and out as you leave. Files in the music/ folder
 // (served at /music/, never shuffled in with the tunes)
-export const AMBIENCE = { water: 'Fountain Sound Effect 4.mp3' };
+export const AMBIENCE = { water: 'Fountain Sound Effect 4.mp3', lava: 'soundreality-lava-flow-202282.mp3' };
 const FADE = 1.2; // s
 
 export class Ambience {

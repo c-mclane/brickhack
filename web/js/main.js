@@ -14,10 +14,10 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music, Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
-import { DRY_GREY, DRY_SIT, LADY_T, FOUNT_POOL_SPOT } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, risePath, RISE_T, againstFountain } from './perch.js';
+import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, FOUNT, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
@@ -277,7 +277,7 @@ const game = {
 // ------------------------------------------------------------------ setup
 const world = new World();
 let npTimer = 0;
-const ambience = new Ambience(opts.music / 100); // (a fountain's water, looped under the music: waterNear)
+const ambience = new Ambience(opts.music / 100); // (a fountain's water, lava's flow: looped under the music: roomNear)
 const music = new Music({
   volume: opts.music / 100,
   onTrack: (title) => {
@@ -582,7 +582,7 @@ function handle(m) {
       cam.snap = true;
       break;
     case 'stat':
-      ambience.set('water', waterNear(m.ux, m.uy)); // (in a room with a fountain or a pool: its water, heard)
+      { const near = roomNear(m.ux, m.uy); ambience.set('water', near.water); ambience.set('lava', near.lava); } // (a fountain's or a pool's water, lava's flow: heard)
       if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name, m); }
       world.heroTile = game.skinLoaded && !m.poly ? skinTile() : null;
       // placed blocks belong to a dungeon level
@@ -716,10 +716,28 @@ function handle(m) {
     case 'bubble': // no water nymph: a great bubble rises out of the fountain and pops
       if (renderer.brickOn && renderer.brick) { const b = brickItemByName('_bubble'); if (b) renderer.brick.fountainBubble(m.x, m.y, b.url); }
       break;
-    case 'gem': { // a gem spotted in the sparkling waters: it leaps out of them and lands in the pool, where it lies
+    case 'gem': { // a gem spotted in the sparkling waters: once your dip's done, you reach in and pull it out, and hold it
+      // up high (as Excalibur), glinting; then it lies in the pool, where the game has it
       const l = brickItemForTile(m.tile);
-      if (l && renderer.brickOn && renderer.brick)
-        renderer.brick.fountainGem(m.x, m.y, l.url, [m.x + 0.5 + FOUNT_POOL_SPOT[0], STUD_H + FOUNT_POOL_SPOT[1] + 0.05, m.y + 0.5 + FOUNT_POOL_SPOT[2]]);
+      if (!l || !renderer.brickOn || !renderer.brick) break;
+      const g = renderer.brick.fountainGem(m.x, m.y, l.url), f = hero3d.fount, now = performance.now();
+      const after = f ? Math.max(0, FOUNT[f.act].T * 1000 - (now - f.t0)) : 0;
+      setTimeout(() => {
+        const t0 = performance.now();
+        hero3d.fount = { act: 'dip', t0, url: null, grab: l.url, fired: 0 }; // (an empty hand in, the gem in it coming out: heroHold)
+        hero3d.raise = { t0: t0 + (FOUNT.dip.T - 0.3) * 1000, T: GEM_RAISE_T, url: l.url, glint: 0, tip: [0.22, 1.3] }; // (its glints: at the fist)
+        setTimeout(g.show, (FOUNT.dip.T - 0.3 + GEM_RAISE_T) * 1000);
+      }, after);
+      break;
+    }
+    case 'fountfx': { // odd things at the fountain you're on, once your drink or dip's done: the urge to take a bath
+      // (a dive in, a jump out, a shake: perch.js bathPath); foul water (doubled over it, retching into it);
+      // contaminated water (a purple haze about you a while: heroHaze)
+      const f = hero3d.fount, after = f ? Math.max(0, FOUNT[f.act].T * 1000 - (performance.now() - f.t0)) : 0;
+      setTimeout(() => {
+        if (m.act === 'poison') { if (!hero3d.haze || !hero3d.haze.sick) hero3d.haze = { t0: performance.now(), T: HAZE_T, last: 0 }; }
+        else hero3d.fount = { act: m.act === 'bath' ? 'bath' : 'retch', t0: performance.now(), url: null, fired: 0, bathFired: 0 };
+      }, after);
       break;
     }
     case 'steam': // a fire ray across a fountain: steam billows up out of it
@@ -820,6 +838,7 @@ function onMenu(m) {
 function onGameOver() {
   game.playing = false;
   ambience.set('water', false);
+  ambience.set('lava', false);
   releaseLock();
   closeInventory();
   ui.hidePrompt();
@@ -1330,7 +1349,10 @@ function heroHold() {
   if (statuePerch(performance.now()) && performance.now() - (game.lastApplyT || 0) > 8000) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free; unless digging down from up there)
   if (hero3d.raise && hero3d.raise.url) { hold.R = hero3d.raise.url; hold.L = null; hold.two = false; } // (Excalibur: in hand from the blessing on, up there, jumping down, and held high)
   const fo = fountAct(performance.now());
-  if (fo) { hold.R = fo.act === 'dip' ? hero3d.fount.url || null : null; hold.L = null; hold.two = false; } // (at a fountain: what's dipped in hand)
+  if (fo) { // (at a fountain: what's dipped in hand; a gem pulled out, in hand as it comes up)
+    hold.R = fo.act === 'dip' ? (hero3d.fount.grab && fo.t > FOUNT.dip.cup + 0.35 ? hero3d.fount.grab : hero3d.fount.url || null) : null;
+    hold.L = null; hold.two = false;
+  }
   // rings: worn as bracelets round the wrists, the right ring on the right
   // (and a ring wielded: on the wrist too, not in the fist)
   const worn = (slot) => game.inv.find((i) => i.w === slot);
@@ -1421,16 +1443,18 @@ function heroSink(dt, t, hx, hz, perched) {
   return hero3d.sink + (wet ? 0.02 * Math.sin(t / 1000 * 2.4) * (hero3d.sink / SINK) : 0);
 }
 
-// in a room with a fountain or water (a pool, a moat: not lava) in it, as far as you know it: the floor
-// you're on, out to its walls and doorways (a corridor: no room, nothing heard)
-function waterNear(x, y) {
-  const at = (cx, cy) => world.classAt(cx, cy);
+// what's in the room you're in, as far as you know it (the floor you're on, out to its walls and
+// doorways; a corridor: no room, nothing heard): {water (a fountain, a pool, a moat), lava}
+function roomNear(x, y) {
+  const at = (cx, cy) => world.classAt(cx, cy), near = { water: false, lava: false };
   const c0 = at(x, y);
-  if (!c0 || (c0.cmap === CM.corr || c0.cmap === CM.litcorr)) return false;
+  if (!c0 || (c0.cmap === CM.corr || c0.cmap === CM.litcorr)) return near;
   const seen = new Set([y * world.w + x]), todo = [[x, y]];
   while (todo.length && seen.size < 3000) {
     const [cx, cy] = todo.pop(), c = at(cx, cy);
-    if (c.cmap === CM.fountain || (c.type === 'liquid' && c.cmap !== CM.lava)) return true;
+    if (c.type === 'liquid' && c.cmap === CM.lava) near.lava = true;
+    else if (c.cmap === CM.fountain || c.type === 'liquid') near.water = true;
+    if (near.water && near.lava) break;
     if (c.lintel && !(cx === x && cy === y)) continue; // (a doorway: the room's edge)
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       const nx = cx + dx, ny = cy + dy, i = ny * world.w + nx, n = at(nx, ny);
@@ -1439,7 +1463,7 @@ function waterNear(x, y) {
       todo.push([nx, ny]);
     }
   }
-  return false;
+  return near;
 }
 
 // ---- the Lady of the Lake (a long sword dipped: Excalibur), as a cutscene: the view taken from you to a
@@ -1470,7 +1494,7 @@ function ladyOfTheLake(m) {
 }
 // holding Excalibur high, now: how far up (0..1: up fast, held, and down again), or 0; and golden light
 // glinting off it as you hold it up (you: where your feet are)
-const RAISE_T = 3.2;
+const RAISE_T = 3.2, GEM_RAISE_T = 2.6; // (s: Excalibur held high; a gem held up)
 function raiseAct(now) {
   const r = hero3d.raise;
   if (!r) return 0;
@@ -1485,7 +1509,8 @@ function raiseGlint(now, x, feet, z, yaw) {
   const t = (now - r.t0) / 1000;
   while (r.glint < 3 && t >= 0.45 + r.glint * 0.6) {
     r.glint++;
-    renderer.brick.fx.sparkles(new THREE3.Vector3(x + Math.sin(yaw) * 0.3, feet + 1.75, z - Math.cos(yaw) * 0.3), 30, r.glint === 2 ? 0xffe27a : 0xffc21a, 0.3); // (its blade's tip)
+    const [out, up] = r.tip || [0.3, 1.75]; // (where it glints: a sword, its blade's tip; a gem, the fist holding it)
+    renderer.brick.fx.sparkles(new THREE3.Vector3(x + Math.sin(yaw) * out, feet + up, z - Math.cos(yaw) * out), r.tip ? 18 : 30, r.glint === 2 ? 0xffe27a : 0xffc21a, r.tip ? 0.15 : 0.3);
   }
 }
 // the cutscene's view, over the game's own (eased in, and back out): slowly round the fountain, low, at you
@@ -1566,9 +1591,29 @@ function fountSplash(now, x, y, z, yaw) {
   if (!a || !renderer.brickOn || !renderer.brick) return;
   const cues = FOUNT_SPLASH[a.act];
   while (f.fired < cues.length && a.t >= cues[f.fired][0]) {
-    const [, n, up] = cues[f.fired++];
-    renderer.brick.fx.splashStuds(new THREE3.Vector3(x + Math.sin(yaw) * FOUNT_REACH, y - FOUNT_DOWN, z - Math.cos(yaw) * FOUNT_REACH), n, up);
+    const [, n, up, tint] = cues[f.fired++];
+    renderer.brick.fx.splashStuds(new THREE3.Vector3(x + Math.sin(yaw) * FOUNT_REACH, y - FOUNT_DOWN, z - Math.cos(yaw) * FOUNT_REACH), n, up, tint ? { tint } : {});
   }
+  const p = walk.perch; // (a bath: the water broken as you dive in and jump out, at the fountain's middle; dripping off you, shaking)
+  while (a.act === 'bath' && p && f.bathFired < BATH_SPLASH.length && a.t >= BATH_SPLASH[f.bathFired][0]) {
+    const [, at, n, up] = BATH_SPLASH[f.bathFired++], g = world.heroLift ?? phys.y, w = (p.pr ? STUD_H + p.pr.H : y) - FOUNT_DOWN;
+    renderer.brick.fx.splashStuds(at === 'mid' ? new THREE3.Vector3(p.x + 0.5, g + w, p.z + 0.5) : new THREE3.Vector3(x, y + 0.6, z), n, up,
+      at === 'mid' ? {} : { floor: y, ring: false });
+  }
+}
+// poisoned: a purple haze about you, specks drifting up off you; a while after contaminated water, and all
+// the while you're sick with it (food poisoning, a terminal illness: the status line's FoodPois, TermIll)
+const HAZE_T = 4.0; // s
+function heroHaze(now, x, y, z) {
+  const cond = (ui.stat && ui.stat.cond) || [];
+  if (!hero3d.haze && game.playing && cond.some((c) => c === 'FoodPois' || c === 'TermIll')) hero3d.haze = { t0: now, T: 1e9, last: 0, sick: true };
+  const h = hero3d.haze;
+  if (!h) return;
+  if (h.sick && !cond.some((c) => c === 'FoodPois' || c === 'TermIll')) { hero3d.haze = null; return; } // (cured)
+  if (now - h.t0 > h.T * 1000) { hero3d.haze = null; return; }
+  if (now - h.last < 80 || !renderer.brickOn || !renderer.brick) return;
+  h.last = now;
+  renderer.brick.fx.haze(new THREE3.Vector3(x, y, z), motion.heroHeight() * 0.9, h.sick ? 8 : 1 - (now - h.t0) / (h.T * 1000) < 0.3 ? 6 : 12);
 }
 
 // ---- things dropped fall. What newly lies at your feet (dropped), or where a monster has just
@@ -1632,7 +1677,9 @@ function statuePerch(now) {
   const p = walk.perch, F = motion.free;
   if (!p || !F) return null;
   const u = (now - p.t0) / 1000;
-  const pose = p.phase === 'on' ? hopOn(p.from, p.side, u / HOP_ON, p.pr) : p.phase === 'off' ? hopOff(p.side, p.out, p.dest, u, p.pr) : perched(p.side, p.pr);
+  const fo = p.phase !== 'on' && p.phase !== 'off' ? fountAct(now) : null; // (taking a bath: in and out of its water)
+  const pose = p.phase === 'on' ? hopOn(p.from, p.side, u / HOP_ON, p.pr) : p.phase === 'off' ? hopOff(p.side, p.out, p.dest, u, p.pr)
+    : fo && fo.act === 'bath' ? { ...bathPath(p.side, fo.t, p.pr), lookUp: 0 } : perched(p.side, p.pr);
   return { k: 1, dx: p.x + pose.x - F.x, dz: p.z + pose.z - F.z, lift: pose.lift, yaw: pose.yaw, hop: pose.hop, lookUp: pose.lookUp };
 }
 
@@ -2643,12 +2690,14 @@ function frame(t) {
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
       const pp = statuePerch(t); // (on a statue's square: up on its ledge, looking at it)
+      if (walk.perch && walk.perch.side && renderer.brick) renderer.brick.setFountainSide(walk.perch.x, walk.perch.z, walk.perch.side); // (what lies on it: on its rim where you stand)
       const sw = heroSwim(t), sink = sw ? 0 : heroSink(dt, t, hx, hz, !!pp); // (in a pool: sunk in it, to the waist; falling in, crawling out)
       const m = sw ? figureMatrix(sw.x + 0.5, (world.heroLift ?? phys.y) + sw.y, sw.z + 0.5, sw.yaw ?? doll.yaw)
         : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
         : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink, hz + 0.5, doll.yaw);
       if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
-      else raiseGlint(t, hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
+      heroHaze(t, sw ? sw.x + 0.5 : hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (sw ? sw.y : pp ? pp.lift : -sink), sw ? sw.z + 0.5 : hz + 0.5 + (pp ? pp.dz : 0));
+      raiseGlint(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : 0), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw); // (something held high: glinting)
       renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL, body: pose.body }) : [])];

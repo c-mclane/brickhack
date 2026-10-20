@@ -29,8 +29,8 @@ import { FigureAnimator, FOUNT } from './minifig-anim.js';
 import { Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, FALL_T, CRAWL_T } from './swim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
-import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, risePath, RISE_T, againstFountain } from './perch.js';
-import { DRY_GREY, DRY_SIT, LADY_T, FOUNT_POOL_SPOT } from './brickworld.js';
+import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, risePath, RISE_T, againstFountain } from './perch.js';
+import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul } from './minifig-anim.js';
 
@@ -50,11 +50,13 @@ export async function runTestbed(data) {
   const cam = new THREE.PerspectiveCamera(45, 1, 0.05, 200);
   const ctl = new OrbitControls(cam, canvas);
   const W = level.w, H = level.h;
-  // the one room: a fountain or a pool in it, its water heard (as the game's: main.js waterNear), once
-  // there's been a click or a key (the browser's rule)
-  if ((level.items || []).some((it) => it.item === 'fountain') || (level.pools || []).length) {
+  // the one room: a fountain or a pool in it, its water heard, lava, its flow (as the game's: main.js
+  // roomNear), once there's been a click or a key (the browser's rule)
+  const hasWater = (level.items || []).some((it) => it.item === 'fountain') || (level.pools || []).length, hasLava = (level.lava || []).length;
+  if (hasWater || hasLava) {
     const amb = new Ambience(0.6);
-    amb.set('water', true);
+    if (hasWater) amb.set('water', true);
+    if (hasLava) amb.set('lava', true);
     const on = () => { amb.allow(); removeEventListener('pointerdown', on); removeEventListener('keydown', on); };
     addEventListener('pointerdown', on);
     addEventListener('keydown', on);
@@ -361,6 +363,61 @@ export async function runTestbed(data) {
         await wait(5.5);
         say('');
       }
+      // a gem in a fountain's sparkling waters (?part=gem): up on its rim, something dipped, and a gem leaps up out of
+      // its water, glittering, and lands in its pool, where it lies (brickworld.js fountainGem)
+      if (doing('gem') && st && st.item === 'fountain') {
+        room();
+        lay([st]);
+        hero.hold = { R: url('dagger') };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        const [fx, fz] = st.at, gems = ['ruby', 'emerald', 'sapphire'], gem = gems[Math.floor(clock) % gems.length];
+        say('dipping a dagger into the fountain...');
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('dagger') };
+        await wait(0.6);
+        say('You spot a gem in the sparkling waters!');
+        const g = brick.fountainGem(fx, fz, url(gem));
+        lay([st, { item: gem, at: [fx, fz] }]); // (the map: it lies there now, in the pool; out of sight while you show it off)
+        await wait(FOUNT.dip.T - 0.6);
+        // (as main.js 'gem': an empty hand reaching in, the gem in it coming up out of the water, and held up high)
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: null, grab: url(gem) };
+        await wait(FOUNT.dip.T - 0.3);
+        hero.raise = { t0: clock, T: 2.6, glint: 0, url: url(gem), tip: [0.22, 1.3] }; // (its glints: at the fist)
+        await wait(2.6);
+        g.show();
+        await wait(2.5);
+        say('');
+      }
+      // odd things at a fountain (?part=odd): foul water drunk, retching into it; contaminated water drunk, a
+      // purple haze about you; and a dagger dipped, the urge to take a bath: a dive in, a jump out, a shake
+      if (doing('odd') && st && st.item === 'fountain') {
+        room();
+        lay([st]);
+        hero.hold = { R: url('dagger') };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        say('drinking from the fountain...');
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        say('The water is foul!  You gag and vomit.');
+        hero.fount = { act: 'retch', t0: clock, fired: 0 };
+        await wait(FOUNT.retch.T + 1);
+        say('drinking from the fountain...');
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        say('The water is contaminated!');
+        hero.haze = { t0: clock, last: -1 };
+        await wait(5);
+        say('dipping a dagger into the fountain...');
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('dagger') };
+        await wait(FOUNT.dip.T);
+        say('An urge to take a bath overwhelms you.');
+        hero.fount = { act: 'bath', t0: clock, fired: 0, bathFired: 0 };
+        await wait(2.4);
+        say('You lost some of your gold in the fountain!');
+        await wait(FOUNT.bath.T - 2.4 + 1.5);
+        say('');
+      }
       // more out of a fountain (?part=fountain): a water demon rising out of it, granting a wish and gone in a burst;
       // a water nymph rising out of it; no nymph, a great bubble rising and popping; a gem leaping out of its water
       // into its pool; and steam billowing up out of it (a fire ray across it)
@@ -401,9 +458,13 @@ export async function runTestbed(data) {
         hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('dagger') };
         await wait(0.6);
         say('You spot a gem in the sparkling waters!');
-        const gem = brick.fountainGem(fx, fz, url('emerald'), [fx + 0.5 + FOUNT_POOL_SPOT[0], STUD_H + FOUNT_POOL_SPOT[1] + 0.05, fz + 0.5 + FOUNT_POOL_SPOT[2]]);
-        lay([st, { item: 'emerald', at: [fx, fz] }]); // (the map: it lies there now, in the pool)
-        await gem;
+        const g = brick.fountainGem(fx, fz, url('emerald'));
+        lay([st, { item: 'emerald', at: [fx, fz] }]); // (the map: it lies there now: on the rim, once it's shown)
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: null, grab: url('emerald') };
+        await wait(FOUNT.dip.T - 0.3);
+        hero.raise = { t0: clock, T: 2.6, glint: 0, url: url('emerald'), tip: [0.22, 1.3] };
+        await wait(2.6);
+        g.show();
         await wait(2);
         say('Steam billows from the fountain.');
         brick.fountainSteam(fx, fz);
@@ -550,10 +611,11 @@ export async function runTestbed(data) {
 
   // ---- every frame
   let last = performance.now(), paused = false;
+  const SLOW = +(new URLSearchParams(location.search).get('slow') || 1); // (?slow=0.25: everything at a quarter speed, to see it)
   addEventListener('keydown', (e) => { if (e.key === 'p' || e.key === 'P') paused = !paused; }); // P: hold everything still
   function frame(now) {
     requestAnimationFrame(frame);
-    const dt = paused ? 0 : Math.min(0.1, (now - last) / 1000);
+    const dt = paused ? 0 : Math.min(0.1, (now - last) / 1000) * SLOW;
     last = now;
     clock += dt;
     for (const w of [...waits]) if (clock >= w.t) { waits.splice(waits.indexOf(w), 1); w.res(); }
@@ -567,6 +629,7 @@ export async function runTestbed(data) {
     if (!hero.walk) hero.pos = [hero.sq.x, hero.sq.y];
     cameFrom(hero.from, hero.sq);
     let pp = perchSpot(hero.sq, hero.from, hero.pos, drops);
+    if (hero.from.perch) brick.setFountainSide(hero.from.perch.x, hero.from.perch.y, hero.from.perch); // (what lies on it: on its rim where you stand)
     if (hero.leap) { // (the statue gone from under you: off the ledge, as the game plays it, perch.js hopOff)
       const L = hero.leap, dest = [L.side.wx * 0.42, L.side.wz * 0.42], u = clock - L.t0;
       if (u >= offTime(L.side, L.side)) { hero.leap = null; hero.after = dest; hero.from.perch = null; }
@@ -576,12 +639,21 @@ export async function runTestbed(data) {
     const push = Math.max(0, 1 - (clock - (anim.pushT0 ?? -1e9)) / 0.7);
     const ft = hero.fount && (hero.fount.freezeUntil ? (clock < hero.fount.freezeUntil ? Math.min(clock - hero.fount.t0, hero.fount.freezeAt) : hero.fount.freezeAt + clock - hero.fount.freezeUntil) : clock - hero.fount.t0); // (held there: the Lady)
     const fo = hero.fount && ft < FOUNT[hero.fount.act].T ? { act: hero.fount.act, t: ft } : null;
+    if (fo && fo.act === 'bath' && pp && pp.k >= 1 && hero.from.perch) { // (the urge to take a bath: in and out of its water, as main.js)
+      const b = bathPath(hero.from.perch, fo.t, PERCHES.fountain), F = hero.from.perch;
+      pp = { k: 1, dx: b.x, dz: b.z, lift: b.lift, yaw: b.yaw, hop: b.hop, lookUp: 0 };
+      while (hero.fount.bathFired < BATH_SPLASH.length && fo.t >= BATH_SPLASH[hero.fount.bathFired][0]) {
+        const [, at, n, up] = BATH_SPLASH[hero.fount.bathFired++];
+        brick.fx.splashStuds(at === 'mid' ? new THREE.Vector3(F.x + 0.5, STUD_H + PERCHES.fountain.H - FOUNT_DOWN, F.y + 0.5)
+          : new THREE.Vector3(hero.pos[0] + 0.5 + pp.dx, pp.lift + 0.6, hero.pos[1] + 0.5 + pp.dz), n, up, at === 'mid' ? {} : { floor: pp.lift, ring: false });
+      }
+    }
     hero.pp = pp; // (where you're drawn, for the script: the Lady of the Lake's sword)
     if (fo && pp) { // (its water broken as it goes, out in front)
       const cues = FOUNT_SPLASH[fo.act], x = hero.pos[0] + 0.5 + pp.dx, z = hero.pos[1] + 0.5 + pp.dz;
       while (hero.fount.fired < cues.length && fo.t >= cues[hero.fount.fired][0]) {
-        const [, n, up] = cues[hero.fount.fired++];
-        brick.fx.splashStuds(new THREE.Vector3(x + Math.sin(pp.yaw) * FOUNT_REACH, pp.lift - FOUNT_DOWN, z - Math.cos(pp.yaw) * FOUNT_REACH), n, up);
+        const [, n, up, tint] = cues[hero.fount.fired++];
+        brick.fx.splashStuds(new THREE.Vector3(x + Math.sin(pp.yaw) * FOUNT_REACH, pp.lift - FOUNT_DOWN, z - Math.cos(pp.yaw) * FOUNT_REACH), n, up, tint ? { tint } : {});
       }
     }
     let sw = null; // (falling into the water, crawling out: swim.js)
@@ -600,7 +672,7 @@ export async function runTestbed(data) {
       if (t > r.T) { hero.raise = null; hero.exc = false; }
       else {
         raise = sm(t / 0.4) * sm((r.T - t) / 0.5);
-        while (r.glint < 3 && t >= 0.45 + r.glint * 0.6) { r.glint++; const yw = pp && pp.k > 0.5 ? pp.yaw : hero.yaw; brick.fx.sparkles(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0) + Math.sin(yw) * 0.3, 1.75 + (pp ? pp.lift : 0), hero.pos[1] + 0.5 + (pp ? pp.dz : 0) - Math.cos(yw) * 0.3), 30, r.glint === 2 ? 0xffe27a : 0xffc21a, 0.3); }
+        while (r.glint < 3 && t >= 0.45 + r.glint * 0.6) { r.glint++; const yw = pp && pp.k > 0.5 ? pp.yaw : hero.yaw, [tout, tup] = r.tip || [0.3, 1.75]; brick.fx.sparkles(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0) + Math.sin(yw) * tout, tup + (pp ? pp.lift : 0), hero.pos[1] + 0.5 + (pp ? pp.dz : 0) - Math.cos(yw) * tout), 30, r.glint === 2 ? 0xffe27a : 0xffc21a, 0.3); }
       }
     }
     const pose = sw && anim.a ? anim.a.update(dt, { hop: sw.hop, reach: sw.reach, lean: sw.lean }) : anim.a ? anim.a.update(dt, { raise, moving, holdsR: !!hero.hold.R, hop: pp ? pp.hop : 0, lookUp: pp && !fo ? pp.lookUp : 0, fount: fo,
@@ -614,8 +686,14 @@ export async function runTestbed(data) {
       brick.fx.sparkles(sp, 10, 0xff7a1a, 0.3);
     }
     hero.sink = (hero.sink || 0) + ((wet ? 0.4 : 0) - (hero.sink || 0)) * Math.min(1, dt * 6);
+    if (hero.haze && clock - hero.haze.t0 > 4) hero.haze = null; // (poisoned: a purple haze about you a while, as main.js heroHaze)
+    if (hero.haze && clock - hero.haze.last > 0.08) {
+      hero.haze.last = clock;
+      brick.fx.haze(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0)), 1.1, clock - hero.haze.t0 > 2.8 ? 6 : 12);
+    }
     const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
-    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? hero.fount.url : null, L: null } : raise > 0 || hero.exc ? { R: url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
+    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? (hero.fount.grab && fo.t > FOUNT.dip.cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+      : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     for (const c of cobras) {
       let rp = null; // (out of a fountain: up out of its water, over the rim, off to its square: perch.js risePath)
       const half = 0.55, out = c.kind === 'snake' ? half * Math.cos(0.45) : 0.22, up = half * Math.sin(0.45); // (a snake: half its length; as main.js SNAKE_OUT, SNAKE_UP)
