@@ -30,7 +30,7 @@ import { Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, FALL_T, CRAWL_T } from './swim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
 import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN } from './perch.js';
-import { DRY_GREY, DRY_SIT } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul } from './minifig-anim.js';
 
@@ -64,8 +64,8 @@ export async function runTestbed(data) {
 
   // the room: a floor of plates, walls all round; water where scene.json has "pools" (and where more's been
   // let in: a fountain gushing, extra)
-  const room = (extra = []) => {
-    const floors = [], walls = [], pools = [], wet = (level.pools || []).concat(extra);
+  const room = (extra = [], filled = []) => { // (filled: water a boulder's been pushed into, floor now)
+    const floors = [], walls = [], pools = [], wet = (level.pools || []).concat(extra).filter(([x, z]) => !filled.some(([a, b]) => a === x && b === z));
     for (let z = 0; z < H; z++)
       for (let x = 0; x < W; x++) {
         if (x === 0 || z === 0 || x === W - 1 || z === H - 1) walls.push({ x, z, shade: 1 });
@@ -90,6 +90,21 @@ export async function runTestbed(data) {
     // (as the game watches its list: a statue broken comes apart; up on it, you jump down)
     for (const [x, z] of brick.watchStatues(drops, 'test', (n) => (items[n] ? { name: n, ...items[n] } : null)))
       if (hero.sq.x === x && hero.sq.y === z && hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz } };
+  };
+  let cut = null; // (a cutscene's view: the Lady of the Lake)
+  const bars = (on) => { // (letterboxed, for a cutscene)
+    let b = document.querySelectorAll('.letterbox');
+    if (!b.length) {
+      for (const edge of ['top', 'bottom']) {
+        const d = document.createElement('div');
+        d.className = 'letterbox';
+        Object.assign(d.style, { position: 'fixed', left: '0', right: '0', [edge]: '0', height: '0', background: '#000', zIndex: '40', pointerEvents: 'none', transition: 'height 0.8s ease' });
+        document.body.appendChild(d);
+      }
+      b = document.querySelectorAll('.letterbox');
+      void b[0].offsetHeight;
+    }
+    b.forEach((d) => { d.style.height = on ? '11vh' : '0'; });
   };
   const say = (text) => { const el = document.getElementById('status'); if (el) el.textContent = text; };
 
@@ -225,6 +240,91 @@ export async function runTestbed(data) {
         say('...and crawls out');
         await wait(CRAWL_T + 1.5);
       }
+      // the fountain at [fx, fz] gushing: its burst, and streams out to squares round it (as the game picks them:
+      // every other square, not the fountain's own, out to 3; here, clear of its basin), pools as they land
+      const gush = ([fx, fz]) => {
+        const wet = [];
+        for (let z = 1; z < H - 1; z++)
+          for (let x = 1; x < W - 1; x++) {
+            const d = Math.max(Math.abs(x - fx), Math.abs(z - fz));
+            if ((x + z) % 2 === 0 && d >= 2 && d <= 3 && !(level.pools || []).some(([a, b]) => a === x && b === z)) wet.push([x, z]);
+          }
+        brick.gushBurst(fx, fz);
+        wet.forEach(([x, z], i) => brick.gushTo(fx, fz, x, z, 0.15 + 0.12 * Math.hypot(x - fx, z - fz) + 0.03 * i));
+        room(wet); // (the map: those are pools now)
+      };
+      // dug into (?part=dig): up on its rim, three blows of a pick straight down, and it gushes; once its water's
+      // landed, it dries up and comes apart (brickworld.js fountainDry), you jumping down as it goes
+      if (doing('dig') && st && st.item === 'fountain') {
+        room();
+        hero.hold = { R: url('pick-axe') };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        say('digging down into the fountain...');
+        hero.digging = true;
+        for (let k = 0; k < 3; k++) { anim.a && anim.a.attack(); await wait(0.6); }
+        hero.digging = false;
+        say('...water gushes forth, and the fountain dries up!');
+        gush(st.at);
+        const w = brick.fountainDry(st.at[0], st.at[1], url('fountain'), (items.fountain || {}).bricks) || 0;
+        await wait(w + DRY_GREY + DRY_SIT);
+        lay([]);
+        if (hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz }, pr: PERCHES.fountain };
+        await wait(5.5);
+        say('');
+      }
+      // the Lady of the Lake (?part=lady): up on the rim, a long sword dipped, and held there in the water: her arm
+      // rises out of it to the sword, a burst of golden light, and she sinks again; and the fountain goes as a
+      // dried-up one does, you jumping down off it. The view a cutscene's, letterboxed
+      if (doing('lady') && st && st.item === 'fountain') {
+        room();
+        hero.hold = { R: url('long sword') };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1.2);
+        say('dipping a long sword into the fountain...');
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('long sword'), freezeAt: 0.85, freezeUntil: clock + LADY_T - 1.1 };
+        const pp = hero.pp, yaw = pp ? pp.yaw : hero.yaw, x = hero.pos[0] + 0.5 + (pp ? pp.dx : 0), z = hero.pos[1] + 0.5 + (pp ? pp.dz : 0);
+        const at = new THREE.Vector3(x + Math.sin(yaw) * FOUNT_REACH, (pp ? pp.lift : 0) - FOUNT_DOWN, z - Math.cos(yaw) * FOUNT_REACH);
+        const sd = hero.from.perch;
+        cut = { t0: clock, T: LADY_T + 0.2 + DRY_GREY + DRY_SIT + 0.7 + 3.2 + 0.4, up: LADY_T + 0.2 + DRY_GREY + DRY_SIT + 0.7, focus: [st.at[0] + 0.5, STUD_H + 0.75, st.at[1] + 0.5], side: sd ? [sd.wx, sd.wz] : [0, 1] };
+        bars(true);
+        await wait(0.5);
+        say('From the murky depths, a hand reaches up to bless the sword.');
+        brick.ladyOfTheLake(at, yaw, url('_lady of the lake'), true);
+        setTimeout(() => { if (hero.fount) hero.fount.url = url('Excalibur'); hero.exc = true; }, 2100); // (blessed: Excalibur now, in your hand, till it's been held high)
+        const w = brick.fountainDry(st.at[0], st.at[1], url('fountain'), (items.fountain || {}).bricks, LADY_T + 0.2) || 0;
+        await wait(LADY_T - 0.6);
+        say('As the hand retreats, the fountain disappears!');
+        await wait(w - LADY_T + 0.6 + DRY_GREY + DRY_SIT);
+        lay([]);
+        if (hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz }, pr: PERCHES.fountain };
+        await wait(0.7);
+        say('Excalibur!'); // (held high, golden light glinting off it: as main.js raiseAct)
+        hero.raise = { t0: clock, T: 3.2, glint: 0 };
+        await wait(4.5);
+        say('');
+      }
+      // a boulder pushed into a pool (?part=sink): it rolls in and sinks with a splash, and a floor rises there in
+      // its place (brickworld.js boulderSink); then you walk across
+      if (doing('sink') && (level.pools || []).length) {
+        const [px, pz] = [...level.pools].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0]; // (the pool's southwest)
+        room();
+        lay([st, { item: 'boulder', at: [px - 1, pz] }]);
+        place(px - 2, pz, Math.PI / 2);
+        hero.hold = { R: null, L: null };
+        say('pushing a boulder into the pool...');
+        await wait(1.2);
+        anim.pushT0 = clock;
+        brick.boulderSink(url('boulder'), px - 1, pz, px, pz, true);
+        lay([st]);
+        room([], [[px, pz]]); // (the map: floor there now)
+        await step(1, 0);
+        say('...it fills the pool: now you can cross it!');
+        await wait(2.2);
+        await step(1, 0);
+        await wait(1.5);
+        say('');
+      }
       // a fountain gushing (?part=gush): up on its rim, a drink, and it bursts: water out of its top all about,
       // and streams arcing out to squares round it, each a pool as the water lands (brickworld.js gushTo)
       if (doing('gush') && st && st.item === 'fountain') {
@@ -236,15 +336,7 @@ export async function runTestbed(data) {
         hero.fount = { act: 'drink', t0: clock, fired: 0 };
         await wait(FOUNT.drink.T);
         say('...and water gushes forth from the overflowing fountain!');
-        const [fx, fz] = st.at, wet = [];
-        for (let z = 1; z < H - 1; z++)
-          for (let x = 1; x < W - 1; x++) { // (as the game picks them: every other square, not the fountain's own, out to 3; here, clear of its basin)
-            const d = Math.max(Math.abs(x - fx), Math.abs(z - fz));
-            if ((x + z) % 2 === 0 && d >= 2 && d <= 3 && !(level.pools || []).some(([a, b]) => a === x && b === z)) wet.push([x, z]);
-          }
-        brick.gushBurst(fx, fz);
-        wet.forEach(([x, z], i) => brick.gushTo(fx, fz, x, z, 0.15 + 0.12 * Math.hypot(x - fx, z - fz) + 0.03 * i));
-        room(wet); // (the map: those are pools now)
+        gush(st.at);
         await wait(6);
         say('');
       }
@@ -357,7 +449,9 @@ export async function runTestbed(data) {
     }
     if (!pp && hero.after) pp = { k: 0, dx: hero.after[0], dz: hero.after[1], lift: 0, hop: 0, lookUp: 0 };
     const push = Math.max(0, 1 - (clock - (anim.pushT0 ?? -1e9)) / 0.7);
-    const fo = hero.fount && clock - hero.fount.t0 < FOUNT[hero.fount.act].T ? { act: hero.fount.act, t: clock - hero.fount.t0 } : null;
+    const ft = hero.fount && (hero.fount.freezeUntil ? (clock < hero.fount.freezeUntil ? Math.min(clock - hero.fount.t0, hero.fount.freezeAt) : hero.fount.freezeAt + clock - hero.fount.freezeUntil) : clock - hero.fount.t0); // (held there: the Lady)
+    const fo = hero.fount && ft < FOUNT[hero.fount.act].T ? { act: hero.fount.act, t: ft } : null;
+    hero.pp = pp; // (where you're drawn, for the script: the Lady of the Lake's sword)
     if (fo && pp) { // (its water broken as it goes, out in front)
       const cues = FOUNT_SPLASH[fo.act], x = hero.pos[0] + 0.5 + pp.dx, z = hero.pos[1] + 0.5 + pp.dz;
       while (hero.fount.fired < cues.length && fo.t >= cues[hero.fount.fired][0]) {
@@ -375,12 +469,21 @@ export async function runTestbed(data) {
       }
       if (!sw) { hero.swim = null; if (s.to) place(s.to[0], s.to[1], hero.yaw); }
     }
-    const pose = sw && anim.a ? anim.a.update(dt, { hop: sw.hop, reach: sw.reach, lean: sw.lean }) : anim.a ? anim.a.update(dt, { moving, holdsR: !!hero.hold.R, hop: pp ? pp.hop : 0, lookUp: pp && !fo ? pp.lookUp : 0, fount: fo,
+    let raise = 0; // (Excalibur held high: up fast, held, down again; golden light glinting off it)
+    if (hero.raise) {
+      const r = hero.raise, t = clock - r.t0, sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+      if (t > r.T) { hero.raise = null; hero.exc = false; }
+      else {
+        raise = sm(t / 0.4) * sm((r.T - t) / 0.5);
+        while (r.glint < 3 && t >= 0.45 + r.glint * 0.6) { r.glint++; const yw = pp && pp.k > 0.5 ? pp.yaw : hero.yaw; brick.fx.sparkles(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0) + Math.sin(yw) * 0.3, 1.75 + (pp ? pp.lift : 0), hero.pos[1] + 0.5 + (pp ? pp.dz : 0) - Math.cos(yw) * 0.3), 30, r.glint === 2 ? 0xffe27a : 0xffc21a, 0.3); }
+      }
+    }
+    const pose = sw && anim.a ? anim.a.update(dt, { hop: sw.hop, reach: sw.reach, lean: sw.lean }) : anim.a ? anim.a.update(dt, { raise, moving, holdsR: !!hero.hold.R, hop: pp ? pp.hop : 0, lookUp: pp && !fo ? pp.lookUp : 0, fount: fo,
       lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: anim.state.heavy || 0, speed: anim.state.heavy ? 1.1 : undefined }) : null;
     const wet = !pp && (level.pools || []).some(([px, pz]) => px === Math.round(hero.pos[0]) && pz === Math.round(hero.pos[1])); // (in a pool: sunk to the waist, as main.js heroSink)
     hero.sink = (hero.sink || 0) + ((wet ? 0.4 : 0) - (hero.sink || 0)) * Math.min(1, dt * 6);
     const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
-    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? hero.fount.url : null, L: null } : pp ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
+    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? hero.fount.url : null, L: null } : raise > 0 || hero.exc ? { R: url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     for (const c of cobras) {
       const yaw = Math.atan2(hero.pos[0] - c.at[0], -(hero.pos[1] - c.at[1]));
       if (c.kind) figs.push({ url: c.url, matrix: mul(partMatrix(c.at[0] + 0.5, STUD_H, c.at[1] + 0.5, Math.PI - yaw), creatureLocal(c.kind, clock, { lungeT: c.lungeAt })), pose: null, hold: {} });
@@ -399,7 +502,26 @@ export async function runTestbed(data) {
     canvas.width = w; canvas.height = h;
     cam.aspect = w / Math.max(1, h);
     cam.updateProjectionMatrix();
-    ctl.update();
+    if (cut) { // (a cutscene, as the game's (main.js cutsceneCamera): slowly round the fountain, low, at you; eased in
+      // from where the view was, and back out to it, given back just as it was)
+      const t = clock - cut.t0, k = Math.min(1, t / 0.9, (cut.T - t) / 0.9), e = k <= 0 ? 0 : k * k * (3 - 2 * k);
+      cut.pos0 = cut.pos0 || cam.position.clone();
+      if (!cut.out && cut.T - t < 0.9) { cut.out = true; bars(false); } // (the bars going as the view comes back)
+      if (t > cut.T) { cam.position.copy(cut.pos0); cut = null; bars(false); ctl.update(); }
+      else {
+        const ang = Math.atan2(cut.side[1], cut.side[0]) + 1.3 + 0.08 * t, f = cut.focus;
+        const ku = cut.up != null ? Math.max(0, Math.min(1, (t - cut.up) / 0.8)) : 0, k2 = ku * ku * (3 - 2 * ku); // (drawn back and up, to the sword held high)
+        const eye = new THREE.Vector3(f[0] + Math.cos(ang) * (2.1 + 0.6 * k2), f[1] + 0.4 + 0.2 * k2, f[2] + Math.sin(ang) * (2.1 + 0.6 * k2));
+        const tgt = new THREE.Vector3(f[0] + cut.side[0] * 0.5, f[1] - 0.1 + 0.5 * k2, f[2] + cut.side[1] * 0.5);
+        { // (round the fountain, not straight across: never through its walls; as main.js roundAbout)
+          const a0 = Math.atan2(cut.pos0.z - f[2], cut.pos0.x - f[0]), r0 = Math.hypot(cut.pos0.x - f[0], cut.pos0.z - f[2]);
+          const a1 = Math.atan2(eye.z - f[2], eye.x - f[0]), r1 = Math.hypot(eye.x - f[0], eye.z - f[2]);
+          const a = a0 + Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0)) * e, r = r0 + (r1 - r0) * e;
+          cam.position.set(f[0] + Math.cos(a) * r, cut.pos0.y + (eye.y - cut.pos0.y) * e, f[2] + Math.sin(a) * r);
+        }
+        cam.lookAt(ctl.target.clone().lerp(tgt, e));
+      }
+    } else ctl.update();
     cam.updateMatrixWorld();
     brick.render(cam.projectionMatrix.elements, cam.matrixWorldInverse.elements, w, h, [hero.pos[0] + 0.5, 0, hero.pos[1] + 0.5]);
   }

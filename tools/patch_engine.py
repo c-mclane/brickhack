@@ -766,4 +766,21 @@ edit("src/fountain.c", [
      "	{ extern void FDECL(web_gush, (int, int)); web_gush(x, y); } /* WEB_HOOK_GUSH: a pool there */\n"
      "	/* Put a pool at x, y */\n"),
 ], "WEB_HOOK_GUSH")
+# BrickHack: a boulder into water (do.c boulder_hits_pool): sent as an event (winweb.c web_boulder_sink:
+# what, from where (pushed) to where, and whether it fills it), the client rolls it in and sinks it, a
+# floor rising in its place should it fill the water
+edit("src/do.c", [
+    ("	    fills_up = lava ? chance == 0 : chance != 0;\n",
+     "	    fills_up = lava ? chance == 0 : chance != 0;\n"
+     "	    { extern void FDECL(web_boulder_sink, (struct obj *, int, int, BOOLEAN_P, BOOLEAN_P)); /* WEB_HOOK_SINK */\n"
+     "	      web_boulder_sink(otmp, rx, ry, fills_up, pushing); }\n"),
+], "WEB_HOOK_SINK")
+# BrickHack: the Lady of the Lake (fountain.c dipfountain: a long sword dipped, Excalibur): sent as an event
+# (winweb.c web_lady: whether she blesses it, or a freezing mist rises), the client plays it as a cutscene: her
+# arm rising out of the water to the sword, the blessing, and the fountain going
+edit("src/fountain.c", [
+    ("		if (u.ualign.type != A_LAWFUL) {\n			/* Ha!  Trying to cheat her. */\n",
+     "		{ extern void FDECL(web_lady, (BOOLEAN_P)); web_lady(u.ualign.type == A_LAWFUL); } /* WEB_HOOK_LADY */\n"
+     "		if (u.ualign.type != A_LAWFUL) {\n			/* Ha!  Trying to cheat her. */\n"),
+], "WEB_HOOK_LADY")
 print("engine hooks applied:", src)

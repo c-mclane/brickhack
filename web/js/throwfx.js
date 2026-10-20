@@ -442,11 +442,24 @@ export class ThrowFX {
     }
   }
 
+  // sparkles: little glints of light (a blessing: gold; a freezing mist: frost) about p, drifting up and out
+  sparkles(p, n = 24, color = 0xffe27a, spread = 0.18) {
+    const mesh = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.018, 0),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, depthWrite: false }), n), parts = [];
+    mesh.frustumCulled = false; mesh.renderOrder = 5;
+    for (let i = 0; i < n; i++)
+      parts.push({ p: p.clone().add(new THREE.Vector3((Math.random() - 0.5) * spread, (Math.random() - 0.5) * spread, (Math.random() - 0.5) * spread)),
+        v: new THREE.Vector3((Math.random() - 0.5) * 0.5, 0.2 + Math.random() * 0.5, (Math.random() - 0.5) * 0.5),
+        q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random(), Math.random(), Math.random()).multiplyScalar(9), s: 0.5 + Math.random(), grow: -0.6 });
+    this.brick.world.add(mesh);
+    this.shards.push({ mesh, parts, t: 0, life: 1.6, rise: true });
+  }
+
   // a wisp of vapor rising out of a fountain (its magic gone out of it, as it's found): soft white puffs
   // drifting up from p, swelling and thinning away
-  vapor(p) {
+  vapor(p, color = 0xf2fbff) {
     const n = 14, mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.045, 1),
-      new THREE.MeshBasicMaterial({ color: 0xf2fbff, transparent: true, opacity: 0.45, depthWrite: false }), n), parts = [];
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.45, depthWrite: false }), n), parts = [];
     mesh.frustumCulled = false;
     for (let i = 0; i < n; i++)
       parts.push({ p: p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.1, -i * 0.05, (Math.random() - 0.5) * 0.1)),

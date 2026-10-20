@@ -2,7 +2,7 @@
 """Generate Ascend's level (the "dreamland" option, level dreamlnd): a blank
 baseplate. A small open, lit square of floor (ROOM x ROOM) in the middle of
 the map, no monsters, no stairs, and a few things to try out (a statue,
-boulders, a scroll of punishment); all round it solid stone that can't be dug,
+boulders, a scroll of punishment, a fountain); all round it solid stone that can't be dug,
 which the client draws as fog: nowhere else to go.
 You start in the middle of it.
 
@@ -36,6 +36,8 @@ des = [
     f"CONTAINER:'`',\"statue\",({X0 + 2},{Y0 + 2})",
     *(f"OBJECT:'`',\"boulder\",({X0 + dx},{Y0 + dy})" for dx, dy in ((7, 3), (7, 7), (3, 7))),
     f"OBJECT:'?',\"punishment\",({START[0] + 1},{START[1]}),uncursed,0",
+    # ...and a fountain (to drink from, dip in, dig into...), on the left, with floor round it to flood
+    f"FOUNTAIN:({X0 + 2},{Y0 + 5})",
 ]
 open(sys.argv[1], "w").write("\n".join(des) + "\n")
 if len(sys.argv) > 2:

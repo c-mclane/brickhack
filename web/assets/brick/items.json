@@ -19347,5 +19347,51 @@
   "shatter": {
    "43": 71
   }
+ },
+ "_lady of the lake": {
+  "brick": "The Lady of the Lake's arm, clad in white samite, raised up out of the water, her hand reaching for the sword",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3818",
+    "color": 15,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "mat": [
+     0.985,
+     0.17,
+     -0.0,
+     0.17,
+     -0.985,
+     0.0,
+     0.0,
+     -0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 14,
+    "pos": [
+     -1.7099,
+     -19.4737,
+     9.8982
+    ],
+    "mat": [
+     0.985,
+     0.12018,
+     -0.12018,
+     0.17,
+     -0.6964,
+     0.6964,
+     0.0,
+     -0.707,
+     -0.707
+    ]
+   }
+  ]
  }
 }

@@ -2112,6 +2112,18 @@ web_gush(int x, int y)
     endmsg();
 }
 
+/* fountain.c dipfountain: a long sword dipped in the fountain the hero's on,
+   and the Lady of the Lake acts (good: she blesses it, Excalibur) or a
+   freezing mist rises (not lawful); either way the fountain goes */
+void
+web_lady(boolean good)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"lady\",\"good\":%d,\"x\":%d,\"y\":%d", good ? 1 : 0, u.ux, u.uy);
+    endmsg();
+}
+
 /* fountain.c dryup: the fountain at (x, y) dried up (seen): the client greys
    its water and breaks it apart */
 void
@@ -2132,6 +2144,21 @@ web_swim(int crawl, int x, int y)
         return;
     fprintf(out, "{\"t\":\"swim\",\"act\":\"%s\",\"px\":%d,\"py\":%d,\"x\":%d,\"y\":%d",
             crawl ? "crawl" : "fall", u.ux, u.uy, x, y);
+    endmsg();
+}
+
+/* do.c boulder_hits_pool: a boulder pushed (from where it lies) or dropped
+   into the water (or lava) at (x, y), filling it (fills: floor there now) or
+   sinking without a trace: the client rolls it in and sinks it (seen, if you
+   can see either square) */
+void
+web_boulder_sink(struct obj *obj, int x, int y, boolean fills, boolean pushing)
+{
+    int fx = pushing && obj->where == OBJ_FLOOR ? obj->ox : x, fy = pushing && obj->where == OBJ_FLOOR ? obj->oy : y;
+    if (!out || !(cansee(fx, fy) || cansee(x, y)))
+        return;
+    fprintf(out, "{\"t\":\"sink\",\"tile\":%d,\"fx\":%d,\"fy\":%d,\"x\":%d,\"y\":%d,\"fills\":%d,\"lava\":%d",
+            web_obj_tile(obj, obj_to_glyph(obj)), fx, fy, x, y, fills ? 1 : 0, is_lava(x, y) ? 1 : 0);
     endmsg();
 }
 

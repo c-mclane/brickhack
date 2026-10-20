@@ -14,7 +14,7 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music, Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
-import { DRY_GREY, DRY_SIT } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN } from './perch.js';
@@ -670,6 +670,12 @@ function handle(m) {
       hero3d.pushT0 = performance.now(); // (a lean into it: heroPose)
       break;
     }
+    case 'sink': { // a boulder pushed into water: rolled in, sunk, a floor rising there should it fill it (brickworld.js boulderSink)
+      const l = brickItemForTile(m.tile);
+      if (l && renderer.brickOn && renderer.brick) renderer.brick.boulderSink(l.url, m.fx, m.fy, m.x, m.y, !!m.fills);
+      if (m.fx !== m.x || m.fy !== m.y) hero3d.pushT0 = performance.now(); // (a lean into it)
+      break;
+    }
     case 'crumble': { // a boulder broke into rocks: it bursts, grit and rocks flying
       const l = brickItemForTile(m.tile), rock = brickItemByName('rock');
       if (l && rock && renderer.brickOn && renderer.brick) renderer.brick.boulderBreak(l.url, m.x, m.y, rock.url, l.halves);
@@ -693,6 +699,7 @@ function handle(m) {
       if (m.x < 0) { renderer.brick.gushBurst(m.fx, m.fy); hero3d.gushN = 0; }
       else renderer.brick.gushTo(m.fx, m.fy, m.x, m.y, 0.15 + 0.12 * Math.hypot(m.x - m.fx, m.y - m.fy) + 0.03 * (hero3d.gushN = (hero3d.gushN || 0) + 1));
       break;
+    case 'lady': ladyOfTheLake(m); break;
     case 'rip': game.rip = m; break;
     case 'bell': $('#hearts').classList.add('flash'); break;
     case 'prevmsg': ui.toggleHistory(); break;
@@ -1255,7 +1262,7 @@ async function redressHero() {
   if (heroView) heroView.show(url);
 }
 // the minifig stands in for the doll and the hero's sprite on brick levels
-const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && opts.camera !== 0 && !(ui.stat && ui.stat.poly);
+const showFigure = () => !!hero3d.prims && opts.playerModel === 'model' && (opts.camera !== 0 || !!cutscene) && !(ui.stat && ui.stat.poly); // (a cutscene: you, seen, whatever the view)
 
 // What the hero has in each hand, as brick: {R, L}, each an item's url;
 // null: nothing in that hand; undefined: something not made in brick yet (the
@@ -1284,7 +1291,8 @@ function heroHold() {
   const hold = { R: wep && !isRing(wep) ? as(wep) : null, L: alt && !isRing(alt) ? as(alt) : undefined, two };
   const ball = heavyBall();
   if (ball) { hold.R = null; hold.L = null; hold.two = false; hold.hug = punishment() ? undefined : as(ball); } // (lugging the ball: weapons put away, it held before you: on its chain, the chain's own ball)
-  if (statuePerch(performance.now())) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free)
+  if (statuePerch(performance.now()) && performance.now() - (game.lastApplyT || 0) > 8000) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free; unless digging down from up there)
+  if (hero3d.raise && hero3d.raise.url) { hold.R = hero3d.raise.url; hold.L = null; hold.two = false; } // (Excalibur: in hand from the blessing on, up there, jumping down, and held high)
   const fo = fountAct(performance.now());
   if (fo) { hold.R = fo.act === 'dip' ? hero3d.fount.url || null : null; hold.L = null; hold.two = false; } // (at a fountain: what's dipped in hand)
   // rings: worn as bracelets round the wrists, the right ring on the right
@@ -1340,7 +1348,7 @@ function heroPose(dt, now) {
   return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround),
     holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two,
     hop: pp ? pp.hop : 0, lookUp: pp && !fountAct(now) ? pp.lookUp : 0, lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: heavyBall() ? 1 : 0,
-    fount: fountAct(now) });
+    fount: fountAct(now), raise: raiseAct(now) });
 }
 // falling into water and crawling out, now (swim.js): where you are and how, or null; and the water
 // broken as it goes. Over: still in it (no crawl: you swim, or drowned), sunk as deep as you went, rising
@@ -1390,24 +1398,121 @@ function waterNear(x, y) {
   return false;
 }
 
+// ---- the Lady of the Lake (a long sword dipped: Excalibur), as a cutscene: the view taken from you to a
+// slow turn about the fountain, letterboxed; your dip held, the sword in the water, while her arm rises out
+// of it to the sword and blesses it (brickworld.js ladyOfTheLake), or (not lawful) a freezing mist wraps it;
+// and then the fountain goes as a dried-up one does (fountainDries), and the view's given back
+let cutscene = null; // {t0, T, focus: [x, y, z] (the fountain's middle), side: [x, z] (the way you are from it)}
+function ladyOfTheLake(m) {
+  const now = performance.now(), pp = statuePerch(now), [hx, hz] = motion.heroPos(now);
+  const yaw = pp && pp.k > 0.5 ? pp.yaw : doll.yaw;
+  const x = hx + 0.5 + (pp ? pp.dx : 0), z = hz + 0.5 + (pp ? pp.dz : 0), feet = (world.heroLift ?? phys.y) + (pp ? pp.lift : 0);
+  const at = new THREE3.Vector3(x + Math.sin(yaw) * FOUNT_REACH, feet - FOUNT_DOWN, z - Math.cos(yaw) * FOUNT_REACH);
+  const T = m.good ? LADY_T : LADY_T - 1.6;
+  if (hero3d.fount && hero3d.fount.act === 'dip') Object.assign(hero3d.fount, { freezeAt: 0.85, freezeUntil: now + (T - 1.1) * 1000 });
+  const sd = walk.perch && walk.perch.side;
+  // (blessed: the sword in your hand becomes Excalibur as her light bursts about it; and once the fountain's
+  // gone and you've landed, you hold it high overhead a while, golden light glinting off it)
+  const exc = brickItemByName('Excalibur'), landed = T + 0.2 + DRY_GREY + DRY_SIT + 0.7;
+  if (m.good && exc) {
+    setTimeout(() => { if (hero3d.fount && hero3d.fount.act === 'dip') hero3d.fount.url = exc.url; }, 2.1 * 1000);
+    hero3d.raise = { t0: now + landed * 1000, T: RAISE_T, url: exc.url, glint: 0 };
+  }
+  cutscene = { t0: now, T: m.good ? landed + RAISE_T + 0.4 : T + DRY_GREY + DRY_SIT + 2, up: m.good ? landed : null, focus: [m.x + 0.5, STUD_H + 0.75, m.y + 0.5], side: sd ? [sd.wx, sd.wz] : [0, 1] };
+  letterbox(true);
+  const arm = brickItemByName('_lady of the lake');
+  if (renderer.brickOn && renderer.brick) renderer.brick.ladyOfTheLake(at, yaw, arm && arm.url, !!m.good);
+  fountainDries(m.x, m.y, T + 0.2);
+}
+// holding Excalibur high, now: how far up (0..1: up fast, held, and down again), or 0; and golden light
+// glinting off it as you hold it up (you: where your feet are)
+const RAISE_T = 3.2;
+function raiseAct(now) {
+  const r = hero3d.raise;
+  if (!r) return 0;
+  const t = (now - r.t0) / 1000;
+  if (t < 0) return 0;
+  if (t > r.T) { hero3d.raise = null; return 0; }
+  return ease(t / 0.4) * ease((r.T - t) / 0.5);
+}
+function raiseGlint(now, x, feet, z, yaw) {
+  const r = hero3d.raise;
+  if (!r || !renderer.brickOn || !renderer.brick) return;
+  const t = (now - r.t0) / 1000;
+  while (r.glint < 3 && t >= 0.45 + r.glint * 0.6) {
+    r.glint++;
+    renderer.brick.fx.sparkles(new THREE3.Vector3(x + Math.sin(yaw) * 0.3, feet + 1.75, z - Math.cos(yaw) * 0.3), 30, r.glint === 2 ? 0xffe27a : 0xffc21a, 0.3); // (its blade's tip)
+  }
+}
+// the cutscene's view, over the game's own (eased in, and back out): slowly round the fountain, low, at you
+const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+function cutsceneCamera(now) {
+  const c = cutscene;
+  if (!c) return;
+  const t = (now - c.t0) / 1000;
+  if (t > c.T) { cutscene = null; letterbox(false); return; }
+  if (!c.out && c.T - t < 0.9) { c.out = true; letterbox(false); } // (the bars going as the view comes back)
+  const w = ease(t / 0.9) * ease((c.T - t) / 0.9);
+  const ang = Math.atan2(c.side[1], c.side[0]) + 1.3 + 0.08 * t, k = c.up != null ? ease((t - c.up) / 0.8) : 0; // (k: drawn back and up a little, to the sword held high)
+  const eye = [c.focus[0] + Math.cos(ang) * (2.1 + 0.6 * k), c.focus[1] + 0.4 + 0.2 * k, c.focus[2] + Math.sin(ang) * (2.1 + 0.6 * k)];
+  const tgt = [c.focus[0] + c.side[0] * 0.5, c.focus[1] - 0.1 + 0.5 * k, c.focus[2] + c.side[1] * 0.5];
+  const d = [tgt[0] - eye[0], tgt[1] - eye[1], tgt[2] - eye[2]];
+  const vy = Math.atan2(d[0], -d[2]), vp = Math.atan2(d[1], Math.hypot(d[0], d[2]));
+  cam.eye = roundAbout(c.focus, cam.eye, eye, w);
+  cam.vyaw += Math.atan2(Math.sin(vy - cam.vyaw), Math.cos(vy - cam.vyaw)) * w;
+  cam.vpitch += (vp - cam.vpitch) * w;
+}
+// from a to b (eyes, [x, y, z]) by w, going round focus rather than straight across: by angle, distance and
+// height about it (so never through what's there: a fountain's walls)
+function roundAbout(focus, a, b, w) {
+  const pa = [Math.atan2(a[2] - focus[2], a[0] - focus[0]), Math.hypot(a[0] - focus[0], a[2] - focus[2]), a[1]];
+  const pb = [Math.atan2(b[2] - focus[2], b[0] - focus[0]), Math.hypot(b[0] - focus[0], b[2] - focus[2]), b[1]];
+  const ang = pa[0] + Math.atan2(Math.sin(pb[0] - pa[0]), Math.cos(pb[0] - pa[0])) * w, r = pa[1] + (pb[1] - pa[1]) * w, y = pa[2] + (pb[2] - pa[2]) * w;
+  return [focus[0] + Math.cos(ang) * r, y, focus[2] + Math.sin(ang) * r];
+}
+// black bars, top and bottom, sliding in for a cutscene
+function letterbox(on) {
+  let bars = document.querySelectorAll('.letterbox');
+  if (!bars.length) {
+    for (const edge of ['top', 'bottom']) {
+      const b = document.createElement('div');
+      b.className = 'letterbox';
+      Object.assign(b.style, { position: 'fixed', left: '0', right: '0', [edge]: '0', height: '0', background: '#000', zIndex: '40', pointerEvents: 'none', transition: 'height 0.8s ease' });
+      document.body.appendChild(b);
+    }
+    bars = document.querySelectorAll('.letterbox');
+    void bars[0].offsetHeight;
+  }
+  bars.forEach((b) => { b.style.height = on ? '11vh' : '0'; });
+}
+
 // a fountain dried up (seen): its water greys, it stands a moment, and it comes apart brick by brick
 // (brickworld.js fountainDry); should you be up on its rim, you jump down as it goes
-function fountainDries(x, y) {
+function fountainDries(x, y, delay = 0) {
+  // (it's floor there now, whatever's remembered of it: stood on, the game draws you there, not its floor, and
+  // the fountain remembered under you would have you hop back up onto a rim that's gone)
+  const i = y * world.w + x, c = world.cells[i];
+  world.floorMem[i] = CM.room;
+  if (c && c.bc === CM.fountain) c.bc = CM.room;
+  if (c && (c.k === 'c' || c.k === 't') && c.c === CM.fountain) c.c = CM.room;
+  world.rebuild();
+  world.dirty = true;
   const it = brickItemByName('fountain');
   if (!it || !renderer.brickOn || !renderer.brick) return;
-  renderer.brick.fountainDry(x, y, it.url, it.bricks);
+  const wait = renderer.brick.fountainDry(x, y, it.url, it.bricks, delay) || 0; // (dug into: gushing first; the Lady of the Lake first)
   setTimeout(() => {
     const p = walk.perch;
     if (p && p.x === x && p.z === y && p.phase !== 'off')
       Object.assign(p, { phase: 'off', t0: performance.now(), out: p.side, dest: [p.side.wx * 0.42, p.side.wz * 0.42], moved: true });
-  }, (DRY_GREY + DRY_SIT) * 1000);
+  }, (wait + DRY_GREY + DRY_SIT) * 1000);
 }
 
 // drinking from a fountain, or dipping something in it, now: {act, t (s in)}, or null
 function fountAct(now) {
   const f = hero3d.fount;
   if (!f) return null;
-  const t = (now - f.t0) / 1000;
+  let t = (now - f.t0) / 1000;
+  if (f.freezeUntil) t = now < f.freezeUntil ? Math.min(t, f.freezeAt) : f.freezeAt + (now - f.freezeUntil) / 1000; // (held there: the Lady of the Lake)
   if (t >= FOUNT[f.act].T) { hero3d.fount = null; return null; }
   return { act: f.act, t };
 }
@@ -1661,6 +1766,7 @@ const dirKey = (d) => DIRS[`${d[0]},${d[1]}`];
 
 function updateCamera(now) {
   updateCameraBase(now);
+  cutsceneCamera(now); // (the Lady of the Lake: the view taken a while)
   const s = fx.shakeOffset(now);
   if (s) {
     cam.eye = [cam.eye[0] + s[0], cam.eye[1] + s[1], cam.eye[2] + s[2]];
@@ -2441,6 +2547,7 @@ function frame(t) {
         : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
         : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink, hz + 0.5, doll.yaw);
       if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
+      else raiseGlint(t, hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
       renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL, body: pose.body }) : [])];
@@ -2448,7 +2555,7 @@ function frame(t) {
     renderer.brickFigures.push(...brickMonFigures(sprites, dt, t)); // (King Skelly...)
     // first person: your own brick arm, and what it holds, in the corner of the
     // view; fighting with two weapons, your left one too, in the other corner
-    const fpOn = !!pose && !!rig && game.playing && opts.camera === 0 && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
+    const fpOn = !!pose && !!rig && game.playing && opts.camera === 0 && !cutscene && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);
     const vc = $('#view'), aspect = vc.clientWidth / Math.max(1, vc.clientHeight);
     if (fpOn) {
       const arms = [];

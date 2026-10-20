@@ -21,6 +21,7 @@ const FOUNT_GLOW = new THREE.Color(0x9ff6ff); // (a magic fountain's water, lit 
 // a fountain drying up (fountainDry): s its water takes to grey, s it stands so, the stone it greys to (the
 // walls' grey), and how high in it (studs) its bricks crumble rather than blow apart (its tiers, over its rim)
 export const DRY_GREY = 1.2, DRY_SIT = 1.0;
+export const LADY_T = 4.5; // (the Lady of the Lake: s, her arm risen, the blessing, and sunk again)
 const DRY_STONE = new THREE.Color(0xa0a5a9), DRY_CRUMBLE = 2.9;
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
@@ -190,7 +191,10 @@ export class BrickWorld {
     const M = () => new THREE.Matrix4();
     const S = MODEL_SCALE;
     const plates = [], smooth = [], courses = [], bricks = [];
+    // (water a boulder's sinking into: still water, till it's under and its floor's risen there: boulderSink)
+    const held = [...(this.pondHold || [])].map((k) => k.split(',').map(Number)).filter(([x, z]) => !(data.pools || []).some((p) => p.x === x && p.z === z));
     for (const f of data.floors) {
+      if (held.some(([x, z]) => x === f.x && z === f.z)) continue;
       if (f.studs) plates.push([M().makeTranslation(f.x + 0.5, 0, f.z + 0.5).scale(new THREE.Vector3(S, S, S)), f.shade]);
       else smooth.push([M().makeTranslation(f.x, -PLATE_H, f.z).scale(new THREE.Vector3(1, PLATE_H, 1)), f.shade]); // a printed tile goes on top
     }
@@ -219,7 +223,7 @@ export class BrickWorld {
     // little off true
     const pools = [], beds = [];
     // (a square a fountain's gushing out to: still its floor, till the water lands there: gushTo)
-    const wet = (data.pools || []).filter((p) => !(this.gushing && this.gushing.has(`${p.x},${p.z}`)));
+    const wet = (data.pools || []).concat(held.map(([x, z]) => ({ x, z, shade: 1 }))).filter((p) => !(this.gushing && this.gushing.has(`${p.x},${p.z}`)));
     for (const p of data.pools || []) if (!wet.includes(p)) plates.push([M().makeTranslation(p.x + 0.5, 0, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
     for (const p of wet) beds.push([M().makeTranslation(p.x + 0.5, -0.09, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
     const LAYERS = [[0.5, 0.5, 4, 4, -0.035], [1, 1, 3, 3, -0.05], [1, 0.5, 3, 4, -0.065], [0.5, 1, 4, 3, -0.08]]; // [x, z offset, how many across, along, top]
@@ -515,6 +519,62 @@ export class BrickWorld {
     }, 150);
   }
 
+  // a boulder pushed into water (url: its model; from (fx, fz) to (tx, tz)): it rolls off its square into the
+  // water and sinks under it with a great splash; filling it (fills), a floor plate rises up through the
+  // water into place, and that's floor now. The water stays drawn till then (setTerrain: pondHold)
+  async boulderSink(url, fx, fz, tx, tz, fills) {
+    const sq = `${tx},${tz}`, hold = (this.pondHold = this.pondHold || new Set());
+    hold.add(sq);
+    if (this.data) this.setTerrain(this.data);
+    const release = () => { hold.delete(sq); if (this.data) this.setTerrain(this.data); };
+    const at = this.lying(fx, fz, url);
+    if (at) at.g.visible = false; // (gone from where it was: the map catches up)
+    let m;
+    try { m = await this.model(url); } catch { release(); return; }
+    const lay = m.clone(), box = new THREE.Box3().setFromObject(lay), c = box.getCenter(new THREE.Vector3()), h = (box.max.y - box.min.y) * MODEL_SCALE;
+    lay.position.copy(c).negate();
+    const holder = new THREE.Group();
+    holder.scale.setScalar(MODEL_SCALE);
+    holder.add(lay);
+    this.world.add(holder);
+    const dx = tx - fx, dz = tz - fz, n = Math.hypot(dx, dz) || 1, axis = new THREE.Vector3(dz / n, 0, -dx / n), q0 = new THREE.Quaternion();
+    const water = new THREE.Vector3(tx + 0.5, -0.03, tz + 0.5);
+    const ROLL = 0.45, SINK = 0.8, t0 = performance.now() / 1000;
+    let splashed = 0;
+    await new Promise((res) => {
+      const step = () => {
+        const t = performance.now() / 1000 - t0, u = Math.min(1, t / ROLL), v = Math.max(0, Math.min(1, (t - ROLL) / SINK));
+        const e = u * u * (3 - 2 * u), along = Math.min(1, e + 0.12 * v); // (rolling on a little as it goes under)
+        holder.position.set(fx + 0.5 + dx * along, STUD_H + h / 2 - (h + 0.12) * v * v, fz + 0.5 + dz * along);
+        holder.quaternion.copy(q0).premultiply(new THREE.Quaternion().setFromAxisAngle(axis, (along * n) / (h / 2)));
+        if (splashed === 0 && t >= ROLL * 0.9) { splashed = 1; this.fx.splashStuds(water, 22, 2.3); }
+        if (splashed === 1 && t >= ROLL + SINK * 0.5) { splashed = 2; this.fx.splashStuds(water, 8, 1.2); }
+        if (t >= ROLL + SINK) { this.world.remove(holder); res(); return; }
+        requestAnimationFrame(step);
+      };
+      step();
+    });
+    if (!fills) { release(); return; }
+    // (filled: its floor rising up through the water, and that's floor)
+    const plate = new THREE.Group();
+    for (const { geometry, material } of this.pieces.plate || []) plate.add(new THREE.Mesh(geometry, material));
+    plate.scale.setScalar(MODEL_SCALE);
+    this.world.add(plate);
+    const RISE = 0.5, r0 = performance.now() / 1000;
+    await new Promise((res) => {
+      const step = () => {
+        const u = Math.min(1, (performance.now() / 1000 - r0) / RISE);
+        plate.position.set(tx + 0.5, -0.16 * (1 - u * u * (3 - 2 * u)), tz + 0.5);
+        if (u >= 1) { res(); return; }
+        requestAnimationFrame(step);
+      };
+      step();
+    });
+    release();
+    this.fx.splashStuds(new THREE.Vector3(tx + 0.5, STUD_H, tz + 0.5), 6, 0.9, { ring: false });
+    setTimeout(() => this.world.remove(plate), 50); // (till the floor's own plate is drawn there: no blink)
+  }
+
   // a boulder (its model) at (x, z) broke into rocks (rockUrl): it bursts, grit and rocks flying;
   // a few of the flung ones stay, lying about the square where they fell: they're the rocks the
   // engine left there (its pile not drawn while they lie there), gone when its rocks are
@@ -724,8 +784,9 @@ export class BrickWorld {
   // the water stops; the water heaped in its pool and the flame on its top evaporate (rising, thinning away,
   // wisps of vapor coming off them: its joints "pool" and "flame"), and every other blue piece of it greys
   // to stone; it stands a moment, and it comes apart brick by brick (statueBreak: its tiers crumbling, its
-  // basin blown apart), each going once it's at rest. Taken from the floor's items (setItems leaves it be)
-  fountainDry(x, z, url, bricks) {
+  // basin blown apart), each going once it's at rest. Taken from the floor's items (setItems leaves it be).
+  // Gushing as it goes (dug into), its water all lands first. Returns s till it begins to dry
+  fountainDry(x, z, url, bricks, delay = 0) {
     const sq = `${x},${z}`;
     let key = null, g = null;
     for (const [k, gg] of this.items) {
@@ -734,9 +795,16 @@ export class BrickWorld {
       gg.userData.lay.traverse((o) => { if (o.userData && o.userData.fx === 'fountain') f = true; });
       if (f) { key = k; g = gg; break; }
     }
-    if (!g) return;
+    if (!g) return 0;
     this.items.delete(key);
     (this.drying = this.drying || new Set()).add(sq);
+    (this.held = this.held || new Map()).set(sq, g); // (still where it stood, its water still pouring: fountainTop finds it)
+    // (gushing first, should it be: dug into, it gushes, then dries up: once the last of its water has landed)
+    const wait = Math.max(delay, ((this.gushEnd && this.gushEnd.get(sq)) || 0) - performance.now() / 1000); // (or after delay s: the Lady first)
+    setTimeout(() => this.dryStart(g, x, z, url, bricks), wait * 1000);
+    return wait;
+  }
+  dryStart(g, x, z, url, bricks) {
     const lay = g.userData.lay, mats = [], evap = [], nodes = new Set();
     const goes = (o) => { for (let n = o; n && n !== lay; n = n.parent) if (n.name === 'pool' || n.name === 'flame') return n; return null; };
     lay.updateMatrixWorld(true);
@@ -777,16 +845,64 @@ export class BrickWorld {
       if (t < DRY_GREY + DRY_SIT) continue;
       this.dries.splice(this.dries.indexOf(d), 1);
       this.world.remove(d.g);
+      this.held.delete(`${d.x},${d.z}`);
       if (d.bricks) this.statueBreak(d.url, d.x, d.z, [], d.bricks, DRY_CRUMBLE).then(() => this.drying.delete(`${d.x},${d.z}`));
       else this.drying.delete(`${d.x},${d.z}`);
     }
+  }
+
+  // the Lady of the Lake (a long sword dipped: Excalibur), at the fountain the hero's on: at, where the sword is
+  // in the water (its surface); yaw, the way the hero faces (the game's yaw). Good: her arm, clad in white
+  // samite (url: its model), rises up out of the water beside the sword, her hand to it; a burst of golden
+  // light about the sword, the blessing; and down she sinks again. Else: a freezing mist rises and wraps the
+  // sword, glittering with frost. Resolves once it's over (LADY_T s, or a little less for the mist)
+  ladyOfTheLake(at, yaw, url, good) {
+    const fwd = new THREE.Vector3(Math.sin(yaw), 0, -Math.cos(yaw)), side = new THREE.Vector3(Math.cos(yaw), 0, Math.sin(yaw));
+    const blade = at.clone().addScaledVector(fwd, 0.05).setY(at.y + 0.12);
+    const later = (s, f) => setTimeout(f, s * 1000);
+    if (!good) { // (the mist: billowing up round the sword, frost glittering in it)
+      for (let k = 0; k < 6; k++) later(0.3 + k * 0.18, () => this.fx.vapor(at.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.25, 0, (Math.random() - 0.5) * 0.25)), 0xcfe8ff));
+      later(0.8, () => this.fx.sparkles(blade, 30, 0xbfe6ff, 0.3));
+      later(1.5, () => this.fx.sparkles(blade, 20, 0xbfe6ff, 0.25));
+      return new Promise((res) => later(LADY_T - 1.6, res));
+    }
+    return this.model(url).then((m) => new Promise((res) => {
+      const arm = m.clone(), holder = new THREE.Group();
+      arm.rotation.x = 0.47; // (the arm piece is bent: stood up straight, the hand right over the shoulder)
+      holder.add(arm);
+      holder.scale.setScalar(MODEL_SCALE);
+      // (facing the hero across the sword, a little to the side of it)
+      holder.rotation.y = -yaw;
+      const base = at.clone().addScaledVector(fwd, 0.16).addScaledVector(side, 0.05);
+      this.world.add(holder);
+      const RISE = [0.5, 1.7], SINK = [3.3, 4.3], t0 = performance.now() / 1000, low = at.y - 0.42, high = at.y + 0.1;
+      let blessed = false, splashed = 0;
+      const step = () => {
+        const t = performance.now() / 1000 - t0;
+        const up = t < RISE[0] ? 0 : t < RISE[1] ? (t - RISE[0]) / (RISE[1] - RISE[0]) : t < SINK[0] ? 1 : Math.max(0, 1 - (t - SINK[0]) / (SINK[1] - SINK[0]));
+        const e = up * up * (3 - 2 * up);
+        holder.position.copy(base).setY(low + (high - low) * e + 0.012 * Math.sin(t * 2.2) * (up > 0.99 ? 1 : 0));
+        holder.rotation.z = 0.08 * Math.sin(t * 1.3) * e; // (swaying a little, held there)
+        if (splashed === 0 && t > RISE[0]) { splashed = 1; this.fx.splashStuds(at.clone().addScaledVector(fwd, 0.16), 10, 1.2); }
+        if (splashed === 1 && t > SINK[0] + 0.5) { splashed = 2; this.fx.splashStuds(at.clone().addScaledVector(fwd, 0.16), 8, 1.0); }
+        if (!blessed && t > 2.1) { // (the blessing: golden light bursting about the sword)
+          blessed = true;
+          this.fx.sparkles(blade, 40, 0xffc21a, 0.22);
+          later(0.35, () => this.fx.sparkles(blade, 30, 0xffe27a, 0.3));
+          later(0.7, () => this.fx.sparkles(blade, 20, 0xffc21a, 0.35));
+        }
+        if (t >= SINK[1]) { this.world.remove(holder); res(); return; }
+        requestAnimationFrame(step);
+      };
+      step();
+    })).catch(() => {});
   }
 
   // a fountain at (fx, fz) gushing (the game's gush): a burst of its water out of its top, falling all about
   // it (and over you, up on it); and a stream arcing out to each square it floods, nearer ones first (delay:
   // s), the pool there opening as the water lands (setTerrain keeps its floor till then)
   fountainTop(fx, fz) {
-    for (const g of this.items.values()) {
+    for (const g of [...this.items.values(), ...(this.held ? this.held.values() : [])]) {
       if (g.userData.square !== `${fx},${fz}` || !g.userData.lay) continue;
       let f = false;
       g.userData.lay.traverse((o) => { if (o.userData && o.userData.fx === 'fountain') f = true; });
@@ -797,16 +913,19 @@ export class BrickWorld {
     return new THREE.Vector3(fx + 0.5, STUD_H + 1.6, fz + 0.5);
   }
   gushBurst(fx, fz) {
-    const top = this.fountainTop(fx, fz);
+    const top = this.fountainTop(fx, fz), fsq = `${fx},${fz}`;
+    (this.gushEnd = this.gushEnd || new Map()).set(fsq, Math.max(this.gushEnd.get(fsq) || 0, performance.now() / 1000 + 1.2)); // (its spray falling, before it dries)
     this.fx.splashStuds(top, 24, 2.4, { floor: STUD_H + 0.5, ring: false });
   }
   gushTo(fx, fz, x, z, delay = 0) {
     const sq = `${x},${z}`;
     (this.gushing = this.gushing || new Set()).add(sq);
     if (this.data) this.setTerrain(this.data);
+    const d = Math.hypot(x - fx, z - fz), flight = 0.5 + d * 0.07, fsq = `${fx},${fz}`;
+    (this.gushEnd = this.gushEnd || new Map()).set(fsq, Math.max((this.gushEnd.get(fsq) || 0), performance.now() / 1000 + delay + flight + 11 * 0.035 + 0.4));
     setTimeout(() => {
-      const d = Math.hypot(x - fx, z - fz), at = new THREE.Vector3(x + 0.5, -0.03, z + 0.5);
-      this.fx.stream(this.fountainTop(fx, fz), at, 12, 0.5 + d * 0.07).then(() => {
+      const at = new THREE.Vector3(x + 0.5, -0.03, z + 0.5);
+      this.fx.stream(this.fountainTop(fx, fz), at, 12, flight).then(() => {
         this.gushing.delete(sq);
         if (this.data) this.setTerrain(this.data);
         this.fx.splashStuds(at, 12, 1.8);
