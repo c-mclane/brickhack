@@ -107,7 +107,7 @@ HELD = {
     '44658': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # knife: by the handle, blade up
     '88288': {'center': (0, 6, 0), 'up': (0, -1, 0)},                       # curved dagger (an athame): by its grip, blade up
     '98338': {'center': (0, 2, 0), 'up': (0, -1, 0)},                       # kunai: by its ribbed grip, blade up
-    '95054': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # Ninjago knife: by its grip
+    '95054': {'center': (0, 4, 0), 'up': (0, -1, 0)},                       # ninja knife: by its grip
     '5685': {'center': (0, 11, 0), 'up': (0, -1, 0), 'face': (1, 0, 0)},     # Dune crysknife (ldraw-extra): by its ribbed grip, blade up, its flat out
     '95053': {'center': (0, 5, 0), 'up': (0, -1, 0)},                       # small sword, angular guard (a stiletto)
     '64567': {'center': (0, 18, 0), 'up': (0, -1, 0)},                      # lightsaber hilt (a great dagger's): by the hilt, the top up

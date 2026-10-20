@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """brick part 24084, "Minifig, Weapon Spiked Ball / Flail / Mace" (2016,
-Nexo Knights; rubber), modelled by hand for our own use: it isn't in the
+knights; rubber), modelled by hand for our own use: it isn't in the
 LDraw library (when LDraw has it, theirs is used instead: ldraw2glb.EXTRA).
 
   spikedball.py   -> ldraw-extra/parts/24084.dat
@@ -81,7 +81,7 @@ def main():
          '0 Author: BrickHack (modelled after the 2016 part, for our own use)',
          '0 !LDRAW_ORG Unofficial_Part',
          '0 BFC NOCERTIFY',
-         '0 !KEYWORDS mace, flail, morning star, Nexo Knights, BrickLink 24084',
+         '0 !KEYWORDS mace, flail, morning star, knights, BrickLink 24084',
          '']
     L += ball()
     for el, n, turn in RINGS:

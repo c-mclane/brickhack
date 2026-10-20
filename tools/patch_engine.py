@@ -649,7 +649,7 @@ edit("include/artilist.h", [
      "	PHYS(5,0),	NO_DFNS,	NO_CARY,	0, A_NEUTRAL, NON_PM, NON_PM, 2500L ),\n\n"
      "A(0, 0, 0, 0, 0, NO_ATTK, NO_DFNS, NO_CARY, 0, A_NONE, NON_PM, NON_PM, 0L )"),
 ], "WEB_HOOK_NARSIL")
-# ---- The four golden weapons of Spinjitzu (Ninjago): never found in the
+# ---- The four golden weapons of Spinjitzu (ninja): never found in the
 # dungeon (the dev command "give <name>" hands them over: winweb.c), each with
 # its element on its blows and, invoked, its power (winweb.c web_golden_power):
 # the Scythe of Quakes shakes the ground, the Nunchucks of Lightning, the
