@@ -4,8 +4,9 @@
 // wiggling side to side; when it strikes or spits (a lunge), it rears back and
 // darts forward, and settles. A bug (the spitting beetle): bobbing, twitching,
 // scuttling; it rears its front to spit. A blob (Juiblex): quivering, squashing
-// and swelling; it swells up and lurches forward to spit. A beast (a dog, a cat, a horse):
-// breathing and looking about, trotting with a bob and a rock; it draws back and springs in to bite.
+// and swelling; it swells up and lurches forward to spit. A beast (a dog, a cat; a horse, galloping):
+// breathing and looking about, trotting with a bob and a rock (a horse: a great rocking lope); it draws back
+// and springs in to bite.
 // A fungus (molds, lichens, shriekers): rooted, breathing, puffing up when it strikes. A float (a
 // gas spore): bobbing in the air, swelling. A bat: fluttering about overhead, diving in to bite.
 //
@@ -67,10 +68,15 @@ export function creatureLocal(kind, t, { moving = false, lungeT = -1e9 } = {}) {
     if (striking) { const dive = Math.sin(Math.PI * k); m = mul(m, mul(move(0, -1.6 * dive, 1.2 * dive), rotX(0.5 * dive))); }
     return m;
   }
-  if (kind === 'beast') { // (a dog, a cat, a horse: breathing at rest, now and then a look round; trotting, bobbing and
-    // rocking nose to tail; to bite or kick, it draws back on its haunches and springs in, nose down, and settles)
-    let m = moving ? mul(move(0, Math.abs(Math.sin(t * 9)) * 0.14, 0), about([0, 0.6, 0], rotX(Math.sin(t * 9) * 0.06)))
-      : mul([1, 0, 0, 0, 0, 1 + Math.sin(t * 2.6) * 0.012, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], rotY(Math.sin(t * 0.37) * 0.09 + Math.sin(t * 0.9) * 0.03));
+  if (kind === 'beast' || kind === 'horse') { // (a dog, a cat, a horse: breathing at rest, now and then a look round; trotting,
+    // bobbing and rocking nose to tail (a horse galloping: a great rocking-horse lope, nose up as it bounds, nose down as it
+    // lands, surging on with each stride); to bite or kick, it draws back on its haunches and springs in, nose down, and settles)
+    const g = t * 7.5;
+    let m = !moving ? null : kind === 'horse'
+      ? mul(move(0, Math.max(0, Math.sin(g)) * 0.55 + 0.05, Math.sin(g + 0.8) * 0.12), about([0, 1.2, 0], rotX(-Math.sin(g - 0.9) * 0.2)))
+      : mul(move(0, Math.abs(Math.sin(t * 9)) * 0.14, 0), about([0, 0.6, 0], rotX(Math.sin(t * 9) * 0.06)));
+    m = m || 
+      mul([1, 0, 0, 0, 0, 1 + Math.sin(t * 2.6) * 0.012, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], rotY(Math.sin(t * 0.37) * 0.09 + Math.sin(t * 0.9) * 0.03));
     if (striking) {
       const back = k < 0.35 ? ease(k / 0.35) : k < 0.5 ? 1 - ease((k - 0.35) / 0.15) : 0;
       const dart = k < 0.35 ? 0 : k < 0.5 ? ease((k - 0.35) / 0.15) : 1 - ease((k - 0.5) / 0.5);

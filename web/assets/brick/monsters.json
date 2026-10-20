@@ -572,7 +572,7 @@
    }
   ],
   "scale": 1.15,
-  "creature": "beast"
+  "creature": "horse"
  },
  "horse": {
   "parts": [
@@ -582,7 +582,7 @@
    }
   ],
   "scale": 1.0,
-  "creature": "beast"
+  "creature": "horse"
  },
  "warhorse": {
   "parts": [
@@ -592,7 +592,7 @@
    }
   ],
   "scale": 1.1,
-  "creature": "beast"
+  "creature": "horse"
  },
  "white unicorn": {
   "parts": [
@@ -1146,5 +1146,22 @@
  },
  "manes": {
   "fig": "manes"
+ },
+ "water moccasin": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 0
+   }
+  ],
+  "scale": 0.85,
+  "creature": "snake",
+  "center": true
+ },
+ "water demon": {
+  "fig": "water-demon"
+ },
+ "water nymph": {
+  "fig": "water-nymph"
  }
 }

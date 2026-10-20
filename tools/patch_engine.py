@@ -783,4 +783,39 @@ edit("src/fountain.c", [
      "		{ extern void FDECL(web_lady, (BOOLEAN_P)); web_lady(u.ualign.type == A_LAWFUL); } /* WEB_HOOK_LADY */\n"
      "		if (u.ualign.type != A_LAWFUL) {\n			/* Ha!  Trying to cheat her. */\n"),
 ], "WEB_HOOK_LADY")
+# BrickHack: monsters out of a fountain (fountain.c dowatersnakes: "an endless stream of snakes pours
+# forth"): each sent as it's made (winweb.c web_rise: which, and the fountain it came out of), the client
+# has it rise up out of the water, over the rim and off to where it is
+edit("src/fountain.c", [
+    ("	    if((mtmp = makemon(&mons[PM_WATER_MOCCASIN],\n			u.ux, u.uy, NO_MM_FLAGS)) && t_at(mtmp->mx, mtmp->my))\n",
+     "	    if((mtmp = makemon(&mons[PM_WATER_MOCCASIN],\n			u.ux, u.uy, NO_MM_FLAGS)) && (web_rise(mtmp), 1) /* WEB_HOOK_RISE */ && t_at(mtmp->mx, mtmp->my))\n"),
+    ("#include \"hack.h\"\nextern void FDECL(web_fountain, (int, struct obj *)); /* WEB_HOOK_FOUNTAIN */\n",
+     "#include \"hack.h\"\nextern void FDECL(web_fountain, (int, struct obj *)); /* WEB_HOOK_FOUNTAIN */\n"
+     "extern void FDECL(web_rise, (struct monst *)); /* WEB_HOOK_RISE */\n"),
+], "WEB_HOOK_RISE")
+# BrickHack: more out of a fountain (fountain.c): the water demon and the water nymph rise out of it as the
+# snakes do (web_rise); a demon granting a wish vanishes in a burst (web_wished); no nymph, and a great bubble
+# rises and pops (web_bubble); a gem found in its water leaps out of it (web_gem); and a fire ray across it
+# (zap.c) sends up steam (web_steam)
+edit("src/fountain.c", [
+    ("	if((mtmp = makemon(&mons[PM_WATER_DEMON],u.ux,u.uy, NO_MM_FLAGS))) {\n",
+     "	if((mtmp = makemon(&mons[PM_WATER_DEMON],u.ux,u.uy, NO_MM_FLAGS))) {\n"
+     "	    web_rise(mtmp); /* WEB_HOOK_FOUNTMORE */\n"),
+    ("		makewish();\n		mongone(mtmp);\n",
+     "		{ extern void FDECL(web_wished, (struct monst *)); web_wished(mtmp); }\n		makewish();\n		mongone(mtmp);\n"),
+    ("	   (mtmp = makemon(&mons[PM_WATER_NYMPH],u.ux,u.uy, NO_MM_FLAGS))) {\n",
+     "	   (mtmp = makemon(&mons[PM_WATER_NYMPH],u.ux,u.uy, NO_MM_FLAGS))) {\n"
+     "		web_rise(mtmp);\n"),
+    ("		if (!Blind)\n		   pline(\"A large bubble rises to the surface and pops.\");\n",
+     "		{ extern void NDECL(web_bubble); web_bubble(); }\n"
+     "		if (!Blind)\n		   pline(\"A large bubble rises to the surface and pops.\");\n"),
+    ("	(void) mksobj_at(rnd_class(DILITHIUM_CRYSTAL, LUCKSTONE-1),\n			 u.ux, u.uy, FALSE, FALSE);\n",
+     "	{ extern void FDECL(web_gem, (struct obj *));\n"
+     "	  web_gem(mksobj_at(rnd_class(DILITHIUM_CRYSTAL, LUCKSTONE-1),\n			 u.ux, u.uy, FALSE, FALSE)); }\n"),
+], "WEB_HOOK_FOUNTMORE")
+edit("src/zap.c", [
+    ("		    if (cansee(x,y))\n			pline(\"Steam billows from the fountain.\");\n",
+     "		    { extern void FDECL(web_steam, (int, int)); web_steam(x, y); } /* WEB_HOOK_STEAM */\n"
+     "		    if (cansee(x,y))\n			pline(\"Steam billows from the fountain.\");\n"),
+], "WEB_HOOK_STEAM")
 print("engine hooks applied:", src)

@@ -95,6 +95,7 @@ export class World {
     const out = [];
     this.brickDrops = []; // items lying on the floor as brick models (the brick dungeon): [{x, z, url}]
     const bob = (x, y) => Math.sin(now / 400 + x * 1.7 + y * 2.3) * 0.06;
+    const drawn = new Set(); // (monsters drawn: each once, the map and the monsters' list out of step or not)
     for (let y = 0; y < this.h; y++)
       for (let x = 0; x < this.w; x++) {
         const c = this.cells[y * this.w + x];
@@ -120,8 +121,10 @@ export class World {
         switch (c.k) {
           case 'm': case 'p': case 'i': case 'W': {
             if (isHero) break; // drawn below
-            const mob = motion.mobAt(x, y);
+            const mob = motion.mobAt(x, y) || motion.mobNear(x, y, (cx, cz) => { const n = this.cells[cz * this.w + cx]; return !n || !'mpiW'.includes(n.k); });
+            if (mob && drawn.has(mob.id)) break; // (drawn already, from the square it's really on)
             if (mob) {
+              drawn.add(mob.id);
               let [mx, mz] = motionPos(mob, now);
               const h = sizeHeight(mob.size);
               let lift = mob.fly ? 0.5 + bob(x, y) * 2 : 0, sh = shade;

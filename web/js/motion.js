@@ -10,6 +10,10 @@ const SIZE_HEIGHT = { 0: 0.9, 1: 1.4, 2: 2.0, 3: 2.6, 4: 3.2, 5: 3.6, 6: 3.8, 7:
 export const sizeHeight = (sz) => SIZE_HEIGHT[sz] ?? 2.0;
 
 const IDLE_TURN_MS = 220; // how long monsters take to move when the hero stands still
+// ...and how fast they walk (squares a second): about the hero's own free walk (main.js FREE_SPEED 3.2), so a
+// step takes a monster a step's time; a next one coming before it's there, it goes straight on from where it is
+// (retarget): walking steadily with you, not hopping a square and standing
+const MOB_SPEED = 2.8;
 
 function track(x, z) {
   return { fx: x, fz: z, tx: x, tz: z, t0: 0, dur: 0 };
@@ -69,7 +73,7 @@ export class Motion {
   setMobs(msg, now) {
     this.heroSize = msg.hero[2];
     this.heroPoly = !!msg.hero[3];
-    const dur = Math.max(this.heroRemaining(now), IDLE_TURN_MS);
+    const turn = Math.max(this.heroRemaining(now), IDLE_TURN_MS);
     const seen = new Set();
     for (const [id, x, y, size, fly, name, peace] of msg.m) {
       seen.add(id);
@@ -80,7 +84,7 @@ export class Motion {
       } else if (m.tx !== x || m.tz !== y) {
         const [cx, cz] = posAt(m, now);
         if (Math.hypot(x - cx, y - cz) > 3) Object.assign(m, track(x, y)); // teleported
-        else retarget(m, x, y, now, dur);
+        else retarget(m, x, y, now, Math.max(turn, (Math.hypot(x - cx, y - cz) / MOB_SPEED) * 1000)); // (at a walk: as far as it goes)
       }
       m.id = id;
       m.size = size;
@@ -94,5 +98,20 @@ export class Motion {
 
   mobAt(x, y) {
     return this.byCell.get(`${x},${y}`);
+  }
+
+  // the monster a picture on (x, y) is, when the monsters' list doesn't have one there: the map and the list
+  // come apart a moment (the map's sent on its own, before a message; the list only before you're asked for
+  // input), so it's the one going to, or come from, the square beside it whose own square has no monster on the
+  // map now (free(x, y): no monster's picture there). Drawn as itself, sliding, not a stand-in snapped there
+  mobNear(x, y, free) {
+    let best = null, bd = 9;
+    for (const m of this.mobs.values()) {
+      const d = Math.max(Math.abs(m.tx - x), Math.abs(m.tz - y));
+      if (d !== 1 || !free(m.tx, m.tz)) continue;
+      const [cx, cz] = posAt(m, performance.now()), e = Math.hypot(cx - x, cz - y);
+      if (e < bd) { bd = e; best = m; }
+    }
+    return best;
   }
 }

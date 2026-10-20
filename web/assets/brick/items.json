@@ -19393,5 +19393,15 @@
     ]
    }
   ]
+ },
+ "_bubble": {
+  "brick": "A great bubble rising up out of a fountain's water: a clear round bubble helmet",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30214",
+    "color": 43
+   }
+  ]
  }
 }

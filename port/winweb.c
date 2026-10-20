@@ -2124,6 +2124,59 @@ web_lady(boolean good)
     endmsg();
 }
 
+/* fountain.c: a monster just made out of the fountain the hero's on (water
+   moccasins pouring forth): the client has it rise up out of the water and
+   over the rim to where it is */
+void
+web_rise(struct monst *mtmp)
+{
+    if (!out || !mtmp || !cansee(mtmp->mx, mtmp->my))
+        return;
+    fprintf(out, "{\"t\":\"rise\",\"id\":%u,\"x\":%d,\"y\":%d,\"fx\":%d,\"fy\":%d", mtmp->m_id, mtmp->mx, mtmp->my, u.ux, u.uy);
+    endmsg();
+}
+
+/* fountain.c: a water demon, grateful for its release, granting a wish and
+   gone (at its square: a burst there); no water nymph, and a great bubble
+   rising and popping in the fountain the hero's on; a gem found in its water
+   (obj: lying there now); and zap.c: a fire ray across a fountain at (x, y),
+   steam billowing up out of it */
+void
+web_wished(struct monst *mtmp)
+{
+    if (!out || !mtmp || !cansee(mtmp->mx, mtmp->my))
+        return;
+    fprintf(out, "{\"t\":\"wished\",\"x\":%d,\"y\":%d", mtmp->mx, mtmp->my);
+    endmsg();
+}
+
+void
+web_bubble(void)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"bubble\",\"x\":%d,\"y\":%d", u.ux, u.uy);
+    endmsg();
+}
+
+void
+web_gem(struct obj *obj)
+{
+    if (!out || !obj)
+        return;
+    fprintf(out, "{\"t\":\"gem\",\"tile\":%d,\"x\":%d,\"y\":%d", web_obj_tile(obj, obj_to_glyph(obj)), u.ux, u.uy);
+    endmsg();
+}
+
+void
+web_steam(int x, int y)
+{
+    if (!out || !cansee(x, y))
+        return;
+    fprintf(out, "{\"t\":\"steam\",\"x\":%d,\"y\":%d", x, y);
+    endmsg();
+}
+
 /* fountain.c dryup: the fountain at (x, y) dried up (seen): the client greys
    its water and breaks it apart */
 void

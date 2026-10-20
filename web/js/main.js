@@ -14,10 +14,10 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music, Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
-import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T, FOUNT_POOL_SPOT } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN } from './perch.js';
+import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, FOUNT, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
@@ -700,6 +700,29 @@ function handle(m) {
       else renderer.brick.gushTo(m.fx, m.fy, m.x, m.y, 0.15 + 0.12 * Math.hypot(m.x - m.fx, m.y - m.fy) + 0.03 * (hero3d.gushN = (hero3d.gushN || 0) + 1));
       break;
     case 'lady': ladyOfTheLake(m); break;
+    case 'bubble': // no water nymph: a great bubble rises out of the fountain and pops
+      if (renderer.brickOn && renderer.brick) { const b = brickItemByName('_bubble'); if (b) renderer.brick.fountainBubble(m.x, m.y, b.url); }
+      break;
+    case 'gem': { // a gem spotted in the sparkling waters: it leaps out of them and lands in the pool, where it lies
+      const l = brickItemForTile(m.tile);
+      if (l && renderer.brickOn && renderer.brick)
+        renderer.brick.fountainGem(m.x, m.y, l.url, [m.x + 0.5 + FOUNT_POOL_SPOT[0], STUD_H + FOUNT_POOL_SPOT[1] + 0.05, m.y + 0.5 + FOUNT_POOL_SPOT[2]]);
+      break;
+    }
+    case 'steam': // a fire ray across a fountain: steam billows up out of it
+      if (renderer.brickOn && renderer.brick) renderer.brick.fountainSteam(m.x, m.y);
+      break;
+    case 'wished': // a water demon granting a wish, and gone: a burst where it stood
+      if (renderer.brickOn && renderer.brick) renderer.brick.demonGone(m.x, m.y);
+      break;
+    case 'rise': { // a monster out of the fountain (snakes pouring forth): one after another, up out of its water and off over the rim
+      const now = performance.now(), burst = now - (rising.last || 0) < 1500 ? rising.n + 1 : 0;
+      Object.assign(rising, { last: now, n: burst });
+      rising.set(m.id, { f: [m.fx, m.fy], t0: now + burst * 350 });
+      if (renderer.brickOn && renderer.brick)
+        setTimeout(() => renderer.brick.fx.splashStuds(new THREE3.Vector3(m.fx + 0.5, STUD_H + PERCHES.fountain.H - 0.1, m.fy + 0.5), 8, 1.4), burst * 350);
+      break;
+    }
     case 'rip': game.rip = m; break;
     case 'bell': $('#hearts').classList.add('flash'); break;
     case 'prevmsg': ui.toggleHistory(); break;
@@ -1597,23 +1620,62 @@ function statuePerch(now) {
 // alive as the hero is (breathing, looking about, walking, swinging what
 // they hold when they lunge at you), always facing you
 const spitAt = new Map(); // x,y -> when a monster there last threw or spat something (its creature lunges)
-const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, anim, lungeT0, last}
+const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, creature, slither, lift} (each monster's own state: monStateOf)
 async function loadBrickMonsters() {
   const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   const [mons, tiles, items] = await Promise.all([get('assets/brick/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/brick/items.built.json')]);
   (tiles.names || []).forEach((n, i) => {
     const m = mons[n];
     if (!m) return;
-    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, anim: null, lungeT0: null, last: null,
+    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null,
       creature: m.creature, slither: m.slither, lift: m.lift || 0 };
     brickMons.set(i, e);
-    renderer.figRender.model(m.url).then((p) => { e.prims = p; e.anim = p && p.rig ? new FigureAnimator(p.rig) : null; if (e.anim) e.anim.spawn(); })
+    renderer.figRender.model(m.url).then((p) => { e.prims = p; }) // (each one's animator its own: monStateOf)
       .catch((err) => console.warn('brick monster:', n, err));
   });
 }
 // take the brick monsters' sprites out of the list; their figures, for renderer.brickFigures
+// monsters coming up out of a fountain (rise events): id -> {f: the fountain's square, t0}; where each is
+// drawn while it comes (risePath), hidden till its turn (under the water)
+const rising = new Map();
+// a creature beside a fountain: kept out of its basin's wall, against its side (perch.js againstFountain); a
+// snake leaning back on it, its back end propped up the side: [x, z] where it's drawn, the fountain's square
+// if it's up against one
+function fountainBeside(x, z) {
+  const f = (world.brickDrops || []).find((o) => o.name === 'fountain' && Math.abs(o.x - x) < 1.6 && Math.abs(o.z - z) < 1.6);
+  return f ? [f.x, f.z] : null;
+}
+// a snake's lean back against a fountain (radians), and half its length (squares): its head on the floor, its
+// back end up against the basin's side, so its middle that far out, and that high
+const LEAN = 0.45, SNAKE_HALF = 0.55, SNAKE_OUT = SNAKE_HALF * Math.cos(LEAN), SNAKE_UP = SNAKE_HALF * Math.sin(LEAN);
+const leanOf = new Map(); // monster id -> how far it's leaning on a fountain now (eased)
+// each brick monster's own state (by its id): its figure's animator (a walk cycle of its own, out of step with
+// its kind's), where it was last drawn (moving or not), its lunges and spits
+const monState = new Map();
+function monStateOf(s, e, now) {
+  const k = s.mob ? s.mob.id : `${s.tile}@${Math.round(s.x)},${Math.round(s.z)}`;
+  let st = monState.get(k);
+  if (!st || st.e !== e) {
+    st = { e, anim: e.prims && e.prims.rig ? new FigureAnimator(e.prims.rig, { phase: Math.random() * 3 }) : null, last: null, lungeT0: null };
+    if (st.anim) st.anim.spawn();
+    monState.set(k, st);
+  }
+  st.seen = now;
+  return st;
+}
+const tiltX = (a) => { const c = Math.cos(a), s = Math.sin(a); return new Float32Array([1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]); };
+function risingAt(s, now) {
+  const r = s.mob && rising.get(s.mob.id);
+  if (!r) return null;
+  const u = (now - r.t0) / 1000 / RISE_T;
+  if (u >= 1) { rising.delete(s.mob.id); return null; }
+  if (u < 0) return 'hidden';
+  const e = brickMons.get(s.tile);
+  return risePath(r.f, [Math.round(s.x), Math.round(s.z)], u, e && e.creature === 'snake' ? SNAKE_OUT : 0.22);
+}
 function brickMonFigures(sprites, dt, now) {
   if (!brickMons.size) return [];
+  for (const [k, st] of monState) if (now - st.seen > 5000) monState.delete(k); // (gone a while: forgotten)
   const out = [];
   const [hx, hz] = motion.heroPos(now);
   for (let i = sprites.length - 1; i >= 0; i--) {
@@ -1621,30 +1683,46 @@ function brickMonFigures(sprites, dt, now) {
     if (!e || !e.prims) continue;
     if (s.mob) mobModel.set(s.mob.id, { url: e.url, lift: (s.lift || 0) + (e.lift || 0) }); // (how tall it stands: dropTop)
     sprites.splice(i, 1);
+    const st = monStateOf(s, e, now); // (this monster's own: its walk, its lunges; not all of its kind's)
+    const rp = risingAt(s, now);
+    if (rp === 'hidden') continue;
+    let sx = rp ? rp.x : s.x, sz = rp ? rp.z : s.z, slift = rp ? rp.y : s.lift || 0; // (out of a fountain: on its way)
+    let lean = rp ? rp.lean || 0 : 0, leanYaw = rp ? rp.leanYaw : null;
+    const fb = !rp && fountainBeside(sx, sz), ag = fb && againstFountain(fb, sx, sz, e.creature === 'snake' ? SNAKE_OUT : 0.22);
+    if (ag) { sx = ag.x; sz = ag.z; lean = 1; leanYaw = ag.yaw; } // (up against a fountain: out of its wall, leaning on it)
+    const lk = s.mob ? s.mob.id : s.tile, lw = (leanOf.get(lk) || 0) + (lean - (leanOf.get(lk) || 0)) * Math.min(1, dt * 6); // (each monster its own: not all of its kind)
+    leanOf.set(lk, lw);
     const f = s.mob && fx.mobFX && fx.mobFX.get(s.mob.id);
-    if (e.anim && f && f.kind === 'lunge' && f.t0 !== e.lungeT0) { e.lungeT0 = f.t0; e.anim.attack(); }
-    const moving = !!e.last && Math.hypot(s.x - e.last[0], s.z - e.last[1]) > 0.002 && !(f && f.kind === 'lunge');
-    e.last = [s.x, s.z];
-    const yaw = Math.atan2(hx - s.x, -(hz - s.z)); // (the game's yaw: 0 looks north, -Z)
+    if (st.anim && f && f.kind === 'lunge' && f.t0 !== st.lungeT0) { st.lungeT0 = f.t0; st.anim.attack(); }
+    const step = st.last ? [sx - st.last[0], sz - st.last[1]] : [0, 0];
+    const moving = !!rp || (Math.hypot(step[0], step[1]) > 1.2 * Math.max(dt, 1 / 120) && !(f && f.kind === 'lunge')); // (going somewhere: faster than a flinch or a dodge)
+    st.last = [sx, sz];
+    // (facing: walking, the way it goes; standing, you; turning between, not snapping)
+    const want = moving && !rp ? Math.atan2(step[0], -step[1]) : Math.atan2(hx - sx, -(hz - sz));
+    st.yaw = st.yaw == null ? want : st.yaw + Math.atan2(Math.sin(want - st.yaw), Math.cos(want - st.yaw)) * Math.min(1, dt * 9);
+    let yaw = rp ? rp.yaw : st.yaw; // (the game's yaw: 0 looks north, -Z; out of a fountain, the way it goes)
+    if (leanYaw != null && e.creature === 'snake') yaw = rp ? yaw + Math.atan2(Math.sin(leanYaw - yaw), Math.cos(leanYaw - yaw)) * lean : leanYaw;
     if (e.creature) { // (a creature: no joints, the whole of it moving: creature.js)
       const spat = spitAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
-      if (spat && spat > (e.spatT0 || 0)) { e.spatT0 = spat; e.lungeAt = now / 1000; }
-      if (f && f.kind === 'lunge' && f.t0 !== e.lungeT0) { e.lungeT0 = f.t0; e.lungeAt = now / 1000; }
-      const local = creatureLocal(e.creature, now / 1000, { moving, lungeT: e.lungeAt ?? -1e9 });
-      out.push({ prims: e.prims, url: e.url, matrix: mul4(partMatrix(s.x + 0.5, (s.lift || 0) + STUD_H, s.z + 0.5, Math.PI - yaw), local), shade: s.shade, pose: null, hold: {} });
+      if (spat && spat > (st.spatT0 || 0)) { st.spatT0 = spat; st.lungeAt = now / 1000; }
+      if (f && f.kind === 'lunge' && f.t0 !== st.lungeT0) { st.lungeT0 = f.t0; st.lungeAt = now / 1000; }
+      const local = creatureLocal(e.creature, now / 1000, { moving, lungeT: st.lungeAt ?? -1e9 });
+      const L = e.creature === 'snake' ? lw : 0; // (a snake against a fountain: its back end up its side)
+      const base = partMatrix(sx + 0.5, slift + STUD_H + SNAKE_UP * L, sz + 0.5, Math.PI - yaw);
+      out.push({ prims: e.prims, url: e.url, matrix: mul4(L > 0.01 ? mul4(base, tiltX(LEAN * L)) : base, local), shade: s.shade, pose: null, hold: {} });
       continue;
     }
     // (a naga: spitting, it leans in, arms out, and its coils lunge; moving, it slithers)
     const spat = spitAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
-    if (spat && spat > (e.spatT0 || 0)) { e.spatT0 = spat; e.spitAt = now / 1000; }
-    const spitting = e.spitAt != null && now / 1000 - e.spitAt < LUNGE_TIME;
-    const pose = e.anim ? e.anim.update(dt, { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0 }) : null;
+    if (spat && spat > (st.spatT0 || 0)) { st.spatT0 = spat; st.spitAt = now / 1000; }
+    const spitting = st.spitAt != null && now / 1000 - st.spitAt < LUNGE_TIME;
+    const pose = st.anim ? st.anim.update(dt, { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0 }) : null;
     if (e.slither) {
-      const m = mul4(figureMatrix(s.x + 0.5, (s.lift || 0) + e.lift, s.z + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: e.spitAt ?? -1e9 }));
+      const m = mul4(figureMatrix(sx + 0.5, slift + e.lift, sz + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: st.spitAt ?? -1e9 }));
       out.push({ prims: e.prims, url: e.url, matrix: m, shade: s.shade, pose, hold: { R: e.hold } });
       continue;
     }
-    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(s.x + 0.5, s.lift || 0, s.z + 0.5, yaw), shade: s.shade, pose, hold: { R: e.hold } });
+    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(sx + 0.5, slift, sz + 0.5, yaw), shade: s.shade, pose, hold: { R: e.hold } });
   }
   return out;
 }

@@ -1,0 +1,25 @@
+{
+ "label": "water demon",
+ "name": "water demon",
+ "torso": "973",
+ "torsoColor": 321,
+ "armColor": 321,
+ "handColor": 321,
+ "head": "3626bpc15",
+ "headColor": 321,
+ "hat": "24636",
+ "hatColor": 272,
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "neck": [
+  {
+   "part": "10183",
+   "color": 33
+  }
+ ],
+ "right": {
+  "part": "92290",
+  "color": 297
+ }
+}

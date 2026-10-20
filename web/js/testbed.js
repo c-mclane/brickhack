@@ -29,8 +29,8 @@ import { FigureAnimator, FOUNT } from './minifig-anim.js';
 import { Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, FALL_T, CRAWL_T } from './swim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
-import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN } from './perch.js';
-import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
+import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, risePath, RISE_T, againstFountain } from './perch.js';
+import { DRY_GREY, DRY_SIT, LADY_T, FOUNT_POOL_SPOT } from './brickworld.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul } from './minifig-anim.js';
 
@@ -273,6 +273,74 @@ export async function runTestbed(data) {
         await wait(5.5);
         say('');
       }
+      // more out of a fountain (?part=fountain): a water demon rising out of it, granting a wish and gone in a burst;
+      // a water nymph rising out of it; no nymph, a great bubble rising and popping; a gem leaping out of its water
+      // into its pool; and steam billowing up out of it (a fire ray across it)
+      if (doing('fountain') && st && st.item === 'fountain' && mons['water demon']) {
+        room();
+        lay([st]);
+        hero.hold = { R: null, L: null };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        const [fx, fz] = st.at;
+        const rise = async (name, at, msg) => { // (a minifig out of the fountain: rising, over the rim, onto its square)
+          say(msg);
+          const c = { monster: name, at, ...mons[name], lungeAt: -1e9, rise: { f: [fx, fz], t0: clock } };
+          brick.model(c.url).then((m) => { let rig = null; m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; }); c.anim = new FigureAnimator(rig, { phase: 1 }); });
+          brick.fx.splashStuds(new THREE.Vector3(fx + 0.5, STUD_H + 0.5, fz + 0.5), 14, 1.8);
+          cobras.push(c);
+          return c;
+        };
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        const demon = await rise('water demon', [fx + 2, fz], 'You unleash a water demon!');
+        await wait(RISE_T + 1.2);
+        say('Grateful for his release, he grants you a wish!');
+        await wait(1);
+        brick.demonGone(...demon.at);
+        cobras.splice(cobras.indexOf(demon), 1);
+        await wait(2);
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        const nymph = await rise('water nymph', [fx, fz + 2], 'You attract a water nymph!');
+        await wait(RISE_T + 2);
+        cobras.splice(cobras.indexOf(nymph), 1);
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        say('A large bubble rises to the surface and pops.');
+        await brick.fountainBubble(fx, fz, url('_bubble'));
+        await wait(1);
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('dagger') };
+        await wait(0.6);
+        say('You spot a gem in the sparkling waters!');
+        const gem = brick.fountainGem(fx, fz, url('emerald'), [fx + 0.5 + FOUNT_POOL_SPOT[0], STUD_H + FOUNT_POOL_SPOT[1] + 0.05, fz + 0.5 + FOUNT_POOL_SPOT[2]]);
+        lay([st, { item: 'emerald', at: [fx, fz] }]); // (the map: it lies there now, in the pool)
+        await gem;
+        await wait(2);
+        say('Steam billows from the fountain.');
+        brick.fountainSteam(fx, fz);
+        await wait(3.5);
+        say('');
+      }
+      // water moccasins (?part=snakes): up on the rim, a drink, and an endless stream of black snakes pours forth,
+      // one after another up out of the water, over the rim and off onto the squares round it
+      if (doing('snakes') && st && st.item === 'fountain' && mons['water moccasin']) {
+        room();
+        hero.hold = { R: null, L: null };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        say('drinking from the fountain...');
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        say('An endless stream of snakes pours forth!');
+        const [fx, fz] = st.at, spots = [[fx + 1, fz - 1], [fx + 1, fz + 1], [fx, fz - 1], [fx + 1, fz], [fx, fz + 1]];
+        const snakes = spots.map((at, i) => ({ monster: 'water moccasin', at, ...mons['water moccasin'], kind: 'snake', lungeAt: -1e9, rise: { f: [fx, fz], t0: clock + i * 0.35 } }));
+        snakes.forEach((sn, i) => setTimeout(() => brick.fx.splashStuds(new THREE.Vector3(fx + 0.5, STUD_H + PERCHES.fountain.H - 0.1, fz + 0.5), 8, 1.4), i * 350));
+        cobras.push(...snakes);
+        await wait(snakes.length * 0.35 + RISE_T + 2.5);
+        for (const sn of snakes) cobras.splice(cobras.indexOf(sn), 1);
+        say('');
+      }
       // the Lady of the Lake (?part=lady): up on the rim, a long sword dipped, and held there in the water: her arm
       // rises out of it to the sword, a burst of golden light, and she sinks again; and the fountain goes as a
       // dried-up one does, you jumping down off it. The view a cutscene's, letterboxed
@@ -485,12 +553,21 @@ export async function runTestbed(data) {
     const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
     const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? hero.fount.url : null, L: null } : raise > 0 || hero.exc ? { R: url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     for (const c of cobras) {
-      const yaw = Math.atan2(hero.pos[0] - c.at[0], -(hero.pos[1] - c.at[1]));
-      if (c.kind) figs.push({ url: c.url, matrix: mul(partMatrix(c.at[0] + 0.5, STUD_H, c.at[1] + 0.5, Math.PI - yaw), creatureLocal(c.kind, clock, { lungeT: c.lungeAt })), pose: null, hold: {} });
+      let rp = null; // (out of a fountain: up out of its water, over the rim, off to its square: perch.js risePath)
+      const half = 0.55, out = c.kind === 'snake' ? half * Math.cos(0.45) : 0.22, up = half * Math.sin(0.45); // (a snake: half its length; as main.js SNAKE_OUT, SNAKE_UP)
+      if (c.rise) { const u = (clock - c.rise.t0) / RISE_T; if (u < 0) continue; if (u < 1) rp = risePath(c.rise.f, c.at, u, out); }
+      let cx = rp ? rp.x : c.at[0], cz = rp ? rp.z : c.at[1], lean = rp ? rp.lean || 0 : 0, leanYaw = rp ? rp.leanYaw : null;
+      const fnt = !rp && drops.find((o) => o.name === 'fountain' && Math.abs(o.x - cx) < 1.6 && Math.abs(o.z - cz) < 1.6), ag = fnt && againstFountain([fnt.x, fnt.z], cx, cz, out);
+      if (ag) { cx = ag.x; cz = ag.z; lean = 1; leanYaw = ag.yaw; } // (up against a fountain: out of its wall, a snake leaning back on it: as main.js)
+      let yaw = rp ? rp.yaw : Math.atan2(hero.pos[0] - cx, -(hero.pos[1] - cz));
+      if (leanYaw != null && c.kind === 'snake') yaw = rp ? yaw + Math.atan2(Math.sin(leanYaw - yaw), Math.cos(leanYaw - yaw)) * lean : leanYaw;
+      const L = c.kind === 'snake' ? lean : 0, ca = Math.cos(0.45 * L), sa = Math.sin(0.45 * L);
+      const base = partMatrix(cx + 0.5, STUD_H + (rp ? rp.y : 0) + up * L, cz + 0.5, Math.PI - yaw);
+      if (c.kind) figs.push({ url: c.url, matrix: mul(L > 0.01 ? mul(base, new Float32Array([1, 0, 0, 0, 0, ca, sa, 0, 0, -sa, ca, 0, 0, 0, 0, 1])) : base, creatureLocal(c.kind, clock, { lungeT: c.lungeAt, moving: !!rp })), pose: null, hold: {} });
       else { // (a naga: leaning in to spit, on coils that weave and lunge)
         const spitting = clock - c.lungeAt < LUNGE_TIME;
-        const pose = c.anim ? c.anim.update(dt, { lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0 }) : null;
-        const fm = figureMatrix(c.at[0] + 0.5, c.lift || 0, c.at[1] + 0.5, yaw);
+        const pose = c.anim ? c.anim.update(dt, { moving: !!rp, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0 }) : null;
+        const fm = figureMatrix(cx + 0.5, (c.lift || 0) + (rp ? rp.y : 0), cz + 0.5, yaw); // (out of a fountain: on its way)
         figs.push({ url: c.url, matrix: c.slither ? mul(fm, slitherLocal(clock, { lungeT: c.lungeAt })) : fm, pose, hold: {} });
       }
     }

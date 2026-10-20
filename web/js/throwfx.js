@@ -457,8 +457,8 @@ export class ThrowFX {
 
   // a wisp of vapor rising out of a fountain (its magic gone out of it, as it's found): soft white puffs
   // drifting up from p, swelling and thinning away
-  vapor(p, color = 0xf2fbff) {
-    const n = 14, mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.045, 1),
+  vapor(p, color = 0xf2fbff, size = 1) { // (size: how big its puffs: steam's, billowing)
+    const n = 14, mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.045 * size, 1),
       new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.45, depthWrite: false }), n), parts = [];
     mesh.frustumCulled = false;
     for (let i = 0; i < n; i++)

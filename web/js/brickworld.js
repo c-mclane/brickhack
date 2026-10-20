@@ -23,6 +23,8 @@ const FOUNT_GLOW = new THREE.Color(0x9ff6ff); // (a magic fountain's water, lit 
 export const DRY_GREY = 1.2, DRY_SIT = 1.0;
 export const LADY_T = 4.5; // (the Lady of the Lake: s, her arm risen, the blessing, and sunk again)
 const DRY_STONE = new THREE.Color(0xa0a5a9), DRY_CRUMBLE = 2.9;
+// where things lie in a fountain's pool, off its square's middle (squares): on its water, between column and rim
+export const FOUNT_POOL_SPOT = [0.3, 0.47, -0.3]; // (clear of its vine and its lily pad)
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
@@ -410,7 +412,7 @@ export class BrickWorld {
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
         g.scale.setScalar(MODEL_SCALE);
-        g.userData = { square: `${it.x},${it.z}`, level, thick: 0, colliders: it.colliders || null };
+        g.userData = { square: `${it.x},${it.z}`, level, thick: 0, colliders: it.colliders || null, name: it.name };
         this.world.add(g);
         if (this.fx.isIncoming(it.x, it.z, it.url)) g.visible = false; // (still in the air: it lands, then shows: throwfx.js)
         if (this.keptRocks.has(`${it.x},${it.z},${it.url}`)) g.visible = false; // (a broken boulder's rocks: the flung ones lying there are its pile)
@@ -898,6 +900,80 @@ export class BrickWorld {
     })).catch(() => {});
   }
 
+  // the water in a fountain at (fx, fz): its surface, over the middle of its basin (squares)
+  fountainWater(fx, fz) { return new THREE.Vector3(fx + 0.5, STUD_H + 0.5, fz + 0.5); }
+  // no water nymph: a great bubble (url: its model) swelling up out of the fountain's water, rising, and popping
+  // into a burst of its water
+  fountainBubble(fx, fz, url) {
+    const w = this.fountainWater(fx, fz).add(new THREE.Vector3(-0.1, 0, 0.45)); // (in the basin, before its column)
+    return this.model(url).then((m) => new Promise((res) => {
+      const b = m.clone(), box = new THREE.Box3().setFromObject(b), c = box.getCenter(new THREE.Vector3());
+      b.position.copy(c).negate();
+      const holder = new THREE.Group();
+      holder.add(b);
+      this.world.add(holder);
+      const T = 1.4, t0 = performance.now() / 1000;
+      const step = () => {
+        const u = (performance.now() / 1000 - t0) / T;
+        if (u >= 1) { // (pop)
+          this.world.remove(holder);
+          this.fx.splashStuds(holder.position.clone(), 18, 1.8, { floor: w.y, ring: false });
+          this.fx.splashStuds(w, 6, 1.0);
+          res(); return;
+        }
+        const k = u * u * (3 - 2 * u), wob = 1 + 0.05 * Math.sin(u * 40) * u; // (swelling, wobbling as it goes)
+        const sc = MODEL_SCALE * (0.6 + 2.2 * k); // (swelling to a great bubble, twice a helmet's size)
+        holder.scale.set(sc * wob, sc / wob, sc * wob);
+        holder.position.copy(w).setY(w.y - 0.05 + 0.45 * k);
+        requestAnimationFrame(step);
+      };
+      step();
+    })).catch(() => {});
+  }
+  // a gem found in a fountain's water (url: its model): it leaps up out of the sparkling water, glittering and
+  // turning, and drops to where it lies (to: [x, y, z]: where; the real one shows as it lands: fx incoming)
+  fountainGem(fx, fz, url, to) {
+    const k = `${fx},${fz},${url}`, t = this.fx;
+    t.incoming.set(k, (t.incoming.get(k) || 0) + 1);
+    this.redrawItems(k);
+    const w = this.fountainWater(fx, fz).add(new THREE.Vector3(-0.2, 0, 0.25));
+    this.fx.sparkles(w, 26, 0xbfefff, 0.35);
+    return this.model(url).then((m) => new Promise((res) => {
+      const g = m.clone(), holder = new THREE.Group(), box = new THREE.Box3().setFromObject(g);
+      g.position.copy(box.getCenter(new THREE.Vector3())).negate();
+      holder.add(g); holder.scale.setScalar(MODEL_SCALE * 1.4);
+      this.world.add(holder);
+      const end = new THREE.Vector3(...to), T = 1.3, t0 = performance.now() / 1000;
+      this.fx.splashStuds(w, 8, 1.4);
+      const step = () => {
+        const u = Math.min(1, (performance.now() / 1000 - t0) / T);
+        holder.position.lerpVectors(w, end, u).y += 0.9 * Math.sin(Math.PI * u) + (1 - u) * 0.0;
+        holder.rotation.set(u * 9, u * 13, 0);
+        if (u > 0.3 && !holder.userData.glint) { holder.userData.glint = 1; this.fx.sparkles(holder.position.clone(), 20, 0xfff4c2, 0.15); }
+        if (u >= 1) { this.world.remove(holder); t.land(k); res(); return; }
+        requestAnimationFrame(step);
+      };
+      step();
+    })).catch(() => t.land(k));
+  }
+  // a fire ray across a fountain at (x, z): steam billowing up out of its water, all over its basin
+  fountainSteam(x, z) {
+    const w = this.fountainWater(x, z);
+    for (let i = 0; i < 18; i++) // (great clouds of it, grey-white, rolling up off the water and over the rim)
+      setTimeout(() => {
+        const a = Math.random() * Math.PI * 2, r = 0.15 + Math.random() * 0.6;
+        this.fx.vapor(w.clone().add(new THREE.Vector3(Math.cos(a) * r, 0.05 + Math.random() * 0.2, Math.sin(a) * r)), i % 3 ? 0xe9edf0 : 0xcfd5da, 2.4);
+      }, i * 90);
+  }
+  // a water demon, grateful for its release, granting a wish and gone, at (x, z): a burst of mist, water and gold
+  // where it stood
+  demonGone(x, z) {
+    const p = new THREE.Vector3(x + 0.5, STUD_H + 0.5, z + 0.5);
+    for (let i = 0; i < 4; i++) this.fx.vapor(p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.3, -0.3 + i * 0.12, (Math.random() - 0.5) * 0.3)), 0xd8f2ff);
+    this.fx.sparkles(p, 40, 0xffc21a, 0.4);
+    this.fx.splashStuds(p.clone().setY(STUD_H + 0.3), 16, 2.0, { floor: STUD_H, ring: false });
+  }
+
   // a fountain at (fx, fz) gushing (the game's gush): a burst of its water out of its top, falling all about
   // it (and over you, up on it); and a stream arcing out to each square it floods, nearer ones first (delay:
   // s), the pool there opening as the water lands (setTerrain keeps its floor till then)
@@ -936,9 +1012,12 @@ export class BrickWorld {
   restack(square) {
     const pile = [...this.items.values()].filter((g) => g.userData.square === square && !g.userData.posed).sort((a, b) => a.userData.level - b.userData.level);
     let y = STUD_H;
+    // (things on a fountain's square lie in its pool, on its water between its column and its rim, not on top of it)
+    const fount = pile.length && pile[0].userData.name === 'fountain', [sx, sz] = square.split(',').map(Number);
     for (const g of pile) {
       g.position.y = y;
-      y += g.userData.thick * 0.85; // (they settle into each other a little)
+      if (fount && g !== pile[0]) { g.position.x = sx + 0.5 + FOUNT_POOL_SPOT[0]; g.position.z = sz + 0.5 + FOUNT_POOL_SPOT[2]; }
+      y = fount && g === pile[0] ? STUD_H + FOUNT_POOL_SPOT[1] : y + g.userData.thick * 0.85; // (they settle into each other a little)
     }
   }
 

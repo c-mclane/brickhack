@@ -1,0 +1,24 @@
+{
+ "label": "water nymph",
+ "name": "water nymph",
+ "torso": "973",
+ "torsoColor": 322,
+ "armColor": 322,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "40251",
+  "color": 378
+ },
+ "dress": {
+  "part": "3678b",
+  "color": 43
+ },
+ "neck": [
+  {
+   "part": "10183",
+   "color": 43
+  }
+ ]
+}

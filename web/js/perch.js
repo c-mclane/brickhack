@@ -142,3 +142,39 @@ export function cameFrom(track, hero) {
 // in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
 export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]] };
 export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;
+
+// ---- out of a fountain (a monster made out of it: water moccasins pouring forth): up out of its water on the
+// side it's going, over the rim, and down off it onto its own square. f: the fountain's square, to: the
+// monster's, u: 0..1 through it. Where it is (squares, as a square's corner: drawn at + 0.5), how high its
+// foot is (y, over the floor's studs), and which way it goes (the game's yaw)
+export const RISE_T = 1.7; // s
+export function risePath(f, to, u, r = 0.22) { // (r: how far it lies out from the basin's side, its middle: a snake's, half its length)
+  const rest = againstFountain(f, to[0], to[1], r); // (where it'll lie: against the basin's side, if its square's up against it)
+  if (rest) to = [rest.x, rest.z];
+  const dx = to[0] - f[0], dz = to[1] - f[1], n = Math.hypot(dx, dz) || 1, ux = dx / n, uz = dz / n;
+  const pr = PERCHES.fountain, rim = pr.H, water = pr.H - 0.12;
+  const at = (r) => [f[0] + ux * r, f[1] + uz * r], yaw = Math.atan2(ux, -uz);
+  if (u < 0.35) { // (up out of the water, in the basin)
+    const k = smooth(u / 0.35), [x, z] = at(0.45);
+    return { x, z, y: water - 0.25 + 0.3 * k, yaw };
+  }
+  if (u < 0.6) { // (along to the rim and over it)
+    const k = smooth((u - 0.35) / 0.25), [x, z] = at(0.45 + (pr.R + 0.1 - 0.45) * k);
+    return { x, z, y: water + 0.05 + (rim - water - 0.05) * k, yaw };
+  }
+  const k = (u - 0.6) / 0.4, [x0, z0] = at(pr.R + 0.1); // (and down off it, to its own square)
+  const e = smooth(k);
+  return { x: x0 + (to[0] - x0) * e, z: z0 + (to[1] - z0) * e, y: rim * (1 - k) * (1 - k) + 0.12 * Math.sin(Math.PI * k), yaw,
+    lean: rest ? smooth(Math.max(0, (k - 0.6) / 0.4)) : 0, leanYaw: rest ? rest.yaw : yaw }; // (turning to lean on it, as it lands)
+}
+
+// ---- beside a fountain: a creature on a square up against its basin (wider than its square) kept out of its
+// wall: pushed out to rest against its side (r: how far it reaches from its middle), facing out into the room,
+// leaning back against it (its back end propped up the basin's side). f: the fountain's square; [x, z]: where
+// it'd be (squares, a square's corner). {x, z, yaw (the game's: facing away from the fountain)}, or null if it's
+// clear of it
+export function againstFountain(f, x, z, r = 0.22) {
+  const dx = x - f[0], dz = z - f[1], d = Math.hypot(dx, dz), out = PERCHES.fountain.OUT + r;
+  if (d >= out || d < 1e-3) return null;
+  return { x: f[0] + (dx / d) * out, z: f[1] + (dz / d) * out, yaw: Math.atan2(dx, -dz) };
+}
