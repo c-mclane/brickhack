@@ -2179,7 +2179,9 @@ web_steam(int x, int y)
 
 /* fountain.c: something odd at the fountain the hero's on: "bath" (the urge
    to take one, dipping), "foul" (foul water drunk: retching into it),
-   "poison" (contaminated water drunk) */
+   "poison" (contaminated water drunk), "curse" (this water's no good: things
+   cursed), "breath" (bad breath), "shiver" (a strange tingling, a sudden
+   chill), "coins" (coins seen glistening far below: gold in it now) */
 void
 web_fountfx(const char *act)
 {

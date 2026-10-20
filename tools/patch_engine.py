@@ -850,4 +850,19 @@ edit("src/fountain.c", [
     ("\t\t\tpline_The(\"water is contaminated!\");\n",
      "\t\t\t" + B % "poison" + "pline_The(\"water is contaminated!\");\n"),
 ], "WEB_HOOK_FOUNTFX")
+# ...and more of them: "This water's no good!" (a dark puff, your things cursed); bad breath (a faint wisp off
+# you, monsters fleeing); a strange tingling, a sudden chill (dipping: a shiver); and coins seen glistening
+# far below (dipping: gold strewn in its basin, glinting)
+edit("src/fountain.c", [
+    ("\t\t\tpline(\"This water's no good!\");\n",
+     "\t\t\t" + B % "curse" + "pline(\"This water's no good!\"); /* WEB_HOOK_FOUNTFX2 */\n"),
+    ("\t\t\tpline(\"This water gives you bad breath!\");\n",
+     "\t\t\t" + B % "breath" + "pline(\"This water gives you bad breath!\");\n"),
+] + [("\t\t\tpline(\"A strange tingling runs up your %s.\",\n",
+      "\t\t\t" + B % "shiver" + "pline(\"A strange tingling runs up your %s.\",\n")] * 2
+  + [("\t\t\tYou_feel(\"a sudden chill.\");\n",
+      "\t\t\t" + B % "shiver" + "You_feel(\"a sudden chill.\");\n")] * 2
+  + [("\t\t    if (!Blind)\n\t\tpline(\"Far below you, you see coins glistening in the water.\");\n",
+      "\t\t    " + B % "coins" + "if (!Blind)\n\t\tpline(\"Far below you, you see coins glistening in the water.\");\n")] * 2,
+  "WEB_HOOK_FOUNTFX2")
 print("engine hooks applied:", src)

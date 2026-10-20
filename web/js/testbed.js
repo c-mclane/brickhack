@@ -32,7 +32,7 @@ import { figureMatrix, partMatrix, STUD_H } from './brick.js';
 import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, risePath, RISE_T, againstFountain } from './perch.js';
 import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { mul } from './minifig-anim.js';
+import { mul, mouthPoint } from './minifig-anim.js';
 
 const STEP_TIME = 0.32; // s a square, walking
 
@@ -47,6 +47,7 @@ export async function runTestbed(data) {
   document.body.prepend(canvas);
   const gl = canvas.getContext('webgl2', { antialias: true });
   const brick = new BrickWorld(canvas, gl);
+  brick.coinUrl = url('_coin'); // (gold in a fountain: coins strewn in its basin)
   const cam = new THREE.PerspectiveCamera(45, 1, 0.05, 200);
   const ctl = new OrbitControls(cam, canvas);
   const W = level.w, H = level.h;
@@ -418,6 +419,56 @@ export async function runTestbed(data) {
         await wait(FOUNT.bath.T - 2.4 + 1.5);
         say('');
       }
+      // and more (?part=more): this water's no good, a murky puff about you; bad breath, a faint wisp or two; a
+      // strange tingling, a shiver; and coins seen glistening far below, gold strewn in its basin
+      if (doing('more') && st && st.item === 'fountain') {
+        room();
+        lay([st]);
+        hero.hold = { R: url('dagger') };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        const drink = async (msg) => { say('drinking from the fountain...'); hero.fount = { act: 'drink', t0: clock, fired: 0 }; await wait(FOUNT.drink.T); say(msg); };
+        const dip = async (msg) => { say('dipping a dagger into the fountain...'); hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('dagger') }; await wait(FOUNT.dip.T); say(msg); };
+        await drink("This water's no good!");
+        hero.puff = true;
+        await wait(3);
+        await drink('This water gives you bad breath!');
+        hero.breath = { last: -1 }; // (as main.js: a wisp every second or so, a while: here, the rest of the demo)
+        await dip('A strange tingling runs up your arm.');
+        hero.fount = { act: 'shiver', t0: clock, fired: 0, frostT: 0 };
+        await wait(FOUNT.shiver.T + 1);
+        say('dipping a dagger into the fountain...');
+        hero.fount = { act: 'dip', t0: clock, fired: 0, url: url('dagger') };
+        await wait(FOUNT.dip.T - 0.9);
+        lay([st, { item: 'gold piece', at: st.at }]);
+        brick.fountainCoinsGlint(st.at[0], st.at[1]);
+        await wait(0.9);
+        say('Far below you, you see coins glistening in the water.');
+        await wait(4);
+        say('');
+        hero.breath = null;
+      }
+      // just bad breath (?part=breath): a drink, and then the faint green wisp off you, on and on
+      if (doing('breath') && st && st.item === 'fountain') {
+        room();
+        lay([st]);
+        hero.hold = { R: null };
+        await walk(Array(st.at[0] - hero.sq.x).fill([1, 0]));
+        await wait(1);
+        say('drinking from the fountain...');
+        hero.fount = { act: 'drink', t0: clock, fired: 0 };
+        await wait(FOUNT.drink.T);
+        say('This water gives you bad breath!');
+        hero.breath = { last: -1 };
+        await wait(3);
+        say('...and it stays with you as you go');
+        // (down off the rim, round the room past the pools, and back: the wisp off your mouth all the way)
+        await walk([[-1, 0], [0, -1], [0, -1], [1, 0], [0, 1], [1, 0], [0, 1], [1, 0], [1, 0], [0, 1], [0, 1],
+          [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [0, -1], [0, -1]]);
+        await wait(2);
+        hero.breath = null;
+        say('');
+      }
       // more out of a fountain (?part=fountain): a water demon rising out of it, granting a wish and gone in a burst;
       // a water nymph rising out of it; no nymph, a great bubble rising and popping; a gem leaping out of its water
       // into its pool; and steam billowing up out of it (a fire ray across it)
@@ -686,12 +737,22 @@ export async function runTestbed(data) {
       brick.fx.sparkles(sp, 10, 0xff7a1a, 0.3);
     }
     hero.sink = (hero.sink || 0) + ((wet ? 0.4 : 0) - (hero.sink || 0)) * Math.min(1, dt * 6);
+    { // (this water's no good, bad breath, a shiver: as main.js heroWisps)
+      const wx = hero.pos[0] + 0.5 + (pp ? pp.dx : 0), wy = pp ? pp.lift : -hero.sink, wz = hero.pos[1] + 0.5 + (pp ? pp.dz : 0), yw = pp && pp.k > 0.5 ? pp.yaw : hero.yaw;
+      if (hero.puff) { brick.fx.cursePuff(new THREE.Vector3(wx, wy + 0.5, wz)); hero.puff = null; }
+      const b = hero.breath;
+      if (b) {
+        if (clock - b.last > 0.95 && hero.mouth) { b.last = clock; brick.fx.breath(new THREE.Vector3(...hero.mouth), yw); } // (at your mouth, as drawn: mouthPoint)
+      }
+      if (fo && fo.act === 'shiver' && fo.t > 0.25 && fo.t < 1.6 && clock - (hero.fount.frostT || 0) > 0.16) { hero.fount.frostT = clock; brick.fx.frost(new THREE.Vector3(wx, wy + 0.5, wz)); }
+    }
     if (hero.haze && clock - hero.haze.t0 > 4) hero.haze = null; // (poisoned: a purple haze about you a while, as main.js heroHaze)
     if (hero.haze && clock - hero.haze.last > 0.08) {
       hero.haze.last = clock;
       brick.fx.haze(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0)), 1.1, clock - hero.haze.t0 > 2.8 ? 6 : 12);
     }
     const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
+    hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
     const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? (hero.fount.grab && fo.t > FOUNT.dip.cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     for (const c of cobras) {

@@ -142,7 +142,7 @@ export function cameFrom(track, hero) {
 // in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
 // (and a 4th: what's thrown up into it, a tint for its studs)
 export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]],
-  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [] };
+  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [] };
 export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;
 
 // the urge to take a bath (minifig-anim.js FOUNT.bath): off the rim on `sd`'s side, a dive in head first to

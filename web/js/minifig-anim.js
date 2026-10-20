@@ -89,6 +89,12 @@ function slashAt(k, rest) {
 // dipping, what's in the right hand plunged in and swished about. Keyframes [s, value] for each of:
 // the bend at the waist (radians), the arms' swing (degrees: null, where they'd be anyway; "R" with the
 // right), turned in toward each other (degrees), and the head tipped back (radians)
+// a shiver: keyframes about `base`, jerking `amp` either way every few hundredths of a second, dying away
+function SHIVER(base, amp, T = 2.0) {
+  const k = [[0, 0], [0.25, base]];
+  for (let t = 0.31, i = 0; t < 1.6; t += 0.06, i++) k.push([t, base + (i % 2 ? amp : -amp) * (1 - (t - 0.25) / 1.6)]);
+  return k.concat([[1.6, base], [T, 0]]);
+}
 export const FOUNT = {
   drink: { T: 2.6, cup: 0.6, sip: [1.15, 1.9],
     lean: [[0, 0], [0.4, 0.8], [0.75, 0.8], [1.15, 0.05], [2.2, 0.05], [2.6, 0]],
@@ -107,6 +113,9 @@ export const FOUNT = {
     armR: [[0, null], [0.3, -62], [2.0, -62], [2.5, -15], [2.9, null]], armL: 'R',
     inn: [[0, 0], [0.3, 18], [2.0, 18], [2.5, 0]],
     head: [[0, 0], [0.3, -0.2], [0.5, 0.3], [0.65, -0.25], [0.82, 0.3], [0.97, -0.25], [1.15, 0.35], [1.32, -0.2], [1.5, 0.2], [2.0, -0.1], [2.5, 0]] },
+  // a strange tingling, a sudden chill: arms hugged about you, hunched, shivering hard and then less (SHIVER)
+  shiver: { T: 2.0, lean: SHIVER(0.18, 0.07), armR: [[0, null], [0.25, -48], [1.6, -48], [2.0, null]], armL: 'R',
+    inn: [[0, 0], [0.25, -62], [1.6, -62], [2.0, 0]], head: SHIVER(-0.12, 0.06) },
   // the urge to take a bath: a crouch, a dive in head first, arms out before you; under, arms up out of the
   // water; a jump back out onto the rim, turning to land facing away from it, and a shake, arms out,
   // dripping; then a dusting down, a hand and then the other patting your front, looking down at it; and a
@@ -355,6 +364,14 @@ export function firstPersonWrist(rig, fm, side = 'R') {
 // ring model (tools/build_items.py) stands on its axis, +Y, 0.4 tall: turned
 // onto the wrist's axis, its middle at the wrist. -> a column-major 4x4 in
 // the figure's (hand joint's) frame, or null.
+// where a figure's mouth is, in the world: a point on the front of its head (model units: studs, up from the
+// neck and out before the face), carried through the head's pose (leaning, nodding) and the figure's matrix
+export const MOUTH = [0, 0.6, 0.62];
+export function mouthPoint(matrix, pose) {
+  const ap = (M, v) => [0, 1, 2].map((r) => M[r] * v[0] + M[4 + r] * v[1] + M[8 + r] * v[2] + M[12 + r]);
+  const h = pose && pose.head ? ap(pose.head, MOUTH) : MOUTH;
+  return ap(matrix, h);
+}
 export function wristMatrix(rig, side) {
   const h = rig && rig['hand' + side];
   if (!h || !h.axis) return null;

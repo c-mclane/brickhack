@@ -473,6 +473,26 @@ export class ThrowFX {
     this.shards.push({ mesh, parts, t: 0, life: 1.3, rise: true });
   }
 
+  // bad breath: a faint, small wisp of sickly green off your mouth (p), drifting out the way you face (yaw)
+  breath(p, yaw) {
+    const n = 7, mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.026, 1),
+      new THREE.MeshBasicMaterial({ color: 0x8fb04a, transparent: true, opacity: 0.6, depthWrite: false }), n), parts = [];
+    mesh.frustumCulled = false;
+    for (let i = 0; i < n; i++)
+      parts.push({ p: p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.03, (Math.random() - 0.5) * 0.03, (Math.random() - 0.5) * 0.03)),
+        v: new THREE.Vector3(Math.sin(yaw) * (0.1 + Math.random() * 0.06), (Math.random() - 0.3) * 0.02, -Math.cos(yaw) * (0.1 + Math.random() * 0.06)), // (out before you, level with your mouth)
+        q: new THREE.Quaternion(), w: new THREE.Vector3(), s: 0.6 + Math.random() * 0.5, grow: 0.8 });
+    this.brick.world.add(mesh);
+    this.shards.push({ mesh, parts, t: 0, life: 1.4, rise: true });
+  }
+  // this water's no good (your things cursed): a puff of murky dark about you, at your middle (p), dark specks in it
+  cursePuff(p) {
+    for (let i = 0; i < 5; i++) this.vapor(p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.3, -0.3 + i * 0.15, (Math.random() - 0.5) * 0.3)), i % 2 ? 0x1c1524 : 0x34283f, 1.9);
+    this.sparkles(p, 26, 0x241b2e, 0.45);
+  }
+  // a shiver: a few specks of frost glinting off you (p: your middle)
+  frost(p) { this.sparkles(p, 4, 0xd9f3ff, 0.4); }
+
   // a wisp of vapor rising out of a fountain (its magic gone out of it, as it's found): soft white puffs
   // drifting up from p, swelling and thinning away
   vapor(p, color = 0xf2fbff, size = 1) { // (size: how big its puffs: steam's, billowing)

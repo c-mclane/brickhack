@@ -19,7 +19,7 @@ import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './bri
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, FOUNT, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
+import { FigureAnimator, FOUNT, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
@@ -516,7 +516,7 @@ async function init() {
   // the items made in brick (brickitems.js): their models for the floor, their pictures for the slots
   // (the items' pictures are drawn as the page loads, what's on screen first: redraw as they come)
   onIcons(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
-  loadBrickItems().then(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
+  loadBrickItems().then(() => { const c = brickItemByName('_coin'); if (c && renderer.brick) renderer.brick.coinUrl = c.url; /* (gold in a fountain: coins strewn in its basin) */ if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
   loadBrickMonsters();
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
   requestAnimationFrame(frame);
@@ -732,11 +732,17 @@ function handle(m) {
     }
     case 'fountfx': { // odd things at the fountain you're on, once your drink or dip's done: the urge to take a bath
       // (a dive in, a jump out, a shake: perch.js bathPath); foul water (doubled over it, retching into it);
-      // contaminated water (a purple haze about you a while: heroHaze)
+      // contaminated water (a purple haze about you a while: heroHaze); this water's no good (a murky puff about you)
+      // and bad breath (a faint wisp or two off your mouth: heroWisps); a tingling, a chill (a shiver, frost glinting
+      // off you); coins seen glistening far below (glints off them, strewn in its basin: brickworld basinCoins)
       const f = hero3d.fount, after = f ? Math.max(0, FOUNT[f.act].T * 1000 - (performance.now() - f.t0)) : 0;
+      if (m.act === 'coins') { if (renderer.brickOn && renderer.brick) setTimeout(() => renderer.brick.fountainCoinsGlint(m.x, m.y), Math.max(0, after - 900)); break; }
       setTimeout(() => {
-        if (m.act === 'poison') { if (!hero3d.haze || !hero3d.haze.sick) hero3d.haze = { t0: performance.now(), T: HAZE_T, last: 0 }; }
-        else hero3d.fount = { act: m.act === 'bath' ? 'bath' : 'retch', t0: performance.now(), url: null, fired: 0, bathFired: 0 };
+        const now = performance.now();
+        if (m.act === 'poison') { if (!hero3d.haze || !hero3d.haze.sick) hero3d.haze = { t0: now, T: HAZE_T, last: 0 }; }
+        else if (m.act === 'curse') hero3d.puff = { t0: now };
+        else if (m.act === 'breath') hero3d.breath = { until: ((ui.stat && ui.stat.turn) || 0) + BREATH_TURNS, last: 0 };
+        else hero3d.fount = { act: { bath: 'bath', foul: 'retch', shiver: 'shiver' }[m.act] || 'retch', t0: now, url: null, fired: 0, bathFired: 0, frostT: 0 };
       }, after);
       break;
     }
@@ -1600,6 +1606,22 @@ function fountSplash(now, x, y, z, yaw) {
     renderer.brick.fx.splashStuds(at === 'mid' ? new THREE3.Vector3(p.x + 0.5, g + w, p.z + 0.5) : new THREE3.Vector3(x, y + 0.6, z), n, up,
       at === 'mid' ? {} : { floor: y, ring: false });
   }
+}
+// this water's no good: a murky puff about you, once; bad breath: a faint green wisp off your mouth every
+// second or so, the way you face, for BREATH_TURNS turns (the game keeps no such state: the monsters it scared
+// stay scared till each regains its courage); a shiver: frost glinting off you
+const BREATH_TURNS = 150;
+function heroWisps(now, x, y, z, yaw, mouth) { // (mouth: where yours is, as drawn: minifig-anim.js mouthPoint)
+  if (!renderer.brickOn || !renderer.brick) return;
+  const fx = renderer.brick.fx, H = motion.heroHeight();
+  if (hero3d.puff) { fx.cursePuff(new THREE3.Vector3(x, y + H * 0.4, z)); hero3d.puff = null; }
+  const b = hero3d.breath;
+  if (b) {
+    if (!game.playing || ((ui.stat && ui.stat.turn) || 0) >= b.until) hero3d.breath = null;
+    else if (now - b.last > 950) { b.last = now; fx.breath(mouth ? new THREE3.Vector3(...mouth) : new THREE3.Vector3(x + Math.sin(yaw) * 0.1, y + H * 0.66, z - Math.cos(yaw) * 0.1), yaw); }
+  }
+  const a = fountAct(now), f = hero3d.fount;
+  if (a && a.act === 'shiver' && a.t > 0.25 && a.t < 1.6 && now - (f.frostT || 0) > 160) { f.frostT = now; fx.frost(new THREE3.Vector3(x, y + H * 0.4, z)); }
 }
 // poisoned: a purple haze about you, specks drifting up off you; a while after contaminated water, and all
 // the while you're sick with it (food poisoning, a terminal illness: the status line's FoodPois, TermIll)
@@ -2696,6 +2718,7 @@ function frame(t) {
         : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
         : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink, hz + 0.5, doll.yaw);
       if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
+      heroWisps(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : -sink), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw, pose ? mouthPoint(m, pose) : null);
       heroHaze(t, sw ? sw.x + 0.5 : hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (sw ? sw.y : pp ? pp.lift : -sink), sw ? sw.z + 0.5 : hz + 0.5 + (pp ? pp.dz : 0));
       raiseGlint(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : 0), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw); // (something held high: glinting)
       renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },

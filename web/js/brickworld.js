@@ -26,6 +26,9 @@ const DRY_STONE = new THREE.Color(0xa0a5a9), DRY_CRUMBLE = 2.9;
 // where things on a fountain's square lie, off its square's middle (squares): on its rim, on the ledge round its
 // basin (its front-right, between where you'd stand on it), out of the water: a gem pulled out of it, set down by you
 export const FOUNT_RIM_SPOT = [0.6, 0.6, 0.6];
+// a fountain's basin: how many coins lie strewn in it (gold there: basinCoins), how high its floor (squares, over
+// the studs), and between what distances from its middle (out of its column, in from its wall)
+const BASIN_COINS = 16, BASIN_FLOOR = 0.36, BASIN_R = [0.3, 0.64];
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
@@ -1047,11 +1050,49 @@ export class BrickWorld {
     let y = STUD_H;
     // (things on a fountain's square lie on its rim, out of the water, not on top of it)
     const fount = pile.length && pile[0].userData.name === 'fountain', [sx, sz] = square.split(',').map(Number);
+    let gold = false; // (gold on a fountain: strewn in its basin instead, basinCoins)
     for (const g of pile) {
+      if (g.userData.name === 'gold piece' && fount) { g.visible = false; g.userData.inBasin = gold = true; continue; }
+      if (g.userData.inBasin) { g.visible = true; g.userData.inBasin = false; } // (the fountain gone from under it)
       g.position.y = y;
       if (fount && g !== pile[0]) { const [ox, oz] = this.rimSpot(square); g.position.x = sx + 0.5 + ox; g.position.z = sz + 0.5 + oz; }
       y = fount && g === pile[0] ? STUD_H + FOUNT_RIM_SPOT[1] : y + g.userData.thick * 0.85; // (they settle into each other a little)
     }
+    this.basinCoins(square, gold);
+  }
+  // gold on a fountain's square (coins seen glistening far below, or dropped in): not a pile on its rim but
+  // coins strewn about the floor of its basin, under its water, each lying its own way (this.coinUrl: one
+  // coin's model, set by whoever draws the dungeon); gone with the gold
+  basinCoins(sq, on) {
+    const have = (this.coinsIn = this.coinsIn || new Map()).get(sq);
+    if (!on) { if (have) { this.world.remove(have); this.coinsIn.delete(sq); } return; }
+    if (have || !this.coinUrl) return;
+    const g = new THREE.Group(), [x, z] = sq.split(',').map(Number);
+    this.coinsIn.set(sq, g);
+    this.world.add(g);
+    this.model(this.coinUrl).then((m) => {
+      if (this.coinsIn.get(sq) !== g) return;
+      const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3());
+      for (let i = 0; i < BASIN_COINS; i++) {
+        const h = (k) => { const v = Math.sin(x * 12.9898 + z * 78.233 + i * 37.719 + k * 11.13) * 43758.5453; return v - Math.floor(v); };
+        const a = h(1) * Math.PI * 2, rr = BASIN_R[0] + h(2) * (BASIN_R[1] - BASIN_R[0]);
+        const coin = new THREE.Group(), lay = m.clone();
+        lay.position.copy(c).negate();
+        coin.add(lay);
+        coin.scale.setScalar(MODEL_SCALE);
+        coin.position.set(x + 0.5 + Math.cos(a) * rr, STUD_H + BASIN_FLOOR + h(3) * 0.012, z + 0.5 + Math.sin(a) * rr);
+        coin.rotation.set((h(4) - 0.5) * 0.5, h(5) * Math.PI * 2, (h(6) - 0.5) * 0.5); // (each tipped a little: lying on one another, on the stones)
+        g.add(coin);
+      }
+    });
+  }
+  // coins seen glistening far below in a fountain at (x, z): glints off them, here and there over its basin
+  fountainCoinsGlint(x, z) {
+    for (let i = 0; i < 5; i++)
+      setTimeout(() => {
+        const a = Math.random() * Math.PI * 2, rr = BASIN_R[0] + Math.random() * (BASIN_R[1] - BASIN_R[0]);
+        this.fx.sparkles(new THREE.Vector3(x + 0.5 + Math.cos(a) * rr, STUD_H + BASIN_FLOOR + 0.05, z + 0.5 + Math.sin(a) * rr), 10, i % 2 ? 0xffe27a : 0xffc21a, 0.08);
+      }, i * 260);
   }
 
   // the figures to draw this frame: [{url, matrix, pose}] (the hero); pose:
