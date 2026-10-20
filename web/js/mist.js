@@ -161,18 +161,19 @@ export function addAura(THREE, root) {
   startTicking();
   for (const part of parts) auraOf(THREE, part, cfg);
 }
-function auraOf(THREE, root, cfg = {}) {
+// (the shells made, round all of root's bricks: [mesh]; also a magic fountain's, brickworld.js stepFountainGlow)
+export function auraOf(THREE, root, cfg = {}) {
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
   const all = [];
   root.traverse((o) => {
-    if (!o.isMesh) return;
+    if (!o.isMesh || o.isInstancedMesh || o.material.isShaderMaterial) return; // (not what's thrown, nor another glow)
     const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry;
     const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), v = new THREE.Vector3();
     const a = g.attributes.position;
     for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m); all.push(v.x, v.y, v.z); }
   });
-  const pos = tipOf(new Float32Array(all), cfg.tip);
-  if (!pos.length) return;
+  const pos = tipOf(new Float32Array(all), cfg.tip), made = [];
+  if (!pos.length) return made;
   for (const sh of auraShells(pos, cfg.scale ?? 1, cfg.layers)) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(sh.pos, 3));
@@ -190,7 +191,9 @@ function auraOf(THREE, root, cfg = {}) {
     mesh.renderOrder = 3;
     mesh.castShadow = mesh.receiveShadow = false;
     root.add(mesh);
+    made.push(mesh);
   }
+  return made;
 }
 
 // three.js: lightning crackling over a model (Mjollnir), if it's marked so
@@ -274,6 +277,11 @@ const FX = {
     move: 'p += up * t * h * 0.45 + side * sin(t * 9.0 + ph * 6.3) * h * 0.03;', speed: '0.9 + ph * 0.8' },
   meteors: { n: 40, size: 0.15, color: 'mix(vec3(1.0, 0.98, 0.8), vec3(1.0, 0.45, 0.1), t)', alpha: 'sin(t * 3.1416) * step(0.55, fract(ph * 7.3 + floor(uMistTime * 0.7 + ph) * 0.37))',
     move: 'p += away * h * 0.25 + (away * 0.6 - up) * t * h * 0.35;', speed: '1.6 + ph * 1.2' },
+  // (water leaping from a fountain's spout in arcs every way round, falling basin to basin: the
+  // farther out an arc goes, the farther down it falls)
+  fountain: { n: 300, size: 0.045, color: 'mix(vec3(0.9, 0.97, 1.0), vec3(0.4, 0.68, 0.95), t)', alpha: '0.85 * (1.0 - t * 0.45)',
+    move: 'float ang = fract(ph * 13.37) * 6.2832; vec3 dir = side * cos(ang) + cross(up, side) * sin(ang); float far = fract(ph * 7.91); p += dir * h * (0.25 + 0.75 * far) * t + up * (h * 0.9 * t - (h * 0.9 + h * (0.7 + 2.6 * far)) * t * t);',
+    speed: '0.55 + ph * 0.15' },
   frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
     move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
 };
@@ -281,6 +289,7 @@ export function addEffects(THREE, root) {
   let host = null;
   root.traverse((o) => { if (!host && o.userData && FX[o.userData.fx]) host = o; });
   if (!host) return;
+  if (host.userData.fx === 'fountain') return addStudFountain(THREE, root, host);
   const fx = FX[host.userData.fx];
   root.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
@@ -346,6 +355,79 @@ export function addEffects(THREE, root) {
   startTicking();
 }
 
+// A fountain's water as bricks (tools/build_items.py fx "fountain", "fxPool": its pool's water level,
+// LDU up from its foot): clear blue 1x1 round plates popping up out of its spout (fxJoint), each thrown
+// up and out every way round, tumbling as they fall clear of the basins, and sinking out of sight into
+// the pool's own heap of them; then up out of the spout again. In the model's own units (studs, Y up)
+let studPiece = null; // the clear blue 1x1 round plate, its geometry (about its middle, studs) and plastic: once a fountain's built
+export const fountainStud = () => studPiece;
+export const setWaterStud = (geo, mat) => { if (!studPiece) studPiece = { geo, mat }; }; // (a pool's, when there's no fountain about)
+const STUD_N = 40, STUD_G = 14; // (how many in the air at once; how hard they fall, studs/s²)
+// (all in the shader, on the one clock: so every copy of the model (each fountain in the dungeon) pours too)
+function addStudFountain(THREE, root, host) {
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const box = new THREE.Box3(), spout = new THREE.Box3(), v = new THREE.Vector3();
+  const src = (host.userData.fxJoint && root.getObjectByName(host.userData.fxJoint)) || root;
+  const grow = (o, b) => o.traverse((m) => {
+    if (!m.isMesh) return;
+    const mm = new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld), a = m.geometry.attributes.position;
+    for (let i = 0; i < a.count; i++) b.expandByPoint(v.fromBufferAttribute(a, i).applyMatrix4(mm));
+  });
+  grow(root, box); grow(src, spout);
+  const top = spout.getCenter(new THREE.Vector3()).setY(spout.max.y);
+  const pool = box.min.y + (host.userData.fxPool || 0) / 20, reach = Math.min(box.max.x - box.min.x, box.max.z - box.min.z) / 2;
+  // each stud's throw (out to land past the basins' rims, short of the pool's wall: [out x, out z, up speed,
+  // when in its round]) and its spin (axis, how fast)
+  const thr = [], spin = [];
+  for (let i = 0; i < STUD_N; i++) {
+    const ang = Math.random() * Math.PI * 2, r = reach * (0.62 + Math.random() * 0.2);
+    thr.push(Math.cos(ang) * r, Math.sin(ang) * r, 3 + Math.random() * 2.2, Math.random());
+    const ax = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    spin.push(ax.x, ax.y, ax.z, 5 + Math.random() * 8);
+  }
+  const uniforms = { uMistTime: uTime, uTop: { value: top }, uPool: { value: pool }, uG: { value: STUD_G } };
+  // the studs thrown: the very piece in the spout (its fxJoint: the clear blue 1x1 round plate), its own
+  // geometry and plastic, about its own middle
+  const mid = spout.getCenter(new THREE.Vector3()), pieces = [];
+  src.traverse((m) => {
+    if (!m.isMesh) return;
+    const g = m.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld)).translate(-mid.x, -mid.y, -mid.z);
+    for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
+    pieces.push([g, m.material]);
+  });
+  if (!studPiece) studPiece = { geo: pieces[0][0].clone(), mat: pieces[0][1] }; // (for a splash, ThrowFX.splashStuds: the same piece)
+  const mat = pieces[0][1].clone();
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, uniforms);
+    sh.vertexShader = 'attribute vec4 aThrow; attribute vec4 aSpin; uniform float uMistTime, uPool, uG; uniform vec3 uTop;\n' + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', `
+        // where it is in its round: thrown, falling (when it reaches the water, T), then sinking out of sight
+        float dyS = uTop.y - uPool, vyS = aThrow.z;
+        float T = (vyS + sqrt(vyS * vyS + 2.0 * uG * dyS)) / uG, cyc = T + 0.3;
+        float uS = mod(uMistTime + aThrow.w * cyc, cyc), fall = min(uS, T);
+        float ang = aSpin.w * uS; vec3 axS = aSpin.xyz;
+        vec3 objectNormal = normal * cos(ang) + cross(axS, normal) * sin(ang) + axS * dot(axS, normal) * (1.0 - cos(ang));
+        #ifdef USE_TANGENT
+          vec3 objectTangent = vec3(tangent.xyz);
+        #endif`)
+      .replace('#include <begin_vertex>', `
+        float kS = uS > T ? 1.0 - (uS - T) / 0.3 : 1.0;
+        vec3 transformed = position * kS;
+        transformed = transformed * cos(ang) + cross(axS, transformed) * sin(ang) + axS * dot(axS, transformed) * (1.0 - cos(ang));
+        transformed += uTop + vec3(aThrow.x * fall / T, vyS * fall - 0.5 * uG * fall * fall - (uS > T ? (uS - T) / 0.3 * 0.5 : 0.0), aThrow.y * fall / T);`);
+  };
+  for (const [g] of pieces) {
+    g.setAttribute('aThrow', new THREE.InstancedBufferAttribute(new Float32Array(thr), 4));
+    g.setAttribute('aSpin', new THREE.InstancedBufferAttribute(new Float32Array(spin), 4));
+    const m = new THREE.InstancedMesh(g, mat, STUD_N);
+    m.frustumCulled = false; m.renderOrder = 3;
+    m.boundingBox = box.clone(); // (where they fly: within the fountain, not where the one piece sits, under its foot; the fountain laid flush on the floor: brickworld setItems)
+    root.add(m);
+  }
+  startTicking();
+}
+
 // An item whose colour shifts round the colour wheel (a magic marker:
 // tools/build_items.py "hue", in its model's extras): every part of it
 export function addHueShift(THREE, root) {
@@ -371,4 +453,42 @@ export function addBlink(THREE, root) {
     blinking.add(o.material);
   });
   startTicking();
+}
+
+// Water (a pool, a moat: brickworld.js setTerrain): clear blue 1x1 round plates heaped in a square's
+// hole, roiling: each bobbing, drifting a little round where it lies and rocking, and now and then
+// popping up out of the heap with a flip. All in the shader, on the one clock; each stud its own by
+// where it lies (its instance's place). In the piece's own units (studs, Y up; its middle a stud's
+// height under its top)
+export function roil(THREE, material) {
+  const m = material.clone();
+  m.opacity = Math.max(m.opacity, 0.9); // (heaped deep: hardly to be seen through)
+  m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.2); // (so many glowing together wash out white: their blue kept)
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uMistTime = uTime;
+    const head = `uniform float uMistTime;
+      mat3 roilRot(float a, float b) { float ca = cos(a), sa = sin(a), cb = cos(b), sb = sin(b);
+        return mat3(1.0, 0.0, 0.0, 0.0, ca, sa, 0.0, -sa, ca) * mat3(cb, sb, 0.0, -sb, cb, 0.0, 0.0, 0.0, 1.0); }
+      void roilAt(out mat3 R, out vec3 off) {
+        vec2 at = instanceMatrix[3].xz;
+        float h1 = fract(sin(dot(at, vec2(12.9898, 78.233))) * 43758.5453), h2 = fract(sin(dot(at, vec2(39.346, 11.135))) * 24634.6345);
+        float t = uMistTime, ph = h1 * 6.2832;
+        float bob = 0.3 * sin(t * (1.5 + h2 * 1.3) + ph) + 0.12 * sin(t * 3.3 + ph * 2.0) + 0.35 * (h2 - 0.5); // (and each at a height of its own: a lumpy heap)
+        vec2 drift = 0.16 * vec2(sin(t * 0.9 + ph), cos(t * 0.7 + ph * 1.3));
+        float p = fract(t * 0.2 + h2), pop = p < 0.09 ? p / 0.09 : 0.0; // (now and then: up out of the heap, flipping)
+        R = roilRot(0.7 * sin(t * 1.3 + ph * 1.7) + 6.2832 * pop, 0.7 * cos(t * 1.1 + ph * 0.6));
+        off = vec3(drift.x, bob + 1.4 * sin(3.1416 * pop), drift.y);
+      }
+`;
+    sh.vertexShader = head + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', `mat3 rR; vec3 rOff; roilAt(rR, rOff);
+        vec3 objectNormal = rR * normal;
+        #ifdef USE_TANGENT
+          vec3 objectTangent = vec3(tangent.xyz);
+        #endif`)
+      .replace('#include <begin_vertex>', 'vec3 transformed = rR * (position - vec3(0.0, -0.1, 0.0)) + vec3(0.0, -0.1, 0.0) + rOff;');
+  };
+  m.customProgramCacheKey = () => 'roil';
+  startTicking();
+  return m;
 }

@@ -67,3 +67,45 @@ export class Music {
     if (this.player) this.player.setVol(v);
   }
 }
+
+// Ambience: a sound looped under the music while you're somewhere (a room with a fountain or a pool in
+// it: main.js waterNear), fading in as you come in and out as you leave. Files in the music/ folder
+// (served at /music/, never shuffled in with the tunes)
+export const AMBIENCE = { water: 'Fountain Sound Effect 4.mp3' };
+const FADE = 1.2; // s
+
+export class Ambience {
+  constructor(volume = 0.6) {
+    this.volume = volume;
+    this.sounds = new Map(); // name -> {audio, want (on or off), going (the way it last faded), timer}
+    this.allowed = false; // (browsers: sound only after a click or a key)
+  }
+  allow() { this.allowed = true; for (const s of this.sounds.values()) this.fade(s); }
+  setVolume(v) { this.volume = v; for (const s of this.sounds.values()) if (s.want && !s.timer) s.audio.volume = v; }
+  // name (AMBIENCE) on or off
+  set(name, on) {
+    let s = this.sounds.get(name);
+    if (!s && on && AMBIENCE[name]) {
+      const audio = new Audio('/music/' + encodeURIComponent(AMBIENCE[name]));
+      audio.loop = true;
+      audio.volume = 0;
+      this.sounds.set(name, (s = { audio, want: false, going: null }));
+    }
+    if (!s) return;
+    s.want = on;
+    this.fade(s);
+  }
+  fade(s) {
+    if (!this.allowed || s.going === s.want) return; // (already on its way there)
+    s.going = s.want;
+    const on = s.want;
+    if (on) s.audio.play().catch(() => {});
+    clearInterval(s.timer);
+    const from = s.audio.volume, t0 = performance.now();
+    s.timer = setInterval(() => {
+      const u = Math.min(1, (performance.now() - t0) / (FADE * 1000));
+      s.audio.volume = Math.max(0, Math.min(1, from + ((on ? this.volume : 0) - from) * u));
+      if (u >= 1) { clearInterval(s.timer); s.timer = null; if (!on) s.audio.pause(); }
+    }, 50);
+  }
+}

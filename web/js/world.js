@@ -4,7 +4,7 @@ import { classify, isSolidClass, WALL_H, DOOR_H, CM } from './terrain.js';
 const WALK_THROUGH = new Set(['gateOpen']);
 import { posAt as motionPos, sizeHeight } from './motion.js';
 import { mobAnim } from './anim.js';
-import { brickItemForTile, gameTile } from './brickitems.js';
+import { brickItemForTile, gameTile, brickBuilt } from './brickitems.js';
 
 export class World {
   constructor() {
@@ -102,13 +102,16 @@ export class World {
         if (!c) continue;
         const seen = this.visible(x, y);
         const shade = seen ? 1 : 0.5;
-        if (cl && cl.sprite) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade });
+        // (a fountain stands in brick (items.json "fountain"), first on its square, all else on it; else its sprite)
+        const fountain = cl && cl.cmap === CM.fountain && brickBuilt('fountain');
+        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: 'fountain', colliders: fountain.colliders });
+        else if (cl && cl.sprite) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade });
         const isHero = x === this.hero.x && y === this.hero.y;
         // the brick dungeon: everything lying here as brick models, the bottom one first, each
         // on the one below (brickworld.js stacks them), even under you or a monster
         const pile = this.piles.get(y * this.w + x) || (c.k === 'o' ? [c.t] : null);
         if (pile) {
-          let level = 0;
+          let level = fountain ? 1 : 0;
           for (let i = pile.length - 1; i >= 0; i--) {
             const brick = brickItemForTile(pile[i]);
             if (brick) this.brickDrops.push({ x, z: y, url: brick.url, level: level++, upright: !!brick.upright, name: brick.name, colliders: brick.colliders });

@@ -583,7 +583,7 @@ export class Renderer {
     // not yet explored (a path you haven't followed yet fades into it)
     const brickLevel = true; // (every level is: the dungeon, Ascend's baseplate)
     // what the BrickWorld builds: floor plates, walls, doors, fog
-    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [] };
+    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [], pools: [] };
     // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
     const passable = (xx, yy) => {
       const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
@@ -666,8 +666,9 @@ export class Renderer {
             if (brickLevel) { bricks.floors.push({ x, z: y, shade, studs: true }); doorPiece(x, y, 'door_closed', doorAlongZ(x, y, c), shade); }
             else column(0, null, shade, (l) => (l < DOOR_H ? c.tile : wallLayer(l, WALL_TILE)));
             break;
-          case 'liquid':
-            this.floor(out, x, y, -0.12, c.tile, shade);
+          case 'liquid': // (brick: water is a hole in the floor heaped with roiling clear blue studs; lava as ever, for now)
+            if (brickLevel && c.cmap !== CM.lava) bricks.pools.push({ x, z: y, shade });
+            else this.floor(out, x, y, -0.12, c.tile, shade);
             break;
           default:
             if (brickLevel) {

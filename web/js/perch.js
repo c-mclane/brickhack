@@ -1,4 +1,4 @@
-// Standing at a statue: a statue's square (the brick dungeon) is all plinth, so
+// Standing at a statue (or the rim of a fountain: PERCHES): a statue's square (the brick dungeon) is all plinth, so
 // whoever walks onto it hops up onto one of the four scroll corbels round its
 // column (the one on the side they came from) and stands there on the ledge,
 // gazing up at the statue (its model: items.json "statue"); stepping off, they
@@ -10,7 +10,14 @@
 
 import { STUD_H } from './brick.js';
 
-const PERCH_R = 52 / 80, PERCH_H = 24 / 80; // (the ledge: out from the column, up from the statue's foot)
+// what you can stand up on, by its floor item's name: its ledge (R: out from its middle; H: up from
+// its foot) and how far its foot reaches out from its middle (OUT), all squares. A statue: its
+// scroll corbels; a fountain: the rim of its pool
+export const PERCHES = {
+  statue: { R: 52 / 80, H: 24 / 80, OUT: 60 / 80 },
+  fountain: { R: 70 / 80, H: 48 / 80, OUT: 80 / 80 },
+};
+const STATUE = PERCHES.statue;
 const HOP = 0.28; // (how high the hop goes over the ledge)
 
 // the statue's side (of its four, square to the grid) that best faces the way (fx, fz)
@@ -33,7 +40,7 @@ function roundLedge(a, b, v) {
   if (Math.abs(Math.abs(da) - Math.PI) < 1e-3) da = Math.PI;
   return [Math.cos(a0 + da * v), Math.sin(a0 + da * v)];
 }
-const statueAt = (drops, x, y) => (drops || []).find((d) => d.x === x && d.z === y && d.name === 'statue');
+const statueAt = (drops, x, y) => (drops || []).find((d) => d.x === x && d.z === y && PERCHES[d.name]);
 
 // where you stand, off where you'd be (pos): hero {x, y} (your square), track (cameFrom: the
 // square you came from, and the side you're perched on), pos [x, z] (where you are, walking),
@@ -42,8 +49,9 @@ const statueAt = (drops, x, y) => (drops || []).find((d) => d.x === x && d.z ===
 //   onto it: a hop up onto the ledge on the side you came from, then gazing up at it;
 //   off it: along the ledge to the corbel on the side you're leaving by, and a jump down from there
 export function perchSpot(hero, track, pos, drops) {
-  const L = STUD_H + PERCH_H;
-  if (statueAt(drops, hero.x, hero.y)) {
+  const on = statueAt(drops, hero.x, hero.y), pr = PERCHES[(on || statueAt(drops, track.perch ? track.perch.x : -1, track.perch ? track.perch.y : -1) || { name: 'statue' }).name];
+  const PERCH_R = pr.R, L = STUD_H + pr.H;
+  if (on) {
     const k = Math.max(0, Math.min(1, 1 - Math.hypot(pos[0] - hero.x, pos[1] - hero.y)));
     if (k <= 0) return null;
     const sd = side(track.x - hero.x, track.y - hero.y);
@@ -81,16 +89,16 @@ export const HOP_ON = 0.5; // s (hopping off: offTime)
 export const sideToward = side;
 // up from `from` (where you were on the square, off its middle: [x, z]) onto the ledge on `sd`'s side; u: 0..1
 // (springing up first, then in over the corbels: never through them)
-export function hopOn(from, sd, u) {
+export function hopOn(from, sd, u, pr = STATUE) {
   u = Math.min(1, u);
-  const e = smooth(Math.max(0, (u - 0.3) / 0.7)), tx = sd.wx * PERCH_R, tz = sd.wz * PERCH_R, h = Math.sin(Math.PI * u);
-  return { x: from[0] + (tx - from[0]) * e, z: from[1] + (tz - from[1]) * e, lift: (STUD_H + PERCH_H) * smooth(Math.min(1, u / 0.45)) + HOP * h,
+  const e = smooth(Math.max(0, (u - 0.3) / 0.7)), tx = sd.wx * pr.R, tz = sd.wz * pr.R, h = Math.sin(Math.PI * u);
+  return { x: from[0] + (tx - from[0]) * e, z: from[1] + (tz - from[1]) * e, lift: (STUD_H + pr.H) * smooth(Math.min(1, u / 0.45)) + HOP * h,
     yaw: Math.atan2(-sd.wx, sd.wz), hop: u < 1 ? h : 0, lookUp: smooth(u) };
 }
 // how far the statue's foot reaches out from its middle (its scroll corbels): squares
-export const STATUE_OUT = 60 / 80;
+export const STATUE_OUT = STATUE.OUT;
 // on the ledge: standing there, gazing up
-export const perched = (sd) => ({ x: sd.wx * PERCH_R, z: sd.wz * PERCH_R, lift: STUD_H + PERCH_H, yaw: Math.atan2(-sd.wx, sd.wz), hop: 0, lookUp: 1 });
+export const perched = (sd, pr = STATUE) => ({ x: sd.wx * pr.R, z: sd.wz * pr.R, lift: STUD_H + pr.H, yaw: Math.atan2(-sd.wx, sd.wz), hop: 0, lookUp: 1 });
 // off: round the ledge from `sd`'s side to `out`'s, bounding athletically round the column (a spring
 // each quarter turn, facing the way you go), then a jump down to `dest` (off the middle: just into the
 // square you're going to). t: seconds in; offTime(sd, out): how long it all takes
@@ -104,8 +112,8 @@ const turnOf = (a, b) => {
 const alongYaw = (a, da) => Math.atan2(-Math.sin(a) * Math.sign(da), -Math.cos(a) * Math.sign(da));
 const turnTo = (y0, y1, k) => { const d = Math.atan2(Math.sin(y1 - y0), Math.cos(y1 - y0)); return y0 + d * k; };
 export const offTime = (sd, out) => (Math.abs(turnOf(sd, out)) / (Math.PI / 2)) * SWING_Q + JUMP;
-export function hopOff(sd, out, dest, t) {
-  const L = STUD_H + PERCH_H, da = turnOf(sd, out), swing = (Math.abs(da) / (Math.PI / 2)) * SWING_Q;
+export function hopOff(sd, out, dest, t, pr = STATUE) {
+  const PERCH_R = pr.R, L = STUD_H + pr.H, da = turnOf(sd, out), swing = (Math.abs(da) / (Math.PI / 2)) * SWING_Q;
   if (t < swing) { // (bounding round the ledge)
     const v = smooth(t / swing), a = Math.atan2(sd.wz, sd.wx) + da * v;
     const quarters = Math.abs(da) / (Math.PI / 2), b = Math.abs(Math.sin(Math.PI * quarters * (t / swing)));
@@ -129,3 +137,8 @@ export function cameFrom(track, hero) {
   }
   return track;
 }
+
+// at a fountain (drinking from it, dipping something in: minifig-anim.js FOUNT): when the water's broken, s
+// in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
+export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]] };
+export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;

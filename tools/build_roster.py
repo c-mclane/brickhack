@@ -43,6 +43,36 @@ DUNGEON_PARTS = {
 """,
     'brick2x4': """1 71 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
 """,
+    # water (a pool, a moat): clear blue 1x1 round plates, heaped in the square's hole and roiling
+    'water_stud': """1 43 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat
+""",    # ...and the bottom of its hole, still under them: the same clear blue 1x1 round plates, one on each of the
+    # square's 16 studs and 9 more between them, a little deeper (no floor to be seen through the water)
+    'water_bed': """1 43 -30 0 -30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -30 0 -10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -30 0 10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -30 0 30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -10 0 -30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -10 0 -10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -10 0 10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -10 0 30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 10 0 -30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 10 0 -10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 10 0 10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 10 0 30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 30 0 -30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 30 0 -10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 30 0 10 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 30 0 30 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -20 3 -20 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -20 3 0 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 -20 3 20 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 0 3 -20 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 0 3 0 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 0 3 20 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 20 3 -20 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 20 3 0 1 0 0 0 1 0 0 0 1 6141.dat
+1 43 20 3 20 1 0 0 0 1 0 0 0 1 6141.dat
+""",
 }
 
 

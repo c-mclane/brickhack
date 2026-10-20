@@ -158,7 +158,7 @@ def main():
         if isinstance(aura, dict) and 'tip' in aura:
             aura = dict(aura, tip=dict({'dir': [0, 1, 0]}, **aura['tip']))
         extras = dict({'aura': aura} if aura else {}, **({'lightning': True} if item.get('lightning') else {}),
-                      **({'fx': item['fx']} if item.get('fx') else {}), **({'fxJoint': item['fxJoint']} if item.get('fxJoint') else {}), **({'hue': True} if item.get('hue') else {})) or None   # (its element in particles: mist.js addEffects)
+                      **({'fx': item['fx']} if item.get('fx') else {}), **({'fxJoint': item['fxJoint']} if item.get('fxJoint') else {}), **({'fxPool': item['fxPool']} if item.get('fxPool') else {}), **({'hue': True} if item.get('hue') else {})) or None   # (its element in particles: mist.js addEffects; fxPool: a fountain's water level, LDU up from its foot)
         hinge = item.get('hinge')   # a part that swings on a hinge (a chest's lid): {joint, pivot, axis (LDraw), open (degrees)}
         if hinge:   # (in the model's units and axes, as ldraw2glb writes it: studs, Y up, Z to the front)
             hp = held_point(item, hinge['pivot'])
@@ -204,17 +204,24 @@ def main():
         if item.get('halves'):   # what it cracks into before it bursts (a boulder: its two halves; boulderfx.js crack)
             built[name]['halves'] = [part_glb(lib, colors, h['part'], h['color']) for h in item['halves']]
         if item.get('shatter'):   # broken, it comes apart brick by brick (a statue: boulderfx.js crumble): each
-            # brick's model and where it sits in the item, as the item's model has it (studs, Y up, Z to the front)
+            # brick's model and where it sits in the item, as the item's model has it (studs, Y up, Z to the front);
+            # "shatter" a {colour: colour} map: those bricks in another colour (a fountain dried up: its water stone)
             D = np.diag([1.0, -1, -1])
+            recolor = item['shatter'] if isinstance(item['shatter'], dict) else {}
             built[name]['bricks'] = []
+            group = None
             for l in held_ldr(item).splitlines():
+                if l.startswith('0 !BRICKHACK GROUP '):   # (which of its parts it's among: a fountain's water, evaporating, isn't there to break)
+                    group = l.split()[-1]
                 if not l.startswith('1 '):
                     continue
                 t = l.split()
                 pos, mat = np.array([float(v) for v in t[2:5]]), np.array([float(v) for v in t[5:14]]).reshape(3, 3)
                 part, color = ' '.join(t[14:])[:-4], int(t[1])
+                color = int(recolor.get(str(color), color))
                 built[name]['bricks'].append({'url': part_glb(lib, colors, part, color if color != 16 else 71),
-                                              'pos': [round(v, 4) for v in (D @ pos / 20)], 'mat': [round(v, 5) for v in (D @ mat @ D).flatten()]})
+                                              'pos': [round(v, 4) for v in (D @ pos / 20)], 'mat': [round(v, 5) for v in (D @ mat @ D).flatten()],
+                                              **({'group': group} if group and group != 'body' else {})})
         if item.get('colliders'):   # its solid parts, for things falling onto it (brickworld.js colliders)
             built[name]['colliders'] = item['colliders']
         if item.get('wear'):   # worn on a minifig (a helm): the figure worker dresses the hero in it

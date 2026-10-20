@@ -13,6 +13,7 @@ const ROOT = path.resolve(__dirname, '..');
 const WEB = path.join(ROOT, 'web');
 const MUSIC = path.join(ROOT, 'music'); // local only (git-ignored): tracker modules to shuffle-play
 const MUSIC_EXT = /\.(xm|mod|s3m|it|mo3|mptm|669|med|okt|stm|ult|umx)$/i;
+const AMBIENT_EXT = /\.(mp3|ogg|wav)$/i; // (sounds looped under the music: a fountain's water. Served, never shuffled)
 // local custom art (see art/README.md): art/skins, art/monsters, art/blocks
 const ART = path.join(ROOT, 'art');
 const ART_DIRS = ['skins', 'monsters', 'blocks'];
@@ -324,10 +325,11 @@ const server = http.createServer(async (req, res) => {
   }
   if (url.pathname.startsWith('/music/')) {
     const file = path.join(MUSIC, path.normalize(decodeURIComponent(url.pathname.slice(7))));
-    if (!file.startsWith(MUSIC + path.sep) || !MUSIC_EXT.test(file)) return res.writeHead(403).end();
+    if (!file.startsWith(MUSIC + path.sep) || !(MUSIC_EXT.test(file) || AMBIENT_EXT.test(file))) return res.writeHead(403).end();
     fs.readFile(file, (err, data) => {
       if (err) return res.writeHead(404).end('not found');
-      res.writeHead(200, { 'Content-Type': 'application/octet-stream' }).end(data);
+      const type = { '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.wav': 'audio/wav' }[path.extname(file).toLowerCase()] || 'application/octet-stream';
+      res.writeHead(200, { 'Content-Type': type }).end(data);
     });
     return;
   }

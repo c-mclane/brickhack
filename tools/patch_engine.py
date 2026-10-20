@@ -702,4 +702,68 @@ edit("include/global.h", [
     ("#if defined(GL_GRAPHICS) || defined(SDL_GRAPHICS)\n",
      "#if defined(GL_GRAPHICS) || defined(SDL_GRAPHICS) || defined(WEB_GRAPHICS) /* WEB_HOOK_TILES */\n"),
 ], "WEB_HOOK_TILES")
+# BrickHack: a fountain drunk from or dipped into: sent as an event (winweb.c
+# web_fountain: which, what's dipped, where), the hero drawn kneeling at its
+# water, cupping a drink or dipping the thing in (the client plays it)
+edit("src/fountain.c", [
+    ("#include \"hack.h\"\n",
+     "#include \"hack.h\"\nextern void FDECL(web_fountain, (int, struct obj *)); /* WEB_HOOK_FOUNTAIN */\n"),
+    ("	if (Levitation) {\n		floating_above(\"fountain\");\n		return;\n	}\n\n	if (mgkftn",
+     "	if (Levitation) {\n		floating_above(\"fountain\");\n		return;\n	}\n"
+     "	web_fountain(0, (struct obj *) 0);\n\n	if (mgkftn"),
+    ("	if (Levitation) {\n		floating_above(\"fountain\");\n		return;\n	}\n\n	/* Don't grant Excalibur",
+     "	if (Levitation) {\n		floating_above(\"fountain\");\n		return;\n	}\n"
+     "	web_fountain(1, obj);\n\n	/* Don't grant Excalibur"),
+], "WEB_HOOK_FOUNTAIN")
+# ...and a magic fountain found out (its magic drunk: the wisp of vapor; or one wished for in wizard
+# mode): its water flares up, and an aura round it (web_fountain 2); and "the water glows for a moment"
+# (dipping: something uncursed) flares the same (web_fountain 3)
+edit("src/fountain.c", [
+    ("		pline(\"A wisp of vapor escapes the fountain...\");\n",
+     "		web_fountain(2, (struct obj *) 0); /* WEB_HOOK_MAGICFTN */\n"
+     "		pline(\"A wisp of vapor escapes the fountain...\");\n"),
+    ("			    if (!Blind)\n				pline_The(\"water glows for a moment.\");\n",
+     "			    if (!Blind) {\n				web_fountain(3, obj); /* WEB_HOOK_MAGICFTN */\n"
+     "				pline_The(\"water glows for a moment.\");\n			    }\n"),
+    ("			    if (!Blind)\n				pline_The(\"water glows for a moment.\");\n",
+     "			    if (!Blind) {\n				web_fountain(3, obj); /* WEB_HOOK_MAGICFTN */\n"
+     "				pline_The(\"water glows for a moment.\");\n			    }\n"),
+], "WEB_HOOK_MAGICFTN")
+edit("src/objnam.c", [
+    ("			pline(\"A %sfountain.\",\n			      levl[u.ux][u.uy].blessedftn ? \"magic \" : \"\");\n			newsym(u.ux, u.uy);\n",
+     "			pline(\"A %sfountain.\",\n			      levl[u.ux][u.uy].blessedftn ? \"magic \" : \"\");\n			newsym(u.ux, u.uy);\n"
+     "			{ extern void FDECL(web_fountain, (int, struct obj *)); /* WEB_HOOK_MAGICFTN */\n"
+     "			  if (levl[u.ux][u.uy].blessedftn) web_fountain(2, (struct obj *) 0); }\n"),
+], "WEB_HOOK_MAGICFTN")
+# BrickHack: falling into water and crawling out (trap.c drown): sent as events (winweb.c web_swim:
+# which, from where you stepped or to where you crawl), the client plays them: a stumble in with a splash,
+# sinking, then hauling yourself out onto the dry square, dripping (what you dump to lighten up just
+# sinks: nothing in water is ever drawn)
+edit("src/trap.c", [
+    ("#include \"hack.h\"\n",
+     "#include \"hack.h\"\nextern void FDECL(web_swim, (int, int, int)); /* WEB_HOOK_SWIM */\n"),
+    ("	if (!u.uinwater) {\n	    You(\"%s into the %swater%c\",\n",
+     "	if (!u.uinwater) {\n	    web_swim(0, u.ux - u.dx, u.uy - u.dy);\n	    You(\"%s into the %swater%c\",\n"),
+    ("			pline(\"Pheew!  That was close.\");\n			teleds(x,y,TRUE);\n",
+     "			pline(\"Pheew!  That was close.\");\n			web_swim(1, x, y);\n			teleds(x,y,TRUE);\n"),
+], "WEB_HOOK_SWIM")
+# BrickHack: a fountain dried up (fountain.c dryup): sent as an event (winweb.c web_dryup: where), the
+# client plays it: its water going grey, a moment, and it coming apart brick by brick
+edit("src/fountain.c", [
+    ("		/* replace the fountain with ordinary floor */\n",
+     "		{ extern void FDECL(web_dryup, (int, int)); web_dryup(x, y); } /* WEB_HOOK_DRYUP */\n"
+     "		/* replace the fountain with ordinary floor */\n"),
+], "WEB_HOOK_DRYUP")
+# BrickHack: a fountain gushing (fountain.c dogushforth / gush): sent as events (winweb.c web_gush: from
+# where, and each square it floods), the client plays it: a burst of water out of its top, and a stream
+# arcing out to each square it floods, the pool there opening as it lands
+edit("src/fountain.c", [
+    ("	int madepool = 0;\n\n	do_clear_area(u.ux, u.uy, 7, gush, (genericptr_t)&madepool);\n",
+     "	int madepool = 0;\n\n"
+     "	{ extern void FDECL(web_gush, (int, int)); web_gush(-1, -1); } /* WEB_HOOK_GUSH: the burst */\n"
+     "	do_clear_area(u.ux, u.uy, 7, gush, (genericptr_t)&madepool);\n"),
+    ("	/* Put a pool at x, y */\n",
+     "	{ extern void FDECL(web_gush, (int, int)); web_gush(x, y); } /* WEB_HOOK_GUSH: a pool there */\n"
+     "	/* Put a pool at x, y */\n"),
+], "WEB_HOOK_GUSH")
 print("engine hooks applied:", src)

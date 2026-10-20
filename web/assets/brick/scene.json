@@ -7,182 +7,68 @@
   }
  ],
  "level": {
-  "w": 21,
-  "h": 11,
+  "w": 10,
+  "h": 7,
   "start": [
-   1,
-   1
+   2,
+   3
   ],
-  "items": [],
-  "monsters": [
+  "items": [
    {
-    "monster": "iguana",
+    "item": "fountain",
     "at": [
-     2,
-     2
-    ]
-   },
-   {
-    "monster": "giant bat",
-    "at": [
-     4,
-     2
-    ]
-   },
-   {
-    "monster": "chicken",
-    "at": [
-     6,
-     2
-    ]
-   },
-   {
-    "monster": "lamb",
-    "at": [
-     8,
-     2
-    ]
-   },
-   {
-    "monster": "cave spider",
-    "at": [
-     10,
-     2
-    ]
-   },
-   {
-    "monster": "garter snake",
-    "at": [
-     12,
-     2
-    ]
-   },
-   {
-    "monster": "maggot",
-    "at": [
-     14,
-     2
-    ]
-   },
-   {
-    "monster": "echidna",
-    "at": [
-     16,
-     2
-    ]
-   },
-   {
-    "monster": "floating eye",
-    "at": [
-     18,
-     2
-    ]
-   },
-   {
-    "monster": "wererat",
-    "at": [
-     2,
-     5
-    ]
-   },
-   {
-    "monster": "gnome",
-    "at": [
-     4,
-     5
-    ]
-   },
-   {
-    "monster": "kobold lord",
-    "at": [
-     6,
-     5
-    ]
-   },
-   {
-    "monster": "hobgoblin",
-    "at": [
-     8,
-     5
-    ]
-   },
-   {
-    "monster": "dwarf zombie",
-    "at": [
-     10,
-     5
-    ]
-   },
-   {
-    "monster": "orc zombie",
-    "at": [
-     12,
-     5
-    ]
-   },
-   {
-    "monster": "dretch",
-    "at": [
-     14,
-     5
-    ]
-   },
-   {
-    "monster": "homunculus",
-    "at": [
-     16,
-     5
-    ]
-   },
-   {
-    "monster": "manes",
-    "at": [
-     18,
-     5
-    ]
-   },
-   {
-    "monster": "little dog",
-    "at": [
-     2,
-     8
-    ]
-   },
-   {
-    "monster": "kitten",
-    "at": [
-     4,
-     8
-    ]
-   },
-   {
-    "monster": "dingo puppy",
-    "at": [
-     6,
-     8
-    ]
-   },
-   {
-    "monster": "werejackal",
-    "at": [
-     8,
-     8
+     5,
+     3
     ]
    }
   ],
-  "menagerie": true,
+  "monsters": [],
   "camera": {
    "pos": [
-    10.5,
-    8,
-    18
+    5.5,
+    3.2,
+    7.4
    ],
    "target": [
-    10.5,
-    0,
-    5.5
+    5.5,
+    0.8,
+    3.5
    ]
   },
-  "title": "Dungeon level 2"
+  "pools": [
+   [
+    7,
+    1
+   ],
+   [
+    8,
+    1
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    8,
+    2
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    6,
+    4
+   ]
+  ],
+  "part": "gush"
  }
 }

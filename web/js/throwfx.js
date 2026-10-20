@@ -14,6 +14,7 @@
 
 import * as THREE from 'three';
 import { MODEL_SCALE, STUD_H } from './brick.js';
+import { fountainStud } from './mist.js';
 
 const G = -9; // gravity, squares per second²
 const STEP = 1 / 240; // the simulation's step
@@ -180,6 +181,13 @@ export class ThrowFX {
         this.brick.model(s.url).then((m) => this.burst(m, new THREE.Vector3(s.x + 0.5, STUD_H + 0.2, s.z + 0.5), new THREE.Vector3(), s.splash)).catch(() => {});
       }
     for (const s of [...this.shards]) this.stepShards(s, dt);
+    this.stepStreams(dt);
+    for (const r of [...(this.rings || [])]) { // a ring on the water: spreading, fading
+      r.t += dt;
+      r.mesh.scale.setScalar(0.02 + 0.3 * Math.sqrt(Math.min(1, r.t / 0.9)));
+      r.mesh.material.opacity = 0.6 * Math.max(0, 1 - r.t / 0.9);
+      if (r.t > 0.9) { this.brick.world.remove(r.mesh); r.mesh.geometry.dispose(); r.mesh.material.dispose(); this.rings.splice(this.rings.indexOf(r), 1); }
+    }
     for (const d of [...(this.puddles || [])]) { // spreading, then drying up
       d.t += dt;
       d.mesh.scale.setScalar(d.size * Math.min(1, d.t / 0.35));
@@ -364,6 +372,90 @@ export class ThrowFX {
     this.puddles.push({ mesh: puddle, t: 0, size: 0.28 + Math.random() * 0.12 });
   }
 
+  // a fountain's water broken (something dipped in, a hand cupping a drink: the hero at its rim): its own clear
+  // blue studs (mist.js fountainStud) popping up out of it at p (its surface), tumbling, and dropping back in out
+  // of sight; and a ring spreading out over it. n: how many; up: how hard (squares/s); floor: where they go out
+  // of sight (the water's surface: p's height; drips off someone: the floor), ring: a ring on the water
+  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true } = {}) {
+    const piece = fountainStud();
+    if (piece) {
+      const mesh = new THREE.InstancedMesh(piece.geo.clone(), piece.mat.clone(), n), parts = [];
+      mesh.frustumCulled = false; mesh.renderOrder = 3;
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2, s = 0.15 + Math.random() * 0.35;
+        parts.push({ p: p.clone(), v: new THREE.Vector3(Math.cos(a) * s, up * (0.6 + Math.random() * 0.6), Math.sin(a) * s),
+          q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(18), s: MODEL_SCALE });
+      }
+      this.brick.world.add(mesh);
+      this.shards.push({ mesh, parts, t: 0, life: 1.4, floor, sink: true });
+    }
+    if (!rings) return;
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 32), new THREE.MeshBasicMaterial({ color: 0xdff4ff, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.copy(p).y += 0.006;
+    ring.scale.setScalar(0.02);
+    this.brick.world.add(ring);
+    (this.rings = this.rings || []).push({ mesh: ring, t: 0 });
+  }
+
+  // a stream of water arcing from p to q (a fountain gushing, out to a square it floods): its clear blue
+  // studs (fountainStud) thrown one after another along the arc, tumbling, each sinking away where it lands.
+  // n: how many; T: s each is in the air; gap: s between them. Resolves as the last one lands
+  stream(p, q, n = 10, T = 0.7, gap = 0.035) {
+    const piece = fountainStud();
+    if (!piece) return Promise.resolve();
+    const mesh = new THREE.InstancedMesh(piece.geo.clone(), piece.mat.clone(), n);
+    mesh.frustumCulled = false; mesh.renderOrder = 3;
+    const d = Math.hypot(q.x - p.x, q.z - p.z), h = 0.35 + d * 0.22; // (how high it arcs: higher, the further it goes)
+    const studs = [];
+    for (let i = 0; i < n; i++) {
+      const j = new THREE.Vector3((Math.random() - 0.5) * 0.18, 0, (Math.random() - 0.5) * 0.18); // (spread a little where they land)
+      studs.push({ t0: i * gap, j, q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(14) });
+    }
+    this.brick.world.add(mesh);
+    return new Promise((res) => (this.streams = this.streams || []).push({ mesh, studs, p: p.clone(), q: q.clone(), h, T, t: 0, end: (n - 1) * gap + T, res }));
+  }
+  stepStreams(dt) {
+    const m4 = new THREE.Matrix4(), at = new THREE.Vector3(), s3 = new THREE.Vector3();
+    for (const s of [...(this.streams || [])]) {
+      s.t += dt;
+      s.studs.forEach((f, i) => {
+        const u = (s.t - f.t0) / s.T;
+        let k = 0;
+        if (u > 0 && u < 1.25) {
+          const v = Math.min(1, u);
+          at.lerpVectors(s.p, s.q.clone().add(f.j), v);
+          at.y += s.h * 4 * v * (1 - v); // (a parabola over the straight line between)
+          if (u >= 1) at.y -= (u - 1) * 0.3; // (and down into the water)
+          f.q.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(f.w.x * dt, f.w.y * dt, f.w.z * dt)));
+          k = MODEL_SCALE * (u < 1 ? 1 : Math.max(0, 1 - (u - 1) / 0.25));
+        }
+        m4.compose(at, f.q, s3.set(k, k, k));
+        s.mesh.setMatrixAt(i, m4);
+      });
+      s.mesh.instanceMatrix.needsUpdate = true;
+      if (s.res && s.t >= s.end) { s.res(); s.res = null; }
+      if (s.t > s.end + 0.3) {
+        this.brick.world.remove(s.mesh); s.mesh.geometry.dispose(); s.mesh.material.dispose();
+        this.streams.splice(this.streams.indexOf(s), 1);
+      }
+    }
+  }
+
+  // a wisp of vapor rising out of a fountain (its magic gone out of it, as it's found): soft white puffs
+  // drifting up from p, swelling and thinning away
+  vapor(p) {
+    const n = 14, mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.045, 1),
+      new THREE.MeshBasicMaterial({ color: 0xf2fbff, transparent: true, opacity: 0.45, depthWrite: false }), n), parts = [];
+    mesh.frustumCulled = false;
+    for (let i = 0; i < n; i++)
+      parts.push({ p: p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.1, -i * 0.05, (Math.random() - 0.5) * 0.1)),
+        v: new THREE.Vector3((Math.random() - 0.5) * 0.12, 0.35 + Math.random() * 0.25, (Math.random() - 0.5) * 0.12),
+        q: new THREE.Quaternion(), w: new THREE.Vector3(), s: 0.6 + Math.random() * 0.6, grow: 1.2 });
+    this.brick.world.add(mesh);
+    this.shards.push({ mesh, parts, t: 0, life: 2.8, rise: true });
+  }
+
   // a spit's trail: drips of its colour, let fall as it flies (integrate), each sticking where it lands
   trail(model) {
     const colors = [];
@@ -384,15 +476,17 @@ export class ThrowFX {
     const life = s.life || SHARD_LIFE;
     const m4 = new THREE.Matrix4(), fade = Math.max(0, Math.min(1, (life - s.t) / 0.6));
     s.parts.forEach((f, i) => {
-      f.v.y += G * dt;
+      if (!s.rise) f.v.y += G * dt; else f.s += (f.grow || 0) * dt * 0.4; // (vapor: no weight, swelling as it goes)
       f.p.addScaledVector(f.v, dt);
-      if (f.p.y < STUD_H + 0.01) {
+      if (s.sink && f.p.y < s.floor && f.v.y < 0) f.sunk = (f.sunk || 0) + dt; // (back into the water: sinking out of sight)
+      else if (f.p.y < STUD_H + 0.01) {
         f.p.y = STUD_H + 0.01;
         if (f.stick) f.v.set(0, 0, 0); // (a drop: where it lands, it stays)
         else { f.v.y *= -0.3; f.v.x *= 0.6; f.v.z *= 0.6; f.w.multiplyScalar(0.6); }
       }
       f.q.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(f.w.x * dt, f.w.y * dt, f.w.z * dt)));
-      m4.compose(f.p, f.q, new THREE.Vector3(f.s * fade, f.s * fade, f.s * fade));
+      const k = f.s * fade * (f.sunk ? Math.max(0, 1 - f.sunk / 0.2) : 1);
+      m4.compose(f.p, f.q, new THREE.Vector3(k, k, k));
       s.mesh.setMatrixAt(i, m4);
     });
     s.mesh.instanceMatrix.needsUpdate = true;

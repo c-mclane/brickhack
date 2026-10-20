@@ -12,12 +12,14 @@ import { CombatFX } from './combat.js';
 import { NameTags, nameTagEntries } from './nametags.js';
 import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
-import { Music } from './music.js';
+import { Music, Ambience } from './music.js';
+import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
+import { DRY_GREY, DRY_SIT } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, STATUE_OUT } from './perch.js';
+import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
+import { FigureAnimator, FOUNT, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { loadRules, conflicts } from './charrules.js';
@@ -275,6 +277,7 @@ const game = {
 // ------------------------------------------------------------------ setup
 const world = new World();
 let npTimer = 0;
+const ambience = new Ambience(opts.music / 100); // (a fountain's water, looped under the music: waterNear)
 const music = new Music({
   volume: opts.music / 100,
   onTrack: (title) => {
@@ -294,14 +297,16 @@ const fx = new CombatFX();
 
 // ---- Ascend (the engine's "dreamland" option): a blank baseplate, drawn as
 // any brick level is (render.js): its floor, grey plates, and nothing on it
-const SKY_FOG = [0.62, 0.80, 1.0]; // bright daytime haze
+const NIGHT = 0x0b0d14; // the sky: black (as the test dungeon's), Descend and Ascend alike
+const NIGHT_FOG = [0x0b / 255, 0x0d / 255, 0x14 / 255]; // (what the distance hazes into: the same)
 const ASCEND_FAR = 50; // how far Ascend's baseplate is drawn (squares): a quarter of the dungeon's
-const DUNGEON_FOG = [0.04, 0.04, 0.06];
-// BrickHack's dungeon is a brick maze out in the open, under a blue sky
+// BrickHack's dungeon is a brick maze out in the open, under a black sky
 function setSky() {
-  renderer.daySky = true;
+  renderer.daySky = false;
+  renderer.showSky = false; // (a block level: no stars either, just black)
   renderer.spaceBelow = false;
-  renderer.fog = SKY_FOG;
+  renderer.fog = NIGHT_FOG;
+  if (renderer.brick) renderer.brick.setSky(NIGHT);
 }
 const nameTags = new NameTags($('#nametags'));
 let figPicker = null; // the character select's minifig picker (figpick.js)
@@ -517,7 +522,7 @@ async function init() {
   requestAnimationFrame(frame);
   // music can only start after the first click or key press (browser autoplay rules)
   await music.load();
-  const kick = () => { music.start(); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); };
+  const kick = () => { music.start(); ambience.allow(); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); };
   window.addEventListener('pointerdown', kick);
   window.addEventListener('keydown', kick);
 }
@@ -577,6 +582,7 @@ function handle(m) {
       cam.snap = true;
       break;
     case 'stat':
+      ambience.set('water', waterNear(m.ux, m.uy)); // (in a room with a fountain or a pool: its water, heard)
       if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name, m); }
       world.heroTile = game.skinLoaded && !m.poly ? skinTile() : null;
       // placed blocks belong to a dungeon level
@@ -669,6 +675,24 @@ function handle(m) {
       if (l && rock && renderer.brickOn && renderer.brick) renderer.brick.boulderBreak(l.url, m.x, m.y, rock.url, l.halves);
       break;
     }
+    case 'fountain': // drinking from the fountain you're on, or dipping something in: kneeling at its water (heroPose)
+      if (m.act === 'dry') { fountainDries(m.x, m.y); break; }
+      if (m.act === 'drink' || m.act === 'dip') hero3d.fount = { act: m.act, t0: performance.now(), url: m.act === 'dip' ? (brickItemForTile(m.tile) || {}).url : null, fired: 0 };
+      else if (renderer.brickOn && renderer.brick) { // found to be magic, or "the water glows for a moment": its water flaring, an aura round it
+        const f = hero3d.fount, into = f ? Math.max(0, (f.act === 'drink' ? 0.9 : 0.6) - (performance.now() - f.t0) / 1000) : 0; // (once the water's touched)
+        if (m.act === 'magic') renderer.brick.fountainFlare(m.x, m.y, into); else renderer.brick.fountainGlint(m.x, m.y, into);
+      }
+      break;
+    case 'swim': // fell into water (from the square you stepped from), or crawling out of it (onto a dry one): swim.js
+      if (m.act === 'fall') hero3d.swim = { from: [m.x, m.y], pool: [m.px, m.py], to: null, t0: performance.now(), fired: 0 };
+      else if (hero3d.swim && hero3d.swim.pool[0] === m.px && hero3d.swim.pool[1] === m.py) hero3d.swim.to = [m.x, m.y];
+      else hero3d.swim = { from: [m.px, m.py], pool: [m.px, m.py], to: [m.x, m.y], t0: performance.now() - 1e3 * 0.9, fired: 1 }; // (no fall seen: just the crawl)
+      break;
+    case 'gush': // the fountain you're on gushing: its burst (x -1), then a stream out to each square it floods, nearer first
+      if (!renderer.brickOn || !renderer.brick) break;
+      if (m.x < 0) { renderer.brick.gushBurst(m.fx, m.fy); hero3d.gushN = 0; }
+      else renderer.brick.gushTo(m.fx, m.fy, m.x, m.y, 0.15 + 0.12 * Math.hypot(m.x - m.fx, m.y - m.fy) + 0.03 * (hero3d.gushN = (hero3d.gushN || 0) + 1));
+      break;
     case 'rip': game.rip = m; break;
     case 'bell': $('#hearts').classList.add('flash'); break;
     case 'prevmsg': ui.toggleHistory(); break;
@@ -752,6 +776,7 @@ function onMenu(m) {
 
 function onGameOver() {
   game.playing = false;
+  ambience.set('water', false);
   releaseLock();
   closeInventory();
   ui.hidePrompt();
@@ -1060,6 +1085,7 @@ function drawOptions() {
   mv.value = opts.music;
   mv.nextElementSibling.textContent = opts.music ? `Music: ${opts.music}%` : 'Music: OFF';
   music.setVolume(opts.music / 100);
+  ambience.setVolume(opts.music / 100);
 }
 function openOptions() { drawOptions(); show('options'); }
 
@@ -1259,6 +1285,8 @@ function heroHold() {
   const ball = heavyBall();
   if (ball) { hold.R = null; hold.L = null; hold.two = false; hold.hug = punishment() ? undefined : as(ball); } // (lugging the ball: weapons put away, it held before you: on its chain, the chain's own ball)
   if (statuePerch(performance.now())) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free)
+  const fo = fountAct(performance.now());
+  if (fo) { hold.R = fo.act === 'dip' ? hero3d.fount.url || null : null; hold.L = null; hold.two = false; } // (at a fountain: what's dipped in hand)
   // rings: worn as bracelets round the wrists, the right ring on the right
   // (and a ring wielded: on the wrist too, not in the fist)
   const worn = (slot) => game.inv.find((i) => i.w === slot);
@@ -1307,9 +1335,91 @@ function heroPose(dt, now) {
   // a statue: the hop up onto its ledge, and gazing up at it; a boulder: a lean into the push;
   // the ball: lugged, as if it were the hardest thing in the world
   const pp = statuePerch(now), push = Math.max(0, 1 - (now - (hero3d.pushT0 ?? -1e9)) / 700);
+  const sw = heroSwim(now); // (falling into water, crawling out)
+  if (sw) return a.update(dt, { moving: false, holdsR: !!hold.R, holdsL: !!hold.L, hop: sw.hop, reach: sw.reach, lean: sw.lean });
   return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround),
     holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two,
-    hop: pp ? pp.hop : 0, lookUp: pp ? pp.lookUp : 0, lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: heavyBall() ? 1 : 0 });
+    hop: pp ? pp.hop : 0, lookUp: pp && !fountAct(now) ? pp.lookUp : 0, lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: heavyBall() ? 1 : 0,
+    fount: fountAct(now) });
+}
+// falling into water and crawling out, now (swim.js): where you are and how, or null; and the water
+// broken as it goes. Over: still in it (no crawl: you swim, or drowned), sunk as deep as you went, rising
+// to the waist (heroSink)
+function heroSwim(now) {
+  const s = hero3d.swim;
+  if (!s) return null;
+  const t = (now - s.t0) / 1000, p = swimPose(s, t);
+  if (!p) { hero3d.swim = null; if (!s.to) hero3d.sink = DEEP; return null; }
+  while (renderer.brickOn && renderer.brick && s.fired < SWIM_SPLASH.length && t >= SWIM_SPLASH[s.fired][0]) {
+    const [, at, n, up] = SWIM_SPLASH[s.fired++], ground = world.heroLift ?? phys.y;
+    const w = at === 'pool' ? [s.pool[0] + 0.5, s.pool[1] + 0.5] : [p.x + 0.5, p.z + 0.5];
+    renderer.brick.fx.splashStuds(new THREE3.Vector3(w[0], at === 'you' ? ground + 0.45 + p.y : ground + WATER_Y, w[1]), n, up,
+      at === 'you' ? { floor: ground + STUD_H, ring: false } : {});
+  }
+  return p;
+}
+
+// in water (a pool, a moat, lava: the square you're over, as you go), and not above it (levitating,
+// flying, riding, up on a statue): sunk in it, to the waist, bobbing a little; eased in and out. Squares
+const SINK = 0.4;
+function heroSink(dt, t, hx, hz, perched) {
+  const cond = (ui.stat && ui.stat.cond) || [];
+  const wet = !perched && world.isWater(Math.round(hx), Math.round(hz)) && phys.onGround && !['Lev', 'Fly', 'Ride'].some((c) => cond.includes(c));
+  hero3d.sink = (hero3d.sink || 0) + ((wet ? SINK : 0) - (hero3d.sink || 0)) * Math.min(1, dt * 6);
+  return hero3d.sink + (wet ? 0.02 * Math.sin(t / 1000 * 2.4) * (hero3d.sink / SINK) : 0);
+}
+
+// in a room with a fountain or water (a pool, a moat: not lava) in it, as far as you know it: the floor
+// you're on, out to its walls and doorways (a corridor: no room, nothing heard)
+function waterNear(x, y) {
+  const at = (cx, cy) => world.classAt(cx, cy);
+  const c0 = at(x, y);
+  if (!c0 || (c0.cmap === CM.corr || c0.cmap === CM.litcorr)) return false;
+  const seen = new Set([y * world.w + x]), todo = [[x, y]];
+  while (todo.length && seen.size < 3000) {
+    const [cx, cy] = todo.pop(), c = at(cx, cy);
+    if (c.cmap === CM.fountain || (c.type === 'liquid' && c.cmap !== CM.lava)) return true;
+    if (c.lintel && !(cx === x && cy === y)) continue; // (a doorway: the room's edge)
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = cx + dx, ny = cy + dy, i = ny * world.w + nx, n = at(nx, ny);
+      if (!n || seen.has(i) || !(n.type === 'floor' || n.type === 'liquid' || n.type === 'odoor') || n.cmap === CM.corr || n.cmap === CM.litcorr) continue;
+      seen.add(i);
+      todo.push([nx, ny]);
+    }
+  }
+  return false;
+}
+
+// a fountain dried up (seen): its water greys, it stands a moment, and it comes apart brick by brick
+// (brickworld.js fountainDry); should you be up on its rim, you jump down as it goes
+function fountainDries(x, y) {
+  const it = brickItemByName('fountain');
+  if (!it || !renderer.brickOn || !renderer.brick) return;
+  renderer.brick.fountainDry(x, y, it.url, it.bricks);
+  setTimeout(() => {
+    const p = walk.perch;
+    if (p && p.x === x && p.z === y && p.phase !== 'off')
+      Object.assign(p, { phase: 'off', t0: performance.now(), out: p.side, dest: [p.side.wx * 0.42, p.side.wz * 0.42], moved: true });
+  }, (DRY_GREY + DRY_SIT) * 1000);
+}
+
+// drinking from a fountain, or dipping something in it, now: {act, t (s in)}, or null
+function fountAct(now) {
+  const f = hero3d.fount;
+  if (!f) return null;
+  const t = (now - f.t0) / 1000;
+  if (t >= FOUNT[f.act].T) { hero3d.fount = null; return null; }
+  return { act: f.act, t };
+}
+// ...and its water broken as it goes, out in front of you (you: where your feet are, which way you face)
+function fountSplash(now, x, y, z, yaw) {
+  const f = hero3d.fount, a = fountAct(now);
+  if (!a || !renderer.brickOn || !renderer.brick) return;
+  const cues = FOUNT_SPLASH[a.act];
+  while (f.fired < cues.length && a.t >= cues[f.fired][0]) {
+    const [, n, up] = cues[f.fired++];
+    renderer.brick.fx.splashStuds(new THREE3.Vector3(x + Math.sin(yaw) * FOUNT_REACH, y - FOUNT_DOWN, z - Math.cos(yaw) * FOUNT_REACH), n, up);
+  }
 }
 
 // ---- things dropped fall. What newly lies at your feet (dropped), or where a monster has just
@@ -1349,7 +1459,7 @@ function dropFalls(list, now) {
     if (n <= (dropSeen.counts.get(k) || 0)) continue;
     const [x, z, ...u] = k.split(','), url = u.join(',');
     if (brick.fx.isIncoming(+x, +z, url)) continue; // (thrown, or a boulder rolled: it's on its way there)
-    if (list.some((d) => d.url === url && d.name === 'statue')) continue; // (a statue isn't dropped: one turned to stone, it's just there)
+    if (list.some((d) => d.url === url && PERCHES[d.name])) continue; // (a statue isn't dropped: one turned to stone, it's just there; nor is a fountain)
     const d = dropTop(+x, +z, now);
     if (d) brick.fx.drop(url, +x, +z, d.top, d.at);
   }
@@ -1373,7 +1483,7 @@ function statuePerch(now) {
   const p = walk.perch, F = motion.free;
   if (!p || !F) return null;
   const u = (now - p.t0) / 1000;
-  const pose = p.phase === 'on' ? hopOn(p.from, p.side, u / HOP_ON) : p.phase === 'off' ? hopOff(p.side, p.out, p.dest, u) : perched(p.side);
+  const pose = p.phase === 'on' ? hopOn(p.from, p.side, u / HOP_ON, p.pr) : p.phase === 'off' ? hopOff(p.side, p.out, p.dest, u, p.pr) : perched(p.side, p.pr);
   return { k: 1, dx: p.x + pose.x - F.x, dz: p.z + pose.z - F.z, lift: pose.lift, yaw: pose.yaw, hop: pose.hop, lookUp: pose.lookUp };
 }
 
@@ -2114,11 +2224,14 @@ function obstacles(F) {
         out.push(alongZ ? [x, z + s * DOOR_OPEN, x + 0.25, z + s * 0.5] : [x + s * DOOR_OPEN, z, x + s * 0.5, z + 0.25]);
     }
   // (a statue's foot: its scroll corbels, a cross reaching a quarter into the squares beside it, and
-  // its basin; touched, it's hopped up onto)
+  // its basin; a fountain's pool, its whole square; touched, it's hopped up onto)
   for (const o of world.brickDrops || [])
-    if (o.name === 'statue' && Math.abs(o.x - sx) <= 1 && Math.abs(o.z - sz) <= 1 && !(walk.at && o.x === walk.at.x && o.z === walk.at.z)) {
-      const w = 20 / 80, R = STATUE_OUT, C = 35 / 80; // (and the basin over its middle)
-      out.push([o.x - w, o.z - R, o.x + w, o.z + R, o], [o.x - R, o.z - w, o.x + R, o.z + w, o], [o.x - C, o.z - C, o.x + C, o.z + C, o]);
+    if (PERCHES[o.name] && Math.abs(o.x - sx) <= 1 && Math.abs(o.z - sz) <= 1 && !(walk.at && o.x === walk.at.x && o.z === walk.at.z)) {
+      const R = PERCHES[o.name].OUT;
+      if (o.name === 'statue') {
+        const w = 20 / 80, C = 35 / 80; // (and the basin over its middle)
+        out.push([o.x - w, o.z - R, o.x + w, o.z + R, o], [o.x - R, o.z - w, o.x + R, o.z + w, o], [o.x - C, o.z - C, o.x + C, o.z + C, o]);
+      } else out.push([o.x - R, o.z - R, o.x + R, o.z + R, o]);
     }
   const bfx = renderer && renderer.brick && renderer.brick.boulders;
   if (bfx) for (const b of bfx.all)
@@ -2162,7 +2275,7 @@ function processMovement(now, dt) {
       && walk.perch.x === walk.at.x && walk.perch.z === walk.at.z && !walk.sent.length) {
       // (moved off the statue by the engine (an attack on thin air, a step it took for you): the
       // dismount played, that way, landing where it has you)
-      const p = walk.perch, d = [sq.x - walk.at.x, sq.z - walk.at.z], reach = STATUE_OUT + BODY_R + 0.02, n = Math.hypot(d[0], d[1]);
+      const p = walk.perch, d = [sq.x - walk.at.x, sq.z - walk.at.z], reach = p.pr.OUT + BODY_R + 0.02, n = Math.hypot(d[0], d[1]);
       Object.assign(p, { phase: 'off', t0: now, out: sideToward(d[0], d[1]), dest: [(d[0] / n) * reach * (n > 1 ? Math.SQRT2 : 1), (d[1] / n) * reach * (n > 1 ? Math.SQRT2 : 1)], moved: true });
     } else if (!walk.sent.length && now - lastMove > 300 && (sq.x !== walk.at.x || sq.z !== walk.at.z) && !(walk.perch && walk.perch.moved)) {
       // (all answered, and a moment gone by: it hasn't put you where you went (a step refused), or
@@ -2171,7 +2284,7 @@ function processMovement(now, dt) {
     }
   }
   if (Math.max(Math.abs(F.x - walk.at.x), Math.abs(F.z - walk.at.z)) > 2.5) { F.x = walk.at.x; F.z = walk.at.z; walk.settle = false; return; }
-  const statue = (world.brickDrops || []).some((o) => o.x === walk.at.x && o.z === walk.at.z && o.name === 'statue');
+  const perchOn = (world.brickDrops || []).find((o) => o.x === walk.at.x && o.z === walk.at.z && PERCHES[o.name]), statue = !!perchOn;
   const able = game.playing && !game.mode && !modalOpen() && !anyScreen() && !game.raw && phys.climb == null && !walk.settle;
   const f = able ? (held.has('w') ? 1 : 0) - (held.has('s') ? 1 : 0) : 0;
   const r = able ? (held.has('d') ? 1 : 0) - (held.has('a') ? 1 : 0) : 0;
@@ -2182,7 +2295,7 @@ function processMovement(now, dt) {
   // should the statue drop out of the floor's list a moment while you stand on it)
   if ((statue || walk.perch) && !walk.settle) {
     const at = walk.at, t = (now - (walk.perch ? walk.perch.t0 : now)) / 1000;
-    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: sideToward(F.x - at.x, F.z - at.z) };
+    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: sideToward(F.x - at.x, F.z - at.z), pr: PERCHES[perchOn.name] };
     const p = walk.perch;
     F.x = at.x; F.z = at.z;
     motion.freeMoving = false;
@@ -2193,7 +2306,7 @@ function processMovement(now, dt) {
       const d = OCT[((Math.round(Math.atan2(vz, vx) / (Math.PI / 4)) % 8) + 8) % 8];
       const k = squareIs(at.x + d[0], at.z + d[1]);
       if (k === 'floor' || k === 'climb') {
-        const reach = STATUE_OUT + BODY_R + 0.02, n = Math.hypot(d[0], d[1]);
+        const reach = p.pr.OUT + BODY_R + 0.02, n = Math.hypot(d[0], d[1]);
         Object.assign(p, { phase: 'off', t0: now, out: sideToward(d[0], d[1]), dest: [(d[0] / n) * reach * Math.SQRT2 ** (n > 1 ? 1 : 0), (d[1] / n) * reach * Math.SQRT2 ** (n > 1 ? 1 : 0)] });
       } else if (k !== 'solid') bump(k, at.x + d[0], at.z + d[1], now);
     }
@@ -2323,8 +2436,11 @@ function frame(t) {
     if (fig3d) {
       const [hx, hz] = motion.heroPos(t);
       const pp = statuePerch(t); // (on a statue's square: up on its ledge, looking at it)
-      const m = pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
-        : figureMatrix(hx + 0.5, world.heroLift ?? phys.y, hz + 0.5, doll.yaw);
+      const sw = heroSwim(t), sink = sw ? 0 : heroSink(dt, t, hx, hz, !!pp); // (in a pool: sunk in it, to the waist; falling in, crawling out)
+      const m = sw ? figureMatrix(sw.x + 0.5, (world.heroLift ?? phys.y) + sw.y, sw.z + 0.5, sw.yaw ?? doll.yaw)
+        : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
+        : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink, hz + 0.5, doll.yaw);
+      if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
       renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL, body: pose.body }) : [])];

@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura, addLightning, addEffects, addHueShift, addBlink } from './mist.js';
+import { isMist, mistify, quantumPart, strobify, addAura, auraOf, addLightning, addEffects, addHueShift, addBlink, roil, setWaterStud } from './mist.js';
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
@@ -17,6 +17,11 @@ import { BallChain, ankleAnchor } from './ballchain.js';
 
 // where a figure holds something lugged in both arms: before its belly, clear of it (the model's units: studs)
 export const HUG = new THREE.Vector3(0, -1.05, 1.45); // (high, the hands sunk into it)
+const FOUNT_GLOW = new THREE.Color(0x9ff6ff); // (a magic fountain's water, lit from within)
+// a fountain drying up (fountainDry): s its water takes to grey, s it stands so, the stone it greys to (the
+// walls' grey), and how high in it (studs) its bricks crumble rather than blow apart (its tiers, over its rim)
+export const DRY_GREY = 1.2, DRY_SIT = 1.0;
+const DRY_STONE = new THREE.Color(0xa0a5a9), DRY_CRUMBLE = 2.9;
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
@@ -25,6 +30,8 @@ export const SKY = 0x8fb8de; // the viewer's background
 const PIECES = {
   plate: 'assets/brick/parts/plate4x4.glb', // a floor square: a grey 4x4 plate, origin at its top middle
   brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
+  pool: 'assets/brick/parts/water_stud.glb', // water: a clear blue 1x1 round plate, origin at its top middle (roiling: mist.js roil)
+  poolbed: 'assets/brick/parts/water_bed.glb', // ...and under it, the bottom of its hole: the same plates, still, a square's worth
 };
 const CHUNK = 8; // (squares a side: the map in pieces, each drawn only when in view)
 const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
@@ -41,6 +48,7 @@ export class BrickWorld {
     r.shadowMap.enabled = true;
     r.setPixelRatio(1);
     const scene = (this.scene = new THREE.Scene());
+    this.sky = SKY; // (the game's: black, setSky)
     scene.background = new THREE.Color(SKY);
     // the viewer's lights: sky and ground, a sun that casts shadows, a soft fill from the front
     scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.6));
@@ -71,7 +79,15 @@ export class BrickWorld {
     this.keptRocks = new Map(); // x,z,url -> rocks flung from a broken boulder, lying where they fell (while its rocks are there)
     this.env = gradientEnvironment(THREE, r); // what metal reflects (envmap.js; plastic is lit as ever)
     this.data = null;
-    this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => { this.pieces[k] = await this.partsOf(url); }))
+    this.ready = Promise.all(Object.entries(PIECES).map(async ([k, url]) => {
+      this.pieces[k] = await this.partsOf(url);
+      if (k === 'pool') {
+        setWaterStud(this.pieces[k][0].geometry.clone(), this.pieces[k][0].material); // (a splash's studs, ThrowFX.splashStuds)
+        this.pieces[k] = this.pieces[k].map(({ geometry, material }) => ({ geometry, material: roil(THREE, material) }));
+      }
+      if (k === 'poolbed') this.pieces[k] = this.pieces[k].map(({ geometry, material }) => { // (still, but as the water over it: the same plastic)
+        const m = material.clone(); m.opacity = Math.max(m.opacity, 0.9); m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.2); return { geometry, material: m }; });
+    }))
       .then(() => this.data && this.setTerrain(this.data));
     // solid boxes for the wall courses under the top one (their studs are hidden anyway), and the ground
     const box = new THREE.BoxGeometry(1, 1, 1).translate(0.5, 0.5, 0.5);
@@ -132,7 +148,7 @@ export class BrickWorld {
       chunks.get(key).push(e);
     }
     const had = this.inst[name] || new Map(), now = (this.inst[name] = new Map());
-    const shadows = name !== 'plate' && name !== 'ground'; // (the floor casts no shadow: nothing's under it to fall on)
+    const shadows = !['plate', 'ground', 'pool', 'poolbed'].includes(name); // (the floor casts no shadow: nothing's under it to fall on; nor water)
     const c = new THREE.Color();
     for (const [key, es] of chunks) {
       let sig = es.length;
@@ -148,6 +164,7 @@ export class BrickWorld {
           im.castShadow = shadows;
           im.receiveShadow = true;
           im.frustumCulled = key !== 'all';
+          if (name === 'poolbed') im.renderOrder = -1; // (a pool's still bed drawn before the studs heaped over it: they don't hide what's after them)
           this.world.add(im);
           return im;
         }) };
@@ -166,7 +183,8 @@ export class BrickWorld {
   }
 
   // The dungeon, from the game's terrain builder:
-  // {w, h, floors: [{x, z, shade, studs}], walls: [{x, z, shade, studs, rise}], doors: [{url, matrix, shade}]}
+  // {w, h, floors: [{x, z, shade, studs}], walls: [{x, z, shade, studs, rise}], doors: [{url, matrix, shade}],
+  //  pools: [{x, z, shade}] (water: no floor plate, its hole heaped with roiling clear blue studs)}
   setTerrain(data) {
     this.data = data;
     const M = () => new THREE.Matrix4();
@@ -194,6 +212,26 @@ export class BrickWorld {
         bricks.push([m, w.shade]);
       }
     }
+    // water: the floor's plate gone, and its hole heaped with nothing but 1x1 round plates (on a bed of more of
+    // them, still, the hole's bottom: no grey seen through), their tops sunk
+    // under the floor's: one on each of the square's 16 studs, and three more layers between them, each a
+    // little deeper, offset to cover the gaps the one above leaves (so thick nothing shows through), each a
+    // little off true
+    const pools = [], beds = [];
+    // (a square a fountain's gushing out to: still its floor, till the water lands there: gushTo)
+    const wet = (data.pools || []).filter((p) => !(this.gushing && this.gushing.has(`${p.x},${p.z}`)));
+    for (const p of data.pools || []) if (!wet.includes(p)) plates.push([M().makeTranslation(p.x + 0.5, 0, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
+    for (const p of wet) beds.push([M().makeTranslation(p.x + 0.5, -0.09, p.z + 0.5).scale(new THREE.Vector3(S, S, S)), p.shade]);
+    const LAYERS = [[0.5, 0.5, 4, 4, -0.035], [1, 1, 3, 3, -0.05], [1, 0.5, 3, 4, -0.065], [0.5, 1, 4, 3, -0.08]]; // [x, z offset, how many across, along, top]
+    for (const p of wet)
+      for (const [ox, oz, nx, nz, top] of LAYERS)
+        for (let i = 0; i < nx; i++)
+          for (let j = 0; j < nz; j++) {
+            const h = Math.sin((p.x * 4 + i + ox) * 12.9898 + (p.z * 4 + j + oz) * 78.233 + top * 311) * 43758.5453, r = h - Math.floor(h);
+            pools.push([M().makeTranslation(p.x + (i + ox) / 4 + (r - 0.5) * 0.04, top, p.z + (j + oz) / 4 + (((r * 7.3) % 1) - 0.5) * 0.04).scale(new THREE.Vector3(S, S, S)), p.shade]);
+          }
+    this.place('pool', pools);
+    this.place('poolbed', beds);
     this.place('plate', plates);
     this.place('ground', smooth.concat([[M().makeTranslation(0, -PLATE_H - BRICK_H, 0).scale(new THREE.Vector3(data.w, BRICK_H, data.h)), 0.95]]));
     this.place('course', courses);
@@ -355,6 +393,7 @@ export class BrickWorld {
   setItems(list) {
     const keep = new Map(), touched = new Set();
     for (const it of list) {
+      if (this.drying && this.drying.has(`${it.x},${it.z}`) && it.name === 'fountain') continue; // (drying up: fountainDry has it)
       const level = it.level || 0;
       const key = `${it.x},${it.z},${level},${it.url}`;
       let g = this.items.get(key);
@@ -362,7 +401,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' ? 0 // (a statue, a boulder: square to its square, filling it, its edges its square's)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' ? 0 // (a statue, a boulder, a fountain: square to its square, filling it, its edges its square's)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
@@ -531,7 +570,8 @@ export class BrickWorld {
   // items.built.json "bricks"): the figure crumbles and the bricks blow apart (boulderfx.js crumble),
   // each going once it's at rest; what it left (out: those items' urls: its rocks, its contents)
   // shows on the floor after
-  async statueBreak(url, x, z, out, bricks) {
+  // (figAt: how high up in it (studs) a brick is part of what crumbles, not blown apart; else above a statue's plinth)
+  async statueBreak(url, x, z, out, bricks, figAt = null) {
     const ks = out.map((u) => `${x},${z},${u}`), t = this.fx;
     for (const k of ks) { t.incoming.set(k, (t.incoming.get(k) || 0) + 1); this.redrawItems(k); }
     const done = () => ks.forEach((k) => t.land(k));
@@ -541,9 +581,9 @@ export class BrickWorld {
     const box = new THREE.Box3().setFromObject(whole.clone());
     const off = new THREE.Vector3((box.min.x + box.max.x) / 2, box.min.y, (box.min.z + box.max.z) / 2);
     const foot = new THREE.Vector3(x + 0.5, STUD_H, z + 0.5);
-    const base = (bricks.find((b) => /part-35394-/.test(b.url)) || { pos: [0, 0, 0] }).pos[1];
+    const base = figAt ?? (bricks.find((b) => /part-35394-/.test(b.url)) || { pos: [0, 0, 0] }).pos[1] + 0.1;
     const pieces = bricks.map((b, i) => ({ model: models[i], pos: new THREE.Vector3(...b.pos).sub(off).multiplyScalar(MODEL_SCALE).add(foot),
-      q: new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().setFromMatrix3(new THREE.Matrix3().set(...b.mat))), fig: b.pos[1] > base + 0.1 }));
+      q: new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().setFromMatrix3(new THREE.Matrix3().set(...b.mat))), fig: b.pos[1] > base }));
     await this.boulderFX().crumble(pieces, foot, true);
     done();
   }
@@ -553,7 +593,14 @@ export class BrickWorld {
   setDistance(far) {
     if (far === this.far) return;
     this.far = far;
-    this.scene.fog = far ? new THREE.Fog(SKY, far * 0.7, far) : null;
+    this.scene.fog = far ? new THREE.Fog(this.sky, far * 0.7, far) : null;
+  }
+
+  // the sky (and what the far distance hazes into): a colour
+  setSky(hex) {
+    this.sky = hex;
+    this.scene.background.setHex(hex);
+    if (this.scene.fog) this.scene.fog.color.setHex(hex);
   }
 
   // Punished: the ball and chain on the hero's ankle (ballchain.js), drawn in physics in place of
@@ -615,6 +662,158 @@ export class BrickWorld {
   }
 
   // a square's pile, each item resting on the one below
+  // a fountain's water flaring up, an angel's aura round it: "the water glows for a moment" (glint); or as
+  // it's found to be magic, a wisp of vapor rising out of it (flare).
+  // Its see-through blue pieces (the water: its pool, its basins, the studs it throws) given their own
+  // plastic, lit from within
+  fountainFlare(x, z, delay = 0) {
+    const t = performance.now() / 1000 + delay;
+    (this.fglints = this.fglints || []).push({ sq: `${x},${z}`, t, T: 4.5, peak: 2.2 });
+    setTimeout(() => this.fx.vapor(new THREE.Vector3(x + 0.5, STUD_H + 1.15, z + 0.5)), delay * 1000);
+  }
+  fountainGlint(x, z, delay = 0) {
+    (this.fglints = this.fglints || []).push({ sq: `${x},${z}`, t: performance.now() / 1000 + delay, T: 2.2, peak: 2 });
+  }
+  stepFountainGlow(now) {
+    const lit = new Map(); // square -> how brightly, now
+    for (const g of [...(this.fglints || [])]) {
+      const u = (now - g.t) / g.T;
+      if (u > 1) { this.fglints.splice(this.fglints.indexOf(g), 1); continue; }
+      if (u < 0) continue;
+      const k = g.peak * (u < 0.15 ? u / 0.15 : 1 - (u - 0.15) / 0.85) ** 1.5; // (up fast, dying away)
+      lit.set(g.sq, Math.max(lit.get(g.sq) || 0, k));
+    }
+    if (!lit.size && !this.fglowing) return;
+    this.fglowing = lit.size > 0;
+    for (const g of this.items.values()) {
+      const lay = g.userData.lay;
+      if (!lay) continue;
+      if (g.userData.fountain === undefined) { // (is it a fountain? its water's own plastic, once)
+        let f = false;
+        lay.traverse((o) => { if (o.userData && o.userData.fx === 'fountain') f = true; });
+        g.userData.fountain = f ? [] : null;
+        if (f) lay.traverse((o) => {
+          if (!o.isMesh || !o.material.transparent || !o.material.emissive) return;
+          const c = o.material.color;
+          if (!(c.b > 0.6 && c.r < 0.9)) return; // (the blue: not the clear, nor the flame)
+          const m = o.material.clone();
+          m.onBeforeCompile = o.material.onBeforeCompile; // (the thrown studs: their flight is in the shader)
+          if (o.material.customProgramCacheKey) m.customProgramCacheKey = o.material.customProgramCacheKey;
+          o.material = m;
+          g.userData.fountain.push({ m, e: m.emissive.clone(), i: m.emissiveIntensity });
+        });
+      }
+      if (!g.userData.fountain) continue;
+      const k = lit.get(g.userData.square) || 0;
+      if (k === (g.userData.glowK || 0)) continue;
+      g.userData.glowK = k;
+      // ...and an angel's aura round all its bricks (made the first time it flares)
+      if (k > 0 && !g.userData.aura) {
+        g.userData.aura = auraOf(THREE, lay).map((m) => ({ m, s: m.material.uniforms.uStrength.value }));
+        lay.updateMatrixWorld(true);
+      }
+      for (const a of g.userData.aura || []) { a.m.visible = k > 0; a.m.material.uniforms.uStrength.value = a.s * Math.min(3, k / 0.55); } // (flaring with the water)
+      for (const w of g.userData.fountain) {
+        w.m.emissive.copy(w.e).lerp(FOUNT_GLOW, Math.min(1, k));
+        w.m.emissiveIntensity = w.i + k * 1.4;
+      }
+    }
+  }
+
+  // a fountain dried up at (x, z) (url: its model; bricks: its bricks, items.built.json, its water in grey):
+  // the water stops; the water heaped in its pool and the flame on its top evaporate (rising, thinning away,
+  // wisps of vapor coming off them: its joints "pool" and "flame"), and every other blue piece of it greys
+  // to stone; it stands a moment, and it comes apart brick by brick (statueBreak: its tiers crumbling, its
+  // basin blown apart), each going once it's at rest. Taken from the floor's items (setItems leaves it be)
+  fountainDry(x, z, url, bricks) {
+    const sq = `${x},${z}`;
+    let key = null, g = null;
+    for (const [k, gg] of this.items) {
+      if (gg.userData.square !== sq || !gg.userData.lay) continue;
+      let f = false;
+      gg.userData.lay.traverse((o) => { if (o.userData && o.userData.fx === 'fountain') f = true; });
+      if (f) { key = k; g = gg; break; }
+    }
+    if (!g) return;
+    this.items.delete(key);
+    (this.drying = this.drying || new Set()).add(sq);
+    const lay = g.userData.lay, mats = [], evap = [], nodes = new Set();
+    const goes = (o) => { for (let n = o; n && n !== lay; n = n.parent) if (n.name === 'pool' || n.name === 'flame') return n; return null; };
+    lay.updateMatrixWorld(true);
+    lay.traverse((o) => {
+      if (!o.isMesh) return;
+      if (o.isInstancedMesh || o.material.isShaderMaterial) { o.visible = false; return; } // (the water stops; no glow about it)
+      const n = goes(o), c = o.material.color;
+      if (!n && !(o.material.transparent && o.material.emissive && c.b > 0.6 && c.r < 0.9)) return;
+      const m = o.material.clone();
+      m.onBeforeCompile = o.material.onBeforeCompile;
+      o.material = m;
+      if (n) { m.transparent = true; m.depthWrite = false; evap.push({ m, o: m.opacity }); nodes.add(n); }
+      else mats.push({ m, c: m.color.clone(), e: m.emissive.clone(), i: m.emissiveIntensity, o: m.opacity });
+    });
+    // (wisps of vapor: off the pool, round it, and off the flame, at its top)
+    const wisps = [];
+    for (const n of nodes) {
+      const b = new THREE.Box3().setFromObject(n), mid = b.getCenter(new THREE.Vector3());
+      if (n.name === 'flame') wisps.push(mid.clone().setY(b.max.y));
+      else for (let k = 0; k < 4; k++) { const a = (k / 4) * Math.PI * 2 + 0.4, r = Math.min(b.max.x - b.min.x, b.max.z - b.min.z) * 0.32;
+        wisps.push(new THREE.Vector3(mid.x + Math.cos(a) * r, b.max.y, mid.z + Math.sin(a) * r)); }
+    }
+    wisps.forEach((p, i) => setTimeout(() => this.fx.vapor(p), 120 + i * 140));
+    (this.dries = this.dries || []).push({ g, mats, evap, nodes: [...nodes].map((n) => ({ n, y: n.position.y })), x, z, url,
+      bricks: bricks && bricks.filter((b) => b.group !== 'pool' && b.group !== 'flame'), t0: performance.now() / 1000 });
+  }
+  stepDry(now) {
+    for (const d of [...(this.dries || [])]) {
+      const t = now - d.t0, k = Math.min(1, t / DRY_GREY);
+      for (const w of d.mats) {
+        w.m.color.copy(w.c).lerp(DRY_STONE, k);
+        w.m.emissive.copy(w.e).multiplyScalar(1 - k);
+        w.m.emissiveIntensity = w.i * (1 - k);
+        w.m.opacity = w.o + (1 - w.o) * k;
+      }
+      for (const w of d.evap) w.m.opacity = w.o * (1 - k) ** 1.5; // (the water and the flame: thinning away as they rise)
+      for (const { n, y } of d.nodes) { n.position.y = y + 0.6 * k; n.visible = k < 1; }
+      if (t < DRY_GREY + DRY_SIT) continue;
+      this.dries.splice(this.dries.indexOf(d), 1);
+      this.world.remove(d.g);
+      if (d.bricks) this.statueBreak(d.url, d.x, d.z, [], d.bricks, DRY_CRUMBLE).then(() => this.drying.delete(`${d.x},${d.z}`));
+      else this.drying.delete(`${d.x},${d.z}`);
+    }
+  }
+
+  // a fountain at (fx, fz) gushing (the game's gush): a burst of its water out of its top, falling all about
+  // it (and over you, up on it); and a stream arcing out to each square it floods, nearer ones first (delay:
+  // s), the pool there opening as the water lands (setTerrain keeps its floor till then)
+  fountainTop(fx, fz) {
+    for (const g of this.items.values()) {
+      if (g.userData.square !== `${fx},${fz}` || !g.userData.lay) continue;
+      let f = false;
+      g.userData.lay.traverse((o) => { if (o.userData && o.userData.fx === 'fountain') f = true; });
+      if (!f) continue;
+      const b = new THREE.Box3().setFromObject(g.userData.lay), c = b.getCenter(new THREE.Vector3());
+      return c.setY(b.max.y - 0.1);
+    }
+    return new THREE.Vector3(fx + 0.5, STUD_H + 1.6, fz + 0.5);
+  }
+  gushBurst(fx, fz) {
+    const top = this.fountainTop(fx, fz);
+    this.fx.splashStuds(top, 24, 2.4, { floor: STUD_H + 0.5, ring: false });
+  }
+  gushTo(fx, fz, x, z, delay = 0) {
+    const sq = `${x},${z}`;
+    (this.gushing = this.gushing || new Set()).add(sq);
+    if (this.data) this.setTerrain(this.data);
+    setTimeout(() => {
+      const d = Math.hypot(x - fx, z - fz), at = new THREE.Vector3(x + 0.5, -0.03, z + 0.5);
+      this.fx.stream(this.fountainTop(fx, fz), at, 12, 0.5 + d * 0.07).then(() => {
+        this.gushing.delete(sq);
+        if (this.data) this.setTerrain(this.data);
+        this.fx.splashStuds(at, 12, 1.8);
+      });
+    }, delay * 1000);
+  }
+
   restack(square) {
     const pile = [...this.items.values()].filter((g) => g.userData.square === square && !g.userData.posed).sort((a, b) => a.userData.level - b.userData.level);
     let y = STUD_H;
@@ -742,6 +941,8 @@ export class BrickWorld {
       this.sun.target.updateMatrixWorld();
     }
     this.fx.step(); // thrown things in flight
+    this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
+    this.stepDry(performance.now() / 1000); // ...or drying up
     if (this.boulders) this.boulders.step(); // boulders rolling, rocks flying
     const now = performance.now() / 1000;
     if (this.hazeMat) this.hazeMat.uniforms.uTime.value = now;

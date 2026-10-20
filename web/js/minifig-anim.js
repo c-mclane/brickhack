@@ -85,6 +85,32 @@ function slashAt(k, rest) {
   return { swing: sw(a) + (sw(b) - sw(a)) * u, out: a.out + (b.out - a.out) * u, twist: a.twist + (b.twist - a.twist) * u };
 }
 
+// at a fountain (on its rim, facing its water): drinking, a cupped handful brought up to the mouth;
+// dipping, what's in the right hand plunged in and swished about. Keyframes [s, value] for each of:
+// the bend at the waist (radians), the arms' swing (degrees: null, where they'd be anyway; "R" with the
+// right), turned in toward each other (degrees), and the head tipped back (radians)
+export const FOUNT = {
+  drink: { T: 2.6, cup: 0.6, sip: [1.15, 1.9],
+    lean: [[0, 0], [0.4, 0.8], [0.75, 0.8], [1.15, 0.05], [2.2, 0.05], [2.6, 0]],
+    armR: [[0, null], [0.4, -12], [0.6, 4], [0.78, 4], [1.15, -140], [1.9, -146], [2.3, -20], [2.6, null]],
+    armL: 'R', inn: [[0, 0], [0.4, -14], [1.15, -16], [1.9, -16], [2.3, 0]],
+    head: [[0, 0], [1.1, 0], [1.4, 0.45], [1.9, 0.45], [2.2, 0]] },
+  dip: { T: 2.1, cup: 0.55, out: 1.4,
+    lean: [[0, 0], [0.4, 0.8], [1.55, 0.8], [2.0, 0]],
+    armR: [[0, null], [0.4, -28], [0.55, 6], [0.75, 14], [0.95, 2], [1.15, 14], [1.4, -40], [1.65, -40], [2.1, null]],
+    armL: [[0, null], [0.4, 8], [1.55, 8], [2.0, null]], inn: [[0, 0]],
+    head: [[0, 0], [0.4, -0.25], [1.4, -0.25], [1.7, 0]] },
+};
+function keyAt(keys, t, rest = 0) {
+  const v = (x) => (x === null ? rest : x);
+  if (t <= keys[0][0]) return v(keys[0][1]);
+  for (let i = 0; i < keys.length - 1; i++) {
+    const a = keys[i], b = keys[i + 1];
+    if (t <= b[0]) return v(a[1]) + (v(b[1]) - v(a[1])) * ease((t - a[0]) / (b[0] - a[0]));
+  }
+  return v(keys[keys.length - 1][1]);
+}
+
 export class FigureAnimator {
   // rig: the model's joints ({armR: {pivot, axis, swing, holds}, armL, legs, head, waist}), or null
   constructor(rig, opts = {}) {
@@ -111,7 +137,8 @@ export class FigureAnimator {
   //   lean (radians: the body bent forward at the waist, as into a push), reach (0..1: both arms
   //   out in front, pushing), lookUp (0..1: gazing up at something tall), heavy (0..1: lugging
   //   something far too heavy in both arms: leaning back, arms shaking, staggering), hop (0..1:
-  //   in the air, a little jump: arms flung up, knees up)}
+  //   in the air, a little jump: arms flung up, knees up), fount ({act: 'drink'|'dip', t: s into it}: at a
+  //   fountain, FOUNT)}
   update(dt, state = {}) {
     const rig = this.rig;
     if (!rig) return null;
@@ -150,7 +177,8 @@ export class FigureAnimator {
     // (lugging something heavy: a stagger, side to side)
     const waddle = turnAbout(waist, [0, 0, 1], Math.sin(this.stride) * this.walk * 4 * (1 + 2.5 * heavy) * DEG);
     // bent forward into a push; leaning back under a weight
-    const bend = turnAbout(waist, [1, 0, 0], A.lean - 0.14 * heavy);
+    const F = state.fount && FOUNT[state.fount.act] && state.fount.t < FOUNT[state.fount.act].T ? FOUNT[state.fount.act] : null, ft = F ? state.fount.t : 0;
+    const bend = turnAbout(waist, [1, 0, 0], A.lean - 0.14 * heavy + (F ? keyAt(F.lean, ft) : 0));
     // the upper body: breathing, twisting into a slash, waddling
     const B = mul(bend, mul(waddle, mul(slash ? turnAbout(waist, [0, -1, 0], lefty ? -slash.twist : slash.twist) : ident(), swellY(waist[1], 1 + breath))));
 
@@ -158,7 +186,7 @@ export class FigureAnimator {
     P.body = B;
     P.amulet = B; // (an amulet worn: on the chest, moving with it)
     const hp = rig.head ? rig.head.pivot : [0, 0, 0];
-    P.head = mul(B, mul(turnAbout(hp, [0, 1, 0], this.headYaw), turnAbout(hp, [1, 0, 0], this.headPitch)));
+    P.head = mul(B, mul(turnAbout(hp, [0, 1, 0], this.headYaw * (F ? 0 : 1)), turnAbout(hp, [1, 0, 0], this.headPitch * (F ? 0 : 1) - (F ? keyAt(F.head, ft) : 0))));
 
     // the arms: swing (degrees, as tools/minifig.py's pose_arm: negative raises the arm forward)
     for (const side of ['R', 'L']) {
@@ -181,7 +209,8 @@ export class FigureAnimator {
       let out = 0;
       // (fighting with two weapons, the left slashes too, a moment after the right)
       const slashL = side === 'L' && !lefty && state.twoweap && atk >= 0.25 && atk < 1.25 ? slashAt(atk - 0.25, this.arm.L) : null;
-      if (slash && side === (lefty ? 'L' : 'R')) { a = slash.swing; out = slash.out; }
+      if (F) { a = keyAt(F[F['arm' + side] === 'R' ? 'armR' : 'arm' + side], ft, a); out = keyAt(F.inn, ft); this.arm[side] = a; }
+      else if (slash && side === (lefty ? 'L' : 'R')) { a = slash.swing; out = slash.out; }
       else if (slashL) { a = slashL.swing; out = slashL.out; }
       else this.arm[side] = a;
       // (as a shoulder does it: the arm first thrown out sideways (about the figure's

@@ -2085,6 +2085,56 @@ web_boulder_push(struct obj *obj, int sx, int sy, int rx, int ry)
     endmsg();
 }
 
+/* fountain.c drinkfountain / dipfountain: the hero drinks from the fountain
+   they're on (dip 0) or dips obj into it (dip 1): the client plays it, a
+   drink cupped from its water or the thing dipped in, before what comes of it;
+   or it's found to be magic (dip 2), or "the water glows for a moment" (dip
+   3): either way its water flares up, an aura round it */
+void
+web_fountain(int dip, struct obj *obj)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"fountain\",\"act\":\"%s\",\"tile\":%d,\"x\":%d,\"y\":%d",
+            dip == 3 ? "glint" : dip == 2 ? "magic" : dip ? "dip" : "drink", obj ? web_obj_tile(obj, obj_to_glyph(obj)) : -1, u.ux, u.uy);
+    endmsg();
+}
+
+/* fountain.c dogushforth / gush: water gushing out of the fountain at the
+   hero's square (x -1: the burst, as it begins), or flooding (x, y) (a pool
+   there now): the client sprays it and arcs a stream out there */
+void
+web_gush(int x, int y)
+{
+    if (!out || (x >= 0 && !cansee(x, y)))
+        return;
+    fprintf(out, "{\"t\":\"gush\",\"fx\":%d,\"fy\":%d,\"x\":%d,\"y\":%d", u.ux, u.uy, x, y);
+    endmsg();
+}
+
+/* fountain.c dryup: the fountain at (x, y) dried up (seen): the client greys
+   its water and breaks it apart */
+void
+web_dryup(int x, int y)
+{
+    if (!out || !cansee(x, y))
+        return;
+    fprintf(out, "{\"t\":\"fountain\",\"act\":\"dry\",\"tile\":-1,\"x\":%d,\"y\":%d", x, y);
+    endmsg();
+}
+
+/* trap.c drown: the hero, on the water at (u.ux, u.uy), fell in from (x, y)
+   (crawl 0), or crawls out onto (x, y) (crawl 1): the client plays it */
+void
+web_swim(int crawl, int x, int y)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"swim\",\"act\":\"%s\",\"px\":%d,\"py\":%d,\"x\":%d,\"y\":%d",
+            crawl ? "crawl" : "fall", u.ux, u.uy, x, y);
+    endmsg();
+}
+
 /* zap.c fracture_rock: a boulder lying at (x, y) broke into rocks (a pick-axe,
    force bolt, striking): the client bursts it, grit and rocks flying */
 void
