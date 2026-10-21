@@ -205,7 +205,8 @@ export async function runTestbed(data) {
     for (;;) {
       // set out: the room as the level has it, the hero at its start, a pick in hand
       const st = at('statue') || at('fountain'), bo = at('boulder'), ba = at('heavy iron ball'); // (or a fountain to stand on: perch.js PERCHES)
-      lay([st, bo]);
+      const rest = (level.items || []).filter((i) => !['statue', 'fountain', 'boulder', 'heavy iron ball'].includes(i.item)); // (anything else the scene has: a sink...)
+      lay([st, bo, ...rest]);
       brick.boulders && brick.boulders.clear();
       for (const [k, kept] of brick.keptRocks) brick.keptRocks.delete(k);
       place(level.start[0], level.start[1], Math.PI / 2);
@@ -467,6 +468,94 @@ export async function runTestbed(data) {
           [-1, 0], [-1, 0], [-1, 0], [-1, 0], [-1, 0], [0, -1], [0, -1]]);
         await wait(2);
         hero.breath = null;
+        say('');
+      }
+      // a sink (?part=sink): stood at, a sip from its tap (cold, scalding, a potion's colour), its pipes clanking, a
+      // song from the sewers, sewage, a sewer rat up out of its drain, a ring found in it; then kicked (klunk,
+      // muddy waste and a ring, a black ooze), a ring dropped down its drain, and its pipes broken: a fountain
+      const sk = at('sink');
+      if (doing('sink') && sk) {
+        room();
+        lay([sk]);
+        hero.hold = { R: null };
+        const [sx, sz] = sk.at;
+        // (round to its front, and up to it)
+        await walk([[1, 0], [1, 0], [0, 1], [1, 0], [0, -1]]);
+        await wait(0.8);
+        const spout = () => brick.sinkSpout(sx, sz), drain = () => brick.sinkDrain(sx, sz);
+        const sip = async (msg, { tint = null, then = null } = {}) => {
+          hero.fount = { act: 'sip', t0: clock, fired: 0 };
+          await wait(0.3);
+          brick.fx.pour(spout(), drain().y, 1.2, { tint });
+          await wait(FOUNT.sip.cup);
+          say(msg);
+          if (then) then();
+          await wait(FOUNT.sip.T - FOUNT.sip.cup - 0.3 + 0.8);
+        };
+        await sip('You take a sip of very cold water.', { then: () => { for (let i = 0; i < 4; i++) setTimeout(() => brick.fx.frost(drain().clone().setY(drain().y + 0.15)), i * 250); } });
+        await sip('You take a sip of scalding hot water.', { then: () => { for (let i = 0; i < 5; i++) setTimeout(() => brick.fx.vapor(drain(), 0xf2f6f8, 1.3), i * 200); } });
+        hero.fount = { act: 'scald', t0: clock, fired: 0 };
+        await wait(FOUNT.scald.T + 0.6);
+        await sip('Some puce liquid flows from the faucet.', { tint: 0xc0608a });
+        await sip('You hear clanking from the pipes...', { then: () => brick.sinkShake(sx, sz, 1.2) });
+        await sip('You hear snatches of song from among the sewers...', { then: () => brick.fx.notes(drain(), 6) });
+        await sip('Gaggg... this tastes like sewage!  You vomit.', { tint: 0x7a6a3a });
+        hero.fount = { act: 'sinkRetch', t0: clock, fired: 0 };
+        for (let i = 0; i < 3; i++) setTimeout(() => brick.fx.splashStuds(drain(), 5, 0.5, { tint: 0x8c8a3a }), 500 + i * 330);
+        await wait(FOUNT.retch.T + 0.6);
+        // (a sewer rat up out of its drain, over the rim, onto the square beside you)
+        hero.fount = { act: 'sip', t0: clock, fired: 0 };
+        await wait(FOUNT.sip.cup);
+        if (mons['sewer rat']) {
+          say('Eek!  There\'s a sewer rat in the sink!');
+          const rat = { monster: 'sewer rat', at: [sx + 1, sz], ...mons['sewer rat'], kind: mons['sewer rat'].creature, lungeAt: -1e9, rise: { f: [sx, sz], t0: clock, sink: true } };
+          brick.fx.splashStuds(drain(), 8, 1.2);
+          cobras.push(rat);
+          await wait(RISE_T + 2);
+          cobras.splice(cobras.indexOf(rat), 1);
+        }
+        // (a ring found in it: reached in for, and held up high)
+        say('You find a ring in the sink!');
+        hero.fount = { act: 'reach', t0: clock, fired: 0, url: null, grab: url('ring of adornment') };
+        brick.fx.sparkles(drain(), 16, 0xfff2b0, 0.15);
+        await wait(FOUNT.reach.T - 0.3);
+        hero.raise = { t0: clock, T: 2.4, glint: 0, url: url('ring of adornment'), tip: [0.22, 1.3] };
+        await wait(2.6);
+        lay([sk, { item: 'ring of adornment', at: sk.at }]);
+        await wait(1.2);
+        lay([sk]);
+        // (a step back from it, and kicked)
+        await walk([[0, 1]]);
+        hero.yaw = 0;
+        await wait(0.6);
+        const kick = async (msg, then) => {
+          hero.fount = { act: 'kick', t0: clock, fired: 0 };
+          await wait(0.38);
+          brick.sinkShake(sx, sz, 0.6, 0.04);
+          say(msg);
+          if (then) then();
+          await wait(FOUNT.kick.T + 1.4);
+        };
+        await kick('Klunk!  The pipes vibrate noisily.');
+        await kick('Flupp!  Muddy waste pops up from the drain.', () => {
+          brick.fx.splashStuds(drain(), 18, 1.6, { tint: 0x6b5233 });
+          setTimeout(() => { say('You see a ring shining in its midst.'); lay([sk, { item: 'ring of adornment', at: sk.at }]); brick.fx.sparkles(drain(), 18, 0xfff2b0, 0.15); }, 900);
+        });
+        lay([sk]);
+        await kick('A black ooze gushes up from the drain!', () => { for (let i = 0; i < 4; i++) setTimeout(() => brick.fx.splashStuds(drain(), 12, 1.4, { tint: 0x1a1a1a }), i * 180); });
+        // (back up to it, and a ring dropped down its drain)
+        await walk([[0, -1]]);
+        await wait(0.6);
+        say('You drop a ruby ring down the drain.');
+        await brick.sinkSwallow(sx, sz, url('ring of adornment'));
+        await wait(1.4);
+        // (its pipes broken: water spurting out, the sink burst apart, a fountain there now)
+        hero.fount = { act: 'sip', t0: clock, fired: 0 };
+        await wait(FOUNT.sip.cup);
+        say('The pipes break!  Water spurts out!');
+        brick.sinkBreak(sx, sz);
+        lay([{ item: 'fountain', at: sk.at }]);
+        await wait(5);
         say('');
       }
       // more out of a fountain (?part=fountain): a water demon rising out of it, granting a wish and gone in a burst;
@@ -753,12 +842,12 @@ export async function runTestbed(data) {
     }
     const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' ? (hero.fount.grab && fo.t > FOUNT.dip.cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' || fo.act === 'reach' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     for (const c of cobras) {
       let rp = null; // (out of a fountain: up out of its water, over the rim, off to its square: perch.js risePath)
       const half = 0.55, out = c.kind === 'snake' ? half * Math.cos(0.45) : 0.22, up = half * Math.sin(0.45); // (a snake: half its length; as main.js SNAKE_OUT, SNAKE_UP)
-      if (c.rise) { const u = (clock - c.rise.t0) / RISE_T; if (u < 0) continue; if (u < 1) rp = risePath(c.rise.f, c.at, u, out); }
+      if (c.rise) { const u = (clock - c.rise.t0) / RISE_T; if (u < 0) continue; if (u < 1) rp = risePath(c.rise.f, c.at, u, out, c.rise.sink); }
       let cx = rp ? rp.x : c.at[0], cz = rp ? rp.z : c.at[1], lean = rp ? rp.lean || 0 : 0, leanYaw = rp ? rp.leanYaw : null;
       const fnt = !rp && drops.find((o) => o.name === 'fountain' && Math.abs(o.x - cx) < 1.6 && Math.abs(o.z - cz) < 1.6), ag = fnt && againstFountain([fnt.x, fnt.z], cx, cz, out);
       if (ag) { cx = ag.x; cz = ag.z; lean = 1; leanYaw = ag.yaw; } // (up against a fountain: out of its wall, a snake leaning back on it: as main.js)

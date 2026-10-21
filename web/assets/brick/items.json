@@ -19372,5 +19372,151 @@
     "color": 334
    }
   ]
+ },
+ "sink": {
+  "brick": "A pedestal sink, after a classic washstand: a white oval basin held up at its back on a column of white round bricks, on a curved white foot swept out to the front and sides; a chrome two-valve tap at its back",
+  "upright": true,
+  "parts": [
+   {
+    "part": "47457",
+    "color": 15,
+    "pos": [
+     0,
+     -16,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3062b",
+    "color": 15,
+    "pos": [
+     -10,
+     -40,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3062b",
+    "color": 15,
+    "pos": [
+     -10,
+     -64,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3062b",
+    "color": 15,
+    "pos": [
+     10,
+     -40,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3062b",
+    "color": 15,
+    "pos": [
+     10,
+     -64,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "6195",
+    "color": 15,
+    "pos": [
+     0,
+     -72,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "6936",
+    "color": 383,
+    "pos": [
+     0,
+     -80,
+     30
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   }
+  ]
  }
 }

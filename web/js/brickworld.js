@@ -29,6 +29,8 @@ export const FOUNT_RIM_SPOT = [0.6, 0.6, 0.6];
 // a fountain's basin: how many coins lie strewn in it (gold there: basinCoins), how high its floor (squares, over
 // the studs), and between what distances from its middle (out of its column, in from its wall)
 const BASIN_COINS = 16, BASIN_FLOOR = 0.36, BASIN_R = [0.3, 0.64];
+// a sink's tap's spout and the drain in its bowl, off its square's middle (squares: [across, up, toward its front])
+const SINK_SPOUT = [0, 1.12, -0.08], SINK_DRAIN = [0, 0.83, 0.1];
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
@@ -420,7 +422,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' ? 0 // (a statue, a boulder, a fountain: square to its square, filling it, its edges its square's)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' ? it.turn || 0 // (a statue, a boulder, a fountain, a sink: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
@@ -992,6 +994,59 @@ export class BrickWorld {
     this.fx.sparkles(this.fountainWater(fx, fz).add(new THREE.Vector3(-0.3, 0, 0.1)), 26, 0xbfefff, 0.3);
     return { show: () => t.land(k) };
   }
+  // ---- a sink (items.json "sink"): where its tap's spout is, and the drain in its bowl (world units), as it
+  // stands, turned on its square (its back to a wall: setItems)
+  sinkAt(x, z) { return [...this.items.values()].find((g) => g.userData.square === `${x},${z}` && g.userData.name === 'sink') || null; }
+  sinkSpot(x, z, [ox, oy, oz]) {
+    const g = this.sinkAt(x, z), t = g ? g.rotation.y : 0, c = Math.cos(t), s = Math.sin(t);
+    return new THREE.Vector3(x + 0.5 + ox * c + oz * s, STUD_H + oy, z + 0.5 - ox * s + oz * c);
+  }
+  sinkSpout(x, z) { return this.sinkSpot(x, z, SINK_SPOUT); }
+  sinkDrain(x, z) { return this.sinkSpot(x, z, SINK_DRAIN); }
+  // a ring dropped down a sink's drain (url: its model): dropped in over the bowl, spinning round the drain,
+  // and gone down it
+  sinkSwallow(x, z, url) {
+    const d = this.sinkDrain(x, z);
+    return this.model(url).then((m) => new Promise((res) => {
+      const r = m.clone(), box = new THREE.Box3().setFromObject(r), c = box.getCenter(new THREE.Vector3()), g = new THREE.Group();
+      r.position.copy(c).negate(); g.add(r); g.scale.setScalar(MODEL_SCALE);
+      this.world.add(g);
+      const t0 = performance.now();
+      const tick = () => {
+        const u = (performance.now() - t0) / 1000;
+        if (u > 1.6) { this.world.remove(g); res(); return; }
+        const fall = Math.min(1, u / 0.35), spin = Math.max(0, (u - 0.35) / 1.25), rr = 0.1 * (1 - spin);
+        g.position.set(d.x + Math.cos(spin * 14) * rr, d.y + 0.35 * (1 - fall * fall) - 0.06 * spin, d.z + Math.sin(spin * 14) * rr);
+        g.rotation.set(spin * 2, u * 9, 0);
+        g.scale.setScalar(MODEL_SCALE * (1 - 0.8 * spin));
+        if (u > 0.35 && !g.userData.splashed) { g.userData.splashed = true; this.fx.splashStuds(d, 4, 0.6); }
+        requestAnimationFrame(tick);
+      };
+      tick();
+    }));
+  }
+  // a sink rattling on its foot (clanking pipes; kicked): T s, dying away
+  sinkShake(x, z, T = 0.8, amp = 0.025) {
+    const g = this.sinkAt(x, z);
+    if (!g) return;
+    const base = g.userData.shakeBase || (g.userData.shakeBase = g.position.clone()), t0 = performance.now();
+    const tick = () => {
+      const u = (performance.now() - t0) / 1000 / T;
+      if (u >= 1 || !g.parent) { g.position.copy(base); return; }
+      const k = amp * (1 - u);
+      g.position.set(base.x + k * Math.sin(u * 95), base.y + Math.abs(k * 0.5 * Math.sin(u * 60)), base.z + k * Math.cos(u * 83));
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
+  // the pipes broken: water spurting up out of it, the sink burst apart (as the game has it: a fountain there now)
+  sinkBreak(x, z) {
+    const g = this.sinkAt(x, z), url = g && [...this.items.entries()].find(([, v]) => v === g)[0].split(',').slice(3).join(',');
+    const d = this.sinkDrain(x, z);
+    if (url) this.fx.shatter(url, x, z, true);
+    this.fx.splashStuds(d, 26, 2.6, { floor: STUD_H, ring: false });
+    for (let i = 0; i < 6; i++) setTimeout(() => this.fx.splashStuds(d.clone().setY(d.y - 0.2), 10, 2.2, { floor: STUD_H, ring: false }), 120 * i);
+  }
   // a fire ray across a fountain at (x, z): steam billowing up out of its water, all over its basin
   fountainSteam(x, z) {
     const w = this.fountainWater(x, z);
@@ -1050,10 +1105,12 @@ export class BrickWorld {
     let y = STUD_H;
     // (things on a fountain's square lie on its rim, out of the water, not on top of it)
     const fount = pile.length && pile[0].userData.name === 'fountain', [sx, sz] = square.split(',').map(Number);
+    const sink = pile.length && pile[0].userData.name === 'sink' && this.sinkDrain(sx, sz); // (things on a sink: in its bowl)
     let gold = false; // (gold on a fountain: strewn in its basin instead, basinCoins)
     for (const g of pile) {
       if (g.userData.name === 'gold piece' && fount) { g.visible = false; g.userData.inBasin = gold = true; continue; }
       if (g.userData.inBasin) { g.visible = true; g.userData.inBasin = false; } // (the fountain gone from under it)
+      if (sink && g !== pile[0]) { g.position.set(sink.x, sink.y + 0.01, sink.z); continue; }
       g.position.y = y;
       if (fount && g !== pile[0]) { const [ox, oz] = this.rimSpot(square); g.position.x = sx + 0.5 + ox; g.position.z = sz + 0.5 + oz; }
       y = fount && g === pile[0] ? STUD_H + FOUNT_RIM_SPOT[1] : y + g.userData.thick * 0.85; // (they settle into each other a little)

@@ -13,9 +13,12 @@ import { STUD_H } from './brick.js';
 // what you can stand up on, by its floor item's name: its ledge (R: out from its middle; H: up from
 // its foot) and how far its foot reaches out from its middle (OUT), all squares. A statue: its
 // scroll corbels; a fountain: the rim of its pool
+// A sink: stood at, not on: in front of it on the floor (H 0, a step, not a hop: HOP; no gazing up: LOOK), its
+// basin's rim (RIM) up at your shoulders, its bowl (BOWL) that far out from its middle
 export const PERCHES = {
   statue: { R: 52 / 80, H: 24 / 80, OUT: 60 / 80 },
   fountain: { R: 70 / 80, H: 48 / 80, OUT: 80 / 80 },
+  sink: { R: 58 / 80, H: 0, OUT: 40 / 80, HOP: 0.04, LOOK: 0, RIM: 72 / 80, BOWL: 0.3 },
 };
 const STATUE = PERCHES.statue;
 const HOP = 0.28; // (how high the hop goes over the ledge)
@@ -57,8 +60,8 @@ export function perchSpot(hero, track, pos, drops) {
     const sd = side(track.x - hero.x, track.y - hero.y);
     track.perch = { x: hero.x, y: hero.y, wx: sd.wx, wz: sd.wz }; // (where you'll hop off from)
     const e = smooth(k), hop = Math.sin(Math.PI * Math.min(1, k * 1.15));
-    return { k, dx: sd.wx * PERCH_R * e, dz: sd.wz * PERCH_R * e, lift: L * e + HOP * hop,
-      yaw: Math.atan2(-sd.wx, sd.wz), hop: k < 1 ? hop : 0, lookUp: e };
+    return { k, dx: sd.wx * PERCH_R * e, dz: sd.wz * PERCH_R * e, lift: L * e + (pr.HOP ?? HOP) * hop,
+      yaw: Math.atan2(-sd.wx, sd.wz), hop: k < 1 && pr.HOP === undefined ? hop : 0, lookUp: e * (pr.LOOK ?? 1) };
   }
   // stepping off a statue you were up on: still within a square of it
   const p = track.perch;
@@ -77,7 +80,8 @@ export function perchSpot(hero, track, pos, drops) {
     const v = (u - 0.3) / 0.7;
     ax = out.wx * PERCH_R + (ex - out.wx * PERCH_R) * v; az = out.wz * PERCH_R + (ez - out.wz * PERCH_R) * v;
     hop = Math.sin(Math.PI * v);
-    lift = L * (1 - v) + HOP * 1.4 * hop;
+    lift = L * (1 - v) + (pr.HOP ?? HOP) * 1.4 * hop;
+    if (pr.HOP !== undefined) hop = 0; // (a sink: just a step away)
   }
   return { k: 1, dx: p.x + ax - pos[0], dz: p.y + az - pos[1], lift, yaw, hop, lookUp: 0 };
 }
@@ -92,13 +96,13 @@ export const sideToward = side;
 export function hopOn(from, sd, u, pr = STATUE) {
   u = Math.min(1, u);
   const e = smooth(Math.max(0, (u - 0.3) / 0.7)), tx = sd.wx * pr.R, tz = sd.wz * pr.R, h = Math.sin(Math.PI * u);
-  return { x: from[0] + (tx - from[0]) * e, z: from[1] + (tz - from[1]) * e, lift: (STUD_H + pr.H) * smooth(Math.min(1, u / 0.45)) + HOP * h,
-    yaw: Math.atan2(-sd.wx, sd.wz), hop: u < 1 ? h : 0, lookUp: smooth(u) };
+  return { x: from[0] + (tx - from[0]) * e, z: from[1] + (tz - from[1]) * e, lift: (STUD_H + pr.H) * smooth(Math.min(1, u / 0.45)) + (pr.HOP ?? HOP) * h,
+    yaw: Math.atan2(-sd.wx, sd.wz), hop: u < 1 ? h * (pr.HOP === undefined ? 1 : 0) : 0, lookUp: smooth(u) * (pr.LOOK ?? 1) };
 }
 // how far the statue's foot reaches out from its middle (its scroll corbels): squares
 export const STATUE_OUT = STATUE.OUT;
 // on the ledge: standing there, gazing up
-export const perched = (sd, pr = STATUE) => ({ x: sd.wx * pr.R, z: sd.wz * pr.R, lift: STUD_H + pr.H, yaw: Math.atan2(-sd.wx, sd.wz), hop: 0, lookUp: 1 });
+export const perched = (sd, pr = STATUE) => ({ x: sd.wx * pr.R, z: sd.wz * pr.R, lift: STUD_H + pr.H, yaw: Math.atan2(-sd.wx, sd.wz), hop: 0, lookUp: pr.LOOK ?? 1 });
 // off: round the ledge from `sd`'s side to `out`'s, bounding athletically round the column (a spring
 // each quarter turn, facing the way you go), then a jump down to `dest` (off the middle: just into the
 // square you're going to). t: seconds in; offTime(sd, out): how long it all takes
@@ -119,14 +123,14 @@ export function hopOff(sd, out, dest, t, pr = STATUE) {
     const quarters = Math.abs(da) / (Math.PI / 2), b = Math.abs(Math.sin(Math.PI * quarters * (t / swing)));
     // (turning from the statue to run along the ledge, over the first half of it)
     const yaw = turnTo(Math.atan2(-sd.wx, sd.wz), alongYaw(a, da), smooth(Math.min(1, (t / swing) * 2)));
-    return { x: Math.cos(a) * PERCH_R, z: Math.sin(a) * PERCH_R, lift: L + HOP * 0.55 * b, yaw, hop: b * 0.8, lookUp: 0 };
+    return { x: Math.cos(a) * PERCH_R, z: Math.sin(a) * PERCH_R, lift: L + (pr.HOP ?? HOP) * 0.55 * b, yaw, hop: pr.HOP === undefined ? b * 0.8 : 0, lookUp: 0 };
   }
   const v = Math.min(1, (t - swing) / JUMP), h = Math.sin(Math.PI * v), ox = out.wx * PERCH_R, oz = out.wz * PERCH_R;
   const o = 1 - (1 - v) ** 2; // (out over the corbels early in the jump, then down: never through them)
   // (turning, as you spring, from along the ledge (or the statue) to the way you jump)
   const from = swing ? alongYaw(Math.atan2(out.wz, out.wx), da) : Math.atan2(-sd.wx, sd.wz);
   const yaw = turnTo(from, Math.atan2(dest[0] - ox, -(dest[1] - oz)), smooth(Math.min(1, v / 0.5)));
-  return { x: ox + (dest[0] - ox) * o, z: oz + (dest[1] - oz) * o, lift: L * (1 - v) + HOP * 1.4 * h, yaw, hop: v < 1 ? h : 0, lookUp: 0 };
+  return { x: ox + (dest[0] - ox) * o, z: oz + (dest[1] - oz) * o, lift: L * (1 - v) + (pr.HOP ?? HOP) * 1.4 * h, yaw, hop: v < 1 && pr.HOP === undefined ? h : 0, lookUp: 0 };
 }
 
 // the square you came from, kept as you go: call with your square every frame
@@ -142,7 +146,7 @@ export function cameFrom(track, hero) {
 // in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
 // (and a 4th: what's thrown up into it, a tint for its studs)
 export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]],
-  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [] };
+  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [], sip: [], scald: [], reach: [], kick: [], sinkRetch: [] };
 export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;
 
 // the urge to take a bath (minifig-anim.js FOUNT.bath): off the rim on `sd`'s side, a dive in head first to
@@ -181,21 +185,21 @@ export function bathPath(sd, t, pr = STATUE) {
 // monster's, u: 0..1 through it. Where it is (squares, as a square's corner: drawn at + 0.5), how high its
 // foot is (y, over the floor's studs), and which way it goes (the game's yaw)
 export const RISE_T = 1.7; // s
-export function risePath(f, to, u, r = 0.22) { // (r: how far it lies out from the basin's side, its middle: a snake's, half its length)
-  const rest = againstFountain(f, to[0], to[1], r); // (where it'll lie: against the basin's side, if its square's up against it)
+export function risePath(f, to, u, r = 0.22, sink = false) { // (sink: up out of a sink's drain, over its basin's rim) // (r: how far it lies out from the basin's side, its middle: a snake's, half its length)
+  const rest = sink ? null : againstFountain(f, to[0], to[1], r); // (where it'll lie: against the basin's side, if its square's up against it)
   if (rest) to = [rest.x, rest.z];
   const dx = to[0] - f[0], dz = to[1] - f[1], n = Math.hypot(dx, dz) || 1, ux = dx / n, uz = dz / n;
-  const pr = PERCHES.fountain, rim = pr.H, water = pr.H - 0.12;
+  const pr = sink ? PERCHES.sink : PERCHES.fountain, rim = pr.RIM ?? pr.H, water = rim - 0.12, edge = (pr.RIM ? pr.OUT : pr.R) + 0.1;
   const at = (r) => [f[0] + ux * r, f[1] + uz * r], yaw = Math.atan2(ux, -uz);
   if (u < 0.35) { // (up out of the water, in the basin)
-    const k = smooth(u / 0.35), [x, z] = at(0.45);
+    const k = smooth(u / 0.35), [x, z] = at(pr.BOWL ?? 0.45);
     return { x, z, y: water - 0.25 + 0.3 * k, yaw };
   }
   if (u < 0.6) { // (along to the rim and over it)
-    const k = smooth((u - 0.35) / 0.25), [x, z] = at(0.45 + (pr.R + 0.1 - 0.45) * k);
+    const b = pr.BOWL ?? 0.45, k = smooth((u - 0.35) / 0.25), [x, z] = at(b + (edge - b) * k);
     return { x, z, y: water + 0.05 + (rim - water - 0.05) * k, yaw };
   }
-  const k = (u - 0.6) / 0.4, [x0, z0] = at(pr.R + 0.1); // (and down off it, to its own square)
+  const k = (u - 0.6) / 0.4, [x0, z0] = at(edge); // (and down off it, to its own square)
   const e = smooth(k);
   return { x: x0 + (to[0] - x0) * e, z: z0 + (to[1] - z0) * e, y: rim * (1 - k) * (1 - k) + 0.12 * Math.sin(Math.PI * k), yaw,
     lean: rest ? smooth(Math.max(0, (k - 0.6) / 0.4)) : 0, leanYaw: rest ? rest.yaw : yaw }; // (turning to lean on it, as it lands)

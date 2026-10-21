@@ -15,6 +15,19 @@
 import * as THREE from 'three';
 import { MODEL_SCALE, STUD_H } from './brick.js';
 import { fountainStud } from './mist.js';
+// a stud of water to throw about where there's no fountain or pool about to lend one (mist.js fountainStud): a sink
+let plain = null;
+const plainStud = () => plain || (plain = { geo: new THREE.CylinderGeometry(0.03, 0.03, 0.022, 10).translate(0, 0.011, 0),
+  mat: new THREE.MeshStandardMaterial({ color: 0x9fd8ff, roughness: 0.1, transparent: true, opacity: 0.8 }) });
+// a musical note (♪), drawn once, for notes rising from a drain
+let noteTex = null;
+function noteTexture() {
+  if (noteTex) return noteTex;
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.font = 'bold 54px serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('\u266A', 32, 34);
+  return (noteTex = new THREE.CanvasTexture(c));
+}
 
 const G = -9; // gravity, squares per second²
 const STEP = 1 / 240; // the simulation's step
@@ -182,6 +195,8 @@ export class ThrowFX {
       }
     for (const s of [...this.shards]) this.stepShards(s, dt);
     this.stepStreams(dt);
+    this.stepPours(dt);
+    this.stepNotes(dt);
     for (const r of [...(this.rings || [])]) { // a ring on the water: spreading, fading
       r.t += dt;
       r.mesh.scale.setScalar(0.02 + 0.3 * Math.sqrt(Math.min(1, r.t / 0.9)));
@@ -377,7 +392,7 @@ export class ThrowFX {
   // of sight; and a ring spreading out over it. n: how many; up: how hard (squares/s); floor: where they go out
   // of sight (the water's surface: p's height; drips off someone: the floor), ring: a ring on the water
   splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true, lava = false, tint = null } = {}) { // (lava: its glowing orange studs, embers flying; tint: studs of that colour)
-    const piece = lava ? this.brick.lavaStud : fountainStud();
+    const piece = lava ? this.brick.lavaStud : fountainStud() || plainStud();
     if (lava) this.sparkles(p.clone().setY(p.y + 0.1), Math.round(n * 1.5), 0xff7a1a, 0.3);
     if (piece) {
       const mat = piece.mat.clone();
@@ -492,6 +507,56 @@ export class ThrowFX {
   }
   // a shiver: a few specks of frost glinting off you (p: your middle)
   frost(p) { this.sparkles(p, 4, 0xd9f3ff, 0.4); }
+
+  // water run from a tap (a sink's): drops falling from its spout (p) into its bowl (down to floorY), a steady
+  // stream of them for T s, splashing a little where they land; tint: of another colour (a potion's, sewage)
+  pour(p, floorY, T = 1.2, { tint = null, rate = 40 } = {}) {
+    const n = Math.ceil(T * rate), mat = new THREE.MeshStandardMaterial({ color: tint ?? 0x9fd8ff, roughness: 0.1, transparent: true, opacity: tint ? 0.9 : 0.75 });
+    const mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.014, 0), mat, n), drops = [];
+    mesh.frustumCulled = false; mesh.renderOrder = 4;
+    for (let i = 0; i < n; i++) drops.push({ t0: i / rate, j: [(Math.random() - 0.5) * 0.012, (Math.random() - 0.5) * 0.012] });
+    this.brick.world.add(mesh);
+    (this.pours = this.pours || []).push({ mesh, drops, p: p.clone(), floorY, t: 0, T, tint, splashT: 0 });
+  }
+  stepPours(dt) {
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
+    for (const P of [...(this.pours || [])]) {
+      P.t += dt;
+      let live = false;
+      P.drops.forEach((d, i) => {
+        const u = P.t - d.t0, y = P.p.y - 0.5 * 9.8 * 0.25 * u * u; // (falling: a quarter of g, in squares)
+        const on = u >= 0 && y > P.floorY;
+        if (on) live = true;
+        v.set(P.p.x + d.j[0], Math.max(P.floorY, y), P.p.z + d.j[1]);
+        sc.setScalar(on ? 1 + Math.min(1.2, u * 3) : 0); // (drawn out as it falls)
+        m4.compose(v, q, sc.set(on ? 1 : 0, on ? 1 + Math.min(2, u * 6) : 0, on ? 1 : 0));
+        P.mesh.setMatrixAt(i, m4);
+      });
+      P.mesh.instanceMatrix.needsUpdate = true;
+      if (P.t < P.T && P.t - P.splashT > 0.35) { P.splashT = P.t; this.splashStuds(new THREE.Vector3(P.p.x, P.floorY, P.p.z), 2, 0.5, P.tint ? { tint: P.tint } : {}); }
+      if (!live && P.t > P.T) { this.brick.world.remove(P.mesh); P.mesh.geometry.dispose(); P.mesh.material.dispose(); this.pours.splice(this.pours.indexOf(P), 1); }
+    }
+  }
+  // snatches of song from among the sewers: little black notes rising out of a drain (p), swaying, fading
+  notes(p, n = 5) {
+    const tex = noteTexture(), mat = new THREE.SpriteMaterial({ map: tex, color: 0x222222, transparent: true, depthWrite: false });
+    for (let i = 0; i < n; i++)
+      setTimeout(() => {
+        const s = new THREE.Sprite(mat.clone());
+        s.scale.setScalar(0.09);
+        s.position.copy(p);
+        this.brick.world.add(s);
+        (this.noteList = this.noteList || []).push({ s, p: p.clone(), t: 0, ph: Math.random() * 6 });
+      }, i * 380);
+  }
+  stepNotes(dt) {
+    for (const N of [...(this.noteList || [])]) {
+      N.t += dt;
+      N.s.position.set(N.p.x + 0.06 * Math.sin(N.t * 3 + N.ph), N.p.y + N.t * 0.3, N.p.z + 0.04 * Math.cos(N.t * 2 + N.ph));
+      N.s.material.opacity = Math.max(0, 1 - N.t / 2);
+      if (N.t > 2) { this.brick.world.remove(N.s); N.s.material.dispose(); this.noteList.splice(this.noteList.indexOf(N), 1); }
+    }
+  }
 
   // a wisp of vapor rising out of a fountain (its magic gone out of it, as it's found): soft white puffs
   // drifting up from p, swelling and thinning away

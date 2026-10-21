@@ -691,8 +691,14 @@ function handle(m) {
       break;
     case 'swim': // fell into water (from the square you stepped from), or crawling out of it (onto a dry one): swim.js
       if (m.act === 'fall') hero3d.swim = { from: [m.x, m.y], pool: [m.px, m.py], to: null, t0: performance.now(), fired: 0, lava: !!m.lava };
-      else if (hero3d.swim && hero3d.swim.pool[0] === m.px && hero3d.swim.pool[1] === m.py) hero3d.swim.to = [m.x, m.y];
-      else hero3d.swim = { from: [m.px, m.py], pool: [m.px, m.py], to: [m.x, m.y], t0: performance.now() - 1e3 * 0.9, fired: 1 }; // (no fall seen: just the crawl)
+      else { // (crawling out: onto the square; onto a statue's (a fountain's), only up to its foot on the pool's side, the hop
+        // up onto its rim from there: processMovement)
+        let to = [m.x, m.y];
+        const pd = (world.brickDrops || []).find((o) => o.x === m.x && o.z === m.y && PERCHES[o.name]);
+        if (pd) { const dx = m.px - m.x, dz = m.py - m.y, n = Math.hypot(dx, dz) || 1, k = PERCHES[pd.name].OUT + BODY_R; to = [m.x + (dx / n) * k, m.y + (dz / n) * k]; }
+        if (hero3d.swim && hero3d.swim.pool[0] === m.px && hero3d.swim.pool[1] === m.py) hero3d.swim.to = to;
+        else hero3d.swim = { from: [m.px, m.py], pool: [m.px, m.py], to, t0: performance.now() - 1e3 * 0.9, fired: 1 }; // (no fall seen: just the crawl)
+      }
       break;
     case 'gush': // the fountain you're on gushing: its burst (x -1), then a stream out to each square it floods, nearer first
       if (!renderer.brickOn || !renderer.brick) break;
@@ -2517,6 +2523,20 @@ function obstacles(F) {
     }
   return out.map(([a, b, c, d, statue]) => [Math.min(a, c), Math.min(b, d), Math.max(a, c), Math.max(b, d), statue]);
 }
+// the clear spot in square `at` nearest `F` (the body clear of everything: obstacles), searched out from its
+// middle in rings; its middle, failing all
+function clearSpot(at, F) {
+  const inner = 0.5 - BODY_R, fits = (x, z) => obstacles({ x, z }).every(([x0, z0, x1, z1]) => x + BODY_R <= x0 || x - BODY_R >= x1 || z + BODY_R <= z0 || z - BODY_R >= z1);
+  let best = null;
+  for (let i = -6; i <= 6; i++)
+    for (let j = -6; j <= 6; j++) {
+      const x = at.x + (i / 6) * inner, z = at.z + (j / 6) * inner;
+      if (!fits(x, z)) continue;
+      const d = Math.hypot(x - F.x, z - F.z);
+      if (!best || d < best.d) best = { x, z, d };
+    }
+  return best ? { x: best.x, z: best.z } : { x: at.x, z: at.z };
+}
 // the body (a square BODY_R each way of its middle) out of anything it's come into: put back to just
 // touching it, the shortest way out. The statue it's come up against, if one
 function keepClear(F) {
@@ -2567,6 +2587,9 @@ function processMovement(now, dt) {
   // a statue's square: a hop up onto its ledge on the side you came in by; up there till you go,
   // then round the ledge and a jump off the way you go (each timed: perch.js); you're at its middle
   if (walk.perch && (walk.perch.x !== walk.at.x || walk.perch.z !== walk.at.z)) walk.perch = null; // (moved off it by the engine)
+  // (put on a statue's square by the engine (crawled out of a pool onto it, say): up onto its rim from where you
+  // are, not walked into its middle first, through it)
+  if (walk.settle && statue) walk.settle = false;
   // (once begun, the perch has you till it's done: up, stood there, round and off, input or no; even
   // should the statue drop out of the floor's list a moment while you stand on it)
   if ((statue || walk.perch) && !walk.settle) {
@@ -2606,6 +2629,14 @@ function processMovement(now, dt) {
       walk.moving = true; walk.heading = Math.atan2(dx, -dz);
     } else walk.settle = false;
     keepClear(F);
+    // (kept from getting there: the way in blocked by a statue's foot reaching into the square, say. Not stuck
+    // there for good, input locked: a moment's try, then set down at the clear spot in it nearest you)
+    if (walk.settle) {
+      const left = Math.hypot(tx - F.x, tz - F.z);
+      if (walk.settleBest === undefined || left < walk.settleBest - 1e-3) { walk.settleBest = left; walk.settleT = now; }
+      else if (now - walk.settleT > 400) { Object.assign(F, clearSpot(walk.at, F)); walk.settle = false; }
+    }
+    if (!walk.settle) walk.settleBest = undefined;
     motion.freeMoving = walk.moving;
     return;
   }
@@ -2642,8 +2673,12 @@ function processMovement(now, dt) {
   step('z', vz);
   const st = keepClear(F);
   if (st && !walk.sent.length && !walk.bumped) { // (walked up against a statue's foot: that's the step onto it; up you hop)
-    const d = [st.x - walk.at.x, st.z - walk.at.z];
-    if (Math.max(Math.abs(d[0]), Math.abs(d[1])) === 1 && (vx * d[0] + vz * d[1]) / Math.hypot(d[0], d[1]) > 0.3) { crossed(d); motion.freeMoving = walk.moving = true; return; }
+    // (heading for it, or held up by it, whichever way you were going: its foot reaching into the square
+    // beside it never leaves you stuck there, up against it, it's always up onto it or past it)
+    const d = [st.x - walk.at.x, st.z - walk.at.z], want = FREE_SPEED * dt, got = Math.hypot(F.x - ox, F.z - oz);
+    if (Math.max(Math.abs(d[0]), Math.abs(d[1])) === 1 && ((vx * d[0] + vz * d[1]) / Math.hypot(d[0], d[1]) > 0.3 || got < want * 0.5)) {
+      crossed(d); motion.freeMoving = walk.moving = true; return;
+    }
   }
   if (F.x !== ox || F.z !== oz) { walk.moving = true; walk.heading = Math.atan2(vx, -vz); }
   motion.freeMoving = walk.moving;

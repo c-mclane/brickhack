@@ -280,6 +280,7 @@ void main() {
 }`;
 
 const FLOATS = 8; // x y z u v shade key gray
+const FOG_REACH = 5; // squares: how far out past what you've seen the fog of the unknown is drawn (render.js buildTerrain)
 
 // block type -> texture slots [sides, top]
 const FACES = { grass: ['grassSide', 'grassTop'],
@@ -597,8 +598,26 @@ export class Renderer {
       const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
       return !!n && (n.type === 'wall' || (n.type === 'rock' && n.known) || n.type === 'door');
     };
+    // (fog only where it's near what you know: an unknown square within FOG_REACH squares of one you've seen, the
+    // rest of the level left dark, not a whole map's worth of it)
+    const seenNear = new Uint8Array(W * H);
+    for (let yy = 0; yy < H; yy++)
+      for (let xx = 0; xx < W; xx++) { const n = cls[yy * W + xx]; if (n && (known(xx, yy) || (n.type === 'rock' && n.known))) seenNear[yy * W + xx] = 1; }
+    for (let k = 0; k < FOG_REACH; k++) { // (grown a square each way, each time)
+      const was = seenNear.slice();
+      for (let yy = 0; yy < H; yy++)
+        for (let xx = 0; xx < W; xx++) {
+          if (was[yy * W + xx]) continue;
+          for (let dy = -1; dy <= 1 && !seenNear[yy * W + xx]; dy++)
+            for (let dx = -1; dx <= 1; dx++) {
+              const ax = xx + dx, ay = yy + dy;
+              if (ax >= 0 && ay >= 0 && ax < W && ay < H && was[ay * W + ax]) { seenNear[yy * W + xx] = 1; break; }
+            }
+        }
+    }
     // over: the walls it can pour over (a floor you can walk on just beyond)
     const fogAt = (x, y) => {
+      if (!seenNear[y * W + x]) return;
       const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
       const into = dirs.filter(([dx, dy]) => passable(x + dx, y + dy));
       const over = dirs.filter(([dx, dy]) => solid(x + dx, y + dy) && passable(x + 2 * dx, y + 2 * dy));

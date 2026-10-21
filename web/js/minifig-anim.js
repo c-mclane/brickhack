@@ -116,6 +116,28 @@ export const FOUNT = {
   // a strange tingling, a sudden chill: arms hugged about you, hunched, shivering hard and then less (SHIVER)
   shiver: { T: 2.0, lean: SHIVER(0.18, 0.07), armR: [[0, null], [0.25, -48], [1.6, -48], [2.0, null]], armL: 'R',
     inn: [[0, 0], [0.25, -62], [1.6, -62], [2.0, 0]], head: SHIVER(-0.12, 0.06) },
+  // at a sink (stood before it, its basin up at your shoulders): a sip, hands cupped under the tap and up to the
+  // mouth; snatched back from it, scalded, arms flung out; a reach down into its bowl (a ring found in it: in
+  // hand, coming up: cup); doubled over it, retching (sewage); and a kick at it, the right leg swung up hard
+  sip: { T: 2.4, cup: 0.6, sip: [1.3, 1.9],
+    lean: [[0, 0], [0.4, 0.15], [0.9, 0.15], [1.3, 0], [2.4, 0]],
+    armR: [[0, null], [0.4, -95], [0.9, -95], [1.3, -150], [1.9, -150], [2.4, null]], armL: 'R',
+    inn: [[0, 0], [0.4, -18], [1.9, -18], [2.4, 0]],
+    head: [[0, 0], [1.2, 0], [1.45, 0.4], [1.9, 0.4], [2.2, 0]] },
+  scald: { T: 1.3,
+    lean: [[0, 0], [0.15, -0.35], [0.6, -0.25], [1.3, 0]],
+    armR: [[0, null], [0.15, -60], [0.5, -40], [1.3, null]], armL: 'R',
+    inn: [[0, 0], [0.15, 45], [0.8, 30], [1.3, 0]],
+    head: [[0, 0], [0.15, 0.3], [0.45, -0.2], [0.75, 0.2], [1.05, -0.1], [1.3, 0]] },
+  reach: { T: 1.9, cup: 0.9,
+    lean: [[0, 0], [0.4, 0.35], [1.2, 0.35], [1.6, 0], [1.9, 0]],
+    armR: [[0, null], [0.4, -105], [0.7, -85], [1.0, -105], [1.4, -60], [1.9, null]],
+    armL: [[0, null], [0.4, -75], [1.4, -75], [1.9, null]], inn: [[0, 0]],
+    head: [[0, 0], [0.4, -0.3], [1.3, -0.3], [1.6, 0]] },
+  kick: { T: 0.9, lean: [[0, 0], [0.2, -0.15], [0.35, 0.1], [0.9, 0]],
+    armR: [[0, null], [0.2, 30], [0.4, -30], [0.9, null]], armL: [[0, null], [0.2, -30], [0.4, 30], [0.9, null]], inn: [[0, 0]],
+    head: [[0, 0]], legR: [[0, 0], [0.2, 25], [0.38, -70], [0.55, -60], [0.9, 0]] },
+  get sinkRetch() { const R = FOUNT.retch; return { ...R, lean: R.lean.map(([t, v]) => [t, v * 0.45]), armR: R.armR.map(([t, v]) => [t, v === null ? null : v * 1.4]) }; },
   // the urge to take a bath: a crouch, a dive in head first, arms out before you; under, arms up out of the
   // water; a jump back out onto the rim, turning to land facing away from it, and a shake, arms out,
   // dripping; then a dusting down, a hand and then the other patting your front, looking down at it; and a
@@ -279,7 +301,7 @@ export class FigureAnimator {
     // the legs: stride, opposite each other
     if (rig.legs) {
       const a = swing * 32 * (1 - 0.5 * heavy) * DEG, tuck = -40 * A.hop * DEG; // (heavy: short steps; a hop: knees up)
-      P.legR = turnAbout(rig.legs.pivot, rig.legs.axis, a + tuck);
+      P.legR = turnAbout(rig.legs.pivot, rig.legs.axis, a + tuck + (F && F.legR ? keyAt(F.legR, ft) * DEG : 0)); // (a kick: FOUNT.kick)
       P.legL = turnAbout(rig.legs.pivot, rig.legs.axis, -a + tuck);
     }
     return P;
