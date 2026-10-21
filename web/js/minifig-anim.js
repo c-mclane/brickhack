@@ -152,12 +152,110 @@ export const FOUNT = {
     armR: [[0, null], [0.6, null], [1.2, -50], [2.3, -62], [3.3, -62], [3.6, -50], [4.2, -50], [4.8, null], [5.6, null]], armL: 'R',
     inn: [[0, 0], [1.2, 10], [4.2, 10], [4.8, 0]],
     head: [[0, 0], [2.0, 0], [2.3, -0.25], [3.3, -0.25], [3.6, 0], [5.6, 0]] },
+  // praying (#pray): down on your knees (legs back, the body dropped to them: drop), arms raised to the heavens,
+  // palms out, gazing up into the light; held there while it shines; and up again
+  prayer: { T: 8.0,
+    lean: [[0, 0], [0.7, 0.25], [1.3, -0.12], [6.6, -0.12], [7.3, 0.1], [8.0, 0]],
+    legR: [[0, 0], [0.7, 72], [7.2, 72], [7.9, 0]], legL: 'R',
+    drop: [[0, 0], [0.7, 0.21], [7.2, 0.21], [7.9, 0]],
+    armR: [[0, null], [0.7, -15], [1.6, -168], [6.6, -168], [7.3, -40], [8.0, null]], armL: 'R',
+    inn: [[0, 0], [0.7, 0], [1.6, 38], [6.6, 38], [7.3, 0]],
+    head: [[0, 0], [0.7, -0.35], [1.6, 0.5], [6.6, 0.5], [7.3, -0.1], [8.0, 0]] },
+  // what comes of a prayer, taken: struck (by lightning, a voice, a beam): thrown back, arms flung out, then
+  // hunched, shaken; brought low (displeased, cursed): slumped, arms hanging, head bowed
+  smitten: { T: 2.6,
+    lean: [[0, 0], [0.12, -0.55], [0.7, -0.3], [1.4, 0.35], [2.6, 0]],
+    armR: [[0, null], [0.12, -120], [0.7, -90], [1.4, -20], [2.6, null]], armL: 'R',
+    inn: [[0, 0], [0.12, 55], [0.7, 40], [1.4, 0]],
+    head: [[0, 0], [0.12, 0.45], [0.7, 0.2], [1.4, -0.3], [2.6, 0]], hop: [[0, 0], [0.12, 1], [0.5, 0]] },
+  slump: { T: 3.0,
+    lean: [[0, 0], [0.6, 0.5], [2.4, 0.5], [3.0, 0]],
+    armR: [[0, null], [0.6, 12], [2.4, 12], [3.0, null]], armL: 'R',
+    inn: [[0, 0], [0.6, -8], [2.4, -8], [3.0, 0]],
+    head: [[0, 0], [0.6, -0.45], [2.4, -0.45], [3.0, 0]] },
   // praying to the Porcelain God: bowed over it, arms raised up before you, palms to it
   pray: { T: 3.6,
     lean: [[0, 0], [0.5, 0.45], [3.0, 0.45], [3.6, 0]],
     armR: [[0, null], [0.5, -150], [3.0, -150], [3.6, null]], armL: 'R',
     inn: [[0, 0], [0.5, -25], [3.0, -25], [3.6, 0]],
     head: [[0, 0], [0.5, -0.35], [3.0, -0.35], [3.6, 0]] },
+  // the Mass (#mass, at his altar), the priest's part, from its start: the chalice set down on its stud; a wait
+  // while the altar's angels come down; the wafer taken up off its tile, raised high in both hands, gazed up at
+  // (the elevation), a genuflection (the right knee down), the wafer laid back; the chalice taken up, raised, a
+  // genuflection; it set down; the wafer taken and eaten, the chalice taken and drunk from, set down; a bow.
+  // (what's in the hand and when: testbed.js MASS_HOLD; where the wafer and chalice stand meanwhile, MASS_PROPS)
+  massPriest: { T: 28.0,
+    lean: [[0, 0], [0.4, 0.2], [1.1, 0.2], [1.6, 0], [4.8, 0], [5.3, 0.22], [5.9, 0.22], [6.6, 0], [6.9, -0.08], [9.3, -0.08], [9.9, 0],
+      [11.4, 0], [11.8, 0.22], [12.4, 0.22], [12.6, 0.22], [13.2, 0.22], [13.6, 0], [13.8, -0.08], [16.0, -0.08], [16.6, 0],
+      [18.4, 0], [18.8, 0.22], [19.2, 0.22], [19.8, 0.22], [20.2, 0.1], [21.8, 0], [22.4, 0.22], [23.0, 0.1], [24.8, 0.1], [25.2, 0.22],
+      [25.6, 0.22], [26.0, 0.4], [27.2, 0.4], [28.0, 0]],
+    armR: [[0, -100], [0.4, -84], [1.1, -84], [1.6, null], [4.8, null], [5.3, -80], [5.9, -80], [6.6, -100], [7.3, -122], [9.3, -122], [9.9, -100],
+      [11.4, -100], [11.8, -82], [12.4, -82], [12.6, -80], [13.2, -80], [13.6, -100], [14.2, -122], [16.0, -122], [16.6, -100],
+      [18.4, -100], [18.8, -82], [19.2, -82], [19.8, -80], [20.2, -100], [20.8, -118], [21.6, -118], [21.9, -80], [22.4, -80],
+      [23.0, -100], [23.6, -132], [24.6, -132], [24.9, -100], [25.2, -82], [25.6, -82], [26.0, null], [28.0, null]],
+    armL: [[0, null], [6.6, null], [7.3, -122], [9.3, -122], [9.9, null], [13.6, null], [14.2, -122], [16.0, -122], [16.6, null], [28.0, null]],
+    inn: [[0, 0], [0.4, -12], [1.1, -12], [1.6, 0], [6.6, 0], [7.3, 20], [9.3, 20], [9.9, 0], [13.6, 0], [14.2, 20], [16.0, 20], [16.6, 0],
+      [20.2, 0], [20.8, 28], [21.6, 28], [21.9, 0], [23.0, 0], [23.6, 26], [24.6, 26], [24.9, 0], [28.0, 0]],
+    legR: [[0, 0], [10.0, 0], [10.5, 78], [11.0, 78], [11.4, 0], [16.6, 0], [17.1, 78], [17.6, 78], [18.0, 0], [28.0, 0]], legL: [[0, 0], [28.0, 0]],
+    drop: [[0, 0], [10.0, 0], [10.5, 0.12], [11.0, 0.12], [11.4, 0], [16.6, 0], [17.1, 0.12], [17.6, 0.12], [18.0, 0], [28.0, 0]],
+    head: [[0, 0], [0.4, -0.3], [1.1, -0.3], [1.6, -0.15], [4.8, -0.15], [5.3, -0.35], [6.6, -0.1], [7.3, 0.45], [9.3, 0.45], [9.9, 0],
+      [10.5, -0.35], [11.4, -0.1], [11.8, -0.35], [13.6, -0.1], [14.2, 0.45], [16.0, 0.45], [16.6, 0], [17.1, -0.35], [18.0, -0.1],
+      [18.8, -0.35], [20.2, -0.1], [20.8, -0.05], [21.6, -0.05], [22.4, -0.35], [23.6, 0.35], [24.6, 0.35], [25.2, -0.3], [26.0, -0.4],
+      [27.2, -0.4], [28.0, 0]] },
+  // Communion (#communion): down on both knees on the altar's step, hands joined, head bowed; the head lifted to
+  // receive the wafer (it floats to you: testbed.js), bowed again a while, and up
+  communion: { T: 7.6,
+    lean: [[0, 0], [0.7, 0.1], [2.6, 0.1], [3.0, -0.05], [3.8, -0.05], [4.2, 0.15], [6.6, 0.15], [7.4, 0]],
+    legR: [[0, 0], [0.7, 72], [6.7, 72], [7.4, 0]], legL: 'R',
+    drop: [[0, 0], [0.7, 0.21], [6.7, 0.21], [7.4, 0]],
+    armR: [[0, null], [0.7, -40], [6.6, -40], [7.4, null]], armL: 'R',
+    inn: [[0, 0], [0.7, 34], [6.6, 34], [7.4, 0]],
+    head: [[0, 0], [0.7, -0.3], [2.6, -0.3], [3.0, 0.3], [3.8, 0.3], [4.2, -0.4], [6.6, -0.4], [7.4, 0]] },
+  // confession (#confess): on both knees, bowed low, hands joined at the brow, a while; and up
+  confess: { T: 8.0,
+    lean: [[0, 0], [0.8, 0.35], [7.0, 0.35], [7.8, 0]],
+    legR: [[0, 0], [0.7, 72], [7.1, 72], [7.8, 0]], legL: 'R',
+    drop: [[0, 0], [0.7, 0.21], [7.1, 0.21], [7.8, 0]],
+    armR: [[0, null], [0.8, -78], [7.0, -78], [7.8, null]], armL: 'R',
+    inn: [[0, 0], [0.8, 36], [7.0, 36], [7.8, 0]],
+    head: [[0, 0], [0.8, -0.5], [7.0, -0.5], [7.8, 0]] },
+  // alms (#alms): the right hand out over the offering plate (to the right, on the altar), tipped, the coins let go
+  // a few at a time; and back
+  alms: { T: 3.4,
+    lean: [[0, 0], [0.6, 0.25], [2.7, 0.25], [3.4, 0]],
+    armR: [[0, null], [0.6, -78], [1.0, -70], [1.4, -78], [1.8, -70], [2.2, -78], [2.7, -78], [3.4, null]], armL: [[0, null], [3.4, null]],
+    inn: [[0, 0], [0.6, -24], [2.7, -24], [3.4, 0]],
+    head: [[0, 0], [0.6, -0.35], [2.7, -0.35], [3.4, 0]] },
+  // a corpse offered at his altar (#offer): held up to it in both hands, a wait; refused, lowered, the head bowed
+  offerUp: { T: 4.6,
+    lean: [[0, 0], [0.7, 0.1], [2.6, 0.1], [3.2, 0.2], [4.6, 0]],
+    armR: [[0, null], [0.7, -100], [2.6, -100], [3.3, -40], [4.6, null]], armL: 'R',
+    inn: [[0, 0], [0.7, 18], [2.6, 18], [3.3, 10], [4.6, 0]],
+    head: [[0, 0], [0.7, 0.2], [2.6, 0.2], [3.3, -0.35], [4.2, -0.35], [4.6, 0]] },
+  // an angel come alive at the altar (not the Mass): hands joined before it, head a little bowed, held
+  attend: { T: 600.0, armR: [[0, null], [0.6, -40], [600, -40]], armL: 'R', inn: [[0, 0], [0.6, 34], [600, 34]], lean: [[0, 0], [600, 0]],
+    head: [[0, 0], [0.6, -0.15], [600, -0.15]] },
+  // ...the one on top, watching over you: hands held out over you, gazing down on you
+  watch: { T: 600.0, armR: [[0, null], [0.8, -70], [600, -70]], armL: 'R', inn: [[0, 0], [0.8, -18], [600, -18]], lean: [[0, 0], [0.8, 0.12], [600, 0.12]],
+    head: [[0, 0], [0.8, -0.55], [600, -0.55]] },
+  // carrying something up before you, held upright (the chalice, brought up to the altar)
+  carry: { T: 60.0, armR: [[0, null], [0.4, -100], [60.0, -100]], armL: [[0, null], [60.0, null]], inn: [[0, 0], [60.0, 0]], lean: [[0, 0], [60.0, 0]], head: [[0, 0], [60.0, 0]] },
+  // ...and the deacons' (the altar's two statues, come down): hands joined before them; down on their knees, heads
+  // bowed, at each elevation, the host's and the chalice's
+  massDeacon: { T: 28.0,
+    lean: [[0, 0], [28.0, 0]],
+    armR: [[0, null], [4.6, null], [5.2, -40], [27.4, -40], [28.0, null]], armL: 'R',
+    inn: [[0, 0], [4.6, 0], [5.2, 34], [27.4, 34], [28.0, 0]],
+    legR: [[0, 0], [6.6, 0], [7.2, 74], [9.8, 74], [10.4, 0], [13.6, 0], [14.2, 74], [16.4, 74], [17.0, 0], [28.0, 0]], legL: 'R',
+    drop: [[0, 0], [6.6, 0], [7.2, 0.21], [9.8, 0.21], [10.4, 0], [13.6, 0], [14.2, 0.21], [16.4, 0.21], [17.0, 0], [28.0, 0]],
+    head: [[0, 0], [5.2, -0.1], [6.6, -0.1], [7.2, -0.3], [9.8, -0.3], [10.4, -0.1], [13.6, -0.1], [14.2, -0.3], [16.4, -0.3], [17.0, -0.1],
+      [28.0, -0.1]] },
+  // ...and the angel on the altar's top: hands raised to the heavens, gazing up, held
+  orans: { T: 600.0,
+    lean: [[0, 0], [1.0, -0.1], [600, -0.1]],
+    armR: [[0, null], [1.2, -170], [600, -170]], armL: 'R',
+    inn: [[0, 0], [1.2, 30], [600, 30]],
+    head: [[0, 0], [1.2, 0.55], [600, 0.55]] },
   // something dipped in a toilet: bent over it, the hand with it plunged in and swished about (as a fountain's dip)
   get toiletDip() { const D = FOUNT.dip; return { ...D, lean: D.lean.map(([t, v]) => [t, v * 1.25]) }; },
   get toiletRetch() { const R = FOUNT.retch; return { ...R, lean: R.lean.map(([t, v]) => [t, v * 0.82]), armR: R.armR.map(([t, v]) => [t, v === null ? null : v * 0.7]) }; },
@@ -175,6 +273,8 @@ export const FOUNT = {
     inn: [[0, 0], [0.55, 0], [1.3, -10], [2.35, 0], [2.55, 70], [3.3, 70], [3.5, -30], [4.4, -30], [4.7, 0]],
     head: [[0, 0], [0.35, -0.2], [0.85, -0.4], [1.2, 0.3], [1.8, 0.3], [2.1, 0], [3.4, 0], [3.55, -0.4], [4.4, -0.4], [4.7, 0]] },
 };
+// a FOUNT act's keyframed value at t (s): e.g. how far a prayer's dropped you to your knees ('drop')
+export function fountKey(act, key, t) { const F = FOUNT[act]; return F && F[key] ? keyAt(F[key], t) : 0; }
 function keyAt(keys, t, rest = 0) {
   const v = (x) => (x === null ? rest : x);
   if (t <= keys[0][0]) return v(keys[0][1]);
@@ -198,7 +298,7 @@ export class FigureAnimator {
     this.headYaw = 0; this.headPitch = 0;
     this.look = { yaw: 0, pitch: 0, next: 1 + Math.random() * 2 };
     this.arm = { R: 0, L: 0 }; // the arms' current swing, degrees
-    this.act = { lean: 0, reach: 0, lookUp: 0, heavy: 0, hop: 0, raise: 0 }; // what the body's doing, eased (state: lean...)
+    this.act = { lean: 0, reach: 0, lookUp: 0, heavy: 0, hop: 0, raise: 0, ride: 0 }; // what the body's doing, eased (state: lean...; ride: astride a steed)
     this.poses = {};
   }
 
@@ -226,7 +326,7 @@ export class FigureAnimator {
     const up = stretch < 1 ? bump(stretch, 0.08, 0.42, 0.62, 0.95) : 0; // arms overhead
     const atk = (t - this.attackT0) / ATTACK_TIME;
     const A = this.act;
-    for (const k of ['lean', 'reach', 'lookUp', 'heavy', 'raise']) A[k] = approach(A[k], state[k] || 0, 6, dt);
+    for (const k of ['lean', 'reach', 'lookUp', 'heavy', 'raise', 'ride']) A[k] = approach(A[k], state[k] || 0, 6, dt);
     A.hop = state.hop || 0; // (follows the jump exactly)
     const heavy = A.heavy, shake = heavy * Math.sin(t * 31) * 2.5; // (degrees: arms trembling under the weight)
 
@@ -279,6 +379,7 @@ export class FigureAnimator {
       target = target * (1 - A.reach) - 88 * A.reach;
       target = target * (1 - heavy) + (-52 + shake * (side === 'R' ? 1 : -1)) * heavy;
       target += -55 * A.hop;
+      target = target * (1 - A.ride) + (holding ? target : -38) * A.ride; // (riding: the reins held out before you)
       if (side === 'R') target = target * (1 - A.raise) - 112 * A.raise; // (held high: up and out before you, so what it holds stands up into the air: a minifig's grip is square to its arm)
       let a = approach(this.arm[side], target, 10, dt);
       let out = 0;
@@ -324,7 +425,7 @@ export class FigureAnimator {
 
     // the legs: stride, opposite each other
     if (rig.legs) {
-      const a = swing * 32 * (1 - 0.5 * heavy) * DEG, tuck = -40 * A.hop * DEG; // (heavy: short steps; a hop: knees up)
+      const a = swing * 32 * (1 - 0.5 * heavy) * (1 - A.ride) * DEG, tuck = (-40 * A.hop - 84 * A.ride) * DEG; // (heavy: short steps; a hop: knees up; riding: astride, legs out before you, still)
       P.legR = turnAbout(rig.legs.pivot, rig.legs.axis, a + tuck + (F && F.legR ? keyAt(F.legR, ft) * DEG : 0)); // (a kick: FOUNT.kick)
       P.legL = turnAbout(rig.legs.pivot, rig.legs.axis, -a + tuck + (F && F.legL ? keyAt(F.legL === 'R' ? F.legR : F.legL, ft) * DEG : 0)); // (sat down: FOUNT.sit)
     }

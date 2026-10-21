@@ -43,6 +43,35 @@ DUNGEON_PARTS = {
 """,
     'brick2x4': """1 71 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
 """,
+    # stairs (render.js: a stair's square): built of 1x4 bricks, a square's width, four steps running from its front
+    # toward its back (LDraw +Z: turned to run toward a wall), in brown (reddish brown treads, dark brown under). Down: no floor, the steps going down into the hole a
+    # brick at a time (the deeper, the darker the shadow on them), into the black; up: the steps rising out of the floor, a brick at a time
+    'stairs_down': """1 70 0 8 -30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 32 -30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 56 -30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 80 -30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 104 -30 1 0 0 0 1 0 0 0 1 3010.dat
+1 70 0 32 -10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 56 -10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 80 -10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 104 -10 1 0 0 0 1 0 0 0 1 3010.dat
+1 70 0 56 10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 80 10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 104 10 1 0 0 0 1 0 0 0 1 3010.dat
+1 70 0 80 30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 104 30 1 0 0 0 1 0 0 0 1 3010.dat
+""",
+    'stairs_up': """1 70 0 -24 -30 1 0 0 0 1 0 0 0 1 3010.dat
+1 70 0 -48 -10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 -24 -10 1 0 0 0 1 0 0 0 1 3010.dat
+1 70 0 -72 10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 -48 10 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 -24 10 1 0 0 0 1 0 0 0 1 3010.dat
+1 70 0 -96 30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 -72 30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 -48 30 1 0 0 0 1 0 0 0 1 3010.dat
+1 308 0 -24 30 1 0 0 0 1 0 0 0 1 3010.dat
+""",
     # water (a pool, a moat): clear blue 1x1 round plates, heaped in the square's hole and roiling
     'water_stud': """1 43 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat
 """,    # ...and the bottom of its hole, still under them: the same clear blue 1x1 round plates, one on each of the
@@ -151,12 +180,13 @@ def main():
     json.dump(built, open(os.path.join(ASSETS, 'roster.built.json'), 'w'), indent=1)
     print(f'roster: {len(built)} figures')
     mons = {}
-    def creature(mon, m):
+    def creature(mon, m, saddled=False):
         """A monster that isn't a minifig (a cobra): its parts ({part, color, pos, mat}), scaled down to fit
         its square ("scale"), its middle over the origin and its underside on it; facing +Z as a figure
         does (its head to LDraw's -Z). Animated whole by the client (web/js/creature.js)."""
         s = m.get('scale', 1)
         shift = np.zeros(3)
+        if saddled: m = {**m, 'parts': m['parts'] + m['saddle']}   # (saddled: a steed's saddle on its back, for a rider)
         if m['creature'] in ('beast', 'horse', 'fungus', 'float', 'eye', 'bat') or m.get('center'):   # (an animal: stood on its square, its feet on the floor, its middle over it)
             pts = []
             for p in m['parts']:
@@ -169,7 +199,7 @@ def main():
         ldr = f'0 {mon}\n' + ''.join(f"1 {p['color']} " + ' '.join(str(round((v + d) * s, 3)) for v, d in zip(p.get('pos', [0, 0, 0]), shift))
                                       + ' ' + ' '.join(str(round(v * s, 4)) for v in p.get('mat', [1, 0, 0, 0, 1, 0, 0, 0, 1]))
                                       + f" {p['part']}.dat\n" for p in m['parts'])
-        name = 'mon-' + mon.replace(' ', '-')
+        name = 'mon-' + mon.replace(' ', '-') + ('-saddled' if saddled else '')
         extras = {'fx': m['fx']} if m.get('fx') else None   # (its element in particles all over it: a hell hound's fire, mist.js addEffects)
         key = hashlib.sha1((ldr + json.dumps(extras)).encode()).hexdigest()[:12]
         glb, ldr_path, keyfile = (os.path.join(OUT, name + ext) for ext in ('.glb', '.ldr', '.key'))
@@ -181,7 +211,8 @@ def main():
 
     for mon, m in json.load(open(os.path.join(ASSETS, 'monsters.json'))).items():
         if m.get('creature'):
-            mons[mon] = {'url': creature(mon, m), 'creature': m['creature']}
+            mons[mon] = {'url': creature(mon, m), 'creature': m['creature'],
+                         **({'saddled': creature(mon, m, True), 'seat': m.get('seat', 1)} if m.get('saddle') else {})}   # (with a saddle on: ridden; how high its seat)
             continue
         mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold'),
                      # a serpent's tail for legs (a naga): it slithers (web/js/creature.js slitherLocal), lifted so its coils rest on the floor

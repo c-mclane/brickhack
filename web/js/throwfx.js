@@ -505,6 +505,17 @@ export class ThrowFX {
     for (let i = 0; i < 5; i++) this.vapor(p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.3, -0.3 + i * 0.15, (Math.random() - 0.5) * 0.3)), i % 2 ? 0x1c1524 : 0x34283f, 1.9);
     this.sparkles(p, 26, 0x241b2e, 0.45);
   }
+  // ash drifting down (a prayer gone unanswered): a few grey specks, sinking, fading
+  ash(p) {
+    const n = 4, mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.02, 0.02, 0.02), new THREE.MeshBasicMaterial({ color: 0x8a8a8a, transparent: true, opacity: 0.9, depthWrite: false }), n), parts = [];
+    mesh.frustumCulled = false;
+    for (let i = 0; i < n; i++)
+      parts.push({ p: p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.3, Math.random() * 0.3, (Math.random() - 0.5) * 0.3)),
+        v: new THREE.Vector3((Math.random() - 0.5) * 0.06, -(0.25 + Math.random() * 0.15), (Math.random() - 0.5) * 0.06),
+        q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random(), Math.random(), Math.random()).multiplyScalar(3), s: 0.7 + Math.random() * 0.6, grow: 0 });
+    this.brick.world.add(mesh);
+    this.shards.push({ mesh, parts, t: 0, life: 3.5, rise: true });
+  }
   // a shiver: a few specks of frost glinting off you (p: your middle)
   frost(p) { this.sparkles(p, 4, 0xd9f3ff, 0.4); }
 

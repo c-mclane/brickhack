@@ -44,7 +44,7 @@ export class World {
   }
 
   applyMap(list) {
-    for (const [x, y, t, k, c, bt, bc] of list) this.cells[y * this.w + x] = { t, k, c, bt, bc };
+    for (const [x, y, t, k, c, bt, bc, a] of list) this.cells[y * this.w + x] = { t, k, c, bt, bc, a }; // (a: an altar's alignment, -1/0/1/-128; 2 none)
     this.dirty = true;
   }
 
@@ -115,9 +115,14 @@ export class World {
         const shade = seen ? 1 : 0.5;
         // (a fountain, a sink, a toilet stands in brick (items.json), first on its square, all else on it; else its
         // sprite. A sink, a toilet: its back to a wall beside it, if there's one: turn)
-        const furn = !cl ? null : cl.cmap === CM.fountain ? 'fountain' : cl.cmap === CM.sink ? 'sink' : cl.cmap === CM.toilet && CM.toilet >= 0 ? 'toilet' : null;
-        const fountain = furn && brickBuilt(furn);
-        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders,
+        const furn = !cl ? null : cl.cmap === CM.fountain ? 'fountain' : cl.cmap === CM.sink ? 'sink' : cl.cmap === CM.toilet && CM.toilet >= 0 ? 'toilet'
+          : cl.cmap === CM.altar ? 'altar' : null;
+        // (an altar: the one of its alignment, its stone and trim: lawful white and gold, neutral grey, chaotic black and
+        // dark red, Moloch's black and red; a lawful one, to a follower of Jesus: his, the cross on it)
+        const model = furn === 'altar' ? 'altar_' + (c.a === 1 && this.faith ? 'jesus'
+            : { 1: 'lawful', 0: 'neutral', [-1]: 'chaotic' }[c.a] || (c.a === -128 ? 'unaligned' : 'neutral')) : furn;
+        const fountain = model && brickBuilt(model);
+        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders, perch: fountain.perch, offer: fountain.offer, anchored: fountain.anchored, spots: fountain.spots, item: model,
           turn: furn === 'fountain' ? 0 : this.backToWall(x, y) });
         else if (cl && cl.sprite) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade });
         const isHero = x === this.hero.x && y === this.hero.y;

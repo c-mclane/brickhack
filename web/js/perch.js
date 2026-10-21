@@ -20,6 +20,7 @@ export const PERCHES = {
   fountain: { R: 70 / 80, H: 48 / 80, OUT: 80 / 80 },
   sink: { R: 58 / 80, H: 0, OUT: 40 / 80, HOP: 0.04, LOOK: 0, RIM: 72 / 80, BOWL: 0.3 },
   toilet: { R: 50 / 80, H: 0, OUT: 30 / 80, HOP: 0.04, LOOK: 0, RIM: 52 / 80, BOWL: 0.12 },
+  altar: { R: 46 / 80, H: 0, OUT: 40 / 80, HOP: 0.04, LOOK: 0 }, // (an altar: stood before it, to pray, to offer)
 };
 const STATUE = PERCHES.statue;
 const HOP = 0.28; // (how high the hop goes over the ledge)
@@ -44,6 +45,8 @@ function roundLedge(a, b, v) {
   if (Math.abs(Math.abs(da) - Math.PI) < 1e-3) da = Math.PI;
   return [Math.cos(a0 + da * v), Math.sin(a0 + da * v)];
 }
+// (a model's own, if it has one (the altar of a follower of Jesus: stood on its step), else its kind's)
+export const perchOf = (d) => (d && d.perch) || PERCHES[d.name];
 const statueAt = (drops, x, y) => (drops || []).find((d) => d.x === x && d.z === y && PERCHES[d.name]);
 
 // where you stand, off where you'd be (pos): hero {x, y} (your square), track (cameFrom: the
@@ -53,7 +56,7 @@ const statueAt = (drops, x, y) => (drops || []).find((d) => d.x === x && d.z ===
 //   onto it: a hop up onto the ledge on the side you came from, then gazing up at it;
 //   off it: along the ledge to the corbel on the side you're leaving by, and a jump down from there
 export function perchSpot(hero, track, pos, drops) {
-  const on = statueAt(drops, hero.x, hero.y), pr = PERCHES[(on || statueAt(drops, track.perch ? track.perch.x : -1, track.perch ? track.perch.y : -1) || { name: 'statue' }).name];
+  const on = statueAt(drops, hero.x, hero.y), pr = perchOf(on || statueAt(drops, track.perch ? track.perch.x : -1, track.perch ? track.perch.y : -1) || { name: 'statue' });
   const PERCH_R = pr.R, L = STUD_H + pr.H;
   if (on) {
     const k = Math.max(0, Math.min(1, 1 - Math.hypot(pos[0] - hero.x, pos[1] - hero.y)));
@@ -147,7 +150,7 @@ export function cameFrom(track, hero) {
 // in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
 // (and a 4th: what's thrown up into it, a tint for its studs)
 export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]],
-  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [], sip: [], scald: [], reach: [], kick: [], sinkRetch: [], gulp: [], toiletRetch: [], sit: [], pray: [], toiletDip: [] };
+  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [], sip: [], scald: [], reach: [], kick: [], sinkRetch: [], gulp: [], toiletRetch: [], sit: [], pray: [], toiletDip: [], prayer: [], smitten: [], slump: [] };
 export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;
 
 // sat on a toilet (minifig-anim.js FOUNT.sit): stood before it on `sd`'s side, turned round to face away from it,

@@ -71,7 +71,9 @@ export class Music {
 // Ambience: a sound looped under the music while you're somewhere (a room with a fountain, a pool or lava
 // in it: main.js roomNear), fading in as you come in and out as you leave. Files in the music/ folder
 // (served at /music/, never shuffled in with the tunes)
-export const AMBIENCE = { water: 'Fountain Sound Effect 4.mp3', lava: 'soundreality-lava-flow-202282.mp3' };
+export const AMBIENCE = { water: 'Fountain Sound Effect 4.mp3', lava: 'soundreality-lava-flow-202282.mp3',
+  mass: '06Track6_64kb.mp3' }; // (the Agnus Dei, chanted through the Mass: from its start each time, not looped)
+const ONCE = new Set(['mass']);
 const FADE = 1.2; // s
 
 export class Ambience {
@@ -87,7 +89,7 @@ export class Ambience {
     let s = this.sounds.get(name);
     if (!s && on && AMBIENCE[name]) {
       const audio = new Audio('/music/' + encodeURIComponent(AMBIENCE[name]));
-      audio.loop = true;
+      audio.loop = !ONCE.has(name);
       audio.volume = 0;
       this.sounds.set(name, (s = { audio, want: false, going: null }));
     }
@@ -99,6 +101,7 @@ export class Ambience {
     if (!this.allowed || s.going === s.want) return; // (already on its way there)
     s.going = s.want;
     const on = s.want;
+    if (on && ONCE.has([...this.sounds].find(([, v]) => v === s)[0])) s.audio.currentTime = 0; // (sung from the start)
     if (on) s.audio.play().catch(() => {});
     clearInterval(s.timer);
     const from = s.audio.volume, t0 = performance.now();

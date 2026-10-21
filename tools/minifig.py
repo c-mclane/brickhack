@@ -97,7 +97,8 @@ HELD = {
     '37341b': {'center': (0, 4, 0), 'up': (0, -1, 0)},                      # knife: blade up out of the fist
     '13790': {'center': (0, 8, 0), 'up': (0, -1, 0)},                       # club: by its handle, the thick end up
     '4006': {'center': (0, 6, 0), 'up': (0, -1, 0)},                        # spanner: by the middle, the jaws up
-    '3849': {'center': (0, 0, 14), 'up': (0, 0, -1)},                       # lance: behind its guard, the point forward (it lies along -Z)
+    '3849': {'center': (0, 0, 14), 'up': (0, 0, -1)},
+    '2343': {'center': (0, 25, 0), 'up': (0, -1, 0)},                       # goblet (a chalice): by its stem, the cup up out of the fist                       # lance: behind its guard, the point forward (it lies along -Z)
     '13564': {'center': (4, 0, 0), 'up': (-1, 0, 0)},                       # cow horn (a worm tooth): by its root, the point out (along -X)
     '87994': {'center': (0, 40, 0), 'up': (0, -1, 0)},                      # bar 3L (a stake's shaft): low down, its top up
     '23860': {'center': (0, -4, 0), 'up': (0, -1, 0)},                      # faceted blade: by its bar, the blade up

@@ -282,6 +282,9 @@ const FX = {
   fountain: { n: 300, size: 0.045, color: 'mix(vec3(0.9, 0.97, 1.0), vec3(0.4, 0.68, 0.95), t)', alpha: '0.85 * (1.0 - t * 0.45)',
     move: 'float ang = fract(ph * 13.37) * 6.2832; vec3 dir = side * cos(ang) + cross(up, side) * sin(ang); float far = fract(ph * 7.91); p += dir * h * (0.25 + 0.75 * far) * t + up * (h * 0.9 * t - (h * 0.9 + h * (0.7 + 2.6 * far)) * t * t);',
     speed: '0.55 + ph * 0.15' },
+  // (hellfire: the same, red: Moloch's altar)
+  hellfire: { n: 140, size: 0.09, color: 'mix(vec3(1.0, 0.42, 0.3), vec3(0.55, 0.02, 0.02), t)', alpha: '(1.0 - t) * 0.9',
+    move: 'p += up * t * h * 0.45 + side * sin(t * 9.0 + ph * 6.3) * h * 0.03;', speed: '0.9 + ph * 0.8' },
   frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
     move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
 };
@@ -292,10 +295,15 @@ export function addEffects(THREE, root) {
   if (host.userData.fx === 'fountain') return addStudFountain(THREE, root, host);
   const fx = FX[host.userData.fx];
   root.updateMatrixWorld(true);
+  // (fxJoint: only that part burns: a statue's torch flame, not the statue; a list of them, each its own fire, sized
+  // to it: an altar's two candle flames)
+  const joints = [].concat(host.userData.fxJoint || []), srcs = joints.map((j) => root.getObjectByName(j)).filter(Boolean);
+  for (const src of srcs.length ? srcs : [root]) addFxOn(THREE, root, fx, src);
+  startTicking();
+}
+function addFxOn(THREE, root, fx, src) {
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
   const pts = [], v = new THREE.Vector3();
-  // (fxJoint: only that part burns: a statue's torch flame, not the statue)
-  const src = (host.userData.fxJoint && root.getObjectByName(host.userData.fxJoint)) || root;
   src.traverse((o) => {
     if (!o.isMesh) return;
     const m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), a = o.geometry.attributes.position;
@@ -352,7 +360,6 @@ export function addEffects(THREE, root) {
   const vp = new THREE.Vector2(); // (the height drawn to, in pixels, for the size above: on the material, shared by every copy)
   mat.onBeforeRender = (r) => { const t = r.getRenderTarget(); mat.uniforms.uVH.value = t ? t.height : r.getDrawingBufferSize(vp).y; };
   root.add(points);
-  startTicking();
 }
 
 // A fountain's water as bricks (tools/build_items.py fx "fountain", "fxPool": its pool's water level,

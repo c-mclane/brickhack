@@ -124,7 +124,9 @@ cp sys/share/lev_comp.h sys/share/dgn_comp.h include/
 touch util/*_yacc.c util/*_lex.c include/*_comp.h
 
 mkdir -p "$OUT"
-make -j"$(nproc)" >"$OUT.log" 2>&1 || make >>"$OUT.log" 2>&1 || { grep -n "error" "$OUT.log" | head -30; exit 1; }
+# (a parallel build can write src/monst.o twice at once, the game and the utilities each wanting it, and leave it
+# corrupt but newer than its source: so before the one-at-a-time retry, it goes, to be made again)
+make -j"$(nproc)" >"$OUT.log" 2>&1 || { rm -f src/monst.o; make >>"$OUT.log" 2>&1; } || { grep -n "error" "$OUT.log" | head -30; exit 1; }
 KEEP=$(mktemp -d)
 keep_player_data "$OUT/slashemdir" "$KEEP"
 make install >>"$OUT.log" 2>&1 || { tail -30 "$OUT.log"; echo "player data kept in $KEEP"; exit 1; }

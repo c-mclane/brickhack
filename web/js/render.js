@@ -584,7 +584,7 @@ export class Renderer {
     // not yet explored (a path you haven't followed yet fades into it)
     const brickLevel = true; // (every level is: the dungeon, Ascend's baseplate)
     // what the BrickWorld builds: floor plates, walls, doors, fog
-    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [], pools: [] };
+    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [], pools: [], stairs: [] };
     // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
     const passable = (xx, yy) => {
       const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];
@@ -694,8 +694,11 @@ export class Renderer {
               // a studded plate in the floor's colour; a special floor (stairs, an
               // altar's square...) is a smooth plate with its tile printed on top
               const ft = c.floorTile ?? c.tile, plain = plainFloor.has(ft);
-              bricks.floors.push({ x, z: y, shade, studs: plain });
-              if (!plain) this.floor(out, x, y, 0.002, ft, shade);
+              // (stairs: built in brick, running toward a wall beside them: up, out of the floor; down, a hole in it)
+              const stair = c.cmap === CM.upstair ? 'up' : c.cmap === CM.dnstair ? 'down' : null;
+              if (stair) bricks.stairs.push({ x, z: y, up: stair === 'up', turn: world.backToWall ? world.backToWall(x, y) : 0, shade });
+              if (stair !== 'down') bricks.floors.push({ x, z: y, shade, studs: plain || !!stair || c.cmap === CM.altar });
+              if (!plain && !stair && c.cmap !== CM.altar) this.floor(out, x, y, 0.002, ft, shade); // (an altar: built in brick, world.js)
               if (c.decal != null) this.floor(out, x, y, STUD_H + 0.005, c.decal, shade, 1);
               // an open door swung back in its frame; a doorway (no door, or a broken one): the frame alone
               if (c.type === 'odoor') doorPiece(x, y, 'door_open', doorAlongZ(x, y, c), shade);

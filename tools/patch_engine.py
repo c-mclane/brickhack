@@ -971,4 +971,55 @@ edit("src/do.c", [
     ('\t\tYou("thought your %s got lost in the sink, but there it is!",',
      '\t\tweb_furnfx("sink", "ringback", u.ux, u.uy, (char *)0), You("thought your %s got lost in the sink, but there it is!",'),
 ], "WEB_HOOK_FURNFX")
+
+# BrickHack: praying, played by the client as it goes (web_pray): begun (how it'll go: p_type), and what comes of
+# it: your god pleased (how much), or displeased, angered (a voice, a black glow, punished, a minion, lightning, a
+# disintegration beam), too soon, undead, in Gehennom
+edit("src/pray.c", [
+    ('#include "hack.h"\n',
+     '#include "hack.h"\n/* WEB_HOOK_PRAY */\nextern void FDECL(web_pray, (const char *, int));\n'),
+    ('    nomul(-3);\n    nomovemsg = "You finish your prayer.";\n',
+     '    web_pray("begin", p_type);\n    nomul(-3);\n    nomovemsg = "You finish your prayer.";\n'),
+    ('\tYou_feel("like you are falling apart.");',
+     '\tweb_pray("undead", -1), You_feel("like you are falling apart.");'),
+    ('\tpline("Since you are in Gehennom, %s won\'t help you.",',
+     '\tweb_pray("hell", 0), pline("Since you are in Gehennom, %s won\'t help you.",'),
+    ('\tu.ublesscnt += rnz(250);\n\tchange_luck(-3);\n\tgods_upset(u.ualign.type);\n    } else if(p_type == 1) {',
+     '\tweb_pray("toosoon", 0);\n\tu.ublesscnt += rnz(250);\n\tchange_luck(-3);\n\tgods_upset(u.ualign.type);\n    } else if(p_type == 1) {'),
+    ('\tYou_feel("that %s is %s.", align_gname(g_align),',
+     '\tweb_pray("pleased", u.ualign.record >= DEVOUT ? 3 : u.ualign.record >= STRIDENT ? 2 : 1), You_feel("that %s is %s.", align_gname(g_align),'),
+    ('\t    case 1:\tYou_feel("that %s is %s.", align_gname(resp_god),',
+     '\t    case 1:\tweb_pray("displeased", 0), You_feel("that %s is %s.", align_gname(resp_god),'),
+    ('\t    case 2:\n\t    case 3:\n\t\t\tgodvoice(resp_god,(char *)0);\n',
+     '\t    case 2:\n\t    case 3:\n\t\t\tweb_pray("lessons", 0);\n\t\t\tgodvoice(resp_god,(char *)0);\n'),
+    ('\t\t\t    pline("%s glow surrounds you.",',
+     '\t\t\t    web_pray("blackglow", 0), pline("%s glow surrounds you.",'),
+    ('\t\t\t    punish((struct obj *)0);',
+     '\t\t\t    web_pray("punish", 0), punish((struct obj *)0);'),
+    ('\t\t\tverbalize("Thou durst %s me?",',
+     '\t\t\tweb_pray("minion", 0), verbalize("Thou durst %s me?",'),
+    ('\t    pline("Suddenly a bolt of lightning comes down at you from the heavens!");',
+     '\t    web_pray("bolt", 0), pline("Suddenly a bolt of lightning comes down at you from the heavens!");'),
+    ('\t    pline("Suddenly, a bolt of lightning strikes you!");',
+     '\t    web_pray("bolt", 0), pline("Suddenly, a bolt of lightning strikes you!");'),
+    ('\t    pline("A wide-angle disintegration beam aimed at you hits %s!",',
+     '\t    web_pray("disintegrate", 0), pline("A wide-angle disintegration beam aimed at you hits %s!",'),
+    ('\t    pline("A wide-angle disintegration beam hits you!");',
+     '\t    web_pray("disintegrate", 0), pline("A wide-angle disintegration beam hits you!");'),
+], "WEB_HOOK_PRAY")
+
+# BrickHack: a box or a chest kicked (dokick.c), played by the client (web_boxfx): the thud, what breaks inside
+# it (a muffled shatter, a crack: the thing, for its colour), its lock broken, its lid slammed open and shut
+edit("src/dokick.c", [
+    ('#include "hack.h"\n',
+     '#include "hack.h"\n/* WEB_HOOK_BOXFX */\nextern void FDECL(web_boxfx, (const char *, int, int, struct obj *));\n'),
+    ('\t\tif(range < 2) pline("THUD!");',
+     '\t\tif(range < 2) web_boxfx("thud", kickobj->ox, kickobj->oy, (struct obj *)0), pline("THUD!");'),
+    ('\t\tYou_hear("a muffled %s.", result);',
+     '\t\tweb_boxfx(*result == \'s\' ? "shatter" : "crack", x, y, otmp), You_hear("a muffled %s.", result);'),
+    ('\t\t\tYou("break open the lock!");\n\t\t\tkickobj->olocked = 0;',
+     '\t\t\tweb_boxfx("lockbreak", kickobj->ox, kickobj->oy, (struct obj *)0), You("break open the lock!");\n\t\t\tkickobj->olocked = 0;'),
+    ('\t\t\tpline_The("lid slams open, then falls shut.");',
+     '\t\t\tweb_boxfx("slam", kickobj->ox, kickobj->oy, (struct obj *)0), pline_The("lid slams open, then falls shut.");'),
+], "WEB_HOOK_BOXFX")
 print("engine hooks applied:", src)

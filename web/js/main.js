@@ -14,14 +14,15 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music, Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
-import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T, PRAY_OUTCOME, PRAY_AFTER, prayAfter } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
+import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, perchOf, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, FOUNT, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
+import { FigureAnimator, FOUNT, fountKey, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
+import { AltarRites } from './rites.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
 
@@ -278,6 +279,18 @@ const game = {
 const world = new World();
 let npTimer = 0;
 const ambience = new Ambience(opts.music / 100); // (a fountain's water, lava's flow: looped under the music: roomNear)
+// the rites at the altar of a follower of Jesus (the engine's "rite": winweb.c web_ritefx), played out at it (rites.js):
+// its statues come alive, the wafer, the chalice, alms tossed into its plate...; the Agnus Dei chanted meanwhile
+const rites = new AltarRites({
+  get brick() { return renderer.brick; },
+  clock: () => performance.now() / 1000,
+  wait: (s) => new Promise((res) => (s > 0 ? setTimeout(res, s * 1000) : requestAnimationFrame(() => res()))),
+  say: () => {}, // (the engine says it)
+  hero: { act: (n) => { if (n) fountNow(n); else hero3d.fount = null; }, hold: (h) => { hero3d.riteHold = h; } },
+  url: (n) => (brickBuilt(n) || {}).url, upright: (n) => !!(brickBuilt(n) || {}).upright,
+  angelUrl: null, chant: (on) => ambience.set('mass', on),
+});
+loadRoster().then((r) => { const a = r.find((f) => f.id === 'angel-priest-m'); rites.env.angelUrl = a && a.url; });
 const music = new Music({
   volume: opts.music / 100,
   onTrack: (title) => {
@@ -585,6 +598,7 @@ function handle(m) {
       { const near = roomNear(m.ux, m.uy); ambience.set('water', near.water); ambience.set('lava', near.lava); } // (a fountain's or a pool's water, lava's flow: heard)
       if (!game.charName) { game.charName = m.name; game.loadHotbar(); loadHeroFigure(m.name, m); }
       world.heroTile = game.skinLoaded && !m.poly ? skinTile() : null;
+      if (world.faith !== !!m.faith) { world.faith = !!m.faith; world.dirty = true; } // (his followers: his altar, lawful ones)
       // placed blocks belong to a dungeon level
       if (!blocks.ident) {
         const name = m.name, key = `${m.dnum}:${m.dlev}`;
@@ -697,7 +711,7 @@ function handle(m) {
         // up onto its rim from there: processMovement)
         let to = [m.x, m.y];
         const pd = (world.brickDrops || []).find((o) => o.x === m.x && o.z === m.y && PERCHES[o.name]);
-        if (pd) { const dx = m.px - m.x, dz = m.py - m.y, n = Math.hypot(dx, dz) || 1, k = PERCHES[pd.name].OUT + BODY_R; to = [m.x + (dx / n) * k, m.y + (dz / n) * k]; }
+        if (pd) { const dx = m.px - m.x, dz = m.py - m.y, n = Math.hypot(dx, dz) || 1, k = perchOf(pd).OUT + BODY_R; to = [m.x + (dx / n) * k, m.y + (dz / n) * k]; }
         if (hero3d.swim && hero3d.swim.pool[0] === m.px && hero3d.swim.pool[1] === m.py) hero3d.swim.to = to;
         else hero3d.swim = { from: [m.px, m.py], pool: [m.px, m.py], to, t0: performance.now() - 1e3 * 0.9, fired: 1 }; // (no fall seen: just the crawl)
       }
@@ -755,6 +769,15 @@ function handle(m) {
       break;
     }
     case 'furnfx': furnFx(m); break; // a sink, a toilet: its doings (furnFx)
+    case 'pray': prayFx(m); break; // praying, as it goes (prayFx)
+    case 'rite': riteFx(m); break; // a rite at the altar of a follower of Jesus (riteFx)
+    case 'boxfx': // a box or a chest kicked (brickworld.js boxFx): your kick, and what comes of it as your foot lands
+      if (m.act === 'thud') fountNow('kick');
+      if (renderer.brickOn && renderer.brick) {
+        const l = m.tile >= 0 ? brickItemForTile(m.tile) : null, tint = l ? potionHue((l.name || '').replace(/ potion$/, '')) : null;
+        setTimeout(() => renderer.brick.boxFx(m.x, m.y, m.act, tint), m.act === 'thud' ? 380 : 520);
+      }
+      break;
     case 'steam': // a fire ray across a fountain: steam billows up out of it
       if (renderer.brickOn && renderer.brick) renderer.brick.fountainSteam(m.x, m.y);
       break;
@@ -1371,6 +1394,7 @@ function heroHold() {
     hold.R = fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero3d.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero3d.fount.grab : hero3d.fount.url || null) : null;
     hold.L = null; hold.two = false;
   }
+  if (hero3d.riteHold) { hold.R = hero3d.riteHold.R ?? null; hold.L = hero3d.riteHold.L ?? null; hold.two = false; } // (a rite: the wafer, the chalice, a corpse offered)
   // rings: worn as bracelets round the wrists, the right ring on the right
   // (and a ring wielded: on the wrist too, not in the fist)
   const worn = (slot) => game.inv.find((i) => i.w === slot);
@@ -1408,6 +1432,13 @@ const skipped = (hold) => ['R', 'L'].filter((s) => hold[s] !== undefined).map((s
 
 // the hero minifig's joints this frame: walking when moving (or falling),
 // swinging what's in the right hand on each attack (fx.attack)
+// riding (the engine's stat: steed, its tile): the steed you're on, in brick, saddled, or null
+function riddenSteed() {
+  const t = ui.stat && ui.stat.steed;
+  if (t == null || t < 0 || !renderer.brickOn) return null;
+  const e = brickMons.get(t);
+  return e && (e.saddledPrims || e.prims) ? e : null;
+}
 function heroPose(dt, now) {
   const a = hero3d.anim;
   if (!a) return null;
@@ -1421,7 +1452,8 @@ function heroPose(dt, now) {
   const pp = statuePerch(now), push = Math.max(0, 1 - (now - (hero3d.pushT0 ?? -1e9)) / 700);
   const sw = heroSwim(now); // (falling into water, crawling out)
   if (sw) return a.update(dt, { moving: false, holdsR: !!hold.R, holdsL: !!hold.L, hop: sw.hop, reach: sw.reach, lean: sw.lean });
-  return a.update(dt, { moving: game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround),
+  const riding = !!riddenSteed(); // (astride a steed: legs out, the reins held, still)
+  return a.update(dt, { moving: !riding && game.playing && (motion.heroRemaining(now) > 0 || !phys.onGround), ride: riding ? 1 : 0,
     holdsR: !!hold.R, holdsL: !!hold.L, twoweap: !!hold.two,
     hop: pp ? pp.hop : 0, lookUp: pp && !fountAct(now) ? pp.lookUp : 0, lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: heavyBall() ? 1 : 0,
     fount: fountAct(now), raise: raiseAct(now) });
@@ -1554,6 +1586,41 @@ function furnFx(m) {
   }
 }
 
+// ---- praying (winweb.c web_pray): begun (down on your knees, arms raised; the light that comes for how it'll go, or
+// a storm gathering: brickworld.js prayBegin), then what comes of it (prayOutcome) as the prayer ends, and how you
+// take it after (struck, brought low: prayAfter). The engine tells it all at once; it's played out over the prayer
+// a rite at his altar (winweb.c web_ritefx), played out there if it's his (the brick dungeon: rites.js); its statues
+// come alive whatever, but only on his altar (altar_jesus: they're its own)
+function riteFx(m) {
+  if (!renderer.brickOn || !renderer.brick || !rites.env.angelUrl) return;
+  const d = (world.brickDrops || []).find((o) => o.x === m.x && o.z === m.y && o.name === 'altar' && o.item === 'altar_jesus');
+  if (!d) return;
+  const turn = d.turn || 0;
+  const go = { mass: () => rites.mass(m.x, m.y, turn), communion: () => rites.communion(m.x, m.y, turn), alms: () => rites.alms(m.x, m.y, turn, [[m.n, null, null]]),
+    confess: () => rites.confess(m.x, m.y, turn, !!m.n), offer: () => rites.offer(m.x, m.y, turn), wafer: () => rites.prayed(m.x, m.y, turn, 'wafer'),
+    wine: () => rites.prayed(m.x, m.y, turn, 'wine') }[m.act];
+  if (go) go().catch((e) => console.error(e));
+}
+
+function prayFx(m) {
+  if (!renderer.brickOn || !renderer.brick) return;
+  const b = renderer.brick, now = performance.now();
+  if (m.act === 'begin') {
+    const [hx, hz] = motion.heroPos(now);
+    fountNow('prayer');
+    hero3d.prayer = { t0: now, x: hx + 0.5, z: hz + 0.5, st: b.prayBegin(hx + 0.5, hz + 0.5, m.n) };
+    return;
+  }
+  const P = hero3d.prayer && now - hero3d.prayer.t0 < PRAY_AFTER * 1000 ? hero3d.prayer : null;
+  const [hx, hz] = motion.heroPos(now), x = P ? P.x : hx + 0.5, z = P ? P.z : hz + 0.5;
+  setTimeout(() => {
+    b.prayOutcome(x, z, m.act, m.n, P ? P.st : {});
+    if (m.act === 'lessons') fx.shake = { t0: performance.now(), amp: 0.75 }; // (a god's voice: the world shaken)
+  }, P ? Math.max(0, P.t0 + PRAY_OUTCOME * 1000 - now) : 0);
+  const after = prayAfter(m.act);
+  if (after) setTimeout(() => fountNow(after), P ? Math.max(0, P.t0 + PRAY_AFTER * 1000 - now) : 600);
+}
+
 // ---- the Lady of the Lake (a long sword dipped: Excalibur), as a cutscene: the view taken from you to a
 // slow turn about the fountain, letterboxed; your dip held, the sword in the water, while her arm rises out
 // of it to the sword and blesses it (brickworld.js ladyOfTheLake), or (not lawful) a freezing mist wraps it;
@@ -1665,6 +1732,17 @@ function fountainDries(x, y, delay = 0) {
 }
 
 // drinking from a fountain, or dipping something in it, now: {act, t (s in)}, or null
+// on stairs: stood on a step, up the flight (stairs up) or down it in its hole (stairs down), at the square's middle
+// (render.js, brickworld.js: four steps, a brick each); eased as you come onto them and off
+const STAIR_STEP = { up: 0.6, down: -0.4 };
+function stairStep(dt, hx, hz) {
+  const c = world.classAt(Math.round(hx), Math.round(hz));
+  const want = !c || !renderer.brickOn ? 0 : c.cmap === CM.upstair ? STAIR_STEP.up : c.cmap === CM.dnstair ? STAIR_STEP.down : 0;
+  hero3d.stairY = (hero3d.stairY || 0) + (want - (hero3d.stairY || 0)) * Math.min(1, dt * 7);
+  return hero3d.stairY;
+}
+// praying: how far down onto your knees you are, now (minifig-anim.js FOUNT.prayer drop)
+function kneelDrop(now) { const a = fountAct(now); return a ? fountKey(a.act, 'drop', a.t) : 0; } // (and the rites': Communion, confession, a genuflection)
 function fountAct(now) {
   const f = hero3d.fount;
   if (!f) return null;
@@ -1800,8 +1878,9 @@ async function loadBrickMonsters() {
     const m = mons[n];
     if (!m) return;
     const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null,
-      creature: m.creature, slither: m.slither, lift: m.lift || 0 };
+      creature: m.creature, slither: m.slither, lift: m.lift || 0, saddled: m.saddled || null, seat: m.seat || 1, saddledPrims: null };
     brickMons.set(i, e);
+    if (m.saddled) renderer.figRender.model(m.saddled).then((p) => { e.saddledPrims = p; }).catch(() => {}); // (ridden: with its saddle on)
     renderer.figRender.model(m.url).then((p) => { e.prims = p; }) // (each one's animator its own: monStateOf)
       .catch((err) => console.warn('brick monster:', n, err));
   });
@@ -2585,7 +2664,7 @@ function obstacles(F) {
   // its basin; a fountain's pool, its whole square; touched, it's hopped up onto)
   for (const o of world.brickDrops || [])
     if (PERCHES[o.name] && Math.abs(o.x - sx) <= 1 && Math.abs(o.z - sz) <= 1 && !(walk.at && o.x === walk.at.x && o.z === walk.at.z)) {
-      const R = PERCHES[o.name].OUT;
+      const R = perchOf(o).OUT;
       if (o.name === 'statue') {
         const w = 20 / 80, C = 35 / 80; // (and the basin over its middle)
         out.push([o.x - w, o.z - R, o.x + w, o.z + R, o], [o.x - R, o.z - w, o.x + R, o.z + w, o], [o.x - C, o.z - C, o.x + C, o.z + C, o]);
@@ -2670,8 +2749,8 @@ function processMovement(now, dt) {
   // should the statue drop out of the floor's list a moment while you stand on it)
   if ((statue || walk.perch) && !walk.settle) {
     const at = walk.at, t = (now - (walk.perch ? walk.perch.t0 : now)) / 1000;
-    const front = perchOn && (perchOn.name === 'sink' || perchOn.name === 'toilet') ? { wx: Math.round(Math.sin(perchOn.turn || 0)), wz: Math.round(Math.cos(perchOn.turn || 0)) } : null; // (a sink, a toilet: stood at its front)
-    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: front || sideToward(F.x - at.x, F.z - at.z), pr: PERCHES[perchOn.name] };
+    const front = perchOn && (perchOn.name === 'sink' || perchOn.name === 'toilet' || perchOn.name === 'altar') ? { wx: Math.round(Math.sin(perchOn.turn || 0)), wz: Math.round(Math.cos(perchOn.turn || 0)) } : null; // (a sink, a toilet: stood at its front)
+    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: front || sideToward(F.x - at.x, F.z - at.z), pr: perchOf(perchOn) };
     const p = walk.perch;
     F.x = at.x; F.z = at.z;
     motion.freeMoving = false;
@@ -2826,18 +2905,29 @@ function frame(t) {
       const pp = statuePerch(t); // (on a statue's square: up on its ledge, looking at it)
       if (walk.perch && walk.perch.side && renderer.brick) renderer.brick.setFountainSide(walk.perch.x, walk.perch.z, walk.perch.side); // (what lies on it: on its rim where you stand)
       const sw = heroSwim(t), sink = sw ? 0 : heroSink(dt, t, hx, hz, !!pp); // (in a pool: sunk in it, to the waist; falling in, crawling out)
-      const m = sw ? figureMatrix(sw.x + 0.5, (world.heroLift ?? phys.y) + sw.y, sw.z + 0.5, sw.yaw ?? doll.yaw)
-        : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw)
-        : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink, hz + 0.5, doll.yaw);
+      // (riding: the steed under you, saddled, your way, trotting as you go; you on its saddle, bobbing with it)
+      const steed = !sw && !pp ? riddenSteed() : null, ground = world.heroLift ?? phys.y, going = motion.heroRemaining(t) > 0;
+      const m = steed ? figureMatrix(hx + 0.5, ground + steed.seat - 28 / 80 + (going ? 0.025 * Math.abs(Math.sin(t / 1000 * 9)) : 0), hz + 0.5, doll.yaw)
+        : sw ? figureMatrix(sw.x + 0.5, (world.heroLift ?? phys.y) + sw.y, sw.z + 0.5, sw.yaw ?? doll.yaw)
+        : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift - kneelDrop(t), hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw) // (at an altar, knelt)
+        : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink - kneelDrop(t) + stairStep(dt, hx, hz), hz + 0.5, doll.yaw); // (praying: down on your knees; on stairs, on a step)
       if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
       heroWisps(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : -sink), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw, pose ? mouthPoint(m, pose) : null);
       heroHaze(t, sw ? sw.x + 0.5 : hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (sw ? sw.y : pp ? pp.lift : -sink), sw ? sw.z + 0.5 : hz + 0.5 + (pp ? pp.dz : 0));
       raiseGlint(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : 0), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw); // (something held high: glinting)
-      renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) },
+      const steedFig = steed ? [{ prims: steed.saddledPrims || steed.prims, url: steed.saddled || steed.url, shade: 1, pose: null, hold: {},
+        matrix: mul4(partMatrix(hx + 0.5, ground, hz + 0.5, Math.PI - doll.yaw), creatureLocal(steed.creature, t / 1000, { moving: going, lungeT: -1e9 })) }] : [];
+      renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) }, ...steedFig, // (you first: the hero, to the brick world)
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL, body: pose.body }) : [])];
     } else renderer.brickFigures = [];
     renderer.brickFigures.push(...brickMonFigures(sprites, dt, t)); // (King Skelly...)
+    if (renderer.brick) { // (a rite at his altar: its statues alive, what's set down or tossed; called off if you've gone)
+      if (rites.busy && game.playing && (world.hero.x !== rites.busy.ax || world.hero.y !== rites.busy.az)) rites.cancel();
+      renderer.brickFigures.push(...rites.figures(dt));
+      rites.step();
+      renderer.brick.setProps(rites.props);
+    }
     // first person: your own brick arm, and what it holds, in the corner of the
     // view; fighting with two weapons, your left one too, in the other corner
     const fpOn = !!pose && !!rig && game.playing && opts.camera === 0 && !cutscene && opts.playerModel === 'model' && !anyScreen() && !(ui.stat && ui.stat.poly);

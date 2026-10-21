@@ -28,9 +28,30 @@ const DRY_STONE = new THREE.Color(0xa0a5a9), DRY_CRUMBLE = 2.9;
 export const FOUNT_RIM_SPOT = [0.6, 0.6, 0.6];
 // a fountain's basin: how many coins lie strewn in it (gold there: basinCoins), how high its floor (squares, over
 // the studs), and between what distances from its middle (out of its column, in from its wall)
+// praying: when what comes of it shows, and when you take it (s after you begin), and how: struck (thrown back)
+// or brought low (slumped, head bowed)
+export const PRAY_OUTCOME = 5.8, PRAY_AFTER = 8.0;
+export const prayAfter = (act) => (['bolt', 'disintegrate', 'lessons', 'minion', 'undead'].includes(act) ? 'smitten'
+  : ['displeased', 'toosoon', 'blackglow', 'punish', 'hell'].includes(act) ? 'slump' : null);
 const BASIN_COINS = 16, BASIN_FLOOR = 0.36, BASIN_R = [0.3, 0.64];
 // a sink's tap's spout and the drain in its bowl, off its square's middle (squares: [across, up, toward its front])
 const SINK_SPOUT = [0, 1.12, -0.08], SINK_DRAIN = [0, 0.83, 0.1];
+// (an altar's top, its slab, up from the floor: where an offering lies)
+const ALTAR_TOP = 64 / 80;
+// see-through by k (0..1), each mesh under it given materials of its own the first time (shared ones left as they
+// were); hidden at nothing
+function fadeObject(root, k) {
+  root.visible = k > 0.002;
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    if (!o.userData.fadeOwn) {
+      o.userData.fadeOwn = true;
+      const own = (m) => { const c = m.clone(); c.userData.op0 = m.transparent ? m.opacity : 1; c.transparent = true; return c; };
+      o.material = Array.isArray(o.material) ? o.material.map(own) : own(o.material);
+    }
+    for (const m of [].concat(o.material)) { m.opacity = m.userData.op0 * k; m.depthWrite = k > 0.98; }
+  });
+}
 // (and a toilet's water, down in its bowl)
 const TOILET_WATER = [0, 0.5, 0.125];
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
@@ -45,6 +66,8 @@ const PIECES = {
   poolbed: 'assets/brick/parts/water_bed.glb', // ...and under it, the bottom of its hole: the same plates, still, a square's worth
   lavapool: 'assets/brick/parts/lava_stud.glb', // lava: the same heap, in clear neon orange, glowing bright
   lavabed: 'assets/brick/parts/lava_bed.glb', // ...on a bed of clear red
+  stairs_down: 'assets/brick/parts/stairs_down.glb', // stairs down: brick steps into a hole in the floor, origin at the floor's top, the square's middle
+  stairs_up: 'assets/brick/parts/stairs_up.glb', // stairs up: brick steps rising out of it
 };
 const CHUNK = 8; // (squares a side: the map in pieces, each drawn only when in view)
 const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
@@ -256,6 +279,12 @@ export class BrickWorld {
     this.setLavaSmoke(wet.filter((p) => p.lava).map((p) => [p.x, p.z])); // (smoking)
     this.place('lavabed', lavaBeds);
     this.place('plate', plates);
+    // stairs: the brick flights, each turned to run toward its wall (render.js)
+    const flight = (up) => (data.stairs || []).filter((st) => st.up === up)
+      .map((st) => [M().makeTranslation(st.x + 0.5, 0, st.z + 0.5).multiply(M().makeRotationY(st.turn || 0)).scale(new THREE.Vector3(S, S, S)), st.shade]);
+    this.place('stairs_up', flight(true));
+    this.place('stairs_down', flight(false));
+    this.setStairLights(data.stairs || []);
     // the ground under it all: only under what's drawn (what you know, and the fog about it), in runs along each
     // row; beyond, nothing: the black of the night, till it's found
     const drawn = new Set(), W = data.w;
@@ -437,12 +466,12 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' ? it.turn || 0 // (a statue, a boulder, a fountain, a sink: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
         g.scale.setScalar(MODEL_SCALE);
-        g.userData = { square: `${it.x},${it.z}`, level, thick: 0, colliders: it.colliders || null, name: it.name };
+        g.userData = { square: `${it.x},${it.z}`, level, thick: 0, colliders: it.colliders || null, name: it.name, offer: it.offer || null, spots: it.spots || null };
         this.world.add(g);
         if (this.fx.isIncoming(it.x, it.z, it.url)) g.visible = false; // (still in the air: it lands, then shows: throwfx.js)
         if (this.keptRocks.has(`${it.x},${it.z},${it.url}`)) g.visible = false; // (a broken boulder's rocks: the flung ones lying there are its pile)
@@ -461,7 +490,7 @@ export class BrickWorld {
           lay.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(lay);
           const c = box.getCenter(new THREE.Vector3());
-          lay.position.set(-c.x, -box.min.y, -c.z); // centred on the square, its underside at the group's height
+          lay.position.set(it.anchored ? 0 : -c.x, -box.min.y, it.anchored ? 0 : -c.z); // centred on the square (or by its own origin: anchored), its underside at the group's height
           g.add(lay);
           g.userData.lay = lay; // (a chest: its lid swings open, setLids)
           g.userData.thick = (box.max.y - box.min.y) * MODEL_SCALE;
@@ -743,14 +772,46 @@ export class BrickWorld {
   }
 
   // a chest on square (x, z) opened (looted) or shut: its lid swings to match, over a moment (tickLids)
-  setLid(x, z, open) {
+  // (T: s it takes, a slam's quick; max: how far it goes, a jolt's just a crack)
+  setLid(x, z, open, T = 0.45, max = 1) {
     this.lids = this.lids || new Map();
-    this.lids.set(`${x},${z}`, { open, at: this.lids.get(`${x},${z}`)?.at ?? 0 });
+    this.lids.set(`${x},${z}`, { open, at: this.lids.get(`${x},${z}`)?.at ?? 0, T, max });
+  }
+  // a box or a chest on (x, z) (items.json: one with a hinged lid), as drawn
+  boxAt(x, z) { return [...this.items.values()].find((g) => g.userData.square === `${x},${z}` && /^(chest|large box|ice box)$/.test(g.userData.name)) || null; }
+  // kicked (dokick.c, web_boxfx): THUD, it jumps and rattles; something inside breaking (a muffled shatter: its
+  // glass and what was in it out of the seam of its lid, jolted up a crack; an egg cracking); its lock broken open
+  // (sparks, bits of it flung); its lid slammed open and falling shut. tint: what broke inside, its colour
+  boxFx(x, z, act, tint = null) {
+    const g = this.boxAt(x, z), top = new THREE.Vector3(x + 0.5, STUD_H + 0.42, z + 0.5);
+    switch (act) {
+      case 'thud': if (g) this.shakeItem(g, 0.5, 0.05); break;
+      case 'shatter':
+        this.setLid(x, z, true, 0.06, 0.18); setTimeout(() => this.setLid(x, z, false, 0.2), 120);
+        this.fx.sparkles(top, 18, 0xd8f0ff, 0.25);
+        this.fx.splashStuds(top, 7, 0.9, { floor: STUD_H, ring: false, tint: tint ?? 0x9fd8ff });
+        break;
+      case 'crack': this.fx.splashStuds(top, 5, 0.6, { floor: STUD_H, ring: false, tint: 0xf2e6a8 }); break;
+      case 'lockbreak': if (g) this.shakeItem(g, 0.3, 0.03); this.fx.sparkles(top, 24, 0xffd060, 0.2); this.fx.sparkles(top, 10, 0xb8b8c0, 0.3); break;
+      case 'slam': this.setLid(x, z, true, 0.12); setTimeout(() => this.setLid(x, z, false, 0.22), 380); if (g) setTimeout(() => this.shakeItem(g, 0.3, 0.03), 600); break;
+    }
+  }
+  // a thing on the floor jumping and rattling where it stands (kicked: a box; a sink, a toilet: shakeItem): T s, dying away
+  shakeItem(g, T = 0.8, amp = 0.025) {
+    const base = g.userData.shakeBase || (g.userData.shakeBase = g.position.clone()), t0 = performance.now();
+    const tick = () => {
+      const u = (performance.now() - t0) / 1000 / T;
+      if (u >= 1 || !g.parent) { g.position.copy(base); return; }
+      const k = amp * (1 - u);
+      g.position.set(base.x + k * Math.sin(u * 95), base.y + Math.abs(k * 0.8 * Math.sin(u * 40)), base.z + k * Math.cos(u * 83));
+      requestAnimationFrame(tick);
+    };
+    tick();
   }
   tickLids(dt) {
     if (!this.lids) return;
     for (const [sq, l] of this.lids) {
-      l.at = Math.max(0, Math.min(1, l.at + (l.open ? dt : -dt) / 0.45));
+      l.at = Math.max(0, Math.min(l.max ?? 1, l.at + (l.open ? dt : -dt) / (l.T ?? 0.45)));
       const e = l.at * l.at * (3 - 2 * l.at); // (eased: it creaks open, settles back)
       for (const g of this.items.values())
         if (g.userData.square === sq && g.userData.lay) {
@@ -1073,6 +1134,157 @@ export class BrickWorld {
       tick();
     }));
   }
+  // a prayer heard (#pray): a column of golden light coming down out of the heavens onto (x, z) (where you kneel),
+  // a halo of it spreading over the floor about you, motes of gold rising all round; T s, fading in and out
+  // (color, size, mote: another god's paler light, the red of one that turns you away; flicker: guttering out)
+  prayLight(x, z, T = 6, { color = 0xffe9a0, size = 1, motes = [0xffe27a, 0xfff6d0], flicker = false } = {}) {
+    const p = new THREE.Vector3(x, STUD_H, z), H = 9, g = new THREE.Group();
+    const beam = (r, op) => {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(r * size, r * size * 1.15, H, 28, 1, true),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+      m.position.set(x, STUD_H + H / 2, z); m.userData.op = op; g.add(m); return m;
+    };
+    const beams = flicker ? [beam(0.14, 0.5)] : [beam(0.32, 0.45), beam(0.55, 0.22), beam(0.85, 0.1)];
+    const halo = new THREE.Mesh(new THREE.RingGeometry(0.2 * size, 0.32 * size, 48), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+    halo.rotation.x = -Math.PI / 2; halo.position.set(x, STUD_H + 0.01, z); g.add(halo);
+    this.world.add(g);
+    const t0 = performance.now();
+    let mote = 0;
+    return new Promise((res) => {
+      const tick = () => {
+        const t = (performance.now() - t0) / 1000;
+        if (t > T) { this.world.remove(g); g.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } }); res(); return; }
+        const k = Math.min(1, t / 1.2, (T - t) / 1.4) * (flicker ? (Math.random() < 0.35 ? 0.15 : 1) * Math.max(0, 1 - t / T) : 1), pulse = 0.85 + 0.15 * Math.sin(t * 5); // (comes down, shines, goes; or stutters, and dies)
+        beams.forEach((m, i) => {
+          m.material.opacity = m.userData.op * k * pulse;
+          const down = Math.min(1, t / 1.0); // (lowered out of the heavens)
+          m.scale.y = 0.05 + 0.95 * down; m.position.y = STUD_H + H - (H / 2) * m.scale.y;
+          m.rotation.y = t * (0.4 + i * 0.25);
+        });
+        const hs = 1 + 5 * Math.min(1, t / 2.5);
+        halo.scale.set(hs, hs, hs); halo.material.opacity = (flicker ? 0 : 0.5) * k * (1 - Math.min(1, t / 2.5) * 0.6);
+        if (!flicker && t > 0.8 && t - mote > 0.12 && t < T - 1) { mote = t; this.fx.sparkles(p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.9, Math.random() * 0.6, (Math.random() - 0.5) * 0.9)), 6, Math.random() < 0.5 ? motes[0] : motes[1], 0.12); }
+        if (flicker && t - mote > 0.18) { mote = t; this.fx.ash(p.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.7, 1.6, (Math.random() - 0.5) * 0.7))); } // (ash drifting down)
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+  }
+  // ---- praying (#pray), as it goes: begun (n, how it'll go: 3 true to your god, 2 at another's altar, 1 naughty,
+  // 0 too soon, -1 undead), its light (or none, or a storm gathering) over you at (x, z) a moment in; and what comes
+  // of it (act, n), at the end. PRAY_OUTCOME: s in, the outcome; then (PRAY_AFTER) how you take it (prayAfter)
+  prayBegin(x, z, n) {
+    const st = {};
+    setTimeout(() => {
+      if (n === 3) this.prayLight(x, z, 6);
+      else if (n === 2) this.prayLight(x, z, 5, { color: 0xdfe8ff, size: 0.75, motes: [0xf2f6ff, 0xc8d8ff] });
+      else if (n === -1) this.prayLight(x, z, 4, { color: 0xff5040, size: 0.8, motes: [0xff6040, 0x801010] });
+      else if (n === 0) this.prayLight(x, z, 3.5, { flicker: true });
+    }, 1500);
+    if (n === 1) setTimeout(() => (st.cloud = this.stormCloud(x, z, 9.5)), 900);
+    return st;
+  }
+  prayOutcome(x, z, act, n, st = {}) {
+    const p = new THREE.Vector3(x, STUD_H + 0.6, z), fx = this.fx;
+    switch (act) {
+      case 'pleased': for (let i = 0; i < n; i++) setTimeout(() => fx.sparkles(p.clone().setY(p.y + 0.5), 30 + 20 * n, i % 2 ? 0xfff6d0 : 0xffe27a, 0.45), i * 250); break;
+      case 'displeased': case 'toosoon': case 'hell': for (let i = 0; i < 8; i++) setTimeout(() => fx.ash(p.clone().setY(p.y + 1.2)), i * 150); break;
+      case 'lessons': if (st.cloud) st.cloud.flash(); for (let i = 0; i < 3; i++) setTimeout(() => st.cloud && st.cloud.flash(), 400 + i * 350); break;
+      case 'blackglow': for (let i = 0; i < 24; i++) setTimeout(() => fx.haze(p.clone().setY(STUD_H), 1.2, 10, 0x15101c), i * 120); break;
+      case 'punish': fx.sparkles(p, 30, 0x302838, 0.5); break;
+      case 'minion': if (st.cloud) st.cloud.flash(); fx.sparkles(p, 50, 0xd02020, 0.6); break;
+      case 'bolt': if (st.cloud) st.cloud.flash(); this.lightning(x, z); break;
+      case 'disintegrate': if (st.cloud) st.cloud.flash(); this.disintegrate(x, z); break;
+      case 'undead': fx.sparkles(p, 40, 0xb01818, 0.5); break;
+    }
+  }
+  // a god angered: a dark storm cloud gathering over (x, z), churning, lit within now and then; T s. Its flash():
+  // lit up bright at once (a bolt out of it, a voice from it)
+  stormCloud(x, z, T = 7) {
+    const g = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: 0x2c2f38, roughness: 1, emissive: 0x6070a0, emissiveIntensity: 0, transparent: true, opacity: 0 });
+    const puffs = [];
+    for (let i = 0; i < 9; i++) {
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.35 + Math.random() * 0.3, 1), mat);
+      const a = (i / 9) * Math.PI * 2, r = i ? 0.5 + Math.random() * 0.3 : 0;
+      m.userData.home = new THREE.Vector3(Math.cos(a) * r, (Math.random() - 0.5) * 0.25, Math.sin(a) * r);
+      m.scale.y = 0.55; g.add(m); puffs.push(m);
+    }
+    g.position.set(x, STUD_H + 3.1, z);
+    this.world.add(g);
+    const t0 = performance.now();
+    let flash = 0;
+    const tick = () => {
+      const t = (performance.now() - t0) / 1000;
+      if (t > T) { this.world.remove(g); puffs[0].geometry.dispose(); puffs.forEach((m) => m.geometry.dispose()); mat.dispose(); return; }
+      mat.opacity = 0.92 * Math.min(1, t / 1.5, (T - t) / 1.2);
+      if (Math.random() < 0.012) flash = Math.max(flash, 0.5); // (lit within, now and then)
+      flash *= 0.88;
+      mat.emissiveIntensity = flash * 2.5;
+      puffs.forEach((m, i) => m.position.copy(m.userData.home).add(new THREE.Vector3(Math.sin(t * 0.7 + i) * 0.08, Math.sin(t * 1.1 + i * 2) * 0.05, Math.cos(t * 0.6 + i) * 0.08)));
+      g.rotation.y = t * 0.12;
+      requestAnimationFrame(tick);
+    };
+    tick();
+    return { flash: () => { flash = 1; } };
+  }
+  // a bolt of lightning down out of the heavens onto (x, z): a jagged white-blue streak, struck three times over half
+  // a second; sparks, a scorch on the floor, smoke
+  lightning(x, z, top = 3.1) {
+    const g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0xe8f0ff, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending });
+    const bolt = () => {
+      g.clear();
+      let at = new THREE.Vector3(x, STUD_H + top, z);
+      const n = 9;
+      for (let i = 1; i <= n; i++) {
+        const to = i === n ? new THREE.Vector3(x, STUD_H + 0.6, z) : new THREE.Vector3(x + (Math.random() - 0.5) * 0.5, STUD_H + top - (top - 0.6) * (i / n), z + (Math.random() - 0.5) * 0.5);
+        const d = to.clone().sub(at), len = d.length();
+        for (const [w, op] of [[0.035, 1], [0.12, 0.35]]) { // (its core, and its glow)
+          const seg = new THREE.Mesh(new THREE.BoxGeometry(w, len, w), op === 1 ? mat : new THREE.MeshBasicMaterial({ color: 0x9fb8ff, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending }));
+          seg.position.copy(at).add(to).multiplyScalar(0.5);
+          seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
+          g.add(seg);
+        }
+        at = to;
+      }
+    };
+    this.world.add(g);
+    const t0 = performance.now(), strikes = [0, 0.18, 0.36];
+    let k = 0;
+    const tick = () => {
+      const t = (performance.now() - t0) / 1000;
+      if (k < strikes.length && t >= strikes[k]) { bolt(); k++; }
+      mat.opacity = Math.max(0, 1 - ((t - strikes[k - 1]) / 0.15)) ;
+      g.children.forEach((c) => { if (c.material !== mat) c.material.opacity = 0.35 * mat.opacity; });
+      if (t > 0.7) { this.world.remove(g); g.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); if (o.material !== mat) o.material.dispose(); } }); mat.dispose(); return; }
+      requestAnimationFrame(tick);
+    };
+    tick();
+    const p = new THREE.Vector3(x, STUD_H + 0.2, z);
+    this.fx.sparkles(p, 40, 0xdfe8ff, 0.4);
+    this.fx.sparkles(p, 20, 0xffd060, 0.3);
+    for (let i = 0; i < 4; i++) setTimeout(() => this.fx.vapor(p, 0x555555, 1.4), 200 + i * 180);
+    const scorch = new THREE.Mesh(new THREE.CircleGeometry(0.35, 24), new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.6, depthWrite: false }));
+    scorch.rotation.x = -Math.PI / 2; scorch.position.set(x, STUD_H + 0.012, z);
+    this.world.add(scorch);
+    setTimeout(() => { this.world.remove(scorch); scorch.geometry.dispose(); scorch.material.dispose(); }, 6000);
+  }
+  // a wide-angle disintegration beam down onto (x, z): a broad violet-black column, slammed down and gone
+  disintegrate(x, z) {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.9, 9, 28, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x8a3ad8, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+    m.position.set(x, STUD_H + 4.5, z);
+    this.world.add(m);
+    const t0 = performance.now();
+    const tick = () => {
+      const t = (performance.now() - t0) / 1000;
+      if (t > 1.3) { this.world.remove(m); m.geometry.dispose(); m.material.dispose(); return; }
+      m.material.opacity = 0.7 * Math.min(1, t / 0.08, (1.3 - t) / 0.6);
+      m.rotation.y = t * 3;
+      requestAnimationFrame(tick);
+    };
+    tick();
+    this.fx.sparkles(new THREE.Vector3(x, STUD_H + 0.6, z), 50, 0x2a0a40, 0.6);
+  }
   // a sink rattling on its foot (clanking pipes; kicked): T s, dying away
   sinkShake(x, z, T = 0.8, amp = 0.025, name = 'sink') { // (name: a toilet's too)
     const g = this.sinkAt(x, z, name);
@@ -1159,6 +1371,12 @@ export class BrickWorld {
       if (g.userData.name === 'gold piece' && fount) { g.visible = false; g.userData.inBasin = gold = true; continue; }
       if (g.userData.inBasin) { g.visible = true; g.userData.inBasin = false; } // (the fountain gone from under it)
       if (sink && g !== pile[0]) { g.position.set(sink.x, sink.y + 0.01, sink.z); continue; }
+      if (pile[0].userData.name === 'altar' && g !== pile[0]) { // (on an altar: laid on its top, offered; or where its model says: off its middle, turned as it is)
+        const sp = pile[0].userData.spots, o = (sp && sp[g.userData.name]) || pile[0].userData.offer, t = pile[0].rotation.y;
+        if (o) g.position.set(sx + 0.5 + o[0] * Math.cos(t) + o[2] * Math.sin(t), STUD_H + o[1] + (g.userData.level - 1) * 0.04, sz + 0.5 - o[0] * Math.sin(t) + o[2] * Math.cos(t));
+        else g.position.y = STUD_H + ALTAR_TOP + (g.userData.level - 1) * 0.04;
+        continue;
+      }
       g.position.y = y;
       if (fount && g !== pile[0]) { const [ox, oz] = this.rimSpot(square); g.position.x = sx + 0.5 + ox; g.position.z = sz + 0.5 + oz; }
       y = fount && g === pile[0] ? STUD_H + FOUNT_RIM_SPOT[1] : y + g.userData.thick * 0.85; // (they settle into each other a little)
@@ -1221,6 +1439,46 @@ export class BrickWorld {
       g.matrixWorldNeedsUpdate = true;
       poseJoints(g.userData.joints, f.pose);
       if (g.userData.joints) this.holdItems(g, f.hold || {});
+      if (f.fade !== undefined) fadeObject(g, f.fade); // (coming into being, or going: see-through, 0..1)
+    });
+  }
+
+  // a part of a floor item, by its joint (items.json "joint"), faded: k 1 as built, 0 gone (an altar's statues
+  // come alive: the Mass)
+  fadeJoint(x, z, joint, k) {
+    for (const g of this.items.values()) {
+      if (g.userData.square !== `${x},${z}` || g.userData.level) continue;
+      const node = g.getObjectByName(joint);
+      if (node) fadeObject(node, k);
+    }
+  }
+
+  // things set down loose, anywhere, as they'd lie (an altar's wafer on its tile, its chalice on its stud), or on
+  // their way somewhere (a wafer floating to you, coins tossed into a plate): [{url, x, y, z (world: where its
+  // underside's middle is), yaw, tilt, upright}]; each kept from frame to frame while its url is the same, only moved
+  setProps(list) {
+    if (!this.props) { this.props = new THREE.Group(); this.world.add(this.props); this.propObjs = []; }
+    while (this.propObjs.length > list.length) this.props.remove(this.propObjs.pop().g);
+    list.forEach((p, i) => {
+      let o = this.propObjs[i];
+      if (o && o.url !== p.url) { this.props.remove(o.g); o = null; }
+      if (!o) {
+        const g = new THREE.Group();
+        g.scale.setScalar(MODEL_SCALE);
+        this.props.add(g);
+        o = this.propObjs[i] = { url: p.url, g };
+        this.model(p.url).then((m) => { // (as a floor item lies: centred where it's set, its underside on the surface)
+          if (this.propObjs[i] !== o) return;
+          const c = m.clone();
+          if (!p.upright) c.rotation.z = -Math.PI / 2;
+          c.updateMatrixWorld(true);
+          const box = new THREE.Box3().setFromObject(c), mid = box.getCenter(new THREE.Vector3());
+          c.position.set(-mid.x, -box.min.y, -mid.z);
+          g.add(c);
+        });
+      }
+      o.g.position.set(p.x, p.y, p.z);
+      o.g.rotation.set(p.tilt || 0, p.yaw || 0, 0);
     });
   }
 
@@ -1299,9 +1557,31 @@ export class BrickWorld {
 
   // draw, with the game's camera (column-major projection and view matrices), the
   // sun's shadows following `focus` (the hero)
+  // stairs lit by firelight: a warm light flickering on each flight, from below a flight down (torches burning at
+  // its foot, out of sight), from above one up (at its head)
+  setStairLights(stairs) {
+    const key = stairs.map((st) => `${st.x},${st.z},${st.up}`).join(';');
+    if (key === this.stairKey) return;
+    this.stairKey = key;
+    for (const l of this.stairLights || []) { this.world.remove(l); l.dispose(); }
+    this.stairLights = stairs.map((st, i) => {
+      const l = new THREE.PointLight(0xff9a3c, 0, 3.2, 1.6);
+      l.position.set(st.x + 0.5, st.up ? 1.9 : -1.15, st.z + 0.5);
+      l.userData = { base: st.up ? 2.6 : 3.4, ph: i * 1.7 };
+      this.world.add(l);
+      return l;
+    });
+  }
+  flickerStairs(t) {
+    for (const l of this.stairLights || []) { // (a fire's flicker: a slow sway, and a quick jitter on it)
+      const { base, ph } = l.userData;
+      l.intensity = base * (0.78 + 0.14 * Math.sin(t * 2.3 + ph) + 0.08 * Math.sin(t * 9.7 + ph * 3) + 0.06 * (Math.random() - 0.5));
+    }
+  }
   render(proj, view, w, h, focus) {
     const r = this.r;
     const tLid = performance.now();
+    this.flickerStairs(tLid / 1000);
     this.tickLids(Math.min(0.1, (tLid - (this.lastT || tLid)) / 1000));
     this.stepChain(Math.min(0.1, (tLid - (this.lastT || tLid)) / 1000)); // (the punished: ball and chain)
     this.lastT = tLid;

@@ -25,15 +25,16 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { BrickWorld } from './brickworld.js';
-import { FigureAnimator, FOUNT } from './minifig-anim.js';
+import { FigureAnimator, FOUNT, fountKey } from './minifig-anim.js';
 import { Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, FALL_T, CRAWL_T } from './swim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
 import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
-import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T, PRAY_OUTCOME, PRAY_AFTER, prayAfter } from './brickworld.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul, mouthPoint } from './minifig-anim.js';
 import { NameTags } from './nametags.js';
+import { AltarRites } from './rites.js';
 
 const STEP_TIME = 0.32; // s a square, walking
 
@@ -65,14 +66,12 @@ export async function runTestbed(data) {
   // the one room: a fountain or a pool in it, its water heard, lava, its flow (as the game's: main.js
   // roomNear), once there's been a click or a key (the browser's rule)
   const hasWater = (level.items || []).some((it) => it.item === 'fountain') || (level.pools || []).length, hasLava = (level.lava || []).length;
-  if (hasWater || hasLava) {
-    const amb = new Ambience(0.6);
-    if (hasWater) amb.set('water', true);
-    if (hasLava) amb.set('lava', true);
-    const on = () => { amb.allow(); removeEventListener('pointerdown', on); removeEventListener('keydown', on); };
-    addEventListener('pointerdown', on);
-    addEventListener('keydown', on);
-  }
+  const amb = new Ambience(0.6); // (and the Agnus Dei, chanted through the Mass)
+  if (hasWater) amb.set('water', true);
+  if (hasLava) amb.set('lava', true);
+  const hear = () => { amb.allow(); removeEventListener('pointerdown', hear); removeEventListener('keydown', hear); };
+  addEventListener('pointerdown', hear);
+  addEventListener('keydown', hear);
   cam.position.set(...(level.camera ? level.camera.pos : [W / 2, 11, H + 3])); // (or where the level says to look from)
   ctl.target.set(...(level.camera ? level.camera.target : [W / 2, 0, H / 2 + 0.5]));
 
@@ -85,9 +84,15 @@ export async function runTestbed(data) {
         if (x === 0 || z === 0 || x === W - 1 || z === H - 1) walls.push({ x, z, shade: 1 });
         else if (wet.some(([px, pz]) => px === x && pz === z)) pools.push({ x, z, shade: 1 });
         else if ((level.lava || []).some(([px, pz]) => px === x && pz === z)) pools.push({ x, z, shade: 1, lava: true }); // (scene.json "lava")
-        else floors.push({ x, z, studs: true, shade: 1 });
+        else if (!(level.stairs || []).some((st) => !st.up && st.at[0] === x && st.at[1] === z)) floors.push({ x, z, studs: true, shade: 1 }); // (stairs down: a hole)
       }
-    brick.setTerrain({ floors, walls, pools, doors: [], fog: [], w: W, h: H });
+    // stairs (scene.json "stairs": [{at, up}]), run toward the wall nearest, as the game's (world.js backToWall)
+    const wallBy = (x, z) => x === 0 || z === 0 || x === W - 1 || z === H - 1;
+    const stairs = (level.stairs || []).map((st) => {
+      const [x, z] = st.at, d = [[0, -1], [1, 0], [0, 1], [-1, 0]].find(([dx, dz]) => wallBy(x + dx, z + dz));
+      return { x, z, up: !!st.up, turn: d ? Math.atan2(-d[0], -d[1]) : 0, shade: 1 };
+    });
+    brick.setTerrain({ floors, walls, pools, doors: [], fog: [], stairs, w: W, h: H });
   };
   await brick.ready;
   room();
@@ -101,7 +106,7 @@ export async function runTestbed(data) {
   const lay = (list) => {
     const n = new Map(); // (things on one square: stacked, one on another, as world.js has them)
     drops = list.filter(Boolean).map((i) => { const k = i.at.join(','), level = n.get(k) || 0; n.set(k, level + 1);
-      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, name: i.item }; });
+      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, name: i.item }; });
     // (as the game watches its list: a statue broken comes apart; up on it, you jump down)
     for (const [x, z] of brick.watchStatues(drops, 'test', (n) => (items[n] ? { name: n, ...items[n] } : null)))
       if (hero.sq.x === x && hero.sq.y === z && hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz } };
@@ -133,6 +138,14 @@ export async function runTestbed(data) {
     anim.a.spawn();
   });
 
+  // the Mass (?part=mass): the altar's statues come alive ([{url, x, y, z, yaw, fade, anim, act, moving, hop}]), and
+  // a glow over what's raised at an elevation
+  // the rites at the altar of a follower of Jesus (rites.js): its statues come alive, the wafer, the chalice...
+  const rites = new AltarRites({ brick, clock: () => clock, wait: (s) => wait(s), say: (t) => say(t), angelUrl: null, chant: (on) => amb.set('mass', on),
+    url: (n) => url(n), upright: (n) => !!(items[n] || {}).upright,
+    hero: { act: (n) => { hero.fount = n ? { act: n, t0: clock, fired: 0 } : null; }, hold: (h) => { hero.hold = h ? { R: h.R ?? null, L: h.L ?? null } : { R: null }; } } });
+  let rosterUrls = null; // (the figures, by id: roster.built.json)
+  const roster = async () => rosterUrls || (rosterUrls = Object.fromEntries((await (await fetch('assets/brick/roster.built.json', { cache: 'no-store' })).json()).map((r) => [r.id, r.url])));
   // the clock the script waits on (it runs with the frames)
   let clock = 0;
   const waits = [];
@@ -149,6 +162,10 @@ export async function runTestbed(data) {
   const walk = async (path) => { for (const [dx, dy] of path) await step(dx, dy); };
   const place = (x, y, yaw) => { hero.sq = { x, y }; hero.pos = [x, y]; hero.from = { x, y, cur: null }; hero.yaw = yaw; hero.walk = null; hero.after = null; hero.leap = null; };
 
+  // a steed's saddle: how high you sit on it (your feet, astride: the saddle's top, less your hips' height), and how
+  // long getting up onto it or down off it takes
+  const SADDLE_Y = STUD_H + 96 * 0.85 / 80 - 28 / 80, MOUNT_T = 0.9;
+  let shake = null; // the view shaken a moment ({t0, T}: a god's voice, lightning)
   let punished = null; // the ball and chain, when punished (brickworld.setPunished, as the game sets it)
   // the monsters: creatures (creature.js) facing you
   const mons = await (await fetch('assets/brick/monsters.built.json', { cache: 'no-store' })).json();
@@ -676,6 +693,159 @@ export async function runTestbed(data) {
         for (const c of brood) cobras.splice(cobras.indexOf(c), 1);
         say('');
       }
+      // a chest kicked (?part=chest): THUD, and it jumps; something inside it shattering (its glass and what was in it
+      // out of the seam of its lid); its lid slammed open and falling shut; and then opened, looked into, and shut
+      const ch = at('chest') || at('large box');
+      if (doing('chest') && ch) {
+        room();
+        lay([ch]);
+        hero.hold = { R: null };
+        const [bx, bz] = ch.at;
+        await walk(Array(Math.max(0, bx - 1 - hero.sq.x)).fill([1, 0]));
+        hero.yaw = Math.PI / 2;
+        await wait(0.8);
+        const kick = async (msg, act, tint) => {
+          hero.fount = { act: 'kick', t0: clock, fired: 0 };
+          await wait(0.38);
+          brick.boxFx(bx, bz, 'thud');
+          say('WHAMM!!  THUD!');
+          if (act) { await wait(0.15); say(msg); brick.boxFx(bx, bz, act, tint); }
+          await wait(FOUNT.kick.T + 1.6);
+        };
+        await kick();
+        await kick('You hear a muffled shatter.', 'shatter', 0xc0608a);
+        await kick('The lid slams open, then falls shut.', 'slam');
+        say('You carefully open the chest...');
+        brick.setLid(bx, bz, true);
+        await wait(2.5);
+        say('You close the chest.');
+        brick.setLid(bx, bz, false);
+        await wait(2);
+        say('');
+      }
+      // praying (?part=pray): down on your knees, arms raised, and how it goes, one way after another: heard (a column
+      // of golden light down onto you, a halo spreading, gold rising; your god well-pleased), too soon (a light that
+      // stutters and dies, ash), and angered (a storm gathering over you: a black glow; a voice; lightning)
+      if (doing('pray')) {
+        room();
+        lay([]);
+        hero.hold = { R: null };
+        await wait(1);
+        const x = hero.pos[0] + 0.5, z = hero.pos[1] + 0.5;
+        const pray = async (n, act, outcome, during) => {
+          say('You begin praying to Lugh.');
+          hero.fount = { act: 'prayer', t0: clock, fired: 0 };
+          const st = brick.prayBegin(x, z, n);
+          if (during) { await wait(1.6); say(during); await wait(PRAY_OUTCOME - 1.6); } else await wait(PRAY_OUTCOME);
+          say('You finish your prayer.');
+          await wait(0.6);
+          say(outcome);
+          brick.prayOutcome(x, z, act, act === 'pleased' ? 3 : 0, st);
+          if (act === 'lessons' || act === 'bolt') shake = { t0: clock, T: act === 'bolt' ? 0.6 : 1.4 };
+          await wait(PRAY_AFTER - PRAY_OUTCOME - 0.6);
+          const after = prayAfter(act);
+          if (after) { hero.fount = { act: after, t0: clock, fired: 0 }; await wait(FOUNT[after].T); }
+          await wait(1.5);
+        };
+        await pray(3, 'pleased', 'You feel that Lugh is well-pleased.', 'You are surrounded by a shimmering light.');
+        await pray(0, 'toosoon', 'You feel that Lugh is displeased.');
+        await pray(1, 'blackglow', 'A black glow surrounds you.');
+        await pray(1, 'lessons', '"Thou hast strayed from the path, mortal.  Thou must relearn thy lessons!"');
+        await pray(1, 'bolt', 'Suddenly, a bolt of lightning strikes you!');
+        say('');
+      }
+      // the rites at the altar of a follower of Jesus (altar_jesus: rites.js, as the game plays them), each from the
+      // floor before it up onto its step, and down again after (?part=mass, communion, alms, confess, offer, jesuspray)
+      const ja = at('altar_jesus');
+      if (ja && ['mass', 'communion', 'alms', 'confess', 'offer', 'jesuspray'].some(doing)) {
+        rites.env.angelUrl = (await roster())['angel-priest-m'];
+        rites.place(ja.at[0], ja.at[1], 0);
+        const S = rites.spot;
+        // up onto its step from the floor before it (what's carried, held up before you)
+        const toStep = async (carry) => {
+          hero.hold = { R: carry ? url(carry) : null };
+          hero.fount = carry ? { act: 'carry', t0: clock, fired: 0 } : null;
+          const t0 = clock;
+          while (clock - t0 < 1.4) { const u = (clock - t0) / 1.4, v = Math.min(1, u * 1.6); hero.spot = { x: S.x, y: S.y * v + 0.12 * Math.sin(Math.PI * v), z: S.z + 1.2 * (1 - u), yaw: 0, moving: true }; await wait(0); }
+          hero.spot = { ...S, yaw: 0 };
+        };
+        // ...and down off it again, back the way you came
+        const offStep = async () => {
+          const t0 = clock;
+          hero.fount = null; hero.hold = { R: null };
+          while (clock - t0 < 1.2) { const u = (clock - t0) / 1.2, v = Math.max(0, (u - 0.2) / 0.5); hero.spot = { x: S.x, y: S.y * (1 - Math.min(1, v)) + 0.1 * Math.sin(Math.PI * Math.min(1, v)), z: S.z + 1.2 * u, yaw: Math.PI * Math.min(1, u * 3), moving: u > 0.15 }; await wait(0); }
+          hero.spot = null;
+          await wait(1.2);
+          say('');
+        };
+        const [ax, az] = ja.at;
+        if (doing('mass')) { await toStep('chalice'); await rites.mass(ax, az, 0, { wine: 'chalice', keep: false }); await offStep(); }
+        if (doing('communion')) { await toStep(); await rites.communion(ax, az); await offStep(); }
+        if (doing('alms')) {
+          await toStep();
+          await rites.alms(ax, az, 0, [[0, 'You give 40 gold pieces to the poor.', 'Your gift is noted.'], [1, 'You give 300 gold pieces to the poor.', 'You have a hopeful feeling.'],
+            [2, 'You give 500 gold pieces to the poor.', 'You feel a sense of peace.'], [3, 'You give 112 gold pieces to the poor.', 'You gave all you had, and feel blessed.'],
+            [4, 'You give 1000 gold pieces to the poor.', 'You feel watched over.']]);
+          await offStep();
+        }
+        if (doing('confess')) { await toStep(); await rites.confess(ax, az, 0, true); await rites.confess(ax, az, 0, false); await offStep(); }
+        if (doing('offer')) { await toStep('corpse'); hero.fount = null; await rites.offer(ax, az); await offStep(); }
+        if (doing('jesuspray')) { // (a good prayer, the chalice set on its stud first: the column of light, his favour; a wafer, the wine)
+          await toStep('chalice');
+          hero.fount = null; hero.hold = { R: null };
+          let lying = [rites.prop('chalice', rites.stud)];
+          const keep = setInterval(() => { if (!rites.busy) rites.props = lying; }, 50); // (what the game would lay there: the engine's)
+          say('You begin praying to Jesus.');
+          hero.fount = { act: 'prayer', t0: clock, fired: 0 };
+          const st = brick.prayBegin(S.x, S.z, 3);
+          await wait(1.6); say('You are surrounded by a shimmering light.');
+          await wait(PRAY_OUTCOME - 1.6); say('You finish your prayer.');
+          await wait(0.6); say('You feel that Jesus is well-pleased.');
+          brick.prayOutcome(S.x, S.z, 'pleased', 3, st);
+          await wait(1.0); say('A holy wafer appears on the altar.');
+          lying = [rites.prop('chalice', rites.stud), rites.prop('holy wafer', rites.wafer)];
+          const done = rites.prayed(ax, az, 0, 'wafer');
+          await wait(0.1); rites.props = lying;
+          await wait(1.2); say('The chalice on the altar fills with wine.');
+          lying = [rites.prop('holy wine', rites.stud), rites.prop('holy wafer', rites.wafer)]; rites.props = lying;
+          rites.prayed(ax, az, 0, 'wine');
+          await done;
+          clearInterval(keep); rites.props = [];
+          await offStep();
+        }
+      }
+      // riding (?part=ride): up onto the saddled pony, astride it, ridden round the room (it goes where you go), and
+      // down off it again
+      const steed = cobras.find((c) => c.saddled);
+      if (doing('ride') && steed) {
+        room();
+        lay([]);
+        hero.hold = { R: null };
+        steed.at = level.monsters.find((m) => m.monster === steed.monster).at.slice();
+        // (round to its left side, facing the way it faces)
+        const side = [steed.at[0] - 1, steed.at[1]];
+        while (hero.sq.x !== side[0] || hero.sq.y !== side[1]) await step(Math.sign(side[0] - hero.sq.x), hero.sq.x === side[0] ? Math.sign(side[1] - hero.sq.y) : 0);
+        hero.yaw = Math.PI / 2;
+        steed.rideYaw = Math.PI / 2;
+        await wait(0.8);
+        say('You mount the saddled pony.');
+        hero.ride = { c: steed, t0: clock, phase: 'up', from: hero.pos.slice() };
+        await wait(MOUNT_T);
+        place(steed.at[0], steed.at[1], Math.PI / 2);
+        hero.ride.phase = 'on';
+        await wait(1);
+        say('');
+        await walk([[1, 0], [1, 0], [0, 1], [-1, 0], [-1, 0], [-1, 0], [0, -1], [1, 0]]);
+        await wait(1);
+        say('You dismount the pony.');
+        hero.ride = { c: steed, t0: clock, phase: 'down', to: [hero.sq.x - 1, hero.sq.y] };
+        await wait(MOUNT_T);
+        steed.at = [hero.sq.x, hero.sq.y];
+        place(hero.ride.to[0], hero.ride.to[1], Math.PI / 2);
+        hero.ride = null;
+        await wait(1.5);
+        say('');
+      }
       // more out of a fountain (?part=fountain): a water demon rising out of it, granting a wish and gone in a burst;
       // a water nymph rising out of it; no nymph, a great bubble rising and popping; a gem leaping out of its water
       // into its pool; and steam billowing up out of it (a fire ray across it)
@@ -953,7 +1123,17 @@ export async function runTestbed(data) {
         while (r.glint < 3 && t >= 0.45 + r.glint * 0.6) { r.glint++; const yw = pp && pp.k > 0.5 ? pp.yaw : hero.yaw, [tout, tup] = r.tip || [0.3, 1.75]; brick.fx.sparkles(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0) + Math.sin(yw) * tout, tup + (pp ? pp.lift : 0), hero.pos[1] + 0.5 + (pp ? pp.dz : 0) - Math.cos(yw) * tout), 30, r.glint === 2 ? 0xffe27a : 0xffc21a, 0.3); }
       }
     }
-    const pose = sw && anim.a ? anim.a.update(dt, { hop: sw.hop, reach: sw.reach, lean: sw.lean }) : anim.a ? anim.a.update(dt, { raise, moving, holdsR: !!hero.hold.R, hop: pp ? pp.hop : 0, lookUp: pp && !fo ? pp.lookUp : 0, fount: fo,
+    // (on a steed: up onto it, astride it as it goes, down off it: where you are, how far astride (ride.k), your hop)
+    const R = hero.ride, rideAt = (() => {
+      if (!R) return null;
+      const sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u)), bob = R.phase === 'on' && moving ? 0.025 * Math.abs(Math.sin(clock * 9)) : 0;
+      if (R.phase === 'on') return { x: hero.pos[0], z: hero.pos[1], y: SADDLE_Y + bob, k: 1, hop: 0 };
+      const u = Math.min(1, (clock - R.t0) / MOUNT_T), e = sm(u), up = R.phase === 'up';
+      const a = up ? R.from : R.c.at, b = up ? R.c.at : R.to, h = Math.sin(Math.PI * u);
+      return { x: a[0] + (b[0] - a[0]) * e, z: a[1] + (b[1] - a[1]) * e, y: (up ? e : 1 - e) * SADDLE_Y + 0.3 * h, k: up ? e : 1 - e, hop: h };
+    })();
+    if (hero.spot && hero.spot.moving) moving = true; // (the Mass: walking up to the altar's step)
+    const pose = sw && anim.a ? anim.a.update(dt, { hop: sw.hop, reach: sw.reach, lean: sw.lean }) : anim.a ? anim.a.update(dt, { raise, moving: moving && !R, ride: rideAt ? rideAt.k : 0, holdsR: !!hero.hold.R, hop: pp ? pp.hop : 0, lookUp: pp && !fo ? pp.lookUp : 0, fount: fo,
       lean: push > 0 ? 0.3 : 0, reach: push > 0 ? 1 : 0, heavy: anim.state.heavy || 0, speed: anim.state.heavy ? 1.1 : undefined }) : null;
     const inLava = !pp && (level.lava || []).some(([px, pz]) => px === Math.round(hero.pos[0]) && pz === Math.round(hero.pos[1]));
     const wet = inLava || (!pp && (level.pools || []).some(([px, pz]) => px === Math.round(hero.pos[0]) && pz === Math.round(hero.pos[1]))); // (in a pool: sunk to the waist, as main.js heroSink)
@@ -978,9 +1158,15 @@ export async function runTestbed(data) {
       hero.haze.last = clock;
       brick.fx.haze(new THREE.Vector3(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0)), 1.1, clock - hero.haze.t0 > 2.8 ? 6 : 12);
     }
-    const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
+    const kneel = fo && fo.act === 'prayer' ? fountKey('prayer', 'drop', fo.t) : 0; // (praying: down on your knees)
+    const m = rideAt ? figureMatrix(rideAt.x + 0.5, rideAt.y, rideAt.z + 0.5, hero.yaw) // (astride a steed)
+      : sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), (pp ? pp.lift : -hero.sink) - kneel, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
+    if (hero.spot) { // (the Mass: on the altar's step, as the script has you; a genuflection, down on a knee)
+      const S = hero.spot, drop = fo ? fountKey(fo.act, 'drop', fo.t) : 0;
+      m.set(figureMatrix(S.x, S.y - drop, S.z, S.yaw));
+    }
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: heroFig.url, matrix: m, pose, hold: hero.spot ? hero.hold : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {
@@ -991,12 +1177,14 @@ export async function runTestbed(data) {
       const fnt = !rp && drops.find((o) => o.name === 'fountain' && Math.abs(o.x - cx) < 1.6 && Math.abs(o.z - cz) < 1.6), ag = fnt && againstFountain([fnt.x, fnt.z], cx, cz, out);
       if (ag) { cx = ag.x; cz = ag.z; lean = 1; leanYaw = ag.yaw; } // (up against a fountain: out of its wall, a snake leaning back on it: as main.js)
       const hx2 = hero.pos[0] + (pp ? pp.dx : 0), hz2 = hero.pos[1] + (pp ? pp.dz : 0); // (you as drawn: up on a fountain's rim)
-      let yaw = rp ? rp.yaw : Math.atan2(hx2 - cx, -(hz2 - cz));
+      let yaw = rp ? rp.yaw : c.rideYaw != null ? c.rideYaw : Math.atan2(hx2 - cx, -(hz2 - cz)); // (a steed: the way it was last ridden, or is about to be)
+      if (hero.ride && hero.ride.c === c && hero.ride.phase === 'on') { cx = hero.pos[0]; cz = hero.pos[1]; yaw = hero.yaw; c.rideYaw = yaw; } // (ridden: where you are, your way)
       if (leanYaw != null && c.kind === 'snake') yaw = rp ? yaw + Math.atan2(Math.sin(leanYaw - yaw), Math.cos(leanYaw - yaw)) * lean : leanYaw;
       const L = c.kind === 'snake' ? lean : 0, ca = Math.cos(0.45 * L), sa = Math.sin(0.45 * L);
       const base = partMatrix(cx + 0.5, STUD_H + (rp ? rp.y : 0) + up * L, cz + 0.5, Math.PI - yaw);
+      if (hero.ride && hero.ride.c === c) hero.ride.at = { x: cx, z: cz, yaw }; // (where the saddle is, this frame: you on it)
       tagList.push({ id: c, x: cx + 0.5, y: STUD_H + (rp ? rp.y : 0) + (c.kind ? 0.55 : 1.55), z: cz + 0.5, text: c.monster, cls: c.tame ? 'tame' : c.peaceful ? 'peaceful' : 'hostile' });
-      if (c.kind) figs.push({ url: c.url, matrix: mul(L > 0.01 ? mul(base, new Float32Array([1, 0, 0, 0, 0, ca, sa, 0, 0, -sa, ca, 0, 0, 0, 0, 1])) : base, creatureLocal(c.kind, clock, { lungeT: c.lungeAt, moving: !!rp })), pose: null, hold: {} });
+      if (c.kind) figs.push({ url: c.saddled || c.url, matrix: mul(L > 0.01 ? mul(base, new Float32Array([1, 0, 0, 0, 0, ca, sa, 0, 0, -sa, ca, 0, 0, 0, 0, 1])) : base, creatureLocal(c.kind, clock, { lungeT: c.lungeAt, moving: !!rp || (hero.ride && hero.ride.c === c && moving) })), pose: null, hold: {} });
       else { // (a naga: leaning in to spit, on coils that weave and lunge)
         const spitting = clock - c.lungeAt < LUNGE_TIME;
         const wt = c.warnAt != null ? clock - c.warnAt : 9, sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u)), warn = wt < 1.8 ? sm(wt / 0.3) * sm((1.8 - wt) / 0.4) : 0;
@@ -1005,7 +1193,10 @@ export async function runTestbed(data) {
         figs.push({ url: c.url, matrix: c.slither ? mul(fm, slitherLocal(clock, { lungeT: c.lungeAt })) : fm, pose, hold: c.hold ? { R: url(c.hold) } : {} }); // (a watchman's halberd)
       }
     }
+    figs.push(...rites.figures(dt)); // (the altar's statues, come alive: rites.js)
+    rites.step();
     brick.setFigures(figs);
+    brick.setProps(rites.props);
     brick.setPunished(punished);
     brick.setItems(drops);
     // draw, with the orbiting camera
@@ -1033,8 +1224,15 @@ export async function runTestbed(data) {
         cam.lookAt(ctl.target.clone().lerp(tgt, e));
       }
     } else ctl.update();
+    const jolt = new THREE.Vector3(); // (shaken: jolted about, dying away; put back after drawing, so the view doesn't drift)
+    if (shake) {
+      const u = (clock - shake.t0) / shake.T;
+      if (u >= 1) shake = null;
+      else { const k = 0.06 * (1 - u); jolt.set((Math.random() - 0.5) * k, (Math.random() - 0.5) * k, (Math.random() - 0.5) * k); cam.position.add(jolt); }
+    }
     cam.updateMatrixWorld();
     brick.render(cam.projectionMatrix.elements, cam.matrixWorldInverse.elements, w, h, [hero.pos[0] + 0.5, 0, hero.pos[1] + 0.5]);
+    cam.position.sub(jolt);
     const v = new THREE.Vector3();
     tags.update(tagList, [cam.position.x, cam.position.y, cam.position.z], (p) => {
       v.set(p[0], p[1], p[2]).project(cam);

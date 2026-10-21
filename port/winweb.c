@@ -420,6 +420,19 @@ web_altar_glass(struct obj *obj)
         angry_priest();
 }
 
+/* a rite at his altar, played out there (the client: rites.js): "mass" (n: 1 a gift came of it), "communion",
+   "alms" (n: 0 noted, 1 a hopeful feeling, 2 a sense of peace, 3 all you had, 4 watched over), "confess" (n: 1
+   his anger absolved), "offer" (a corpse refused), "wafer" (one appears on the altar), "wine" (its chalices
+   filled) */
+static void
+web_ritefx(const char *act, int n)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"rite\",\"act\":\"%s\",\"n\":%d,\"x\":%d,\"y\":%d", act, n, u.ux, u.uy);
+    endmsg();
+}
+
 /* ---- the rites of a follower of the figure's own deity (the server's
    BRICKHACK_GOD: Jesus, the lawful god), at his altar: in place of burnt
    offerings (Hebrews 10:10-14: his sacrifice was made once, for all), the
@@ -485,6 +498,7 @@ web_offer(struct obj *otmp)
 {
     if (!web_his_name() || otmp->otyp != CORPSE || your_race(&mons[otmp->corpsenm]))
         return 0;
+    web_ritefx("offer", 0);
     pline("%s has no need of burnt offerings.  His sacrifice was made once, for all.", web_his_name());
     return 1;
 }
@@ -507,6 +521,7 @@ web_mass(void)
         You("need a holy wafer and holy wine to celebrate Mass.");
         return 0;
     }
+    web_ritefx("mass", 0);
     You("celebrate Mass at the altar of %s.", web_his_name());
     pline("The bread and wine are consecrated, and you receive them.");
     useup(wafer);
@@ -549,6 +564,7 @@ web_communion(void)
         You("have no holy wafer to receive.");
         return 0;
     }
+    web_ritefx("communion", 0);
     You("receive Communion.");
     u.uhunger += objects[HOLY_WAFER].oc_nutrition;
     newuhs(FALSE);
@@ -586,17 +602,21 @@ web_alms(void)
     flags.botl = 1;
     You("give %ld gold piece%s to the poor.", n, plur(n));
     if (n < 400 * lvl && !mite) {
-        if (n < 200 * lvl)
+        if (n < 200 * lvl) {
+            web_ritefx("alms", 0);
             pline("Your gift is noted.");
-        else {
+        } else {
+            web_ritefx("alms", 1);
             You("have a hopeful feeling.");
             if (u.uluck < 0) u.uluck = 0;
         }
     } else if (n < 600 * lvl || u.ublessed >= 20 || (u.ublessed >= 9 && rn2(u.ublessed))) {
+        web_ritefx("alms", mite ? 3 : 2);
         You(mite ? "gave all you had, and feel blessed." : "feel a sense of peace.");
         if (u.uluck < 0) u.uluck = 0;
         else change_luck(1);
     } else {
+        web_ritefx("alms", 4);
         You_feel("watched over.");
         u.ublessed++;
     }
@@ -610,6 +630,7 @@ web_confess(void)
 {
     if (!web_at_his_altar("confess"))
         return 0;
+    web_ritefx("confess", u.ugangr ? 1 : 0);
     if (!u.ugangr) {
         You("confess your sins before %s, and feel at peace.", web_his_name());
         return 1;
@@ -638,6 +659,7 @@ web_altar_wafer(void)
     wafer = mksobj_at(HOLY_WAFER, u.ux, u.uy, TRUE, FALSE);
     bless(wafer);
     newsym(u.ux, u.uy);
+    web_ritefx("wafer", 0);
     pline("A holy wafer appears on the altar.");
 }
 
@@ -660,6 +682,7 @@ web_fill_glasses(void)
             if (o->otyp == CHALICE) { n += o->quan; web_fill(o); }
         }
         if (n) {
+            web_ritefx("wine", (int) n);
             pline("The chalice%s on the altar fill%s with wine.", n > 1 ? "s" : "", n > 1 ? "" : "s");
             newsym(u.ux, u.uy);
         }
@@ -1155,10 +1178,13 @@ flush_map(void)
             g = mapglyph_buf[y][x];
             bk = mapbk_buf[y][x];
             fputs(n ? "," : "{\"t\":\"map\",\"c\":[", out);
-            /* [x, y, tile, kind, cmap, bktile, bkcmap] */
-            fprintf(out, "[%d,%d,%d,\"%c\",%d,%d,%d]", x, y, tile_of(g),
+            /* [x, y, tile, kind, cmap, bktile, bkcmap, altar] (altar: an
+               altar there, its alignment: -1 chaotic, 0 neutral, 1 lawful, -128
+               unaligned; or 2, none: the client builds it in brick, coloured) */
+            fprintf(out, "[%d,%d,%d,\"%c\",%d,%d,%d,%d]", x, y, tile_of(g),
                     glyph_kind(g), glyph_cmapidx(g), tile_of(bk),
-                    glyph_cmapidx(bk));
+                    glyph_cmapidx(bk),
+                    IS_ALTAR(levl[x][y].typ) ? (int) Amask2align(levl[x][y].altarmask & AM_MASK) : 2);
             n++;
         }
     if (n) {
@@ -1393,6 +1419,9 @@ build_status(void)
             ACURR(A_CON), ACURR(A_INT), ACURR(A_WIS), ACURR(A_CHA),
             u.ualign.type, near_capacity(), Upolyd ? 1 : 0,
             tile_of(hero_glyph));
+    /* what the hero's riding (its tile: the client draws it under them,
+       saddled, them astride it), or -1 */
+    fprintf(out, "\"steed\":%d,", u.usteed ? tile_of(mon_to_glyph(u.usteed)) : -1);
     /* what's under the hero (for the client's context buttons) */
     {
         struct obj *otmp;
@@ -2174,6 +2203,33 @@ web_steam(int x, int y)
     if (!out || !cansee(x, y))
         return;
     fprintf(out, "{\"t\":\"steam\",\"x\":%d,\"y\":%d", x, y);
+    endmsg();
+}
+
+/* dokick.c: a box or a chest at (x, y) kicked: "thud", "shatter" or "crack"
+   (something inside it broken: obj, its tile), "lockbreak", "slam" (its lid
+   flung open and falling shut) */
+void
+web_boxfx(const char *act, int x, int y, struct obj *obj)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"boxfx\",\"act\":\"%s\",\"x\":%d,\"y\":%d,\"tile\":%d", act, x, y,
+            obj ? web_obj_tile(obj, obj_to_glyph(obj)) : -1);
+    endmsg();
+}
+
+/* pray.c: praying, as it goes: "begin" (n: how it'll go, p_type: -1 undead,
+   0 too soon, 1 naughty, 2 another god's altar, 3 true to your god), then
+   what comes of it: "pleased" (n: 1 satisfied, 2 pleased, 3 well-pleased),
+   "displeased", "toosoon", "lessons", "blackglow", "punish", "minion",
+   "bolt", "disintegrate", "undead", "hell" */
+void
+web_pray(const char *act, int n)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"pray\",\"act\":\"%s\",\"n\":%d,\"x\":%d,\"y\":%d", act, n, u.ux, u.uy);
     endmsg();
 }
 

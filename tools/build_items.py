@@ -222,6 +222,15 @@ def main():
                 built[name]['bricks'].append({'url': part_glb(lib, colors, part, color if color != 16 else 71),
                                               'pos': [round(v, 4) for v in (D @ pos / 20)], 'mat': [round(v, 5) for v in (D @ mat @ D).flatten()],
                                               **({'group': group} if group and group != 'body' else {})})
+        if item.get('spots'):   # where some things lie on it instead (an altar's wafer on its tile), by name: LDU, as "offer"
+            built[name]['spots'] = {k: [round(o[0] / 80, 4), round(-o[1] / 80, 4), round(-o[2] / 80, 4)] for k, o in item['spots'].items()}
+        if item.get('anchored'):   # set down by its own origin, not centred on its square (an altar whose steps run out before it)
+            built[name]['anchored'] = True
+        if item.get('perch'):   # where you stand at it (perch.js PERCHES: R, H, OUT, HOP, LOOK, in squares), if not as its kind's
+            built[name]['perch'] = item['perch']
+        if item.get('offer'):   # where an offering lies on it (an altar's top), LDU off its foot's middle: in squares, the model's axes
+            o = item['offer']
+            built[name]['offer'] = [round(o[0] / 80, 4), round(-o[1] / 80, 4), round(-o[2] / 80, 4)]
         if item.get('colliders'):   # its solid parts, for things falling onto it (brickworld.js colliders)
             built[name]['colliders'] = item['colliders']
         if item.get('wear'):   # worn on a minifig (a helm): the figure worker dresses the hero in it

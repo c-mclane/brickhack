@@ -567,12 +567,19 @@
  "pony": {
   "parts": [
    {
-    "part": "82445p01",
+    "part": "4493c00",
     "color": 70
    }
   ],
-  "scale": 1.15,
-  "creature": "horse"
+  "scale": 0.85,
+  "creature": "horse",
+  "saddle": [
+   {
+    "part": "4491b",
+    "color": 0
+   }
+  ],
+  "seat": 1.02
  },
  "horse": {
   "parts": [
@@ -582,7 +589,14 @@
    }
   ],
   "scale": 1.0,
-  "creature": "horse"
+  "creature": "horse",
+  "saddle": [
+   {
+    "part": "4491b",
+    "color": 0
+   }
+  ],
+  "seat": 1.2
  },
  "warhorse": {
   "parts": [
@@ -592,7 +606,14 @@
    }
   ],
   "scale": 1.1,
-  "creature": "horse"
+  "creature": "horse",
+  "saddle": [
+   {
+    "part": "4491b",
+    "color": 0
+   }
+  ],
+  "seat": 1.32
  },
  "white unicorn": {
   "parts": [
