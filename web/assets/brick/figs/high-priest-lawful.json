@@ -1,0 +1,35 @@
+{
+ "name": "high-priest-lawful",
+ "label": "high priest of a lawful god",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp4g",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "torsoDecal": {
+  "image": "../decals/sun.png"
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 297
+  }
+ ],
+ "dress": {
+  "part": "3678b",
+  "color": 15,
+  "decal": {
+   "image": "../decals/orphrey.png"
+  }
+ },
+ "right": {
+  "part": "88288",
+  "color": 297
+ },
+ "hat": "25516",
+ "hatColor": 297
+}

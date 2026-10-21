@@ -1,0 +1,32 @@
+{
+ "name": "high-priest-neutral",
+ "label": "high priest of a neutral god",
+ "torso": "973",
+ "torsoColor": 71,
+ "armColor": 71,
+ "handColor": 14,
+ "head": "3626bp4g",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "torsoDecal": {
+  "image": "../decals/scales.png"
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 80
+  }
+ ],
+ "dress": {
+  "part": "3678b",
+  "color": 72
+ },
+ "right": {
+  "part": "88288",
+  "color": 80
+ },
+ "hat": "4505a",
+ "hatColor": 72
+}

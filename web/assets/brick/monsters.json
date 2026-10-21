@@ -1288,5 +1288,41 @@
   ],
   "scale": 0.48,
   "creature": "beast"
+ },
+ "aligned priest|lawful": {
+  "fig": "priest-lawful"
+ },
+ "aligned priest|neutral": {
+  "fig": "priest-neutral"
+ },
+ "aligned priest|chaotic": {
+  "fig": "priest-chaotic"
+ },
+ "aligned priest|unaligned": {
+  "fig": "priest-moloch"
+ },
+ "aligned priest|jesus": {
+  "fig": "catholic-priest"
+ },
+ "high priest|lawful": {
+  "fig": "high-priest-lawful"
+ },
+ "high priest|neutral": {
+  "fig": "high-priest-neutral"
+ },
+ "high priest|chaotic": {
+  "fig": "high-priest-chaotic"
+ },
+ "high priest|unaligned": {
+  "fig": "high-priest-moloch"
+ },
+ "high priest|jesus": {
+  "fig": "catholic-bishop"
+ },
+ "aligned priest": {
+  "fig": "priest-neutral"
+ },
+ "high priest": {
+  "fig": "high-priest-neutral"
  }
 }

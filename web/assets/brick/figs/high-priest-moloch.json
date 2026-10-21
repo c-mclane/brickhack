@@ -1,0 +1,75 @@
+{
+ "name": "high-priest-moloch",
+ "label": "high priest of Moloch",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bp4f",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "torsoDecal": {
+  "image": "../decals/flame.png"
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 4
+  }
+ ],
+ "dress": {
+  "part": "3678b",
+  "color": 0,
+  "decal": {
+   "image": "../decals/flame.png"
+  }
+ },
+ "right": {
+  "part": "18395",
+  "color": 36
+ },
+ "hat": "53450",
+ "hatColor": 297,
+ "extras": [
+  {
+   "part": "53451",
+   "color": 297,
+   "pos": [
+    -15,
+    -22,
+    0
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -90
+    }
+   ]
+  },
+  {
+   "part": "53451",
+   "color": 297,
+   "pos": [
+    15,
+    -22,
+    0
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 90
+    }
+   ]
+  }
+ ]
+}

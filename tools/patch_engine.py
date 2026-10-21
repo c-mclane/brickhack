@@ -1085,4 +1085,11 @@ edit("src/mkroom.c", [
      '\tif (!web_altar_ok(shrine_spot->x, shrine_spot->y)) { sroom->rtype = OROOM; return; }\n'),
 ], "WEB_HOOK_ALTAROK")
 
+edit("src/sp_lev.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\n/* WEB_HOOK_ALTAROK */\nextern void FDECL(web_altar_place, (int *, int *));\n'),
+    ('\t/* check for existing features */\n\toldtyp = levl[x][y].typ;\n\tif (oldtyp == STAIRS || oldtyp == LADDER)\n\t    return;\n\n\ta->x = x;',
+     '\t{ int wx = x, wy = y; web_altar_place(&wx, &wy); x = wx; y = wy; } /* (never facing a wall) */\n'
+     '\t/* check for existing features */\n\toldtyp = levl[x][y].typ;\n\tif (oldtyp == STAIRS || oldtyp == LADDER)\n\t    return;\n\n\ta->x = x;'),
+], "WEB_HOOK_ALTAROK")
+
 print("engine hooks applied:", src)

@@ -1,0 +1,35 @@
+{
+ "name": "priest-lawful",
+ "label": "priest of a lawful god",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "torsoDecal": {
+  "image": "../decals/sun.png"
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 297,
+   "decal": {
+    "image": "../decals/sun.png"
+   }
+  }
+ ],
+ "dress": {
+  "part": "3678b",
+  "color": 15
+ },
+ "right": {
+  "part": "88288",
+  "color": 297
+ },
+ "hat": "4505a",
+ "hatColor": 15
+}

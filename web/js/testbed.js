@@ -1373,7 +1373,7 @@ async function menagerie(level, brick, cam, ctl, canvas) {
   // their names, kept over them on screen
   const tags = beasts.map((b) => {
     const t = document.createElement('div');
-    t.className = 'tag'; t.textContent = b.monster;
+    t.className = 'tag'; t.textContent = b.label || b.monster; // (or what the scene calls it: a priest, by his god)
     document.body.appendChild(t);
     return t;
   });

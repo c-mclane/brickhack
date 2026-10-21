@@ -1,0 +1,32 @@
+{
+ "name": "high-priest-chaotic",
+ "label": "high priest of a chaotic god",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 320,
+ "legColor": 320,
+ "torsoDecal": {
+  "image": "../decals/skull.png"
+ },
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 320
+  }
+ ],
+ "dress": {
+  "part": "3678b",
+  "color": 320
+ },
+ "right": {
+  "part": "88288",
+  "color": 320
+ },
+ "hat": "24636",
+ "hatColor": 320
+}

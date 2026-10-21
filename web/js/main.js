@@ -1910,9 +1910,19 @@ function statuePerch(now) {
 // they hold when they lunge at you), always facing you
 const spitAt = new Map(); // x,y -> when a monster there last threw or spat something (its creature lunges)
 const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, creature, slither, lift} (each monster's own state: monStateOf)
+const brickMonGods = new Map(); // `${tile}|${god}` -> the same, a priest of that god (monsters.json "aligned priest|lawful": his own figure)
+const brickMonOf = (s) => (s.mob && s.mob.god && brickMonGods.get(`${s.tile}|${s.mob.god}`)) || brickMons.get(s.tile);
 async function loadBrickMonsters() {
   const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   const [mons, tiles, items] = await Promise.all([get('assets/brick/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/brick/items.built.json')]);
+  const tileOf = new Map((tiles.names || []).map((n, i) => [n, i]));
+  for (const [k, m] of Object.entries(mons)) { // (a priest, by his god)
+    const [base, god] = k.split('|');
+    if (!god || !tileOf.has(base)) continue;
+    const e = { url: m.url, hold: undefined, prims: null, creature: null, slither: false, lift: 0, saddled: null, seat: 1, saddledPrims: null };
+    brickMonGods.set(`${tileOf.get(base)}|${god}`, e);
+    renderer.figRender.model(m.url).then((p) => { e.prims = p; }).catch((err) => console.warn('brick monster:', k, err));
+  }
   (tiles.names || []).forEach((n, i) => {
     const m = mons[n];
     if (!m) return;
@@ -1960,7 +1970,7 @@ function risingAt(s, now) {
   const u = (now - r.t0) / 1000 / RISE_T;
   if (u >= 1) { rising.delete(s.mob.id); return null; }
   if (u < 0) return 'hidden';
-  const e = brickMons.get(s.tile), fd = (world.brickDrops || []).find((o) => o.x === r.f[0] && o.z === r.f[1] && PERCHES[o.name]);
+  const e = brickMonOf(s), fd = (world.brickDrops || []).find((o) => o.x === r.f[0] && o.z === r.f[1] && PERCHES[o.name]);
   return risePath(r.f, [Math.round(s.x), Math.round(s.z)], u, e && e.creature === 'snake' ? SNAKE_OUT : 0.22, fd && fd.name !== 'fountain' ? fd.name : false); // (out of a sink's drain, a toilet's bowl)
 }
 function brickMonFigures(sprites, dt, now) {
@@ -1969,7 +1979,7 @@ function brickMonFigures(sprites, dt, now) {
   const out = [];
   const [hx, hz] = motion.heroPos(now);
   for (let i = sprites.length - 1; i >= 0; i--) {
-    const s = sprites[i], e = s.mon && brickMons.get(s.tile);
+    const s = sprites[i], e = s.mon && brickMonOf(s);
     if (!e || !e.prims) continue;
     if (s.mob) mobModel.set(s.mob.id, { url: e.url, lift: (s.lift || 0) + (e.lift || 0) }); // (how tall it stands: dropTop)
     sprites.splice(i, 1);
