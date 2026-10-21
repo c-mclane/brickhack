@@ -44,7 +44,7 @@ export class World {
   }
 
   applyMap(list) {
-    for (const [x, y, t, k, c, bt, bc, a] of list) this.cells[y * this.w + x] = { t, k, c, bt, bc, a }; // (a: an altar's alignment, -1/0/1/-128; 2 none)
+    for (const [x, y, t, k, c, bt, bc, a, h] of list) this.cells[y * this.w + x] = { t, k, c, bt, bc, a, h }; // (a: an altar's alignment, -1/0/1/-128; 2 none; h: a high altar)
     this.dirty = true;
   }
 
@@ -119,8 +119,9 @@ export class World {
           : cl.cmap === CM.altar ? 'altar' : null;
         // (an altar: the one of its alignment, its stone and trim: lawful white and gold, neutral grey, chaotic black and
         // dark red, Moloch's black and red; a lawful one, to a follower of Jesus: his, the cross on it)
+        // (a high altar, the Astral Plane's or the Sanctum's: its kind's, grander; his, though, is his)
         const model = furn === 'altar' ? 'altar_' + (c.a === 1 && this.faith ? 'jesus'
-            : { 1: 'lawful', 0: 'neutral', [-1]: 'chaotic' }[c.a] || (c.a === -128 ? 'unaligned' : 'neutral')) : furn;
+            : (c.h ? 'high_' : '') + ({ 1: 'lawful', 0: 'neutral', [-1]: 'chaotic' }[c.a] || (c.a === -128 ? 'unaligned' : 'neutral'))) : furn;
         const fountain = model && brickBuilt(model);
         if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders, perch: fountain.perch, offer: fountain.offer, anchored: fountain.anchored, spots: fountain.spots, item: model,
           turn: furn === 'fountain' ? 0 : this.backToWall(x, y) });

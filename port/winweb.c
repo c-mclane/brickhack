@@ -395,6 +395,22 @@ web_intro_line(char *line)
         Sprintf(line, "Satan's undeserved ascendance over the other gods.");
 }
 
+/* pray.c, do.c: what happens at an altar, played out there (the client: brickworld.altarFx), on your square:
+   "offer" (a sacrifice begun: obj, the offering, held up and laid on it), "consume" (gone up: n 1 in a flash of
+   light, a lawful hero's; else a burst of flame), "clover", "gift", "hopeful", "inadequacy", "convert" (n: its new
+   alignment), "decrease", "reject", "blood" (n 1: a dark cloud forming), "wrath" (kicked: n 1 by its own god's
+   follower), "blessed", "cursed" (obj landing on it with an amber, a black flash), "claim" (a chalice set down on
+   it by a follower of Jesus: his now) */
+void
+web_altarfx(const char *act, int n, struct obj *obj)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"altar\",\"act\":\"%s\",\"n\":%d,\"x\":%d,\"y\":%d,\"tile\":%d", act, n, u.ux, u.uy,
+            obj ? web_obj_tile(obj, obj_to_glyph(obj)) : -1);
+    endmsg();
+}
+
 /* do.c doaltarobj: a chalice set down on an altar by a follower of the
    figure's own deity (the server's BRICKHACK_GOD: Jesus, the lawful god)
    claims the altar for him, whoever's it was (Moloch's, a high altar too):
@@ -410,6 +426,7 @@ web_altar_glass(struct obj *obj)
         || Amask2align(lev->altarmask & AM_MASK) == A_LAWFUL)
         return;
     lev->altarmask = (lev->altarmask & AM_SHRINE) | AM_LAWFUL;
+    web_altarfx("claim", 1, obj);
     if (Blind)
         You_feel("the altar shudder under %s.", the(xname(obj)));
     else
@@ -1178,13 +1195,16 @@ flush_map(void)
             g = mapglyph_buf[y][x];
             bk = mapbk_buf[y][x];
             fputs(n ? "," : "{\"t\":\"map\",\"c\":[", out);
-            /* [x, y, tile, kind, cmap, bktile, bkcmap, altar] (altar: an
+            /* [x, y, tile, kind, cmap, bktile, bkcmap, altar, high] (altar: an
                altar there, its alignment: -1 chaotic, 0 neutral, 1 lawful, -128
-               unaligned; or 2, none: the client builds it in brick, coloured) */
-            fprintf(out, "[%d,%d,%d,\"%c\",%d,%d,%d,%d]", x, y, tile_of(g),
+               unaligned; or 2, none: the client builds it in brick, coloured;
+               high: 1, a high altar, the Astral Plane's or the Sanctum's) */
+            fprintf(out, "[%d,%d,%d,\"%c\",%d,%d,%d,%d,%d]", x, y, tile_of(g),
                     glyph_kind(g), glyph_cmapidx(g), tile_of(bk),
                     glyph_cmapidx(bk),
-                    IS_ALTAR(levl[x][y].typ) ? (int) Amask2align(levl[x][y].altarmask & AM_MASK) : 2);
+                    IS_ALTAR(levl[x][y].typ) ? (int) Amask2align(levl[x][y].altarmask & AM_MASK) : 2,
+                    IS_ALTAR(levl[x][y].typ) && (levl[x][y].altarmask & AM_SHRINE)
+                        && (Is_astralevel(&u.uz) || Is_sanctum(&u.uz)) ? 1 : 0);
             n++;
         }
     if (n) {

@@ -38,6 +38,10 @@ const BASIN_COINS = 16, BASIN_FLOOR = 0.36, BASIN_R = [0.3, 0.64];
 const SINK_SPOUT = [0, 1.12, -0.08], SINK_DRAIN = [0, 0.83, 0.1];
 // (an altar's top, its slab, up from the floor: where an offering lies)
 const ALTAR_TOP = 64 / 80;
+const ALTAR_ROW = [0, -0.16, 0.16]; // (things on an altar, side by side along its front: squares off its offering place)
+// an altar's fire, by its kind: [bright, dark] (altarFx)
+const ALTAR_BOLT = { lawful: [0xfffbe8, 0xffd060], neutral: [0xf4f8ff, 0xa8b8d0], chaotic: [0xffb090, 0xd02020], unaligned: [0xffd0a0, 0xff3010] }; // (a sacrifice's bolt of fire: core, glow)
+const ALTAR_HUE = { lawful: [0xfff3c0, 0x8a7a50], neutral: [0xdfe6f0, 0x5a6270], chaotic: [0xd02020, 0x2a0808], unaligned: [0xff3010, 0x3a0000] };
 // see-through by k (0..1), each mesh under it given materials of its own the first time (shared ones left as they
 // were); hidden at nothing
 function fadeObject(root, k) {
@@ -472,6 +476,8 @@ export class BrickWorld {
         g.rotation.y = turn;
         g.scale.setScalar(MODEL_SCALE);
         g.userData = { square: `${it.x},${it.z}`, level, thick: 0, colliders: it.colliders || null, name: it.name, offer: it.offer || null, spots: it.spots || null };
+        const cv = !level && this.converting && this.converting.get(g.userData.square);
+        if (cv) { g.userData.rising = cv; g.visible = false; } // (the new altar, of a turned one: risen into its place, after: altarIn)
         this.world.add(g);
         if (this.fx.isIncoming(it.x, it.z, it.url)) g.visible = false; // (still in the air: it lands, then shows: throwfx.js)
         if (this.keptRocks.has(`${it.x},${it.z},${it.url}`)) g.visible = false; // (a broken boulder's rocks: the flung ones lying there are its pile)
@@ -493,6 +499,7 @@ export class BrickWorld {
           lay.position.set(it.anchored ? 0 : -c.x, -box.min.y, it.anchored ? 0 : -c.z); // centred on the square (or by its own origin: anchored), its underside at the group's height
           g.add(lay);
           g.userData.lay = lay; // (a chest: its lid swings open, setLids)
+          if (g.userData.rising) this.altarIn(g, g.userData.rising);
           g.userData.thick = (box.max.y - box.min.y) * MODEL_SCALE;
           this.restack(g.userData.square);
         });
@@ -500,7 +507,11 @@ export class BrickWorld {
       }
       keep.set(key, g);
     }
-    for (const [key, g] of this.items) if (!keep.has(key)) { this.world.remove(g); touched.add(g.userData.square); }
+    for (const [key, g] of this.items) if (!keep.has(key)) {
+      touched.add(g.userData.square);
+      const cv = !g.userData.level && this.converting && this.converting.get(g.userData.square);
+      if (cv) this.altarOut(g, cv); else this.world.remove(g); // (an altar turned: the old one burning away, as the new rises)
+    }
     this.items = keep;
     // a thrown item picked up (or gone): its resting pose forgotten
     for (const k of [...this.fx.poses.keys()]) {
@@ -1170,6 +1181,123 @@ export class BrickWorld {
       tick();
     });
   }
+  // an altar about to turn (converted; claimed for Jesus): the next time the square's altar changes, the old one
+  // burns down and sinks away while the new one rises in its place (setItems: altarOut, altarIn). after: s from now
+  // the old one starts to go (the light's had its moment)
+  convertAltar(x, z, after = 0.6) {
+    this.converting = this.converting || new Map();
+    const k = `${x},${z}`, cv = { t0: performance.now() + after * 1000 };
+    this.converting.set(k, cv);
+    setTimeout(() => { if (this.converting.get(k) === cv) this.converting.delete(k); }, after * 1000 + 8000);
+  }
+  altarOut(g, cv) {
+    const step = () => {
+      const t = (performance.now() - cv.t0) / 1000;
+      if (t < 0) { requestAnimationFrame(step); return; }
+      const u = Math.min(1, t / 1.4);
+      fadeObject(g, 1 - u);
+      const lay = g.userData.lay; // (sinking into the floor as it goes)
+      if (lay) { if (g.userData.layY0 == null) g.userData.layY0 = lay.position.y; lay.position.y = g.userData.layY0 - (0.5 * u * u) / MODEL_SCALE; }
+      if (Math.random() < 0.4) this.fx.sparkles(new THREE.Vector3(g.position.x + (Math.random() - 0.5) * 0.6, STUD_H + 0.3 + Math.random() * 0.5, g.position.z + (Math.random() - 0.5) * 0.6), 4, 0xff7a1a, 0.08); // (embers)
+      if (u < 1) requestAnimationFrame(step); else this.world.remove(g);
+    };
+    step();
+  }
+  altarIn(g, cv) {
+    const lay = g.userData.lay, y0 = lay.position.y, sq = g.userData.square;
+    const others = (on) => { for (const o of this.items.values()) if (o !== g && o.userData.square === sq) o.visible = on; }; // (what lies on it: once it's up)
+    const step = () => {
+      const t = (performance.now() - cv.t0) / 1000 - 0.7;
+      if (t < 0) { g.visible = false; others(false); requestAnimationFrame(step); return; }
+      const u = Math.min(1, t / 1.8), e = 1 - (1 - u) ** 3;
+      g.visible = true;
+      fadeObject(g, Math.min(1, u * 1.6));
+      lay.position.y = y0 - (1 - e) * 1.2 / MODEL_SCALE;
+      if (Math.random() < 0.5) this.fx.sparkles(new THREE.Vector3(g.position.x + (Math.random() - 0.5) * 0.9, STUD_H + Math.random() * 0.4, g.position.z + (Math.random() - 0.5) * 0.9), 5, 0xfff3c0, 0.1);
+      if (u < 1) requestAnimationFrame(step); else { lay.position.y = y0; fadeObject(g, 1); g.userData.rising = null; others(true); this.restack(sq); }
+    };
+    step();
+  }
+
+  // a flash of light (or dark: dark, a black flash) swelling out of a point and gone: an altar's flash as
+  // something blessed or cursed hits it, a sacrifice going up in light, an altar converted
+  flash(p, color, { size = 1, T = 0.7, dark = false } = {}) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(0.5, 24, 16), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false,
+      blending: dark ? THREE.NormalBlending : THREE.AdditiveBlending }));
+    m.position.copy(p);
+    this.world.add(m);
+    const t0 = performance.now();
+    const tick = () => {
+      const t = (performance.now() - t0) / 1000;
+      if (t > T) { this.world.remove(m); m.geometry.dispose(); m.material.dispose(); return; }
+      const u = t / T, s = size * (0.2 + 1.3 * Math.sqrt(u));
+      m.scale.set(s, s, s);
+      m.material.opacity = (dark ? 0.85 : 0.9) * Math.min(1, u * 6) * (1 - u) ** 1.5;
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  // ---- what happens at an altar (the engine's "altar": winweb.c web_altarfx), on (x, z): its kind (ALTAR_HUE:
+  // lawful, neutral, chaotic, unaligned: Moloch's) gives its fire its colours. act:
+  //   blessed, cursed: an amber flash, a black flash, as it lands on it
+  //   consume: a sacrifice gone up (n 1: in a flash of light, a lawful hero's; else in a burst of flame, the altar's)
+  //   clover: a four-leaf clover glimpsed at your feet (fx at hx, hz); gift: something at your feet, out of a column
+  //   of light; hopeful: a soft glow on you
+  //   convert: the altar glowing as it turns (n: its new alignment, 1 white, 0 grey, -1 black); decrease: the power of
+  //   your god waning, dark motes settling on you; reject: refused, a god's red anger; blood: the altar stained with
+  //   it; cloud: a dark cloud forming over it (a demon summoned); wrath: kicked (n 1: your own god's thunder; else a
+  //   whisper, a dark wisp)
+  altarFx(x, z, act, kind = 'lawful', n = 0, hx = x, hz = z) {
+    const top = new THREE.Vector3(x + 0.5, STUD_H + ALTAR_TOP + 0.05, z + 0.5), you = new THREE.Vector3(hx + 0.5, STUD_H + 0.6, hz + 0.5);
+    const [hi, lo] = ALTAR_HUE[kind] || ALTAR_HUE.lawful, fx = this.fx, later = (s, f) => setTimeout(f, s * 1000);
+    switch (act) {
+      case 'blessed': this.flash(top, 0xffb31a, { size: 1.1 }); fx.sparkles(top, 40, 0xffc84a, 0.3); break;
+      case 'cursed': this.flash(top, 0x050505, { size: 1.1, dark: true }); fx.haze(top.clone().setY(top.y - 0.2), 0.6, 10, 0x0a0a0a); fx.sparkles(top, 16, 0x1a1a1a, 0.25); break;
+      case 'consume': { // (a bolt of fire from the sky onto it, in its own colours; then it goes up)
+        const [core, glowc] = ALTAR_BOLT[kind] || ALTAR_BOLT.lawful;
+        this.lightning(x + 0.5, z + 0.5, 4, { core, glow: glowc, to: ALTAR_TOP + 0.05, ground: false, sparks: [core, glowc] });
+        later(0.12, () => this.altarFx(x, z, 'burn', kind, n, hx, hz));
+        break;
+      }
+      case 'burn':
+        if (n === 1) { this.flash(top, 0xfff6d8, { size: 1.6, T: 0.9 }); fx.sparkles(top, 60, 0xfff3c0, 0.35); later(0.15, () => fx.sparkles(top.clone().setY(top.y + 0.4), 40, 0xffe27a, 0.3)); break; }
+        this.flash(top, hi, { size: 1.2, T: 0.8 });
+        for (let i = 0; i < 8; i++) later(i * 0.11, () => { // (flames licking up off it, then smoke)
+          fx.sparkles(top.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.3, i * 0.04, (Math.random() - 0.5) * 0.3)), 22, i % 2 ? hi : 0xffa020, 0.22);
+          if (i % 2) fx.vapor(top.clone().setY(top.y + 0.2), lo, 0.8);
+        });
+        break;
+      case 'clover': fx.sparkles(new THREE.Vector3(hx + 0.5, STUD_H + 0.05, hz + 0.5), 30, 0x3fbf3f, 0.2); later(0.3, () => fx.sparkles(new THREE.Vector3(hx + 0.5, STUD_H + 0.1, hz + 0.5), 14, 0x8dff7a, 0.12)); break;
+      case 'gift': this.prayLight(hx + 0.5, hz + 0.5, 3, { size: 0.6 }); later(0.8, () => this.flash(new THREE.Vector3(hx + 0.5, STUD_H + 0.1, hz + 0.5), 0xffe9a0, { size: 0.7 })); break;
+      case 'hopeful': fx.sparkles(you, 26, 0xfff6d0, 0.35); if (n) this.prayLight(hx + 0.5, hz + 0.5, 2.5, { size: 0.5 }); break; // (n: reconciled: a soft light down on you too)
+      case 'inadequacy': fx.vapor(top, 0x8a8a8a, 0.6); break; // (a wisp, and nothing)
+      case 'convert': {
+        const c = n > 0 ? 0xffffff : n < 0 ? 0x101010 : 0x9a9a9a;
+        this.flash(top.clone().setY(top.y - 0.3), c, { size: 2.6, T: 1.6, dark: n < 0 });
+        for (let i = 0; i < 6; i++) later(i * 0.2, () => fx.sparkles(top.clone().setY(top.y + 0.3), 20, n < 0 ? 0x2a2a2a : n > 0 ? 0xffffff : 0xb8b8b8, 0.6));
+        break;
+      }
+      case 'decrease': for (let i = 0; i < 6; i++) later(i * 0.15, () => fx.ash(you.clone().setY(you.y + 1.0))); break;
+      case 'reject': this.flash(top, 0xff2a10, { size: 1.6, T: 0.9 }); fx.sparkles(top, 40, 0xff4020, 0.4); break;
+      case 'blood': // (n: and a dark cloud forming over it)
+        if (n) later(0.8, () => this.stormCloud(x + 0.5, z + 0.5, 5));
+        fx.haze(top.clone().setY(top.y - 0.6), 0.7, 14, 0x6a0000);
+        for (let i = 0; i < 6; i++) later(i * 0.12, () => fx.sparkles(top.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, 0, (Math.random() - 0.5) * 0.3)), 8, 0x8a0000, 0.06));
+        break;
+      case 'cloud': this.stormCloud(x + 0.5, z + 0.5, 5); break;
+      case 'claim': // (a chalice set down on it by his follower: a brilliant white, the old god's altar burning away, his rising)
+        this.flash(top.clone().setY(top.y - 0.2), 0xffffff, { size: 3.2, T: 2.0 });
+        this.prayLight(x + 0.5, z + 0.5, 4.5, { size: 1.2 });
+        for (let i = 0; i < 10; i++) later(i * 0.2, () => fx.sparkles(top.clone().setY(top.y + 0.2 + i * 0.05), 24, i % 2 ? 0xffffff : 0xfff3c0, 0.7));
+        break;
+      case 'wrath':
+        if (n === 1) { this.flash(top.clone().setY(top.y + 0.4), 0xfff6d8, { size: 2, T: 0.6 }); fx.sparkles(you, 30, 0xffffff, 0.4); }
+        else for (let i = 0; i < 10; i++) later(i * 0.1, () => fx.haze(you.clone().setY(STUD_H), 1.2, 6, 0x15101c));
+        break;
+    }
+  }
+
   // ---- praying (#pray), as it goes: begun (n, how it'll go: 3 true to your god, 2 at another's altar, 1 naughty,
   // 0 too soon, -1 undead), its light (or none, or a storm gathering) over you at (x, z) a moment in; and what comes
   // of it (act, n), at the end. PRAY_OUTCOME: s in, the outcome; then (PRAY_AFTER) how you take it (prayAfter)
@@ -1229,22 +1357,24 @@ export class BrickWorld {
   }
   // a bolt of lightning down out of the heavens onto (x, z): a jagged white-blue streak, struck three times over half
   // a second; sparks, a scorch on the floor, smoke
-  lightning(x, z, top = 3.1) {
-    const g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0xe8f0ff, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending });
+  // (or a bolt of fire from the sky onto an altar's sacrifice: its colours (core, glow), down to `to` (up from the
+  // floor), no scorch on the floor, no smoke of its own)
+  lightning(x, z, top = 3.1, { core = 0xe8f0ff, glow = 0x9fb8ff, to = 0.6, ground = true, sparks = [0xdfe8ff, 0xffd060] } = {}) {
+    const g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: core, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending });
     const bolt = () => {
       g.clear();
       let at = new THREE.Vector3(x, STUD_H + top, z);
       const n = 9;
       for (let i = 1; i <= n; i++) {
-        const to = i === n ? new THREE.Vector3(x, STUD_H + 0.6, z) : new THREE.Vector3(x + (Math.random() - 0.5) * 0.5, STUD_H + top - (top - 0.6) * (i / n), z + (Math.random() - 0.5) * 0.5);
-        const d = to.clone().sub(at), len = d.length();
+        const end = i === n ? new THREE.Vector3(x, STUD_H + to, z) : new THREE.Vector3(x + (Math.random() - 0.5) * 0.5, STUD_H + top - (top - to) * (i / n), z + (Math.random() - 0.5) * 0.5);
+        const d = end.clone().sub(at), len = d.length();
         for (const [w, op] of [[0.035, 1], [0.12, 0.35]]) { // (its core, and its glow)
-          const seg = new THREE.Mesh(new THREE.BoxGeometry(w, len, w), op === 1 ? mat : new THREE.MeshBasicMaterial({ color: 0x9fb8ff, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending }));
-          seg.position.copy(at).add(to).multiplyScalar(0.5);
+          const seg = new THREE.Mesh(new THREE.BoxGeometry(w, len, w), op === 1 ? mat : new THREE.MeshBasicMaterial({ color: glow, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending }));
+          seg.position.copy(at).add(end).multiplyScalar(0.5);
           seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
           g.add(seg);
         }
-        at = to;
+        at = end;
       }
     };
     this.world.add(g);
@@ -1259,9 +1389,10 @@ export class BrickWorld {
       requestAnimationFrame(tick);
     };
     tick();
-    const p = new THREE.Vector3(x, STUD_H + 0.2, z);
-    this.fx.sparkles(p, 40, 0xdfe8ff, 0.4);
-    this.fx.sparkles(p, 20, 0xffd060, 0.3);
+    const p = new THREE.Vector3(x, STUD_H + (ground ? 0.2 : to), z);
+    this.fx.sparkles(p, 40, sparks[0], 0.4);
+    this.fx.sparkles(p, 20, sparks[1], 0.3);
+    if (!ground) return;
     for (let i = 0; i < 4; i++) setTimeout(() => this.fx.vapor(p, 0x555555, 1.4), 200 + i * 180);
     const scorch = new THREE.Mesh(new THREE.CircleGeometry(0.35, 24), new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.6, depthWrite: false }));
     scorch.rotation.x = -Math.PI / 2; scorch.position.set(x, STUD_H + 0.012, z);
@@ -1371,10 +1502,13 @@ export class BrickWorld {
       if (g.userData.name === 'gold piece' && fount) { g.visible = false; g.userData.inBasin = gold = true; continue; }
       if (g.userData.inBasin) { g.visible = true; g.userData.inBasin = false; } // (the fountain gone from under it)
       if (sink && g !== pile[0]) { g.position.set(sink.x, sink.y + 0.01, sink.z); continue; }
-      if (pile[0].userData.name === 'altar' && g !== pile[0]) { // (on an altar: laid on its top, offered; or where its model says: off its middle, turned as it is)
+      if (/^altar/.test(pile[0].userData.name) && g !== pile[0]) { // (on an altar: laid on its top, offered; or where its model says (its front, clear of its statue): off its middle, turned as it is, lying across it
         const sp = pile[0].userData.spots, o = (sp && sp[g.userData.name]) || pile[0].userData.offer, t = pile[0].rotation.y;
-        if (o) g.position.set(sx + 0.5 + o[0] * Math.cos(t) + o[2] * Math.sin(t), STUD_H + o[1] + (g.userData.level - 1) * 0.04, sz + 0.5 - o[0] * Math.sin(t) + o[2] * Math.cos(t));
+        // (several: side by side along its front, the middle, then left, then right; then on top of those)
+        const k = g.userData.level - 1, along = o && !(sp && sp[g.userData.name]) ? ALTAR_ROW[k % 3] : 0, up = Math.floor(k / 3) * 0.05;
+        if (o) g.position.set(sx + 0.5 + (o[0] + along) * Math.cos(t) + o[2] * Math.sin(t), STUD_H + o[1] + up, sz + 0.5 - (o[0] + along) * Math.sin(t) + o[2] * Math.cos(t));
         else g.position.y = STUD_H + ALTAR_TOP + (g.userData.level - 1) * 0.04;
+        g.rotation.y = t + (g.userData.level % 2 ? 0 : 0.12); // (across it, along its front edge, not slanting back into what stands on it)
         continue;
       }
       g.position.y = y;

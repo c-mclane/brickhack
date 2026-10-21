@@ -238,6 +238,18 @@ export const FOUNT = {
   // ...the one on top, watching over you: hands held out over you, gazing down on you
   watch: { T: 600.0, armR: [[0, null], [0.8, -70], [600, -70]], armL: 'R', inn: [[0, 0], [0.8, -18], [600, -18]], lean: [[0, 0], [0.8, 0.12], [600, 0.12]],
     head: [[0, 0], [0.8, -0.55], [600, -0.55]] },
+  // something set down on an altar before you: reached out over it, let go, and back
+  place: { T: 1.5,
+    lean: [[0, 0], [0.5, 0.3], [0.9, 0.3], [1.5, 0]],
+    armR: [[0, null], [0.5, -64], [0.9, -64], [1.5, null]], armL: [[0, null], [1.5, null]],
+    inn: [[0, 0], [1.5, 0]], head: [[0, 0], [0.5, -0.35], [0.9, -0.35], [1.5, 0]] },
+  // a sacrifice (#offer): held up to the heavens in both hands, laid on the altar, let go; a step back from it,
+  // gazing at it as it goes up
+  sacrifice: { T: 4.0,
+    lean: [[0, 0], [0.6, -0.1], [1.3, -0.1], [1.8, 0.3], [2.2, 0.3], [2.6, -0.05], [3.6, -0.05], [4.0, 0]],
+    armR: [[0, -30], [0.6, -150], [1.3, -150], [1.8, -64], [2.2, -64], [2.6, null], [4.0, null]], armL: 'R',
+    inn: [[0, 0], [0.6, 14], [1.3, 14], [1.8, 10], [2.2, 10], [2.6, 0], [4.0, 0]],
+    head: [[0, 0], [0.6, 0.45], [1.3, 0.45], [1.8, -0.35], [2.2, -0.35], [2.6, 0.1], [3.6, 0.1], [4.0, 0]] },
   // carrying something up before you, held upright (the chalice, brought up to the altar)
   carry: { T: 60.0, armR: [[0, null], [0.4, -100], [60.0, -100]], armL: [[0, null], [60.0, null]], inn: [[0, 0], [60.0, 0]], lean: [[0, 0], [60.0, 0]], head: [[0, 0], [60.0, 0]] },
   // ...and the deacons' (the altar's two statues, come down): hands joined before them; down on their knees, heads

@@ -1022,4 +1022,53 @@ edit("src/dokick.c", [
     ('\t\t\tpline_The("lid slams open, then falls shut.");',
      '\t\t\tweb_boxfx("slam", kickobj->ox, kickobj->oy, (struct obj *)0), pline_The("lid slams open, then falls shut.");'),
 ], "WEB_HOOK_BOXFX")
+# BrickHack: what happens at an altar (pray.c dosacrifice, consume_offering, altar_wrath; do.c doaltarobj),
+# played by the client there (winweb.c web_altarfx): a sacrifice held up and laid on it, gone up in a bolt of
+# fire from the sky; what comes of it (a four-leaf clover, a gift, an altar converted, refused, bloodied...);
+# things landing on it in an amber or a black flash; kicked, its god's wrath
+AFX = "web_altarfx"
+NOOBJ = "(struct obj *)0"
+edit("src/pray.c", [
+    ('#include "hack.h"\n',
+     '#include "hack.h"\n/* WEB_HOOK_ALTARFX */\nextern void FDECL(web_altarfx, (const char *, int, struct obj *));\n'),
+    ('if (web_offer(otmp)) return 1; } /* WEB_HOOK_RITES */\n',
+     'if (web_offer(otmp)) return 1; } /* WEB_HOOK_RITES */\n    web_altarfx("offer", 0, otmp);\n'),
+    ('    else Your("sacrifice is consumed in a %s!",',
+     '    else web_altarfx("consume", u.ualign.type == A_LAWFUL, otmp), Your("sacrifice is consumed in a %s!",'),
+    ('\t\telse You(Hallucination ?\n\t\t    "see crabgrass',
+     '\t\telse web_altarfx("clover", 0, (struct obj *)0), You(Hallucination ?\n\t\t    "see crabgrass'),
+    ('\t\t\tpline_The("altar glows %s.",',
+     '\t\t\tweb_altarfx("convert", u.ualign.type, (struct obj *)0), pline_The("altar glows %s.",'),
+    ('\t\t    pline("Unluckily, you feel the power of %s decrease.",',
+     '\t\t    web_altarfx("decrease", 0, (struct obj *)0), pline("Unluckily, you feel the power of %s decrease.",'),
+    ('\t\t    pline("%s rejects your sacrifice!", a_gname());',
+     '\t\t    web_altarfx("reject", 0, (struct obj *)0), pline("%s rejects your sacrifice!", a_gname());'),
+    ('\t\t    pline_The("altar is stained with %s blood.",',
+     '\t\t    web_altarfx("blood", 0, (struct obj *)0), pline_The("altar is stained with %s blood.",'),
+    ('\t\t    pline_The("blood covers the altar, and a dark cloud forms!");',
+     '\t\t    web_altarfx("blood", 1, (struct obj *)0), pline_The("blood covers the altar, and a dark cloud forms!");'),
+    ('\t\t    at_your_feet("An object");',
+     '\t\t    web_altarfx("gift", 0, otmp), at_your_feet("An object");'),
+    ('\t\t    pline("A spellbook appears at your %s!",',
+     '\t\t    web_altarfx("gift", 0, (struct obj *)0), pline("A spellbook appears at your %s!",'),
+    ('\t    You_feel("partially absolved.");',
+     '\t    web_altarfx("hopeful", 0, (struct obj *)0), You_feel("partially absolved.");'),
+    ('\t\t\tYou("have a hopeful feeling.");',
+     '\t\t\tweb_altarfx("hopeful", 0, (struct obj *)0), You("have a hopeful feeling.");'),
+    ('\t\t\tYou("have a feeling of reconciliation.");',
+     '\t\t\tweb_altarfx("hopeful", 1, (struct obj *)0), You("have a feeling of reconciliation.");'),
+    ('\t\telse You("have a feeling of inadequacy.");',
+     '\t\telse web_altarfx("inadequacy", 0, (struct obj *)0), You("have a feeling of inadequacy.");'),
+    ('\tgodvoice(altaralign, "How darest thou desecrate my altar!");',
+     '\tweb_altarfx("wrath", 1, (struct obj *)0), godvoice(altaralign, "How darest thou desecrate my altar!");'),
+    ('\tpline("A voice (could it be %s?) whispers:",',
+     '\tweb_altarfx("wrath", 0, (struct obj *)0), pline("A voice (could it be %s?) whispers:",'),
+], "WEB_HOOK_ALTARFX")
+edit("src/do.c", [
+    ('#include "hack.h"\n',
+     '#include "hack.h"\n/* WEB_HOOK_ALTARFX */\nextern void FDECL(web_altarfx, (const char *, int, struct obj *));\n'),
+    ('\t\tThere("is %s flash as %s %s the altar.",',
+     '\t\tweb_altarfx(obj->blessed ? "blessed" : "cursed", 0, obj), There("is %s flash as %s %s the altar.",'),
+], "WEB_HOOK_ALTARFX")
+
 print("engine hooks applied:", src)

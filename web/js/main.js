@@ -771,6 +771,7 @@ function handle(m) {
     case 'furnfx': furnFx(m); break; // a sink, a toilet: its doings (furnFx)
     case 'pray': prayFx(m); break; // praying, as it goes (prayFx)
     case 'rite': riteFx(m); break; // a rite at the altar of a follower of Jesus (riteFx)
+    case 'altar': altarFx(m); break; // what happens at an altar: a sacrifice, a flash, a conversion (altarFx)
     case 'boxfx': // a box or a chest kicked (brickworld.js boxFx): your kick, and what comes of it as your foot lands
       if (m.act === 'thud') fountNow('kick');
       if (renderer.brickOn && renderer.brick) {
@@ -1600,6 +1601,43 @@ function riteFx(m) {
     confess: () => rites.confess(m.x, m.y, turn, !!m.n), offer: () => rites.offer(m.x, m.y, turn), wafer: () => rites.prayed(m.x, m.y, turn, 'wafer'),
     wine: () => rites.prayed(m.x, m.y, turn, 'wine') }[m.act];
   if (go) go().catch((e) => console.error(e));
+}
+
+// what happens at an altar (winweb.c web_altarfx), played out there (brickworld.altarFx), in its own colours: a
+// sacrifice held up and laid on it (offer), then, in turn, a moment apart (the engine says it all at once): the bolt
+// of fire it goes up in, and what comes of it; things landing on it in a flash; an altar turned (convert, claim:
+// the old one burning away, the new rising); kicked, its god's wrath
+const ALTAR_KIND = { altar_lawful: 'lawful', altar_jesus: 'lawful', altar_neutral: 'neutral', altar_chaotic: 'chaotic', altar_unaligned: 'unaligned',
+  altar_high_lawful: 'lawful', altar_high_neutral: 'neutral', altar_high_chaotic: 'chaotic', altar_high_unaligned: 'unaligned' };
+const altarSeq = { next: 0 };
+let altarProps = []; // (a sacrifice laid on it, till it goes up)
+function altarFx(m) {
+  if (!renderer.brickOn || !renderer.brick) return;
+  const b = renderer.brick, now = performance.now();
+  const d = (world.brickDrops || []).find((o) => o.x === m.x && o.z === m.y && o.name === 'altar');
+  const kind = (d && ALTAR_KIND[d.item]) || 'lawful', turn = (d && d.turn) || 0, R = d ? perchOf(d).R : 0;
+  const hx = m.x + Math.sin(turn) * R, hz = m.y + Math.cos(turn) * R; // (you, stood at its front)
+  const o = (d && d.offer) || [0, 64 / 80, 0], c = Math.cos(turn), sn = Math.sin(turn);
+  const spot = { x: m.x + 0.5 + o[0] * c + o[2] * sn, y: STUD_H + o[1], z: m.y + 0.5 - o[0] * sn + o[2] * c }; // (its offering place)
+  if (m.act === 'offer') { // (held up to the heavens, laid on it)
+    const l = m.tile >= 0 ? brickItemForTile(m.tile) : null;
+    fountNow('sacrifice');
+    hero3d.riteHold = { R: (l && l.url) || null };
+    setTimeout(() => { hero3d.riteHold = { R: null }; if (l && l.url) altarProps = [{ url: l.url, ...spot, upright: !!l.upright }]; }, 2000);
+    setTimeout(() => { hero3d.riteHold = null; }, FOUNT.sacrifice.T * 1000);
+    setTimeout(() => { altarProps = []; }, 9000); // (whatever comes of it)
+    altarSeq.next = now + 2500;
+    return;
+  }
+  const at = Math.max(now, altarSeq.next);
+  altarSeq.next = at + (m.act === 'consume' ? 1400 : m.act === 'claim' || m.act === 'convert' ? 2600 : 1100);
+  if (m.act === 'claim' || m.act === 'convert') b.convertAltar(m.x, m.y, (at - now) / 1000 + 0.6); // (before the map turns it: its old model kept a while)
+  if (m.act === 'claim') fountNow('place');
+  setTimeout(() => {
+    if (m.act === 'consume') altarProps = [];
+    if ((m.act === 'wrath' && m.n) || m.act === 'reject') fx.shake = { t0: performance.now(), amp: 0.6 };
+    b.altarFx(m.x, m.y, m.act, kind, m.n, hx, hz);
+  }, at - now);
 }
 
 function prayFx(m) {
@@ -2926,7 +2964,7 @@ function frame(t) {
       if (rites.busy && game.playing && (world.hero.x !== rites.busy.ax || world.hero.y !== rites.busy.az)) rites.cancel();
       renderer.brickFigures.push(...rites.figures(dt));
       rites.step();
-      renderer.brick.setProps(rites.props);
+      renderer.brick.setProps(altarProps.length ? rites.props.concat(altarProps) : rites.props);
     }
     // first person: your own brick arm, and what it holds, in the corner of the
     // view; fighting with two weapons, your left one too, in the other corner

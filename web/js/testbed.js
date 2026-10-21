@@ -106,7 +106,7 @@ export async function runTestbed(data) {
   const lay = (list) => {
     const n = new Map(); // (things on one square: stacked, one on another, as world.js has them)
     drops = list.filter(Boolean).map((i) => { const k = i.at.join(','), level = n.get(k) || 0; n.set(k, level + 1);
-      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, name: i.item }; });
+      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, offer: (items[i.item] || {}).offer, spots: (items[i.item] || {}).spots, name: i.item }; });
     // (as the game watches its list: a statue broken comes apart; up on it, you jump down)
     for (const [x, z] of brick.watchStatues(drops, 'test', (n) => (items[n] ? { name: n, ...items[n] } : null)))
       if (hero.sq.x === x && hero.sq.y === z && hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz } };
@@ -752,6 +752,119 @@ export async function runTestbed(data) {
         await pray(1, 'blackglow', 'A black glow surrounds you.');
         await pray(1, 'lessons', '"Thou hast strayed from the path, mortal.  Thou must relearn thy lessons!"');
         await pray(1, 'bolt', 'Suddenly, a bolt of lightning strikes you!');
+        say('');
+      }
+      // the altars of the gods (?part=altars: lawful, neutral, chaotic, Moloch's), one after another, as a lawful hero
+      // finds them: things set down on them flashing amber or black; sacrifices going up in light or in the altar's own
+      // fire, and what comes of them (a four-leaf clover; a cross-aligned altar converted, glowing white; blood and a
+      // dark cloud; Moloch's refusal); and an altar kicked (brickworld.altarFx)
+      const alts = [['altar_lawful', 'lawful'], ['altar_neutral', 'neutral'], ['altar_chaotic', 'chaotic'], ['altar_unaligned', 'unaligned']]
+        .map(([n, kind]) => ({ it: at(n), kind })).filter((a) => a.it);
+      if ((doing('altars') || doing('highaltars')) && alts.length) {
+        const stand = (a) => { const pr = items[a.it.item].perch || { R: 46 / 80, H: 0 }; return { x: a.it.at[0] + 0.5, y: pr.H ? STUD_H + pr.H : 0, z: a.it.at[1] + 0.5 + pr.R, yaw: 0 }; }; // (where you stand at it: perch.js, its own if it has one)
+        const top = (a, i = 0) => { const o = items[a.it.item].offer || [0, 64 / 80, 0]; return { x: a.it.at[0] + 0.5 + o[0] + [0, -0.16, 0.16][i % 3], y: STUD_H + o[1] + Math.floor(i / 3) * 0.05, z: a.it.at[1] + 0.5 + o[2] }; }; // (its offering place: before its statue; several side by side, as brickworld lays them)
+        const go = async (to) => { // (walked over to it, turning to face it)
+          const from = hero.spot || { x: hero.pos[0] + 0.5, y: 0, z: hero.pos[1] + 0.5, yaw: hero.yaw }, t0 = clock, d = Math.hypot(to.x - from.x, to.z - from.z), T = Math.max(0.4, d / 2.2);
+          const way = Math.atan2(to.x - from.x, -(to.z - from.z));
+          while (clock - t0 < T) { const u = (clock - t0) / T; hero.spot = { x: from.x + (to.x - from.x) * u, y: 0, z: from.z + (to.z - from.z) * u, yaw: u < 0.85 ? way : to.yaw, moving: true }; await wait(0); }
+          hero.spot = { ...to };
+          await wait(0.3);
+        };
+        let lying = [];
+        const show = () => { if (!rites.busy) rites.props = lying; };
+        const fx = (a, act, n = 0) => brick.altarFx(a.it.at[0], a.it.at[1], act, items0.find((i) => i.at === a.it.at) && /lawful|jesus/.test(items0.find((i) => i.at === a.it.at).item) ? 'lawful' : a.kind, n, a.it.at[0], a.it.at[1] + ((items[a.it.item] || {}).perch || { R: 46 / 80 }).R);
+        const put = async (a, name, act, said) => { // (set down on it: a flash as it lands)
+          hero.hold = { R: url(name) }; hero.fount = { act: 'place', t0: clock, fired: 0 };
+          await wait(0.75); hero.hold = { R: null };
+          lying.push(rites.prop(name, top(a, lying.length))); show(); say(said); if (act) fx(a, act);
+          await wait(1.6);
+        };
+        const sacrifice = async (a, said, after) => { // (held up, laid on it, gone up in light or fire; what comes of it)
+          hero.hold = { R: url('corpse') }; hero.fount = { act: 'sacrifice', t0: clock, fired: 0 };
+          await wait(2.0); hero.hold = { R: null }; lying.push(rites.prop('corpse', top(a, lying.length))); show();
+          await wait(0.5);
+          say(said[0]); fx(a, 'consume', said[0].includes('light') ? 1 : 0); await wait(0.15); lying.pop(); show(); // (struck by the bolt, and gone)
+          for (const [s, act, n] of after) { await wait(1.4); say(s); if (act) fx(a, act, n); }
+          await wait(1.8);
+        };
+        const [L, N, C, M] = ['lawful', 'neutral', 'chaotic', 'unaligned'].map((k) => alts.find((a) => a.kind === k));
+        let items0 = (level.items || []).slice(); // (what stands in the room: an altar turned, the next)
+        const turnAltar = (a, to, extra = []) => { // (converted: the old one burning away as the new rises, as the game draws it)
+          brick.convertAltar(a.it.at[0], a.it.at[1], 0.6);
+          items0 = items0.map((i) => (i === a.it ? { ...i, item: to } : i));
+          lay(items0.concat(extra));
+        };
+        const basic = doing('altars');
+        if (L && basic) {
+          await go(stand(L));
+          await put(L, 'holy water', 'blessed', 'There is an amber flash as a potion of water hits the altar.');
+          await put(L, 'iron shoes', 'cursed', 'There is a black flash as a pair of iron shoes hits the altar.');
+          await put(L, 'dagger', null, 'A dagger lands on the altar.');
+          lying = []; show();
+          await sacrifice(L, ['Your sacrifice is consumed in a flash of light!'], [['You glimpse a four-leaf clover at your feet.', 'clover']]);
+          await sacrifice(L, ['Your sacrifice is consumed in a flash of light!'], [['You have a feeling of reconciliation.', 'hopeful', 1]]);
+          await sacrifice(L, ['Your sacrifice is consumed in a flash of light!'], [['An object appears at your feet!', 'gift'], ['"Use my gift wisely!"']]);
+          await sacrifice(L, ['Your sacrifice is consumed in a flash of light!'], [['You have a feeling of inadequacy.', 'inadequacy']]);
+          say('');
+        }
+        if (N && basic) { // (another god's: converted to yours)
+          await go(stand(N));
+          await sacrifice(N, ['Your sacrifice is consumed in a flash of light!'], [['You sense a conflict between Lugh and Crom.'], ['You feel the power of Lugh increase.']]);
+          say('The altar glows white.'); fx(N, 'convert', 1); turnAltar(N, 'altar_lawful');
+          await wait(3.2);
+          say('');
+        }
+        if (C && basic) { // (a human sacrificed at a chaotic altar: blood, and a dark cloud; then kicked)
+          await go(stand(C));
+          await sacrifice(C, ['You offer this evil thing to Set...'], [['The blood covers the altar, and a dark cloud forms!', 'blood', 1]]);
+          await wait(1.5);
+          hero.fount = { act: 'kick', t0: clock, fired: 0 }; await wait(0.4);
+          say('A voice (could it be Set?) whispers:  "Thou shalt pay, infidel!"'); fx(C, 'wrath', 0);
+          await wait(2.4);
+          say('');
+        }
+        if (M && basic) { // (Moloch's: the power of your god waning, refused; then claimed for Jesus, a chalice set down on it)
+          await go(stand(M));
+          await sacrifice(M, ['Your sacrifice is consumed in a burst of flame!'], [['You sense a conflict between Lugh and Moloch.'], ['Unluckily, you feel the power of Lugh decrease.', 'decrease']]);
+          await sacrifice(M, ['Your sacrifice is consumed in a burst of flame!'], [['Moloch rejects your sacrifice!', 'reject'], ['"Suffer, infidel!"']]);
+          shake = { t0: clock, T: 1.2 };
+          await wait(1.4);
+          say('(a follower of Jesus sets a chalice down on it)');
+          await put(M, 'chalice', null, 'As the chalice touches the altar, it glows a brilliant white!');
+          fx(M, 'claim', 1); lying = []; show();
+          turnAltar(M, 'altar_jesus', [{ item: 'chalice', at: M.it.at }]);
+          await go({ ...stand(M), z: M.it.at[1] + 2.4 }); // (stood back off it, as his rises)
+          say("The altar is Jesus's now.");
+          await wait(4);
+          say('');
+        }
+        lying = []; show();
+        say('');
+        // the high altars (?part=altars, the row before the others: the Astral Plane's, the Sanctum's), each
+        // visited from the corridor before them, a sacrifice on each going up in its fire
+        const highs = [['altar_high_lawful', 'lawful'], ['altar_high_neutral', 'neutral'], ['altar_high_chaotic', 'chaotic'], ['altar_high_unaligned', 'unaligned']]
+          .map(([n, kind]) => ({ it: at(n), kind })).filter((a) => a.it);
+        for (const [i, h] of highs.entries()) {
+          if (!doing('highaltars')) break;
+          const s = stand(h);
+          await go({ ...s, y: 0, z: s.z + 0.6, yaw: Math.PI / 2 }); // (along the corridor before them, then up to it)
+          await go(s);
+          const said = [['Your sacrifice is consumed in a flash of light!', 'You glimpse a four-leaf clover at your feet.', 'clover'],
+            ['Your sacrifice is consumed in a burst of flame!', 'You have a hopeful feeling.', 'hopeful'],
+            ['Your sacrifice is consumed in a burst of flame!', 'You have a feeling of inadequacy.', 'inadequacy'],
+            ['Your sacrifice is consumed in a burst of flame!', 'Moloch rejects your sacrifice!', 'reject']][i];
+          await sacrifice(h, [said[0]], [[said[1], said[2]]]);
+          await go({ ...s, y: 0, z: s.z + 0.6, yaw: Math.PI / 2 });
+        }
+        say('');
+        if (L && basic) { // (your own god's, kicked)
+          await go(stand(L));
+          hero.fount = { act: 'kick', t0: clock, fired: 0 }; await wait(0.4);
+          say('"How darest thou desecrate my altar!"'); fx(L, 'wrath', 1); shake = { t0: clock, T: 1.0 };
+          await wait(2.4);
+        }
+        lying = []; show();
+        hero.spot = null; hero.fount = null; hero.hold = { R: null };
         say('');
       }
       // the rites at the altar of a follower of Jesus (altar_jesus: rites.js, as the game plays them), each from the
