@@ -772,7 +772,7 @@ export async function runTestbed(data) {
         };
         let lying = [];
         const show = () => { if (!rites.busy) rites.props = lying; };
-        const fx = (a, act, n = 0) => brick.altarFx(a.it.at[0], a.it.at[1], act, items0.find((i) => i.at === a.it.at) && /lawful|jesus/.test(items0.find((i) => i.at === a.it.at).item) ? 'lawful' : a.kind, n, a.it.at[0], a.it.at[1] + ((items[a.it.item] || {}).perch || { R: 46 / 80 }).R);
+        const fx = (a, act, n = 0) => brick.altarFx(a.it.at[0], a.it.at[1], act, items0.find((i) => i.at === a.it.at) && /lawful|jesus/.test(items0.find((i) => i.at === a.it.at).item) ? 'lawful' : a.kind, n, a.it.at[0], a.it.at[1] + ((items[a.it.item] || {}).perch || { R: 46 / 80 }).R, top(a));
         const put = async (a, name, act, said) => { // (set down on it: a flash as it lands)
           hero.hold = { R: url(name) }; hero.fount = { act: 'place', t0: clock, fired: 0 };
           await wait(0.75); hero.hold = { R: null };

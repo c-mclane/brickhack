@@ -411,6 +411,27 @@ web_altarfx(const char *act, int n, struct obj *obj)
     endmsg();
 }
 
+/* mklev.c mkaltar, mkroom.c mktemple: may an altar go at (x, y)? Never facing a wall: the client turns an
+   altar with its back to a wall beside it, and plays what's done at it before its front, where you stand (and a
+   grand one's steps run out): so beside a wall, the square across from it must be open floor; beside none,
+   the one south (its front, unturned) */
+int
+web_altar_ok(int x, int y)
+{
+    static const int d[4][2] = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
+    int i, walled = 0;
+
+    for (i = 0; i < 4; i++) {
+        int bx = x + d[i][0], by = y + d[i][1], fx = x - d[i][0], fy = y - d[i][1];
+        if (!isok(bx, by) || IS_STWALL(levl[bx][by].typ)) {
+            walled = 1;
+            if (!isok(fx, fy) || !ACCESSIBLE(levl[fx][fy].typ))
+                return 0;
+        }
+    }
+    return walled || (isok(x, y + 1) && ACCESSIBLE(levl[x][y + 1].typ));
+}
+
 /* do.c doaltarobj: a chalice set down on an altar by a follower of the
    figure's own deity (the server's BRICKHACK_GOD: Jesus, the lawful god)
    claims the altar for him, whoever's it was (Moloch's, a high altar too):

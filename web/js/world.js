@@ -75,12 +75,18 @@ export class World {
 
   // which way a sink or a toilet at (x, y) turns (radians about Y) for its back (a model's back is -Z) to be against a
   // wall beside it: the first wall found, north, east, south, west; none, as it is
+  // (with walls beside it on more than one side: its back to the one across from open floor, so it faces out into
+  // the room: an altar's front, where you stand, never against a wall: winweb.c web_altar_ok)
   backToWall(x, y) {
+    const wall = (n) => n && (n.type === 'wall' || (n.type === 'rock' && n.known));
+    let first = null;
     for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
-      const n = this.classAt(x + dx, y + dy);
-      if (n && (n.type === 'wall' || (n.type === 'rock' && n.known))) return Math.atan2(-dx, -dy);
+      if (!wall(this.classAt(x + dx, y + dy))) continue;
+      const t = Math.atan2(-dx, -dy);
+      if (!wall(this.classAt(x - dx, y - dy))) return t;
+      if (first === null) first = t;
     }
-    return 0;
+    return first ?? 0;
   }
 
   rebuild() {

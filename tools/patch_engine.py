@@ -1071,4 +1071,18 @@ edit("src/do.c", [
      '\t\tweb_altarfx(obj->blessed ? "blessed" : "cursed", 0, obj), There("is %s flash as %s %s the altar.",'),
 ], "WEB_HOOK_ALTARFX")
 
+# BrickHack: no altar facing a wall (winweb.c web_altar_ok): a random altar is put elsewhere in its room; a
+# temple too cramped for its shrine stays an ordinary room
+edit("src/mklev.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\n/* WEB_HOOK_ALTAROK */\nextern int FDECL(web_altar_ok, (int, int));\n'),
+    ('\t} while(occupied(m.x, m.y) || bydoor(m.x, m.y));\n\n\t/* Put an altar at m.x, m.y */',
+     '\t} while(occupied(m.x, m.y) || bydoor(m.x, m.y) || !web_altar_ok(m.x, m.y));\n\n\t/* Put an altar at m.x, m.y */'),
+], "WEB_HOOK_ALTAROK")
+edit("src/mkroom.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\n/* WEB_HOOK_ALTAROK */\nextern int FDECL(web_altar_ok, (int, int));\n'),
+    ('\tshrine_spot = shrine_pos((sroom - rooms) + ROOMOFFSET);\n',
+     '\tshrine_spot = shrine_pos((sroom - rooms) + ROOMOFFSET);\n'
+     '\tif (!web_altar_ok(shrine_spot->x, shrine_spot->y)) { sroom->rtype = OROOM; return; }\n'),
+], "WEB_HOOK_ALTAROK")
+
 print("engine hooks applied:", src)

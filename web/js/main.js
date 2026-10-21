@@ -1636,7 +1636,7 @@ function altarFx(m) {
   setTimeout(() => {
     if (m.act === 'consume') altarProps = [];
     if ((m.act === 'wrath' && m.n) || m.act === 'reject') fx.shake = { t0: performance.now(), amp: 0.6 };
-    b.altarFx(m.x, m.y, m.act, kind, m.n, hx, hz);
+    b.altarFx(m.x, m.y, m.act, kind, m.n, hx, hz, spot);
   }, at - now);
 }
 
@@ -1644,9 +1644,10 @@ function prayFx(m) {
   if (!renderer.brickOn || !renderer.brick) return;
   const b = renderer.brick, now = performance.now();
   if (m.act === 'begin') {
-    const [hx, hz] = motion.heroPos(now);
+    const [hx, hz] = motion.heroPos(now), pp = statuePerch(now); // (at an altar: on its step, before it, where you're drawn)
+    const px = hx + 0.5 + (pp ? pp.dx : 0), pz = hz + 0.5 + (pp ? pp.dz : 0);
     fountNow('prayer');
-    hero3d.prayer = { t0: now, x: hx + 0.5, z: hz + 0.5, st: b.prayBegin(hx + 0.5, hz + 0.5, m.n) };
+    hero3d.prayer = { t0: now, x: px, z: pz, st: b.prayBegin(px, pz, m.n) };
     return;
   }
   const P = hero3d.prayer && now - hero3d.prayer.t0 < PRAY_AFTER * 1000 ? hero3d.prayer : null;

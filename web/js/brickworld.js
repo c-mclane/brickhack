@@ -1248,16 +1248,17 @@ export class BrickWorld {
   //   your god waning, dark motes settling on you; reject: refused, a god's red anger; blood: the altar stained with
   //   it; cloud: a dark cloud forming over it (a demon summoned); wrath: kicked (n 1: your own god's thunder; else a
   //   whisper, a dark wisp)
-  altarFx(x, z, act, kind = 'lawful', n = 0, hx = x, hz = z) {
-    const top = new THREE.Vector3(x + 0.5, STUD_H + ALTAR_TOP + 0.05, z + 0.5), you = new THREE.Vector3(hx + 0.5, STUD_H + 0.6, hz + 0.5);
+  // (at: where on it things are laid, its offering place ({x, y, z}, the world): a grand one's table; else its top's middle)
+  altarFx(x, z, act, kind = 'lawful', n = 0, hx = x, hz = z, at = null) {
+    const top = at ? new THREE.Vector3(at.x, at.y + 0.05, at.z) : new THREE.Vector3(x + 0.5, STUD_H + ALTAR_TOP + 0.05, z + 0.5), you = new THREE.Vector3(hx + 0.5, STUD_H + 0.6, hz + 0.5);
     const [hi, lo] = ALTAR_HUE[kind] || ALTAR_HUE.lawful, fx = this.fx, later = (s, f) => setTimeout(f, s * 1000);
     switch (act) {
       case 'blessed': this.flash(top, 0xffb31a, { size: 1.1 }); fx.sparkles(top, 40, 0xffc84a, 0.3); break;
       case 'cursed': this.flash(top, 0x050505, { size: 1.1, dark: true }); fx.haze(top.clone().setY(top.y - 0.2), 0.6, 10, 0x0a0a0a); fx.sparkles(top, 16, 0x1a1a1a, 0.25); break;
       case 'consume': { // (a bolt of fire from the sky onto it, in its own colours; then it goes up)
         const [core, glowc] = ALTAR_BOLT[kind] || ALTAR_BOLT.lawful;
-        this.lightning(x + 0.5, z + 0.5, 4, { core, glow: glowc, to: ALTAR_TOP + 0.05, ground: false, sparks: [core, glowc] });
-        later(0.12, () => this.altarFx(x, z, 'burn', kind, n, hx, hz));
+        this.lightning(top.x, top.z, 4, { core, glow: glowc, to: top.y - STUD_H, ground: false, sparks: [core, glowc] });
+        later(0.12, () => this.altarFx(x, z, 'burn', kind, n, hx, hz, at));
         break;
       }
       case 'burn':
@@ -1281,14 +1282,14 @@ export class BrickWorld {
       case 'decrease': for (let i = 0; i < 6; i++) later(i * 0.15, () => fx.ash(you.clone().setY(you.y + 1.0))); break;
       case 'reject': this.flash(top, 0xff2a10, { size: 1.6, T: 0.9 }); fx.sparkles(top, 40, 0xff4020, 0.4); break;
       case 'blood': // (n: and a dark cloud forming over it)
-        if (n) later(0.8, () => this.stormCloud(x + 0.5, z + 0.5, 5));
+        if (n) later(0.8, () => this.stormCloud(top.x, top.z, 5));
         fx.haze(top.clone().setY(top.y - 0.6), 0.7, 14, 0x6a0000);
         for (let i = 0; i < 6; i++) later(i * 0.12, () => fx.sparkles(top.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, 0, (Math.random() - 0.5) * 0.3)), 8, 0x8a0000, 0.06));
         break;
-      case 'cloud': this.stormCloud(x + 0.5, z + 0.5, 5); break;
+      case 'cloud': this.stormCloud(top.x, top.z, 5); break;
       case 'claim': // (a chalice set down on it by his follower: a brilliant white, the old god's altar burning away, his rising)
         this.flash(top.clone().setY(top.y - 0.2), 0xffffff, { size: 3.2, T: 2.0 });
-        this.prayLight(x + 0.5, z + 0.5, 4.5, { size: 1.2 });
+        this.prayLight(top.x, top.z, 4.5, { size: 1.2 });
         for (let i = 0; i < 10; i++) later(i * 0.2, () => fx.sparkles(top.clone().setY(top.y + 0.2 + i * 0.05), 24, i % 2 ? 0xffffff : 0xfff3c0, 0.7));
         break;
       case 'wrath':
