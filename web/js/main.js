@@ -17,7 +17,7 @@ import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
 import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
-import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, risePath, RISE_T, againstFountain } from './perch.js';
+import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, FOUNT, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
@@ -754,6 +754,7 @@ function handle(m) {
       }, after);
       break;
     }
+    case 'furnfx': furnFx(m); break; // a sink, a toilet: its doings (furnFx)
     case 'steam': // a fire ray across a fountain: steam billows up out of it
       if (renderer.brickOn && renderer.brick) renderer.brick.fountainSteam(m.x, m.y);
       break;
@@ -764,8 +765,11 @@ function handle(m) {
       const now = performance.now(), burst = now - (rising.last || 0) < 1500 ? rising.n + 1 : 0;
       Object.assign(rising, { last: now, n: burst });
       rising.set(m.id, { f: [m.fx, m.fy], t0: now + burst * 350 });
-      if (renderer.brickOn && renderer.brick)
-        setTimeout(() => renderer.brick.fx.splashStuds(new THREE3.Vector3(m.fx + 0.5, STUD_H + PERCHES.fountain.H - 0.1, m.fy + 0.5), 8, 1.4), burst * 350);
+      if (renderer.brickOn && renderer.brick) {
+        const fd = (world.brickDrops || []).find((o) => o.x === m.fx && o.z === m.fy && PERCHES[o.name]), b = renderer.brick;
+        const at = fd && fd.name === 'sink' ? b.sinkDrain(m.fx, m.fy) : fd && fd.name === 'toilet' ? b.toiletWater(m.fx, m.fy) : new THREE3.Vector3(m.fx + 0.5, STUD_H + PERCHES.fountain.H - 0.1, m.fy + 0.5);
+        setTimeout(() => b.fx.splashStuds(at, 8, 1.4), burst * 350);
+      }
       break;
     }
     case 'rip': game.rip = m; break;
@@ -1364,7 +1368,7 @@ function heroHold() {
   if (hero3d.raise && hero3d.raise.url) { hold.R = hero3d.raise.url; hold.L = null; hold.two = false; } // (Excalibur: in hand from the blessing on, up there, jumping down, and held high)
   const fo = fountAct(performance.now());
   if (fo) { // (at a fountain: what's dipped in hand; a gem pulled out, in hand as it comes up)
-    hold.R = fo.act === 'dip' ? (hero3d.fount.grab && fo.t > FOUNT.dip.cup + 0.35 ? hero3d.fount.grab : hero3d.fount.url || null) : null;
+    hold.R = fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero3d.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero3d.fount.grab : hero3d.fount.url || null) : null;
     hold.L = null; hold.two = false;
   }
   // rings: worn as bracelets round the wrists, the right ring on the right
@@ -1478,6 +1482,76 @@ function roomNear(x, y) {
     }
   }
   return near;
+}
+
+// ---- a sink and a toilet (winweb.c web_furnfx, web_furnobj): drunk from (a sip from a sink's tap, poured; bent
+// down over a toilet, lapping) and what came of it; sat on, prayed at, a thing dipped in it; kicked; broken. What
+// comes after a drink waits on it (atFount: when the water's touched; afterFount: when it's done)
+const POTION_HUES = { puce: 0xc0608a, ruby: 0xb3122a, pink: 0xf28fb5, orange: 0xf08a24, yellow: 0xf2d43a, emerald: 0x1e9e5a, 'dark green': 0x1f5e2e,
+  cyan: 0x3fd0d8, 'sky blue': 0x7cc4f0, 'brilliant blue': 0x2a6af0, indigo: 0x4b3cb0, magenta: 0xd02aa8, 'purple-red': 0x9c2a5a, violet: 0x8a4ad8,
+  white: 0xf0f0f0, black: 0x1a1a1a, brown: 0x7a4a24, golden: 0xd8a83a, amber: 0xd89a2a, milky: 0xe8ece8, murky: 0x6a6a4a, cloudy: 0xc8ccd0,
+  smoky: 0x8a8a8a, swirly: 0x9ab0e0, bubbly: 0xa8e0f0, fizzy: 0xd0f0e0, effervescent: 0xc0f0d8, dark: 0x2a2a3a, silver: 0xc8ccd4, clear: 0xbfe8ff };
+const potionHue = (name) => POTION_HUES[name] ?? ([...(name || '')].reduce((h, c) => (h * 31 + c.charCodeAt(0)) & 0xffffff, 7) | 0x404040);
+function atFount(fn, cup = 0.6) { const f = hero3d.fount; setTimeout(fn, f ? Math.max(0, cup * 1000 - (performance.now() - f.t0)) : 0); }
+function afterFount(fn) { const f = hero3d.fount; setTimeout(fn, f ? Math.max(0, FOUNT[f.act].T * 1000 - (performance.now() - f.t0)) : 0); }
+const fountNow = (act, extra = {}) => { hero3d.fount = { act, t0: performance.now(), url: null, fired: 0, ...extra }; };
+function furnFx(m) {
+  if (!renderer.brickOn || !renderer.brick) return;
+  const b = renderer.brick, fx = b.fx, x = m.x, y = m.y, sink = m.what === 'sink';
+  const wet = () => (sink ? b.sinkDrain(x, y) : b.toiletWater(x, y)), item = m.tile != null ? brickItemForTile(m.tile) : null;
+  switch (m.act) {
+    // a sink drunk from: hands under the tap, the water poured (a potion's colour, if it's that: set just after)
+    case 'sip': {
+      fountNow('sip');
+      const sip = (hero3d.sinkSip = { tint: null });
+      setTimeout(() => fx.pour(b.sinkSpout(x, y), b.sinkDrain(x, y).y, 1.2, { tint: sip.tint }), 300);
+      break;
+    }
+    case 'potion': if (hero3d.sinkSip) hero3d.sinkSip.tint = potionHue(m.extra); break;
+    case 'cold': atFount(() => { for (let i = 0; i < 4; i++) setTimeout(() => fx.frost(wet().setY(wet().y + 0.15)), i * 250); }); break;
+    case 'scald': atFount(() => { for (let i = 0; i < 5; i++) setTimeout(() => fx.vapor(wet(), 0xf2f6f8, 1.3), i * 200); }); afterFount(() => fountNow('scald')); break;
+    case 'awful': afterFount(() => fountNow('scald')); break;
+    case 'toxic': atFount(() => { for (let i = 0; i < 4; i++) setTimeout(() => fx.vapor(wet(), 0x8ac83a, 1.0), i * 250); }); break;
+    case 'clank': atFount(() => b.sinkShake(x, y, 1.2)); break;
+    case 'song': atFount(() => fx.notes(wet(), 6)); break;
+    case 'elemental': atFount(() => { for (let i = 0; i < 3; i++) setTimeout(() => fx.splashStuds(wet(), 16, 2.2), i * 160); }); break;
+    case 'dirty': atFount(() => fx.splashStuds(wet(), 6, 0.6, { tint: 0x5a4a2a })); break;
+    case 'sewage': afterFount(() => {
+      fountNow(sink ? 'sinkRetch' : 'toiletRetch');
+      for (const t of [0.5, 0.82, 1.15, 1.5]) setTimeout(() => fx.splashStuds(wet(), 6, 0.6, { tint: 0x7a6a3a }), t * 1000);
+    }); break;
+    case 'ring': { // a ring found in a sink: reached in for, and held up high (as a gem out of a fountain)
+      if (!item) break;
+      const g = b.fountainGem(x, y, item.url);
+      afterFount(() => {
+        const t0 = performance.now();
+        fountNow('reach', { grab: item.url });
+        hero3d.raise = { t0: t0 + (FOUNT.reach.T - 0.3) * 1000, T: GEM_RAISE_T, url: item.url, glint: 0, tip: [0.22, 1.3] };
+        setTimeout(g.show, (FOUNT.reach.T - 0.3 + GEM_RAISE_T) * 1000);
+      });
+      break;
+    }
+    case 'break': b.sinkBreak(x, y, m.what); break;
+    // a toilet drunk from: bent down over it, lapping
+    case 'gulp': fountNow('gulp'); for (const t of [0.55, 0.95, 1.35, 1.75]) setTimeout(() => fx.splashStuds(wet(), 3, 0.4), t * 1000); break;
+    case 'refreshing': atFount(() => fx.sparkles(wet(), 14, 0xbfefff, 0.2), 1.0); break;
+    case 'ooze': hero3d.oozeT = setTimeout(() => b.toiletOoze(x, y, false), 900); break; // (and it stays: unless it slithers back, just after)
+    case 'slither': clearTimeout(hero3d.oozeT); setTimeout(() => b.toiletOoze(x, y, true), 900); break;
+    case 'fishy': atFount(() => { for (let i = 0; i < 4; i++) setTimeout(() => fx.vapor(wet(), 0xa3ab78, 0.7), i * 350); }, 1.0); break;
+    case 'sit': fountNow('sit'); break;
+    case 'pray': fountNow('pray'); break;
+    case 'smiles': setTimeout(() => { const [hx, hz] = motion.heroPos(performance.now()); fx.sparkles(new THREE3.Vector3(hx + 0.5, (world.heroLift ?? phys.y) + 1.4, hz + 0.5), 40, 0xffe27a, 0.4); }, 900); break;
+    case 'dip': fountNow('toiletDip', { url: item ? item.url : null }); for (const t of [0.6, 1.0, 1.4]) setTimeout(() => fx.splashStuds(wet(), 5, 0.7, { tint: 0x7a6a3a }), t * 1000); break;
+    // kicked: your kick, and it rattles; what comes up out of a sink's drain
+    case 'klunk': fountNow('kick'); setTimeout(() => b.sinkShake(x, y, 0.6, 0.04, m.what), 380); break;
+    case 'pudding': setTimeout(() => { for (let i = 0; i < 4; i++) setTimeout(() => fx.splashStuds(wet(), 12, 1.4, { tint: 0x1a1a1a }), i * 180); }, 380); break;
+    case 'washer': setTimeout(() => fx.vapor(wet(), 0xf0d8f0, 1.6), 380); break;
+    case 'flupp': setTimeout(() => fx.splashStuds(wet(), 18, 1.6, { tint: 0x6b5233 }), 380); break;
+    case 'shine': setTimeout(() => fx.sparkles(wet(), 18, 0xfff2b0, 0.15), 1200); break;
+    // a ring dropped down a sink's drain; or given back up out of it
+    case 'ringdown': if (item) b.sinkSwallow(x, y, item.url); break;
+    case 'ringback': fx.splashStuds(wet(), 8, 1.2); break;
+  }
 }
 
 // ---- the Lady of the Lake (a long sword dipped: Excalibur), as a cutscene: the view taken from you to a
@@ -1709,7 +1783,7 @@ function statuePerch(now) {
   const u = (now - p.t0) / 1000;
   const fo = p.phase !== 'on' && p.phase !== 'off' ? fountAct(now) : null; // (taking a bath: in and out of its water)
   const pose = p.phase === 'on' ? hopOn(p.from, p.side, u / HOP_ON, p.pr) : p.phase === 'off' ? hopOff(p.side, p.out, p.dest, u, p.pr)
-    : fo && fo.act === 'bath' ? { ...bathPath(p.side, fo.t, p.pr), lookUp: 0 } : perched(p.side, p.pr);
+    : fo && fo.act === 'bath' ? { ...bathPath(p.side, fo.t, p.pr), lookUp: 0 } : fo && fo.act === 'sit' ? { ...sitPath(p.side, fo.t, p.pr), lookUp: 0 } : perched(p.side, p.pr);
   return { k: 1, dx: p.x + pose.x - F.x, dz: p.z + pose.z - F.z, lift: pose.lift, yaw: pose.yaw, hop: pose.hop, lookUp: pose.lookUp };
 }
 
@@ -1768,8 +1842,8 @@ function risingAt(s, now) {
   const u = (now - r.t0) / 1000 / RISE_T;
   if (u >= 1) { rising.delete(s.mob.id); return null; }
   if (u < 0) return 'hidden';
-  const e = brickMons.get(s.tile);
-  return risePath(r.f, [Math.round(s.x), Math.round(s.z)], u, e && e.creature === 'snake' ? SNAKE_OUT : 0.22);
+  const e = brickMons.get(s.tile), fd = (world.brickDrops || []).find((o) => o.x === r.f[0] && o.z === r.f[1] && PERCHES[o.name]);
+  return risePath(r.f, [Math.round(s.x), Math.round(s.z)], u, e && e.creature === 'snake' ? SNAKE_OUT : 0.22, fd && fd.name !== 'fountain' ? fd.name : false); // (out of a sink's drain, a toilet's bowl)
 }
 function brickMonFigures(sprites, dt, now) {
   if (!brickMons.size) return [];
@@ -2596,7 +2670,8 @@ function processMovement(now, dt) {
   // should the statue drop out of the floor's list a moment while you stand on it)
   if ((statue || walk.perch) && !walk.settle) {
     const at = walk.at, t = (now - (walk.perch ? walk.perch.t0 : now)) / 1000;
-    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: sideToward(F.x - at.x, F.z - at.z), pr: PERCHES[perchOn.name] };
+    const front = perchOn && (perchOn.name === 'sink' || perchOn.name === 'toilet') ? { wx: Math.round(Math.sin(perchOn.turn || 0)), wz: Math.round(Math.cos(perchOn.turn || 0)) } : null; // (a sink, a toilet: stood at its front)
+    if (!walk.perch) walk.perch = { phase: 'on', t0: now, x: at.x, z: at.z, from: [F.x - at.x, F.z - at.z], side: front || sideToward(F.x - at.x, F.z - at.z), pr: PERCHES[perchOn.name] };
     const p = walk.perch;
     F.x = at.x; F.z = at.z;
     motion.freeMoving = false;

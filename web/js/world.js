@@ -73,6 +73,16 @@ export class World {
       }
   }
 
+  // which way a sink or a toilet at (x, y) turns (radians about Y) for its back (a model's back is -Z) to be against a
+  // wall beside it: the first wall found, north, east, south, west; none, as it is
+  backToWall(x, y) {
+    for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+      const n = this.classAt(x + dx, y + dy);
+      if (n && (n.type === 'wall' || (n.type === 'rock' && n.known))) return Math.atan2(-dx, -dy);
+    }
+    return 0;
+  }
+
   rebuild() {
     this.classes = new Array(this.w * this.h);
     for (let y = 0; y < this.h; y++)
@@ -103,9 +113,12 @@ export class World {
         if (!c) continue;
         const seen = this.visible(x, y);
         const shade = seen ? 1 : 0.5;
-        // (a fountain stands in brick (items.json "fountain"), first on its square, all else on it; else its sprite)
-        const fountain = cl && cl.cmap === CM.fountain && brickBuilt('fountain');
-        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: 'fountain', colliders: fountain.colliders });
+        // (a fountain, a sink, a toilet stands in brick (items.json), first on its square, all else on it; else its
+        // sprite. A sink, a toilet: its back to a wall beside it, if there's one: turn)
+        const furn = !cl ? null : cl.cmap === CM.fountain ? 'fountain' : cl.cmap === CM.sink ? 'sink' : cl.cmap === CM.toilet && CM.toilet >= 0 ? 'toilet' : null;
+        const fountain = furn && brickBuilt(furn);
+        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders,
+          turn: furn === 'fountain' ? 0 : this.backToWall(x, y) });
         else if (cl && cl.sprite) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade });
         const isHero = x === this.hero.x && y === this.hero.y;
         // the brick dungeon: everything lying here as brick models, the bottom one first, each

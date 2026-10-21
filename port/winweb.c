@@ -2177,6 +2177,50 @@ web_steam(int x, int y)
     endmsg();
 }
 
+/* fountain.c, sit.c, pray.c, dokick.c, do.c: something at a sink or a toilet
+   (what) at (x, y): drunk from ("sip", "gulp") and what came of it, kicked
+   ("klunk"), sat on, prayed at, broken...; extra: a word more (a potion's
+   colour) or null */
+void
+web_furnfx(const char *what, const char *act, int x, int y, const char *extra)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"furnfx\",\"what\":\"%s\",\"act\":\"%s\",\"x\":%d,\"y\":%d", what, act, x, y);
+    if (extra) {
+        const char *c;
+        fputs(",\"extra\":\"", out);
+        for (c = extra; *c; c++)
+            if (*c != '"' && *c != '\\')
+                fputc(*c, out);
+        fputc('"', out);
+    }
+    endmsg();
+}
+
+/* ...and a thing with it: a ring found in a sink, one dropped down its drain,
+   something dipped in a toilet (obj: its tile) */
+void
+web_furnobj(const char *what, const char *act, int x, int y, struct obj *obj)
+{
+    if (!out || !obj)
+        return;
+    fprintf(out, "{\"t\":\"furnfx\",\"what\":\"%s\",\"act\":\"%s\",\"x\":%d,\"y\":%d,\"tile\":%d", what, act, x, y,
+            web_obj_tile(obj, obj_to_glyph(obj)));
+    endmsg();
+}
+
+/* a monster up out of the sink or toilet at (x, y) (a crocodile out of a toilet
+   kicked to pieces; a rat out of a sink drunk from) */
+void
+web_rise_from(struct monst *mtmp, int x, int y)
+{
+    if (!out || !mtmp || !cansee(mtmp->mx, mtmp->my))
+        return;
+    fprintf(out, "{\"t\":\"rise\",\"id\":%u,\"x\":%d,\"y\":%d,\"fx\":%d,\"fy\":%d", mtmp->m_id, mtmp->mx, mtmp->my, x, y);
+    endmsg();
+}
+
 /* fountain.c: something odd at the fountain the hero's on: "bath" (the urge
    to take one, dipping), "foul" (foul water drunk: retching into it),
    "poison" (contaminated water drunk), "curse" (this water's no good: things
