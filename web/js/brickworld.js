@@ -254,7 +254,20 @@ export class BrickWorld {
     this.setLavaSmoke(wet.filter((p) => p.lava).map((p) => [p.x, p.z])); // (smoking)
     this.place('lavabed', lavaBeds);
     this.place('plate', plates);
-    this.place('ground', smooth.concat([[M().makeTranslation(0, -PLATE_H - BRICK_H, 0).scale(new THREE.Vector3(data.w, BRICK_H, data.h)), 0.95]]));
+    // the ground under it all: only under what's drawn (what you know, and the fog about it), in runs along each
+    // row; beyond, nothing: the black of the night, till it's found
+    const drawn = new Set(), W = data.w;
+    for (const list of [data.floors, data.walls, data.pools, data.fog]) for (const c of list || []) drawn.add(c.z * W + c.x);
+    const ground = [];
+    for (let z = 0; z < data.h; z++)
+      for (let x = 0; x < W; x++) {
+        if (!drawn.has(z * W + x)) continue;
+        let x1 = x;
+        while (x1 + 1 < W && drawn.has(z * W + x1 + 1)) x1++;
+        ground.push([M().makeTranslation(x, -PLATE_H - BRICK_H, z).scale(new THREE.Vector3(x1 - x + 1, BRICK_H, 1)), 0.95]);
+        x = x1;
+      }
+    this.place('ground', smooth.concat(ground));
     this.place('course', courses);
     this.place('brick', bricks);
     this.setFog(data.fog || [], data.w, data.h);
