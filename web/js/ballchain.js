@@ -88,6 +88,18 @@ export class BallChain {
     this.inv[this.inv.length - 1] = fn ? 0 : BALL_INV;
   }
 
+  // thrown (by the one chained to it): the ball itself flung, in an arc, to come down on the middle of (x, z),
+  // the chain whipping out after it; there it lands and rolls, and then lies, sliding to its square as ever
+  toss(x, z) {
+    if (this.carryFn) this.carry(null);
+    const n = this.p.length - 1, c = this.p[n], d = Math.hypot(x - c.x, z - c.z);
+    const T = 0.45 + 0.1 * d, g = G * this.s, land = this.floor + this.R;
+    const vx = (x - c.x) / T, vz = (z - c.z) / T, vy = (land - c.y) / T - 0.5 * g * T;
+    this.q[n].set(c.x - vx * STEP, c.y - vy * STEP, c.z - vz * STEP);
+    this.flight = T + 0.1; // (in the air: not slid toward its square, nor slowed by the air, till it's down)
+    this.homeAt = [x, z];
+  }
+
   // the square the ball is on, as the game has it ((x, z): its middle): the ball, lying free,
   // slides over there (the chain drags it as the game says it does), or is put there if it's far
   home(x, z) {
@@ -111,6 +123,7 @@ export class BallChain {
     this.p[0].copy(this.anchor());
     this.q[0].copy(this.p[0]);
     if (this.carryFn) { this.p[n].copy(this.carryFn()); this.q[n].copy(this.p[n]); } // (in someone's arms)
+    else if (this.flight > 0) this.flight -= dt; // (thrown: in the air)
     else if (this.homeAt) { // (lying free: sliding over to the square it's on, steadily, easing in at the end)
       const c = this.p[n], dx = this.homeAt[0] - c.x, dz = this.homeAt[1] - c.z, d = Math.hypot(dx, dz);
       const step = Math.min(d, Math.min(1.4, d * 2.5 + 0.15) * dt);
@@ -118,7 +131,7 @@ export class BallChain {
     }
     for (let i = 1; i <= n; i++) { // move on, at the speed it had, and fall
       const p = this.p[i], q = this.q[i];
-      _d.subVectors(p, q).multiplyScalar(0.995);
+      _d.subVectors(p, q).multiplyScalar(i === n && this.flight > 0 ? 1 : 0.995);
       q.copy(p);
       p.add(_d);
       p.y += G * s * dt * dt;
@@ -141,6 +154,12 @@ export class BallChain {
           const ux = d > 1e-6 ? dx / d : Math.sin(a.yaw || 0), uz = d > 1e-6 ? dz / d : -Math.cos(a.yaw || 0); // (dead centre: out in front)
           c.x = a.x + ux * r; c.z = a.z + uz * r;
         }
+      }
+      if (!this.carryFn) { // (and never further from where the chain's fastened than the chain reaches: pulled up short)
+        const reach = this.reach || (this.reach = this.len.reduce((a, b) => a + b, 0)), o = this.p[0];
+        _d.subVectors(c, o);
+        const d = _d.length();
+        if (d > reach) { c.addScaledVector(_d, (reach - d) / d); this.q[n].lerp(c, 0.5); }
       }
       for (let i = 1; i < n; i++) { // the links stay out of the ball
         const p = this.p[i];

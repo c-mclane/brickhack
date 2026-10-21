@@ -20,23 +20,52 @@
      5,
      3
     ]
+   },
+   {
+    "item": "heavy iron ball",
+    "at": [
+     2,
+     5
+    ]
+   },
+   {
+    "item": "toilet",
+    "at": [
+     7,
+     1
+    ]
    }
   ],
-  "monsters": [],
+  "monsters": [
+   {
+    "monster": "baby crocodile",
+    "at": [
+     5,
+     4
+    ]
+   },
+   {
+    "monster": "crocodile",
+    "at": [
+     3,
+     4
+    ]
+   }
+  ],
   "camera": {
    "pos": [
-    7.2,
-    2.3,
-    6.4
+    6.0,
+    5.2,
+    8.6
    ],
    "target": [
-    5.3,
-    0.6,
-    3.6
+    6.0,
+    0.3,
+    2.6
    ]
   },
   "pools": [],
-  "part": "sink",
+  "part": "toilet",
   "lava": []
  }
 }

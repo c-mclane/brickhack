@@ -652,7 +652,9 @@ function handle(m) {
       const l = brickItemForTile(m.tile);
       if (l && renderer.brickOn && renderer.brick) {
         const spit = / venom$/.test(l.name); // (spit: straight and dripping, and it splats where it reaches)
-        renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit });
+        // (the ball you're chained to: it itself flung, the chain after it, not a copy of it flown there)
+        const pun = m.by !== 'monster' && l.name === 'heavy iron ball' && punishment();
+        if (!(pun && renderer.brick.tossBall(m.tx, m.ty))) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit });
         if (spit) renderer.brick.fx.shatter(l.url, m.tx, m.ty, 'venom');
       }
       if (m.by === 'monster') spitAt.set(`${m.fx},${m.fy}`, performance.now()); // (a creature there lunges: brickMonFigures)

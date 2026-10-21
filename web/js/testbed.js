@@ -29,10 +29,11 @@ import { FigureAnimator, FOUNT } from './minifig-anim.js';
 import { Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, FALL_T, CRAWL_T } from './swim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
-import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, risePath, RISE_T, againstFountain } from './perch.js';
+import { perchSpot, cameFrom, hopOff, offTime, PERCHES, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
 import { DRY_GREY, DRY_SIT, LADY_T } from './brickworld.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul, mouthPoint } from './minifig-anim.js';
+import { NameTags } from './nametags.js';
 
 const STEP_TIME = 0.32; // s a square, walking
 
@@ -45,6 +46,16 @@ export async function runTestbed(data) {
   const canvas = document.createElement('canvas');
   Object.assign(canvas.style, { position: 'fixed', inset: '0', width: '100%', height: '100%' });
   document.body.prepend(canvas);
+  // name tags over the monsters, as the game's (nametags.js; its look, style.css .nametag)
+  const tagLayer = document.createElement('div');
+  Object.assign(tagLayer.style, { position: 'fixed', inset: '0', pointerEvents: 'none', overflow: 'hidden' });
+  document.body.appendChild(tagLayer);
+  const tagStyle = document.createElement('style');
+  tagStyle.textContent = `.nametag { position: absolute; left: 0; top: 0; padding: 1px 6px 2px; background: rgba(0, 0, 0, .42); color: #fff;
+    font: 18px/1.15 monospace; white-space: nowrap; transform-origin: 50% 100%; text-shadow: 2px 2px 0 #3f3f3f; }
+    .nametag.hostile { color: #ffe0e0; } .nametag.peaceful { color: #bfeaff; } .nametag.tame { color: #9dff9d; }`;
+  document.head.appendChild(tagStyle);
+  const tags = new NameTags(tagLayer);
   const gl = canvas.getContext('webgl2', { antialias: true });
   const brick = new BrickWorld(canvas, gl);
   brick.coinUrl = url('_coin'); // (gold in a fountain: coins strewn in its basin)
@@ -558,6 +569,113 @@ export async function runTestbed(data) {
         await wait(5);
         say('');
       }
+      // a toilet (?part=toilet): stood at, bent down over it, a drink from it; sewage: retching into it
+      const tl = at('toilet');
+      if (doing('toilet') && tl) {
+        room();
+        lay([tl]);
+        hero.hold = { R: null };
+        const [tx, tz] = tl.at, water = () => brick.toiletWater(tx, tz);
+        // (round to its front, and up to it)
+        await walk([...Array(Math.max(0, tx - hero.sq.x)).fill([1, 0]), ...Array(Math.max(0, hero.sq.y - tz - 1)).fill([0, -1]), [0, -1]]);
+        await wait(0.8);
+        say('You drink from the toilet...');
+        hero.fount = { act: 'gulp', t0: clock, fired: 0 };
+        for (const t of [0.55, 0.95, 1.35, 1.75]) setTimeout(() => brick.fx.splashStuds(water(), 3, 0.4), t * 1000);
+        await wait(FOUNT.gulp.T - 0.4);
+        // (a baby crocodile: up out of the bowl, over the seat, and down onto the floor beside you)
+        if (mons['baby crocodile']) {
+          say('Egad!  There\'s a baby crocodile in the toilet!');
+          const croc = { monster: 'baby crocodile', at: [tx + 1, tz], ...mons['baby crocodile'], kind: mons['baby crocodile'].creature, lungeAt: -1e9, rise: { f: [tx, tz], t0: clock, sink: 'toilet' } };
+          brick.fx.splashStuds(water(), 10, 1.3);
+          cobras.push(croc);
+          await wait(RISE_T + 0.6);
+          croc.lungeAt = clock; // (and a snap at you)
+          await wait(2.2);
+          cobras.splice(cobras.indexOf(croc), 1);
+        }
+        const drink = async () => {
+          say('You drink from the toilet...');
+          hero.fount = { act: 'gulp', t0: clock, fired: 0 };
+          for (const t of [0.55, 0.95, 1.35, 1.75]) setTimeout(() => brick.fx.splashStuds(water(), 3, 0.4), t * 1000);
+          await wait(FOUNT.gulp.T - 0.4);
+        };
+        // (a sewer rat, up out of it, as the crocodile)
+        await drink();
+        if (mons['sewer rat']) {
+          say('Eek!  There\'s a sewer rat in the toilet!');
+          const rat = { monster: 'sewer rat', at: [tx + 1, tz], ...mons['sewer rat'], kind: mons['sewer rat'].creature, lungeAt: -1e9, rise: { f: [tx, tz], t0: clock, sink: 'toilet' } };
+          brick.fx.splashStuds(water(), 8, 1.2);
+          cobras.push(rat);
+          await wait(RISE_T + 2);
+          cobras.splice(cobras.indexOf(rat), 1);
+        }
+        // (something heaving up out of it, and slithering back down)
+        await drink();
+        say('Something begins to crawl out of the toilet!');
+        const ooze = brick.toiletOoze(tx, tz, true);
+        await wait(2.3);
+        say('But it slithers back out of sight.');
+        await ooze;
+        await wait(0.8);
+        // (no crocodiles left: a stink off it)
+        await drink();
+        say('The toilet smells fishy.');
+        for (let i = 0; i < 4; i++) setTimeout(() => brick.fx.vapor(water(), 0xa3ab78, 0.7), i * 350);
+        await wait(2.6);
+        await drink();
+        say('Gaggg... this tastes like sewage!  You vomit.');
+        hero.fount = { act: 'toiletRetch', t0: clock, fired: 0 };
+        for (const t of [0.5, 0.82, 1.15, 1.5]) setTimeout(() => brick.fx.splashStuds(water(), 6, 0.6, { tint: 0x7a6a3a }), t * 1000);
+        await wait(FOUNT.retch.T + 1);
+        // (sat on: round, down onto its seat, a strain, and up again)
+        say('You sit on the toilet.');
+        hero.fount = { act: 'sit', t0: clock, fired: 0 };
+        await wait(2.3);
+        say('You grunt.');
+        await wait(FOUNT.sit.T - 2.3 + 0.6);
+        // (prayed at)
+        say('You pray to the Porcelain God.');
+        hero.fount = { act: 'pray', t0: clock, fired: 0 };
+        await wait(1.8);
+        say('He ignores your pleas.');
+        await wait(FOUNT.pray.T - 1.8 + 0.6);
+        // (a dagger dipped in it)
+        hero.hold = { R: url('dagger') };
+        say('You dip the dagger into the toilet.');
+        hero.fount = { act: 'toiletDip', t0: clock, fired: 0, url: url('dagger') };
+        for (const t of [0.6, 1.0, 1.4]) setTimeout(() => brick.fx.splashStuds(water(), 5, 0.7, { tint: 0x7a6a3a }), t * 1000);
+        await wait(1.2);
+        say('You cover it in filth.  Yuck!');
+        await wait(FOUNT.dip.T - 1.2 + 0.6);
+        hero.hold = { R: null };
+        // (a step back, and kicked: klunk; and again: it shatters, a fountain there now, a brood of crocodiles out of
+        // its pipes every way)
+        await walk([[0, 1]]);
+        hero.yaw = 0;
+        await wait(0.5);
+        const kick = async (msg) => {
+          hero.fount = { act: 'kick', t0: clock, fired: 0 };
+          await wait(0.38);
+          brick.sinkShake(tx, tz, 0.6, 0.04, 'toilet');
+          say(msg);
+          await wait(FOUNT.kick.T + 1.2);
+        };
+        await kick('Klunk!');
+        hero.fount = { act: 'kick', t0: clock, fired: 0 };
+        await wait(0.38);
+        say('Klunk!  The toilet suddenly shatters!');
+        brick.sinkBreak(tx, tz, 'toilet');
+        lay([{ item: 'fountain', at: tl.at }]);
+        await wait(0.9);
+        say('Oh no!  Crocodiles come out from the pipes!');
+        const brood = [[tx - 1, tz], [tx + 1, tz], [tx - 1, tz + 1], [tx + 1, tz + 1], [tx, tz + 2]].filter(([x, z]) => x > 0 && x < level.w - 1 && z > 0 && z < level.h - 1)
+          .map((at, i) => ({ monster: 'baby crocodile', at, ...mons['baby crocodile'], kind: mons['baby crocodile'].creature, lungeAt: -1e9, rise: { f: [tx, tz], t0: clock + i * 0.3 } }));
+        if (mons['baby crocodile']) cobras.push(...brood);
+        await wait(RISE_T + 3.5);
+        for (const c of brood) cobras.splice(cobras.indexOf(c), 1);
+        say('');
+      }
       // more out of a fountain (?part=fountain): a water demon rising out of it, granting a wish and gone in a burst;
       // a water nymph rising out of it; no nymph, a great bubble rising and popping; a gem leaping out of its water
       // into its pool; and steam billowing up out of it (a fire ray across it)
@@ -732,7 +850,23 @@ export async function runTestbed(data) {
         await walk([[1, 0], [1, 0], [1, 0]]);
         await wait(1);
         await walk([[-1, 0], [-1, 0]]);
-        // and down it goes, where you stand
+        // thrown: the game has it where it lands at once; the ball itself flung there, the chain whipping after it
+        hero.yaw = Math.PI / 2;
+        await wait(0.4);
+        anim.a && anim.a.attack();
+        anim.state.heavy = 0;
+        const tgt = [hero.sq.x + 2, hero.sq.y];
+        punished.ball = tgt;
+        say('You throw the heavy iron ball.');
+        brick.tossBall(tgt[0], tgt[1]); // (the ball itself flung, the chain after it: as main.js 'throw')
+        await wait(2.5);
+        say('');
+        await walk([[1, 0], [1, 0]]);
+        // picked up again, and down it goes, where you stand
+        anim.state.heavy = 1;
+        punished.ball = null;
+        await wait(1);
+        await walk([[-1, 0], [-1, 0]]);
         punished.ball = [hero.sq.x, hero.sq.y];
         anim.state.heavy = 0;
         await wait(1.5);
@@ -788,6 +922,10 @@ export async function runTestbed(data) {
           : new THREE.Vector3(hero.pos[0] + 0.5 + pp.dx, pp.lift + 0.6, hero.pos[1] + 0.5 + pp.dz), n, up, at === 'mid' ? {} : { floor: pp.lift, ring: false });
       }
     }
+    if (fo && fo.act === 'sit' && pp && pp.k >= 1 && hero.from.perch) { // (sat on a toilet: round, down onto its seat, and up again)
+      const b = sitPath(hero.from.perch, fo.t, PERCHES.toilet);
+      pp = { k: 1, dx: b.x, dz: b.z, lift: b.lift, yaw: b.yaw, hop: 0, lookUp: 0 };
+    }
     hero.pp = pp; // (where you're drawn, for the script: the Lady of the Lake's sword)
     if (fo && pp) { // (its water broken as it goes, out in front)
       const cues = FOUNT_SPLASH[fo.act], x = hero.pos[0] + 0.5 + pp.dx, z = hero.pos[1] + 0.5 + pp.dz;
@@ -842,8 +980,9 @@ export async function runTestbed(data) {
     }
     const m = sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), pp ? pp.lift : -hero.sink, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' || fo.act === 'reach' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: heroFig.url, matrix: m, pose, hold: fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
+    const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {
       let rp = null; // (out of a fountain: up out of its water, over the rim, off to its square: perch.js risePath)
       const half = 0.55, out = c.kind === 'snake' ? half * Math.cos(0.45) : 0.22, up = half * Math.sin(0.45); // (a snake: half its length; as main.js SNAKE_OUT, SNAKE_UP)
@@ -856,6 +995,7 @@ export async function runTestbed(data) {
       if (leanYaw != null && c.kind === 'snake') yaw = rp ? yaw + Math.atan2(Math.sin(leanYaw - yaw), Math.cos(leanYaw - yaw)) * lean : leanYaw;
       const L = c.kind === 'snake' ? lean : 0, ca = Math.cos(0.45 * L), sa = Math.sin(0.45 * L);
       const base = partMatrix(cx + 0.5, STUD_H + (rp ? rp.y : 0) + up * L, cz + 0.5, Math.PI - yaw);
+      tagList.push({ id: c, x: cx + 0.5, y: STUD_H + (rp ? rp.y : 0) + (c.kind ? 0.55 : 1.55), z: cz + 0.5, text: c.monster, cls: c.tame ? 'tame' : c.peaceful ? 'peaceful' : 'hostile' });
       if (c.kind) figs.push({ url: c.url, matrix: mul(L > 0.01 ? mul(base, new Float32Array([1, 0, 0, 0, 0, ca, sa, 0, 0, -sa, ca, 0, 0, 0, 0, 1])) : base, creatureLocal(c.kind, clock, { lungeT: c.lungeAt, moving: !!rp })), pose: null, hold: {} });
       else { // (a naga: leaning in to spit, on coils that weave and lunge)
         const spitting = clock - c.lungeAt < LUNGE_TIME;
@@ -895,6 +1035,11 @@ export async function runTestbed(data) {
     } else ctl.update();
     cam.updateMatrixWorld();
     brick.render(cam.projectionMatrix.elements, cam.matrixWorldInverse.elements, w, h, [hero.pos[0] + 0.5, 0, hero.pos[1] + 0.5]);
+    const v = new THREE.Vector3();
+    tags.update(tagList, [cam.position.x, cam.position.y, cam.position.z], (p) => {
+      v.set(p[0], p[1], p[2]).project(cam);
+      return v.z > 1 || v.z < -1 ? null : [(v.x + 1) / 2 * w, (1 - v.y) / 2 * h];
+    });
   }
   requestAnimationFrame(frame);
 }

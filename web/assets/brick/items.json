@@ -19518,5 +19518,171 @@
     ]
    }
   ]
+ },
+ "toilet": {
+  "brick": "A toilet, the classic simple build: on a tan 2x2 tile, a tan flower pot for its bowl, a smooth tan tyre laid flat on it for its seat, a tan 1x2 tank behind with a tile lid, and a round trans-black flush handle on its side",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 19,
+    "pos": [
+     0,
+     -8,
+     -10
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "7077",
+    "color": 19,
+    "pos": [
+     0,
+     -16,
+     -10
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3139b",
+    "color": 19,
+    "pos": [
+     0,
+     -46,
+     -10
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "3005",
+    "color": 19,
+    "pos": [
+     0,
+     -24,
+     20
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3005",
+    "color": 19,
+    "pos": [
+     0,
+     -48,
+     20
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3004",
+    "color": 19,
+    "pos": [
+     0,
+     -72,
+     20
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "3069b",
+    "color": 19,
+    "pos": [
+     0,
+     -80,
+     20
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 40,
+    "pos": [
+     -28,
+     -60,
+     20
+    ],
+    "mat": [
+     0,
+     1,
+     0,
+     -1,
+     0,
+     0,
+     0,
+     0,
+     1
+    ]
+   }
+  ]
  }
 }

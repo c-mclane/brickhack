@@ -31,6 +31,8 @@ export const FOUNT_RIM_SPOT = [0.6, 0.6, 0.6];
 const BASIN_COINS = 16, BASIN_FLOOR = 0.36, BASIN_R = [0.3, 0.64];
 // a sink's tap's spout and the drain in its bowl, off its square's middle (squares: [across, up, toward its front])
 const SINK_SPOUT = [0, 1.12, -0.08], SINK_DRAIN = [0, 0.83, 0.1];
+// (and a toilet's water, down in its bowl)
+const TOILET_WATER = [0, 0.5, 0.125];
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
 import { gradientEnvironment } from './envmap.js';
 
@@ -435,7 +437,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' ? it.turn || 0 // (a statue, a boulder, a fountain, a sink: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' ? it.turn || 0 // (a statue, a boulder, a fountain, a sink: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
@@ -697,6 +699,14 @@ export class BrickWorld {
   // the two floor items ({ball: [x, z] (its square) or null (carried: held before you), ballUrl,
   // linkUrl}), or null. The hero: the first figure (setFigures)
   setPunished(p) { this.punished = p; }
+  // the ball thrown by the one chained to it: the ball itself flung to square (x, z), the chain after it (not a copy
+  // of it flown there: ballchain.js toss); false if there's no ball and chain drawn to throw
+  tossBall(x, z) {
+    const bc = this.chain && this.chain.bc;
+    if (!bc) return false;
+    bc.toss(x + 0.5, z + 0.5);
+    return true;
+  }
   stepChain(dt) {
     const p = this.punished, g = this.figObjs && this.figObjs[0], j = g && g.userData.joints;
     if (this.chain && (!p || this.chain.joints !== j)) { if (this.chain.bc) this.chain.bc.dispose(); this.chain = null; }
@@ -1009,13 +1019,38 @@ export class BrickWorld {
   }
   // ---- a sink (items.json "sink"): where its tap's spout is, and the drain in its bowl (world units), as it
   // stands, turned on its square (its back to a wall: setItems)
-  sinkAt(x, z) { return [...this.items.values()].find((g) => g.userData.square === `${x},${z}` && g.userData.name === 'sink') || null; }
-  sinkSpot(x, z, [ox, oy, oz]) {
-    const g = this.sinkAt(x, z), t = g ? g.rotation.y : 0, c = Math.cos(t), s = Math.sin(t);
+  sinkAt(x, z, name = 'sink') { return [...this.items.values()].find((g) => g.userData.square === `${x},${z}` && g.userData.name === name) || null; }
+  sinkSpot(x, z, [ox, oy, oz], name = 'sink') {
+    const g = this.sinkAt(x, z, name), t = g ? g.rotation.y : 0, c = Math.cos(t), s = Math.sin(t);
     return new THREE.Vector3(x + 0.5 + ox * c + oz * s, STUD_H + oy, z + 0.5 - ox * s + oz * c);
   }
   sinkSpout(x, z) { return this.sinkSpot(x, z, SINK_SPOUT); }
   sinkDrain(x, z) { return this.sinkSpot(x, z, SINK_DRAIN); }
+  // a toilet (items.json "toilet"): the water in its bowl
+  toiletWater(x, z) { return this.sinkSpot(x, z, TOILET_WATER, 'toilet'); }
+  // something crawling up out of a toilet: a brown ooze heaving up out of its bowl, over its seat, glistening,
+  // wobbling there; and (back) slithering back down out of sight. Resolves once it's done
+  toiletOoze(x, z, back = true) {
+    const w = this.toiletWater(x, z), T = back ? 3.2 : 2.0;
+    const mat = new THREE.MeshStandardMaterial({ color: 0x6b4423, roughness: 0.25, metalness: 0.05 });
+    const blob = new THREE.Mesh(new THREE.IcosahedronGeometry(0.16, 2), mat);
+    this.world.add(blob);
+    const t0 = performance.now();
+    return new Promise((res) => {
+      const tick = () => {
+        const t = (performance.now() - t0) / 1000;
+        if (t > T) { this.world.remove(blob); blob.geometry.dispose(); mat.dispose(); res(); return; }
+        const up = back ? (t < 1.0 ? t / 1.0 : t < 2.2 ? 1 : 1 - (t - 2.2) / 1.0) : Math.min(1, t / 1.0), e = up * up * (3 - 2 * up);
+        const wob = 0.06 * Math.sin(t * 9);
+        blob.position.set(w.x, w.y - 0.12 + 0.3 * e, w.z);
+        blob.scale.set((0.8 + 0.4 * e) * (1 + wob), (0.5 + 0.6 * e) * (1 - wob), (0.8 + 0.4 * e) * (1 + wob));
+        requestAnimationFrame(tick);
+      };
+      tick();
+      this.fx.splashStuds(w, 8, 0.9, { tint: 0x6b4423 });
+      if (back) setTimeout(() => this.fx.splashStuds(w, 6, 0.6, { tint: 0x6b4423 }), 2900);
+    });
+  }
   // a ring dropped down a sink's drain (url: its model): dropped in over the bowl, spinning round the drain,
   // and gone down it
   sinkSwallow(x, z, url) {
@@ -1039,8 +1074,8 @@ export class BrickWorld {
     }));
   }
   // a sink rattling on its foot (clanking pipes; kicked): T s, dying away
-  sinkShake(x, z, T = 0.8, amp = 0.025) {
-    const g = this.sinkAt(x, z);
+  sinkShake(x, z, T = 0.8, amp = 0.025, name = 'sink') { // (name: a toilet's too)
+    const g = this.sinkAt(x, z, name);
     if (!g) return;
     const base = g.userData.shakeBase || (g.userData.shakeBase = g.position.clone()), t0 = performance.now();
     const tick = () => {
@@ -1053,9 +1088,9 @@ export class BrickWorld {
     tick();
   }
   // the pipes broken: water spurting up out of it, the sink burst apart (as the game has it: a fountain there now)
-  sinkBreak(x, z) {
-    const g = this.sinkAt(x, z), url = g && [...this.items.entries()].find(([, v]) => v === g)[0].split(',').slice(3).join(',');
-    const d = this.sinkDrain(x, z);
+  sinkBreak(x, z, name = 'sink') { // (name: a toilet shattering too)
+    const g = this.sinkAt(x, z, name), url = g && [...this.items.entries()].find(([, v]) => v === g)[0].split(',').slice(3).join(',');
+    const d = name === 'toilet' ? this.toiletWater(x, z) : this.sinkDrain(x, z);
     if (url) this.fx.shatter(url, x, z, true);
     this.fx.splashStuds(d, 26, 2.6, { floor: STUD_H, ring: false });
     for (let i = 0; i < 6; i++) setTimeout(() => this.fx.splashStuds(d.clone().setY(d.y - 0.2), 10, 2.2, { floor: STUD_H, ring: false }), 120 * i);

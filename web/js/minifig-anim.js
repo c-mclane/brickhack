@@ -137,6 +137,30 @@ export const FOUNT = {
   kick: { T: 0.9, lean: [[0, 0], [0.2, -0.15], [0.35, 0.1], [0.9, 0]],
     armR: [[0, null], [0.2, 30], [0.4, -30], [0.9, null]], armL: [[0, null], [0.2, -30], [0.4, 30], [0.9, null]], inn: [[0, 0]],
     head: [[0, 0]], legR: [[0, 0], [0.2, 25], [0.38, -70], [0.55, -60], [0.9, 0]] },
+  // at a toilet (stood before it, its bowl at your hips): bent right down over it, hands braced on its rim, lapping
+  // at its water with little dips of the head; and doubled over it, retching into it (sewage)
+  gulp: { T: 2.8,
+    lean: [[0, 0], [0.5, 1.15], [2.1, 1.15], [2.8, 0]],
+    armR: [[0, null], [0.45, -42], [2.2, -42], [2.8, null]], armL: 'R',
+    inn: [[0, 0], [0.45, 22], [2.2, 22], [2.8, 0]],
+    head: [[0, 0], [0.5, -0.3], [0.75, -0.12], [0.95, -0.3], [1.15, -0.12], [1.35, -0.3], [1.55, -0.12], [1.75, -0.3], [2.2, -0.2], [2.6, 0]] },
+  // sat on a toilet (where: perch.js sitPath): turned round, sat down, legs out before you, hands on the knees; a
+  // strain, hunched, shaking ("You grunt."); and up again
+  sit: { T: 5.6,
+    lean: [[0, 0], [0.6, 0], [1.2, 0.08], [2.0, 0.08], [2.3, 0.3], [3.3, 0.3], [3.6, 0.08], [4.2, 0.08], [4.6, 0.25], [5.0, 0], [5.6, 0]],
+    legR: [[0, 0], [0.6, 0], [1.2, -88], [4.2, -88], [4.8, 0], [5.6, 0]], legL: 'R',
+    armR: [[0, null], [0.6, null], [1.2, -50], [2.3, -62], [3.3, -62], [3.6, -50], [4.2, -50], [4.8, null], [5.6, null]], armL: 'R',
+    inn: [[0, 0], [1.2, 10], [4.2, 10], [4.8, 0]],
+    head: [[0, 0], [2.0, 0], [2.3, -0.25], [3.3, -0.25], [3.6, 0], [5.6, 0]] },
+  // praying to the Porcelain God: bowed over it, arms raised up before you, palms to it
+  pray: { T: 3.6,
+    lean: [[0, 0], [0.5, 0.45], [3.0, 0.45], [3.6, 0]],
+    armR: [[0, null], [0.5, -150], [3.0, -150], [3.6, null]], armL: 'R',
+    inn: [[0, 0], [0.5, -25], [3.0, -25], [3.6, 0]],
+    head: [[0, 0], [0.5, -0.35], [3.0, -0.35], [3.6, 0]] },
+  // something dipped in a toilet: bent over it, the hand with it plunged in and swished about (as a fountain's dip)
+  get toiletDip() { const D = FOUNT.dip; return { ...D, lean: D.lean.map(([t, v]) => [t, v * 1.25]) }; },
+  get toiletRetch() { const R = FOUNT.retch; return { ...R, lean: R.lean.map(([t, v]) => [t, v * 0.82]), armR: R.armR.map(([t, v]) => [t, v === null ? null : v * 0.7]) }; },
   get sinkRetch() { const R = FOUNT.retch; return { ...R, lean: R.lean.map(([t, v]) => [t, v * 0.45]), armR: R.armR.map(([t, v]) => [t, v === null ? null : v * 1.4]) }; },
   // the urge to take a bath: a crouch, a dive in head first, arms out before you; under, arms up out of the
   // water; a jump back out onto the rim, turning to land facing away from it, and a shake, arms out,
@@ -302,7 +326,7 @@ export class FigureAnimator {
     if (rig.legs) {
       const a = swing * 32 * (1 - 0.5 * heavy) * DEG, tuck = -40 * A.hop * DEG; // (heavy: short steps; a hop: knees up)
       P.legR = turnAbout(rig.legs.pivot, rig.legs.axis, a + tuck + (F && F.legR ? keyAt(F.legR, ft) * DEG : 0)); // (a kick: FOUNT.kick)
-      P.legL = turnAbout(rig.legs.pivot, rig.legs.axis, -a + tuck);
+      P.legL = turnAbout(rig.legs.pivot, rig.legs.axis, -a + tuck + (F && F.legL ? keyAt(F.legL === 'R' ? F.legR : F.legL, ft) * DEG : 0)); // (sat down: FOUNT.sit)
     }
     return P;
   }

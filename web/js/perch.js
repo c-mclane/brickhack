@@ -19,6 +19,7 @@ export const PERCHES = {
   statue: { R: 52 / 80, H: 24 / 80, OUT: 60 / 80 },
   fountain: { R: 70 / 80, H: 48 / 80, OUT: 80 / 80 },
   sink: { R: 58 / 80, H: 0, OUT: 40 / 80, HOP: 0.04, LOOK: 0, RIM: 72 / 80, BOWL: 0.3 },
+  toilet: { R: 50 / 80, H: 0, OUT: 30 / 80, HOP: 0.04, LOOK: 0, RIM: 52 / 80, BOWL: 0.12 },
 };
 const STATUE = PERCHES.statue;
 const HOP = 0.28; // (how high the hop goes over the ledge)
@@ -146,8 +147,25 @@ export function cameFrom(track, hero) {
 // in, and how ([s, how many studs pop up, how hard]); where, out in front of you (squares), and down from your feet
 // (and a 4th: what's thrown up into it, a tint for its studs)
 export const FOUNT_SPLASH = { drink: [[0.55, 6, 1.2]], dip: [[0.5, 9, 1.7], [0.95, 4, 1.0], [1.35, 6, 1.3]],
-  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [], sip: [], scald: [], reach: [], kick: [], sinkRetch: [] };
+  retch: [[0.5, 5, 0.5, 0x9aa83a], [0.82, 6, 0.6, 0x9aa83a], [1.15, 8, 0.7, 0xa8a040], [1.5, 4, 0.4, 0x9aa83a]], bath: [], shiver: [], sip: [], scald: [], reach: [], kick: [], sinkRetch: [], gulp: [], toiletRetch: [], sit: [], pray: [], toiletDip: [] };
 export const FOUNT_REACH = 0.3, FOUNT_DOWN = 0.06;
+
+// sat on a toilet (minifig-anim.js FOUNT.sit): stood before it on `sd`'s side, turned round to face away from it,
+// a step back and down onto its seat (your hips on it, your legs out), sat there, and up and round again. t: s in.
+// Where you are off its middle ({x, z}), how high your feet, which way you face
+export const SEAT = { hip: 28 / 80, top: 52 / 80, at: 10 / 80 }; // (your hips up from your feet; the seat's top; its middle out toward you)
+export function sitPath(sd, t, pr = PERCHES.toilet) {
+  const rx = sd.wx * pr.R, rz = sd.wz * pr.R, sx = sd.wx * SEAT.at, sz = sd.wz * SEAT.at, face = Math.atan2(-sd.wx, sd.wz), away = face + Math.PI;
+  const L = STUD_H + SEAT.top - SEAT.hip, at = (k) => ({ x: rx + (sx - rx) * k, z: rz + (sz - rz) * k });
+  if (t < 0.6) return { x: rx, z: rz, lift: STUD_H, yaw: face + Math.PI * smooth(t / 0.6), hop: 0 }; // (turning round)
+  if (t < 1.2) { const k = smooth((t - 0.6) / 0.6); return { ...at(k), lift: STUD_H + (L - STUD_H) * k, yaw: away, hop: 0 }; } // (back and down)
+  if (t < 4.2) { // (sat; the strain: a shake)
+    const strain = t > 2.3 && t < 3.3 ? 0.012 * Math.sin(t * 70) : 0;
+    return { x: sx + strain, z: sz, lift: L, yaw: away, hop: 0 };
+  }
+  if (t < 5.0) { const k = smooth((t - 4.2) / 0.8); return { ...at(1 - k), lift: L + (STUD_H - L) * k, yaw: away, hop: 0 }; } // (up)
+  return { x: rx, z: rz, lift: STUD_H, yaw: away + Math.PI * smooth((t - 5.0) / 0.6), hop: 0 }; // (and round again)
+}
 
 // the urge to take a bath (minifig-anim.js FOUNT.bath): off the rim on `sd`'s side, a dive in head first to
 // the fountain's middle, sunk to the shoulders, and a jump back out onto the rim, shaking yourself off. t: s
@@ -185,11 +203,11 @@ export function bathPath(sd, t, pr = STATUE) {
 // monster's, u: 0..1 through it. Where it is (squares, as a square's corner: drawn at + 0.5), how high its
 // foot is (y, over the floor's studs), and which way it goes (the game's yaw)
 export const RISE_T = 1.7; // s
-export function risePath(f, to, u, r = 0.22, sink = false) { // (sink: up out of a sink's drain, over its basin's rim) // (r: how far it lies out from the basin's side, its middle: a snake's, half its length)
+export function risePath(f, to, u, r = 0.22, sink = false) { // (sink: up out of a sink's drain, over its basin's rim; or 'toilet': out of its bowl) // (r: how far it lies out from the basin's side, its middle: a snake's, half its length)
   const rest = sink ? null : againstFountain(f, to[0], to[1], r); // (where it'll lie: against the basin's side, if its square's up against it)
   if (rest) to = [rest.x, rest.z];
   const dx = to[0] - f[0], dz = to[1] - f[1], n = Math.hypot(dx, dz) || 1, ux = dx / n, uz = dz / n;
-  const pr = sink ? PERCHES.sink : PERCHES.fountain, rim = pr.RIM ?? pr.H, water = rim - 0.12, edge = (pr.RIM ? pr.OUT : pr.R) + 0.1;
+  const pr = typeof sink === 'string' ? PERCHES[sink] : sink ? PERCHES.sink : PERCHES.fountain, rim = pr.RIM ?? pr.H, water = rim - 0.12, edge = (pr.RIM ? pr.OUT : pr.R) + 0.1;
   const at = (r) => [f[0] + ux * r, f[1] + uz * r], yaw = Math.atan2(ux, -uz);
   if (u < 0.35) { // (up out of the water, in the basin)
     const k = smooth(u / 0.35), [x, z] = at(pr.BOWL ?? 0.45);
