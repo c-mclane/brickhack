@@ -314,7 +314,7 @@ const fx = new CombatFX();
 fx.onKill = (x, z) => { // (a monster slain: its figure blown apart, white studs flying: it, by who it is, not whatever's on its square)
   if (!(renderer && renderer.brickOn && renderer.brick)) return false;
   const mob = motion.mobAt(x, z), g = !mob && [...gone].reverse().find((o) => o.x === x && o.z === z && performance.now() - o.t < 2500);
-  if (renderer.brick.shatterFigureAt(x, z, mob ? mob.id : g ? g.id : undefined)) return true;
+  if (renderer.brick.shatterFigureAt(x, z, mob ? mob.id : g ? g.id : undefined, mob ? mob.name : g ? g.name : undefined)) return true;
   // (no figure of it to blow apart (a monster not yet in brick): the white studs, still; not the flat puff, black in brick)
   renderer.brick.fx.splashStuds(new THREE3.Vector3(x + 0.5, STUD_H + 0.45, z + 0.5), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
   return true;
@@ -595,10 +595,10 @@ function handle(m) {
       break;
     case 'clear': world.reset(); motion.mobs.clear(); if (renderer.brick) renderer.brick.clearCorpses(); break;
     case 'mons': { // (any monster gone since: where it was, and how tall, for what it drops: dropTop)
-      const before = new Map([...motion.mobs].map(([id, mob]) => [id, { x: mob.tx, z: mob.tz, size: mob.size }]));
+      const before = new Map([...motion.mobs].map(([id, mob]) => [id, { x: mob.tx, z: mob.tz, size: mob.size, name: mob.name }]));
       motion.setMobs(m, performance.now());
       const now = performance.now();
-      for (const [id, b] of before) if (!motion.mobs.has(id)) gone.push({ id, x: b.x, z: b.z, top: mobTop(id, b.size), t: now });
+      for (const [id, b] of before) if (!motion.mobs.has(id)) gone.push({ id, name: b.name, x: b.x, z: b.z, top: mobTop(id, b.size), t: now });
       while (gone.length && now - gone[0].t > 3000) gone.shift();
       break;
     }

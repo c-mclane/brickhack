@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { gradientEnvironment } from './envmap.js';
+import { corpsePiece } from './pieces.js';
 
 const byTile = new Map(); // tile -> {name, url, brick}
 // items named as the game names them, where a plain name could be another class's ("ring of see invisible")
@@ -31,7 +32,16 @@ const startSlot = (t) => SLOTS[Math.floor((t - START_TILE) / 10000)];
 const startBase = (t) => (t - START_TILE) % 10000;
 export const isStartTile = isStart;
 
+// Corpses: the game sends each as CORPSE_TILE + whose (winweb.c web_obj_tile: its monster's own tile, on the tile
+// sheet): shown as one brick of that monster's own model (pieces.js corpsePiece: the model url
+// "corpse:<its name>", brickworld.model), on the floor and in its picture; one with no brick model, as its sprite
+const CORPSE_TILE = 94000;
+let monNames = [], monUrls = {}, corpseSprite = null;
+const isCorpse = (t) => t >= CORPSE_TILE && t < CORPSE_TILE + 2000;
+export const corpseMonsterUrl = (name) => monUrls[name] || null;
+
 export const brickItemForTile = (t) => {
+  if (isCorpse(t)) { const mon = monNames[t - CORPSE_TILE]; return mon && monUrls[mon] ? { name: 'corpse', url: 'corpse:' + mon, upright: true, corpse: mon } : null; }
   if (isStart(t)) {
     const p = pieces.get(startSlot(t)), base = byTile.get(startBase(t));
     return p ? { name: base ? base.name : '', url: p.url, brick: 'its own, from your design', upright: UPRIGHT.has(startSlot(t)), start: true } : base || null;
@@ -47,6 +57,7 @@ export const brickChainLink = () => chainLinkUrl;
 // a brick item by its real name ("rock"), or null
 export const brickItemByName = (name) => { for (const it of byTile.values()) if (it.name === name) return it; return null; };
 export const brickIconForTile = (t) => {
+  if (isCorpse(t)) return corpseIcon(t);
   if (isStart(t)) { const p = pieces.get(startSlot(t)); return (p && p.icon) || brickIconForTile(startBase(t)); }
   const icon = icons.get(t);
   if (!icon && byTile.has(t)) wanted.add(t); // (not drawn yet: it's on screen, so it's drawn next)
@@ -64,7 +75,21 @@ function iconReady() {
   requestAnimationFrame(() => { redrawSoon = false; iconsChanged(); });
 }
 // the game's own tile for a look (an artifact's: its base item's, for its sprite; starting armour's: its own)
-export const gameTile = (t) => (isStart(t) ? startBase(t) : artBase.get(t) ?? t);
+export const gameTile = (t) => (isCorpse(t) ? corpseSprite ?? t : isStart(t) ? startBase(t) : artBase.get(t) ?? t);
+// (a corpse's picture: its brick, drawn once for each kind of monster, those that show it told when it's ready)
+const corpseIcons = new Map();
+function corpseIcon(t) {
+  const mon = monNames[t - CORPSE_TILE];
+  if (!mon || !monUrls[mon]) return null;
+  if (corpseIcons.has(mon)) return corpseIcons.get(mon) || null;
+  corpseIcons.set(mon, null);
+  const { loader } = kit();
+  new Promise((res, rej) => loader.load(monUrls[mon], res, undefined, rej))
+    .then((g) => drawIcon(corpsePiece(g.scene, mon)))
+    .then((png) => { if (png) { corpseIcons.set(mon, png); iconReady(); } })
+    .catch(() => {});
+  return null;
+}
 
 // the hero's figure (and its wardrobe swaps): each slot's piece of its design, and
 // its picture; resolves when they're all in (then redraw what shows them)
@@ -84,7 +109,11 @@ export function loadBrickItems() {
       fetch('assets/brick/items.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})),
       fetch('assets/slashem/tiles.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : { names: [] })),
       fetch('assets/brick/artifacts.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
-    ]).then(async ([items, tiles, arts]) => {
+      fetch('assets/brick/monsters.built.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+    ]).then(async ([items, tiles, arts, mons]) => {
+      // (the monsters: the tile sheet's first tiles (a corpse's whose), and their models)
+      monNames = (tiles.names || []).slice(0, 2000);
+      monUrls = Object.fromEntries(Object.entries(mons).filter(([k]) => !k.includes('|')).map(([k, m]) => [k, m.url]));
       if (items['_chain link']) chainLinkUrl = items['_chain link'].url; // (the punished hero's chain, link by link)
       builtItems = items;
       const tileOf = new Map(); // an item's real name (lower case) -> its game tile
@@ -97,6 +126,8 @@ export function loadBrickItems() {
         const it = items[(PREFIX[cls] || '') + real] || items[real]; // ("ring of see invisible": a ring's own; or the plain name)
         if (it && (!it.oc || !cls || it.oc === cls)) byTile.set(i, { name: real, ...it });
       });
+      // (no corpse in its one look, ever: each is its own monster's brick; the plain corpse's sprite, for one with none)
+      for (const [t, it] of [...byTile]) if (it.name === 'corpse') { corpseSprite = t; byTile.delete(t); }
       // artifacts: the game sends each as a tile of its own (winweb.c web_obj_tile): its own
       // brick look if it has one, or else its base item's (model, or sprite)
       for (const [t, a] of Object.entries(arts)) {
@@ -138,10 +169,13 @@ function kit() {
 // radians, opts.turn: about the view) posed as asked; opts.empty: drawn as a ghost of itself, dark and see-through
 // (the status bars' spent hearts: ui.js hudIcons)
 export async function renderIcon(url, opts = {}) {
-  const { canvas, r, scene, loader, env } = kit();
+  const { loader } = kit();
   const g = await new Promise((res, rej) => loader.load(url, res, undefined, rej)).catch(() => null);
-  if (!g) return null;
-  const m = g.scene;
+  return g ? drawIcon(g.scene, opts) : null;
+}
+// ...a model (an Object3D) pictured so
+function drawIcon(m, opts = {}) {
+  const { canvas, r, scene, env } = kit();
   m.traverse((o) => {
     if (!o.isMesh) return;
     o.material.flatShading = true;

@@ -14,6 +14,8 @@ import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
 import { BoulderFX } from './boulderfx.js';
 import { BallChain, ankleAnchor } from './ballchain.js';
+import { brickPieces, corpsePiece, pieceOf, sizesOf } from './pieces.js';
+import { corpseMonsterUrl } from './brickitems.js';
 
 // where a figure holds something lugged in both arms: before its belly, clear of it (the model's units: studs)
 export const HUG = new THREE.Vector3(0, -1.05, 1.45); // (high, the hands sunk into it)
@@ -54,66 +56,6 @@ function fadeObject(root, k) {
       o.material = Array.isArray(o.material) ? o.material.map(own) : own(o.material);
     }
     for (const m of [].concat(o.material)) { m.opacity = m.userData.op0 * k; m.depthWrite = k > 0.98; }
-  });
-}
-// A figure (its meshes, as drawn now) in its pieces: the bricks it's built of, each a run of triangles joined to one
-// another (welded where they meet), the biggest `most` kept apart and every smaller bit (a stud, a print) joined to the
-// one it's nearest. [{center (world), parts: [Mesh, its triangles round the centre, in world space]}]
-function brickPieces(meshes, most) {
-  const geos = meshes.map((o) => { const g = (o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()); g.applyMatrix4(o.matrixWorld); return { g, mat: o.material }; });
-  const keyId = new Map(), parent = [];
-  const find = (a) => { while (parent[a] !== a) a = parent[a] = parent[parent[a]]; return a; };
-  const vid = []; // per geometry, per vertex: its welded id
-  for (const { g } of geos) {
-    const P = g.attributes.position, ids = new Int32Array(P.count);
-    for (let v = 0; v < P.count; v++) {
-      const k = `${Math.round(P.getX(v) * 400)},${Math.round(P.getY(v) * 400)},${Math.round(P.getZ(v) * 400)}`;
-      let id = keyId.get(k);
-      if (id === undefined) { id = parent.length; parent.push(id); keyId.set(k, id); }
-      ids[v] = id;
-    }
-    for (let t = 0; t + 2 < P.count; t += 3) { const a = find(ids[t]), b = find(ids[t + 1]), c = find(ids[t + 2]); parent[b] = a; parent[find(c)] = a; }
-    vid.push(ids);
-  }
-  // each run: its triangles, how many, its middle
-  const runs = new Map();
-  geos.forEach(({ g }, gi) => {
-    const P = g.attributes.position;
-    for (let t = 0; t + 2 < P.count; t += 3) {
-      const r = find(vid[gi][t]);
-      let run = runs.get(r);
-      if (!run) runs.set(r, (run = { tris: [], n: 0, sum: new THREE.Vector3() }));
-      run.tris.push([gi, t]); run.n++;
-      run.sum.x += P.getX(t); run.sum.y += P.getY(t); run.sum.z += P.getZ(t);
-    }
-  });
-  const list = [...runs.values()].map((r) => ({ ...r, mid: r.sum.divideScalar(r.n) })).sort((a, b) => b.n - a.n);
-  const keep = list.slice(0, most).map((r) => ({ tris: [...r.tris], mid: r.mid }));
-  for (const r of list.slice(most)) { // (a small bit: with the nearest big one)
-    let best = keep[0], bd = Infinity;
-    for (const k of keep) { const d = k.mid.distanceToSquared(r.mid); if (d < bd) { bd = d; best = k; } }
-    best.tris.push(...r.tris);
-  }
-  return keep.map((k) => {
-    const byGeo = new Map();
-    for (const [gi, t] of k.tris) { if (!byGeo.has(gi)) byGeo.set(gi, []); byGeo.get(gi).push(t); }
-    const box = new THREE.Box3();
-    for (const [gi, ts] of byGeo) { const P = geos[gi].g.attributes.position; for (const t of ts) for (let v = 0; v < 3; v++) box.expandByPoint(new THREE.Vector3(P.getX(t + v), P.getY(t + v), P.getZ(t + v))); }
-    const center = box.getCenter(new THREE.Vector3());
-    const parts = [];
-    for (const [gi, ts] of byGeo) {
-      const src = geos[gi].g, out = new THREE.BufferGeometry();
-      for (const [name, a] of Object.entries(src.attributes)) {
-        const arr = new Float32Array(ts.length * 3 * a.itemSize);
-        let o = 0;
-        for (const t of ts) for (let v = 0; v < 3; v++) for (let c = 0; c < a.itemSize; c++) arr[o++] = a.array[(t + v) * a.itemSize + c];
-        out.setAttribute(name, new THREE.BufferAttribute(arr, a.itemSize, a.normalized));
-      }
-      out.translate(-center.x, -center.y, -center.z);
-      const mat = Array.isArray(geos[gi].mat) ? geos[gi].mat[0] : geos[gi].mat;
-      parts.push(new THREE.Mesh(out, mat));
-    }
-    return { center, parts };
   });
 }
 // (and a toilet's water, down in its bowl)
@@ -255,6 +197,11 @@ export class BrickWorld {
 
   // a .glb, set up as the viewer sets it up
   model(url) {
+    // (a corpse: a brick of its monster's own model, pieces.js corpsePiece; brickitems: "corpse:<its name>")
+    if (url.startsWith('corpse:') && !this.models.has(url)) {
+      const name = url.slice(7), mu = corpseMonsterUrl(name);
+      this.models.set(url, mu ? this.model(mu).then((m) => corpsePiece(m, name)) : Promise.reject(new Error('no model: ' + name)));
+    }
     if (!this.models.has(url))
       this.models.set(url, new Promise((res, rej) => this.loader.load(url, (g) => {
         g.scene.traverse((o) => {
@@ -1771,7 +1718,7 @@ export class BrickWorld {
   // the figure drawn there blown apart at its joints (head, body, each arm, its hands
   // and what's in them, each leg; one all of a piece, a creature: the whole of it), the parts flung about its square,
   // tumbling and bouncing (throwfx explode), and a burst of white studs. False if no figure's drawn there
-  shatterFigureAt(x, z, mon) {
+  shatterFigureAt(x, z, mon, name) { // (name: the monster's: which of its bricks is its corpse, pieces.js pieceOf)
     const cx = x + 0.5, cz = z + 0.5, now = performance.now();
     const all = [...(this.figObjs || []).slice(1), ...(this.goneFigs || []).filter((o) => now - o.t < 1500).map((o) => o.g)]; // (not you; and those just gone)
     const live = all.filter((g) => g.visible && g.children.length);
@@ -1796,8 +1743,9 @@ export class BrickWorld {
       return holder;
     });
     const m = 0.04; // (kept within its square)
-    // (one of its bricks, any, left lying there for its corpse: stepCorpses)
-    const keep = holders.length ? holders[Math.floor(Math.random() * holders.length)] : null;
+    // (its corpse: one of its bricks, left lying where it lands, the rest fading away; the corpse's own model not shown
+    // there while it's there: stepCorpses)
+    const keep = holders.length ? holders[pieceOf(name || '', sizesOf(holders))] : null;
     if (keep) { const old = (this.corpseParts = this.corpseParts || new Map()).get(`${x},${z}`); if (old) old.g.parent && old.g.parent.remove(old.g); this.corpseParts.set(`${x},${z}`, { g: keep, t: now }); }
     this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.25, cz), keep);
     this.fx.splashStuds(new THREE.Vector3(cx, STUD_H + 0.45, cz), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
@@ -1875,9 +1823,9 @@ export class BrickWorld {
     }
   }
 
-  // a monster's corpse, where it was blown apart (shatterFigureAt): one of its own bricks, lying where it came to rest,
-  // the corpse's own model not shown there; gone with the corpse (eaten, picked up, rotted away), or, none left by it,
-  // once the rest of it has gone. Each frame
+  // a slain monster's corpse, where it was blown apart (shatterFigureAt): the brick of it left lying where it landed, the
+  // corpse's own model (brickitems: a brick of its monster) not shown there; gone with the corpse (eaten, picked up,
+  // rotted away), or, none left by it, once the rest of it has faded. Each frame
   stepCorpses() {
     if (!this.corpseParts) return;
     const now = performance.now();
@@ -2074,7 +2022,7 @@ export class BrickWorld {
       this.sun.target.updateMatrixWorld();
     }
     this.fx.step(); // thrown things in flight
-    this.stepCorpses(); // (the slain's corpses: a brick of each)
+    this.stepCorpses(); // (the slain's corpses: the brick of each that's left)
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
     this.stepDry(performance.now() / 1000); // ...or drying up
     if (this.boulders) this.boulders.step(); // boulders rolling, rocks flying

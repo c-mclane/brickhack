@@ -258,9 +258,12 @@ web_realm_count(struct obj *chain)
    variant with a look of its own, VARIANT_TILE + its number: water you know
    is holy (0) or unholy (1) (items.json "variant"); and armour the hero
    started with, START_TILE + its category x 10000 + its own tile (the client
-   shows its figure's design's piece for that slot, or else as ever) */
+   shows its figure's design's piece for that slot, or else as ever); and a
+   corpse, CORPSE_TILE + whose (its monster's own tile: the client shows a
+   brick of that monster's own model) */
 #define ART_TILE 90000
 #define VARIANT_TILE 92000
+#define CORPSE_TILE 94000
 #define START_TILE 100000   /* + its armour category (oc_armcat) x 10000 + its own tile: armour the hero started with */
 static int tile_of(int glyph);
 static int
@@ -270,6 +273,8 @@ web_obj_tile(struct obj *o, int glyph)
         return tile_of(glyph);
     if (o->oartifact)
         return ART_TILE + o->oartifact;
+    if (o->otyp == CORPSE && o->corpsenm >= LOW_PM && o->corpsenm < NUMMONS)
+        return CORPSE_TILE + tile_of(monnum_to_glyph(o->corpsenm));
     if (o->otyp == POT_WATER && o->bknown && (o->blessed || o->cursed))
         return VARIANT_TILE + (o->blessed ? 0 : 1);
     if (o->webstart && o->oclass == ARMOR_CLASS)   /* the design's own piece, in its slot */
@@ -1273,7 +1278,8 @@ flush_map(void)
                altar there, its alignment: -1 chaotic, 0 neutral, 1 lawful, -128
                unaligned; or 2, none: the client builds it in brick, coloured;
                high: 1, a high altar, the Astral Plane's or the Sanctum's) */
-            fprintf(out, "[%d,%d,%d,\"%c\",%d,%d,%d,%d,%d]", x, y, tile_of(g),
+            fprintf(out, "[%d,%d,%d,\"%c\",%d,%d,%d,%d,%d]", x, y,
+                    glyph_is_body(g) && !Hallucination ? CORPSE_TILE + tile_of(monnum_to_glyph(g - GLYPH_BODY_OFF)) : tile_of(g), /* (a corpse: whose, web_obj_tile) */
                     glyph_kind(g), glyph_cmapidx(g), tile_of(bk),
                     glyph_cmapidx(bk),
                     IS_ALTAR(levl[x][y].typ) ? (int) Amask2align(levl[x][y].altarmask & AM_MASK) : 2,
