@@ -337,6 +337,7 @@ const FX = {
   // (sparks: little blue-white arcs crackling off it, flickering: a spark bug's)
   sparks: { n: 70, size: 0.06, color: 'mix(vec3(0.85, 0.95, 1.0), vec3(0.3, 0.6, 1.0), t)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 3.0), 0.0), 8.0)',
     move: 'p += away * h * 0.22 * t + side * sin(t * 40.0 + ph * 9.0) * h * 0.05;', speed: '1.2 + ph' },
+  dust: { studs: true }, // (studs, not specks: addStudVortex, a dust vortex's)
   frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
     move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
 };
@@ -345,6 +346,7 @@ export function addEffects(THREE, root) {
   root.traverse((o) => { if (!host && o.userData && FX[o.userData.fx]) host = o; });
   if (!host) return;
   if (host.userData.fx === 'fountain') return addStudFountain(THREE, root, host);
+  if (host.userData.fx === 'dust') return addStudVortex(THREE, root, host);
   const fx = FX[host.userData.fx];
   root.updateMatrixWorld(true);
   // (fxJoint: only that part burns: a statue's torch flame, not the statue; a list of them, each its own fire, sized
@@ -491,6 +493,58 @@ function addStudFountain(THREE, root, host) {
     const m = new THREE.InstancedMesh(g, mat, STUD_N);
     m.frustumCulled = false; m.renderOrder = 3;
     m.boundingBox = box.clone(); // (where they fly: within the fountain, not where the one piece sits, under its foot; the fountain laid flush on the floor: brickworld setItems)
+    root.add(m);
+  }
+  startTicking();
+}
+
+// A dust vortex (fx "dust"): its one piece (a brown 1x1 round plate) the stuff of it, whirled up off the floor in
+// studs, round and round, wider and faster as they climb, tumbling, to a figure's height and more, and dropping back
+// to the floor to go round again; the piece itself not seen. In the model's own units (studs, Y up), all in the shader
+const VORTEX_N = 64, VORTEX_H = 5.4, VORTEX_R = 2.2;
+function addStudVortex(THREE, root, host) {
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), pieces = [], box = new THREE.Box3(), v = new THREE.Vector3();
+  root.traverse((m) => {
+    if (!m.isMesh) return;
+    const g = m.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld));
+    g.computeBoundingBox(); box.union(g.boundingBox);
+    for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
+    pieces.push([g, m.material]);
+    m.visible = false; // (not the piece itself: the whirl of it)
+  });
+  if (!pieces.length) return;
+  const mid = box.getCenter(new THREE.Vector3()), foot = box.min.y;
+  for (const [g] of pieces) g.translate(-mid.x, -mid.y, -mid.z);
+  const ph = [], spin = [];
+  for (let i = 0; i < VORTEX_N; i++) {
+    ph.push(Math.random(), 0.7 + Math.random() * 0.6, Math.random(), 0);   // (where in its climb, how fast, where round)
+    const ax = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    spin.push(ax.x, ax.y, ax.z, 4 + Math.random() * 7);
+  }
+  const uniforms = { uMistTime: uTime, uFoot: { value: foot }, uVH: { value: VORTEX_H }, uVR: { value: VORTEX_R } };
+  const mat = pieces[0][1].clone();
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, uniforms);
+    sh.vertexShader = 'attribute vec4 aPh; attribute vec4 aSpin; uniform float uMistTime, uFoot, uVH, uVR;\n' + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', `
+        float tV = fract(uMistTime * 0.32 * aPh.y + aPh.x);
+        float ang = aSpin.w * uMistTime; vec3 axS = aSpin.xyz;
+        vec3 objectNormal = normal * cos(ang) + cross(axS, normal) * sin(ang) + axS * dot(axS, normal) * (1.0 - cos(ang));
+        #ifdef USE_TANGENT
+          vec3 objectTangent = vec3(tangent.xyz);
+        #endif`)
+      .replace('#include <begin_vertex>', `
+        vec3 transformed = position * smoothstep(0.0, 0.06, tV) * (1.0 - smoothstep(0.9, 1.0, tV));
+        transformed = transformed * cos(ang) + cross(axS, transformed) * sin(ang) + axS * dot(axS, transformed) * (1.0 - cos(ang));
+        float round = aPh.z * 6.2832 + tV * 14.0 + tV * tV * 10.0, rV = uVR * (0.12 + 0.88 * tV);
+        transformed += vec3(cos(round) * rV, uFoot + tV * uVH, sin(round) * rV);`);
+  };
+  for (const [g] of pieces) {
+    g.setAttribute('aPh', new THREE.InstancedBufferAttribute(new Float32Array(ph), 4));
+    g.setAttribute('aSpin', new THREE.InstancedBufferAttribute(new Float32Array(spin), 4));
+    const m = new THREE.InstancedMesh(g, mat, VORTEX_N);
+    m.frustumCulled = false; m.renderOrder = 3;
     root.add(m);
   }
   startTicking();

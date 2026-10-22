@@ -7859,8 +7859,8 @@
  "dust vortex": {
   "parts": [
    {
-    "part": "3941",
-    "color": 47,
+    "part": "6141",
+    "color": 70,
     "pos": [
      0,
      0,
@@ -7868,10 +7868,9 @@
     ]
    }
   ],
-  "scale": 1.0,
-  "creature": "float",
-  "center": true,
-  "fx": "smoke"
+  "scale": 1,
+  "creature": "fungus",
+  "fx": "dust"
  },
  "goat": {
   "parts": [
