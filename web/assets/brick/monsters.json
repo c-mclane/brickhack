@@ -15162,5 +15162,641 @@
   "scale": 1,
   "creature": "beast",
   "fx": "fire+smoke"
+ },
+ "archeologist": {
+  "fig": "johnny-thunder"
+ },
+ "barbarian": {
+  "fig": "barbarian-m"
+ },
+ "caveman": {
+  "fig": "caveman"
+ },
+ "cavewoman": {
+  "fig": "cavewoman"
+ },
+ "flame mage": {
+  "fig": "flame-mage-m"
+ },
+ "healer": {
+  "fig": "healer-m"
+ },
+ "ice mage": {
+  "fig": "ice-mage-m"
+ },
+ "knight": {
+  "fig": "knight"
+ },
+ "monk": {
+  "fig": "monk-m"
+ },
+ "necromancer": {
+  "fig": "necromancer-m"
+ },
+ "priest": {
+  "fig": "priest-m"
+ },
+ "priestess": {
+  "fig": "priest-f"
+ },
+ "ranger": {
+  "fig": "ranger-m"
+ },
+ "rogue": {
+  "fig": "rogue-m"
+ },
+ "samurai": {
+  "fig": "samurai-m"
+ },
+ "tourist": {
+  "fig": "tourist-m"
+ },
+ "undead slayer": {
+  "fig": "undead-slayer-m"
+ },
+ "valkyrie": {
+  "fig": "valkyrie"
+ },
+ "wizard": {
+  "fig": "wizard-m"
+ },
+ "yeoman": {
+  "fig": "yeoman-m"
+ },
+ "elf": {
+  "fig": "elf-ranger-m"
+ },
+ "Aleax": {
+  "fig": "angel-knight-m"
+ },
+ "vampire": {
+  "fig": "vampire-rogue-m"
+ },
+ "lieutenant": {
+  "fig": "lieutenant",
+  "hold": "long sword"
+ },
+ "ettin": {
+  "fig": "ettin",
+  "hold": "club"
+ },
+ "frost giant": {
+  "fig": "frost-giant",
+  "hold": "club"
+ },
+ "golden naga": {
+  "fig": "golden-naga",
+  "slither": true,
+  "lift": 0.1
+ },
+ "shadow ogre": {
+  "fig": "shadow-ogre",
+  "hold": "club"
+ },
+ "ghoul mage": {
+  "fig": "ghoul-mage"
+ },
+ "Aphrodite": {
+  "fig": "aphrodite"
+ },
+ "ghost": {
+  "fig": "ghost",
+  "lift": 0.45
+ },
+ "migo warrior": {
+  "parts": [
+   {
+    "part": "27152",
+    "color": 26,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.5,
+  "creature": "bug",
+  "center": true
+ },
+ "assassin bug": {
+  "parts": [
+   {
+    "part": "95827",
+    "color": 320,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.4,
+  "creature": "bug",
+  "center": true
+ },
+ "jiggling blob": {
+  "parts": [
+   {
+    "part": "23925",
+    "color": 13,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     7,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     33,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 0.5,
+  "creature": "blob",
+  "center": true
+ },
+ "lava blob": {
+  "parts": [
+   {
+    "part": "23925",
+    "color": 4,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     7,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     33,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 0.5,
+  "creature": "blob",
+  "center": true,
+  "fx": "fire"
+ },
+ "black pudding": {
+  "parts": [
+   {
+    "part": "23925",
+    "color": 0,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     7,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     33,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 0.5,
+  "creature": "blob",
+  "center": true
+ },
+ "bull": {
+  "parts": [
+   {
+    "part": "64452",
+    "color": 308,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "87695",
+    "color": 15,
+    "pos": [
+     0.0,
+     -40.0,
+     -70.0
+    ]
+   }
+  ],
+  "scale": 1.2,
+  "creature": "beast"
+ },
+ "kangaroo": {
+  "parts": [
+   {
+    "part": "66965",
+    "color": 70,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.4,
+  "creature": "beast"
+ },
+ "lurker above": {
+  "parts": [
+   {
+    "part": "3958",
+    "color": 72,
+    "pos": [
+     0.0,
+     -8.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3022",
+    "color": 71,
+    "pos": [
+     0.0,
+     -16.0,
+     0.0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     -14,
+     -6,
+     -61
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     14,
+     -6,
+     -61
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     0.0,
+     -2.0,
+     -56.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     -0.8944,
+     0.4472,
+     0.0,
+     -0.4472,
+     -0.8944
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     39.6,
+     -2.0,
+     -39.6
+    ],
+    "mat": [
+     -0.0883,
+     -0.7695,
+     0.6325,
+     -0.7695,
+     0.4558,
+     0.4472,
+     -0.6325,
+     -0.4472,
+     -0.6325
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     56.0,
+     -2.0,
+     -0.0
+    ],
+    "mat": [
+     0.2,
+     -0.4,
+     0.8944,
+     -0.4,
+     0.8,
+     0.4472,
+     -0.8944,
+     -0.4472,
+     0.0
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     39.6,
+     -2.0,
+     39.6
+    ],
+    "mat": [
+     0.755,
+     -0.1733,
+     0.6325,
+     -0.1733,
+     0.8775,
+     0.4472,
+     -0.6325,
+     -0.4472,
+     0.6325
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     0.0,
+     -2.0,
+     56.0
+    ],
+    "mat": [
+     1.0,
+     -0.0,
+     0.0,
+     -0.0,
+     0.8944,
+     0.4472,
+     -0.0,
+     -0.4472,
+     0.8944
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     -39.6,
+     -2.0,
+     39.6
+    ],
+    "mat": [
+     0.755,
+     0.1733,
+     -0.6325,
+     0.1733,
+     0.8775,
+     0.4472,
+     0.6325,
+     -0.4472,
+     0.6325
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     -56.0,
+     -2.0,
+     0.0
+    ],
+    "mat": [
+     0.2,
+     0.4,
+     -0.8944,
+     0.4,
+     0.8,
+     0.4472,
+     0.8944,
+     -0.4472,
+     0.0
+    ]
+   },
+   {
+    "part": "53451",
+    "color": 72,
+    "pos": [
+     -39.6,
+     -2.0,
+     -39.6
+    ],
+    "mat": [
+     -0.0883,
+     0.7695,
+     -0.6325,
+     0.7695,
+     0.4558,
+     0.4472,
+     0.6325,
+     -0.4472,
+     -0.6325
+    ]
+   }
+  ],
+  "scale": 1,
+  "creature": "blob",
+  "center": true
+ },
+ "two-headed troll": {
+  "parts": [
+   {
+    "part": "60671",
+    "color": 70,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "part": "60672",
+    "color": 70,
+    "pos": [
+     -40.0,
+     26.0,
+     0.0
+    ]
+   },
+   {
+    "part": "60640",
+    "color": 70,
+    "pos": [
+     -53.75,
+     71.0,
+     -62.0
+    ]
+   },
+   {
+    "part": "60673",
+    "color": 70,
+    "pos": [
+     40.0,
+     26.0,
+     0.0
+    ]
+   },
+   {
+    "part": "60641",
+    "color": 70,
+    "pos": [
+     53.75,
+     71.0,
+     -62.0
+    ]
+   },
+   {
+    "part": "60636",
+    "color": 70,
+    "pos": [
+     30.0,
+     -6.0,
+     8.0
+    ],
+    "mat": [
+     0.9063,
+     0.0,
+     -0.4226,
+     0.0,
+     1.0,
+     0.0,
+     0.4226,
+     0.0,
+     0.9063
+    ]
+   }
+  ],
+  "scale": 1,
+  "creature": "beast"
  }
 }

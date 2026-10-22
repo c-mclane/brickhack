@@ -1,0 +1,15 @@
+{
+ "label": "golden naga",
+ "name": "golden naga",
+ "torso": "973",
+ "torsoColor": 334,
+ "armColor": 334,
+ "handColor": 14,
+ "head": "98150",
+ "headColor": 334,
+ "headY": 0,
+ "shortLegs": {
+  "part": "98140",
+  "color": 334
+ }
+}

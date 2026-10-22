@@ -1,0 +1,18 @@
+{
+ "label": "shadow ogre",
+ "name": "shadow ogre",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 0,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626cpxa",
+ "headColor": 0,
+ "hair": {
+  "part": "40233",
+  "color": 308
+ },
+ "fx": "smoke"
+}

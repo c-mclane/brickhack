@@ -1,0 +1,34 @@
+{
+ "label": "ettin",
+ "name": "ettin",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 78,
+ "handColor": 78,
+ "longLegs": {
+  "color": 70
+ },
+ "longArms": true,
+ "head": null,
+ "headColor": 78,
+ "extras": [
+  {
+   "part": "3626cpxa",
+   "color": 78,
+   "pos": [
+    -11,
+    -24,
+    0
+   ]
+  },
+  {
+   "part": "3626cpxa",
+   "color": 78,
+   "pos": [
+    11,
+    -24,
+    0
+   ]
+  }
+ ]
+}

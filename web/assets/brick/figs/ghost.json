@@ -1,0 +1,14 @@
+{
+ "label": "ghost",
+ "name": "ghost",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 15,
+ "head": "3626bp01g",
+ "headColor": 15,
+ "shortLegs": {
+  "part": "19859",
+  "color": 15
+ }
+}

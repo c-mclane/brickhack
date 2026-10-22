@@ -1,0 +1,19 @@
+{
+ "label": "frost giant",
+ "name": "frost giant",
+ "torso": "973",
+ "torsoColor": 1,
+ "armColor": 1,
+ "handColor": 15,
+ "longLegs": {
+  "color": 15
+ },
+ "longArms": true,
+ "head": "3626cpxa",
+ "headColor": 15,
+ "hair": {
+  "part": "40233",
+  "color": 15
+ },
+ "fx": "frost"
+}
