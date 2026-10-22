@@ -10,7 +10,7 @@
  "legColor": 72,
  "head": "3626bpc15",
  "headColor": 151,
- "hat": "71015",
+ "hat": "18165",
  "hatColor": 82,
  "neck": [
   {
@@ -18,5 +18,10 @@
    "color": 0
   }
  ],
- "static": true
+ "static": true,
+ "fx": "smoke",
+ "right": {
+  "part": "2674b",
+  "color": 80
+ }
 }

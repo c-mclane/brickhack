@@ -1581,6 +1581,7 @@ export async function runTestbed(data) {
 // each in turn breathing and looking about, trotting, then biting (a lunge), over and over
 async function menagerie(level, brick, cam, ctl, canvas) {
   const mons = await (await fetch('assets/brick/monsters.built.json', { cache: 'no-store' })).json();
+  const items = await (await fetch('assets/brick/items.built.json', { cache: 'no-store' })).json(); // (what each holds, as the game gives it)
   const beasts = level.monsters.filter((m) => mons[m.monster]).map((m, i) => ({ ...m, ...mons[m.monster], phase: (i * 0.53) % 7 }));
   for (const b of beasts) if (!b.creature) brick.model(b.url).then((m) => { // (a minifig monster: alive as the hero is)
     let rig = null;
@@ -1612,7 +1613,8 @@ async function menagerie(level, brick, cam, ctl, canvas) {
       if (!b.creature) { // (a minifig: walking on the spot, then a swing)
         if (b.anim && b.lastU !== undefined && b.lastU < BITE && u >= BITE) b.anim.attack();
         b.lastU = u;
-        return { url: b.url, matrix: figureMatrix(b.at[0] + 0.5, b.lift || 0, b.at[1] + 0.5, Math.PI), pose: b.anim ? b.anim.update(dt, { moving }) : null, hold: {} };
+        const held = b.hold && items[b.hold] ? items[b.hold].url : null;
+        return { url: b.url, matrix: figureMatrix(b.at[0] + 0.5, b.lift || 0, b.at[1] + 0.5, Math.PI), pose: b.anim ? b.anim.update(dt, { moving, holdsR: !!held }) : null, hold: held ? { R: held } : {} };
       }
       return { url: b.url, matrix: mul(partMatrix(b.at[0] + 0.5, STUD_H, b.at[1] + 0.5, 0), creatureLocal(b.creature, clock, { moving, lungeT })), pose: null, hold: {} };
     });

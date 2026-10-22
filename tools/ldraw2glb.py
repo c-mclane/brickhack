@@ -218,13 +218,15 @@ def split(geom, d, t, code):
 _lum = {}
 def shaded(geom, ldr_text):
     """A shade (the manes): if the model says '0 !BRICKHACK STATIC', every part turns to static, light grey, or
-    dark where it was dark (a face's print, black hair: by the colour's lightness); prints' pictures dropped."""
+    dark where it was dark (a face's print, black hair: by the colour's lightness), but metal (a crown); prints' pictures dropped."""
     if '0 !BRICKHACK STATIC' not in ldr_text:
         return geom
     if not _lum:
         for code, (rgb, _, _) in load_colors(LDRAW).items():
             _lum[code] = 0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2]
-    return [(STATIC_DARK if tex is not None or _lum.get(code, 1) < 0.35 else STATIC, None, arr, None) for code, tex, arr, uv in geom]
+    # (its metal not: a barrow wight's gold crown is gold still, solid, whatever's become of him)
+    return [(code, tex, arr, uv) if FINISH.get(code) in ('METAL', 'CHROME') else
+            (STATIC_DARK if tex is not None or _lum.get(code, 1) < 0.35 else STATIC, None, arr, None) for code, tex, arr, uv in geom]
 
 
 def ghosted(geom, ldr_text):

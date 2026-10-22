@@ -2129,8 +2129,7 @@
   "hold": "quarterstaff"
  },
  "barrow wight": {
-  "fig": "barrow-wight",
-  "hold": "long sword"
+  "fig": "barrow-wight"
  },
  "bugbear": {
   "fig": "bugbear",
@@ -2250,10 +2249,6 @@
   "parts": [
    {
     "part": "1569p01",
-    "color": 15
-   },
-   {
-    "part": "1570",
     "color": 15
    }
   ],
