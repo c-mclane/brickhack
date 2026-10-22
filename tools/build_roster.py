@@ -28,6 +28,7 @@ PARTS = os.path.join(ASSETS, 'parts')
 # A 1x4x6 door frame (60596) with its door (60616a) on the frame's hinge pins
 # at x = -32, z = 5: shut, swung open a quarter turn, or missing (a doorway).
 FRAME, DOOR = 308, 70   # wooden: a dark brown frame, a reddish brown door
+UI_GLYPHS = {'A': '3070bpta', 'B': '3070bptb', 'C': '3070bptc', 'D': '3070bptd', 'E': '3070bpte', 'F': '3070bptf', 'G': '3070bptg', 'H': '3070bpth', 'I': '3070bpti', 'J': '3070bptj', 'K': '3070bptk', 'L': '3070bptl', 'M': '3070bptm', 'N': '3070bptn', 'O': '3070bpto', 'P': '3070bptp', 'Q': '3070bptq', 'R': '3070bptr', 'S': '3070bpts', 'T': '3070bptt', 'U': '3070bptu', 'V': '3070bptv', 'W': '3070bptw', 'X': '3070bptx', 'Y': '3070bpty', 'Z': '3070bptz', '0': '3070bpv0', '1': '3070bpv1', '2': '3070bpv2', '3': '3070bpv3', '4': '3070bpv4', '5': '3070bpv5', '6': '3070bpv6', '7': '3070bpv7', '8': '3070bpv8', '-': '3070bpuh', '.': '3070bpuf', '@': '3070bpuj', '_': '3070bpug'}   # (the silver letter tiles: char -> part)
 DUNGEON_PARTS = {
     'door_closed': f"""1 {FRAME} 0 0 0 1 0 0 0 1 0 0 0 1 60596.dat
 1 {DOOR} -32 0 5 1 0 0 0 1 0 0 0 1 60616a.dat
@@ -98,6 +99,11 @@ DUNGEON_PARTS = {
 """,
     'hud_bubble': """1 43 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat
 """,
+    # the interface in brick (web/js/brickui.js): a white 1x1 plate (tinted, a button's colour, laid in a row: its
+    # plate), and a black 1x1 tile printed with each silver letter there is (no 9: the 6 turned round), spelling on it
+    'ui_plate': """1 15 0 0 0 1 0 0 0 1 0 0 0 1 3024.dat
+""",
+    **{f'ui_glyph_{ord(c)}': f'1 0 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat\n' for c, part in UI_GLYPHS.items()},
     # water (a pool, a moat): clear blue 1x1 round plates, heaped in the square's hole and roiling
     'water_stud': """1 43 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat
 """,    # ...and the bottom of its hole, still under them: the same clear blue 1x1 round plates, one on each of the

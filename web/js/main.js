@@ -22,6 +22,7 @@ import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl 
 import { FigureAnimator, FOUNT, LOOSE_AT, NOCKED, nockAt, fountKey, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
+import { brickInterface } from './brickui.js';
 import { AltarRites } from './rites.js';
 import { loadRules, conflicts } from './charrules.js';
 import { makeSkin, loadSkinURL } from './skin.js';
@@ -975,6 +976,7 @@ const CONTROLS = [
 
 function buildScreens() {
   $('#title .splash').textContent = SPLASHES[Math.floor(Math.random() * SPLASHES.length)];
+  brickInterface(); // (titles, buttons, the splash in brick: brickui.js)
   // every menu stands on a 3D brick baseplate; the title has BRICKHACK built on it
   const shown = (id) => !$('#' + id).classList.contains('hidden');
   const plated = SCREENS.filter((id) => $('#' + id).classList.contains('dirt'));
