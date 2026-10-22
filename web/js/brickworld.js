@@ -1796,7 +1796,10 @@ export class BrickWorld {
       return holder;
     });
     const m = 0.04; // (kept within its square)
-    this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.25, cz));
+    // (one of its bricks, any, left lying there for its corpse: stepCorpses)
+    const keep = holders.length ? holders[Math.floor(Math.random() * holders.length)] : null;
+    if (keep) { const old = (this.corpseParts = this.corpseParts || new Map()).get(`${x},${z}`); if (old) old.g.parent && old.g.parent.remove(old.g); this.corpseParts.set(`${x},${z}`, { g: keep, t: now }); }
+    this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.25, cz), keep);
     this.fx.splashStuds(new THREE.Vector3(cx, STUD_H + 0.45, cz), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
     return true;
   }
@@ -1870,6 +1873,24 @@ export class BrickWorld {
       case 'antimagic': this.fx.haze(up(0), 1.3, 7, 0x2a1a3a); this.flash(up(0.6), 0x200830, { size: 1.6, T: 1, dark: true }); return later(1);
       case 'poly': column(0x40ff70, 6); this.flash(up(0.7), 0x30e060, { size: 1.5 }); return later(0.6);
     }
+  }
+
+  // a monster's corpse, where it was blown apart (shatterFigureAt): one of its own bricks, lying where it came to rest,
+  // the corpse's own model not shown there; gone with the corpse (eaten, picked up, rotted away), or, none left by it,
+  // once the rest of it has gone. Each frame
+  stepCorpses() {
+    if (!this.corpseParts) return;
+    const now = performance.now();
+    for (const [sq, c] of this.corpseParts) {
+      let corpse = false;
+      for (const g of this.items.values()) if (g.userData.square === sq && g.userData.name === 'corpse') { corpse = true; g.visible = false; }
+      if (!corpse && now - c.t > 3500) { c.g.parent && c.g.parent.remove(c.g); this.corpseParts.delete(sq); }
+    }
+  }
+  // (a new level: none of them)
+  clearCorpses() {
+    for (const c of (this.corpseParts || new Map()).values()) c.g.parent && c.g.parent.remove(c.g);
+    this.corpseParts = new Map();
   }
 
   // a part of a floor item, by its joint (items.json "joint"), faded: k 1 as built, 0 gone (an altar's statues
@@ -2053,6 +2074,7 @@ export class BrickWorld {
       this.sun.target.updateMatrixWorld();
     }
     this.fx.step(); // thrown things in flight
+    this.stepCorpses(); // (the slain's corpses: a brick of each)
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
     this.stepDry(performance.now() / 1000); // ...or drying up
     if (this.boulders) this.boulders.step(); // boulders rolling, rocks flying

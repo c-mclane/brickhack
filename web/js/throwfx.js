@@ -424,14 +424,14 @@ export class ThrowFX {
   // a monster slain (brickworld.shatterFigure): its parts (holders in the world, each its own part round its middle)
   // flung out from `from`, tumbling, bouncing off the floor and the walls of its square (box: [x0, z0, x1, z1]), lying
   // there a moment, and fading away
-  explode(holders, box, from) {
+  explode(holders, box, from, keep = null) { // (keep: one left lying where it comes to rest, not faded: a corpse, brickworld stepCorpses)
     const pieces = holders.map((obj) => {
       const own = (m) => { const c = m.clone(); c.userData.op0 = m.transparent ? m.opacity : 1; c.transparent = true; return c; };
       obj.traverse((o) => { if (o.isMesh) o.material = Array.isArray(o.material) ? o.material.map(own) : own(o.material); });
       const out = obj.position.clone().sub(from).setY(0);
       if (out.lengthSq() < 1e-4) out.set(Math.random() - 0.5, 0, Math.random() - 0.5);
       out.normalize().multiplyScalar(1.6 + Math.random() * 2.4); // (violently: hard out, high, spinning fast)
-      return { obj, v: out.setY(2.8 + Math.random() * 2.4), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(30) };
+      return { obj, keep: obj === keep, v: out.setY(2.8 + Math.random() * 2.4), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(30) };
     });
     (this.debris = this.debris || []).push({ pieces, box, t: 0 });
   }
@@ -460,10 +460,10 @@ export class ThrowFX {
       }
       if (d.t > LIE) {
         const k = Math.max(0, 1 - (d.t - LIE) / FADE);
-        for (const pc of d.pieces) pc.obj.traverse((o) => { if (o.isMesh) for (const m of [].concat(o.material)) { m.opacity = m.userData.op0 * k; m.depthWrite = k > 0.98; } });
+        for (const pc of d.pieces) if (!pc.keep) pc.obj.traverse((o) => { if (o.isMesh) for (const m of [].concat(o.material)) { m.opacity = m.userData.op0 * k; m.depthWrite = k > 0.98; } });
       }
       if (d.t > LIE + FADE) {
-        for (const pc of d.pieces) pc.obj.parent && pc.obj.parent.remove(pc.obj);
+        for (const pc of d.pieces) if (!pc.keep) pc.obj.parent && pc.obj.parent.remove(pc.obj); // (the one kept: lying there still)
         this.debris.splice(this.debris.indexOf(d), 1);
       }
     }

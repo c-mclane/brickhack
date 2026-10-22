@@ -593,7 +593,7 @@ function handle(m) {
       game.ext = m.ext;
       if (m.cm) { setCmap(m.cm, m.cmapTiles); rebuildTextures(); }
       break;
-    case 'clear': world.reset(); motion.mobs.clear(); break;
+    case 'clear': world.reset(); motion.mobs.clear(); if (renderer.brick) renderer.brick.clearCorpses(); break;
     case 'mons': { // (any monster gone since: where it was, and how tall, for what it drops: dropTop)
       const before = new Map([...motion.mobs].map(([id, mob]) => [id, { x: mob.tx, z: mob.tz, size: mob.size }]));
       motion.setMobs(m, performance.now());
