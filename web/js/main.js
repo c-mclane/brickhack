@@ -1926,6 +1926,18 @@ function trapFx(m) {
   const u = (n) => { const b = brickItemByName(n); return b && b.url; };
   renderer.brick.trapFx(kind, m.x, m.y, { arrow: u('arrow'), dart: u('dart'), rock: u('rock'), boulder: u('boulder') });
   if (!m.m && /^(pit|spiked|hole|trapdoor)$/.test(kind)) hero3d.pit = { x: m.x, y: m.y, deep: /^(hole|trapdoor)$/.test(kind) ? 1.6 : 0.55 };
+  if (!m.m && /^(tele|level|portal)$/.test(kind)) hero3d.teleFrom = { x: m.x, y: m.y, kind, t: performance.now() }; // (and where you land: teleArrive)
+}
+// ...taken away by it (a teleportation trap, a level teleporter, a portal): the same burst of light where you come down,
+// once you're somewhere else (on this level or another), in a few seconds
+function teleArrive(now) {
+  const f = hero3d.teleFrom;
+  if (!f) return;
+  if (now - f.t > 6000) { hero3d.teleFrom = null; return; }
+  const h = world.hero;
+  if (h.x === f.x && h.y === f.y) return;
+  hero3d.teleFrom = null;
+  if (renderer.brickOn && renderer.brick) renderer.brick.trapFx(f.kind, h.x, h.y, {});
 }
 function pitStep(dt, hx, hz) {
   const p = hero3d.pit, inIt = p && Math.round(hx) === p.x && Math.round(hz) === p.y;
@@ -2146,6 +2158,8 @@ function brickMonFigures(sprites, dt, now) {
     const rp = risingAt(s, now);
     if (rp === 'hidden') continue;
     let sx = rp ? rp.x : s.x, sz = rp ? rp.z : s.z, slift = rp ? rp.y : s.lift || 0; // (out of a fountain: on its way)
+    st.pitY = (st.pitY || 0) + ((s.mob && s.mob.pit ? -0.55 : 0) - (st.pitY || 0)) * Math.min(1, dt * (s.mob && s.mob.pit ? 14 : 5)); // (caught in a pit: down in it; out, back up)
+    slift += st.pitY;
     let lean = rp ? rp.lean || 0 : 0, leanYaw = rp ? rp.leanYaw : null;
     const fb = !rp && fountainBeside(sx, sz), ag = fb && againstFountain(fb, sx, sz, e.creature === 'snake' ? SNAKE_OUT : 0.22);
     if (ag) { sx = ag.x; sz = ag.z; lean = 1; leanYaw = ag.yaw; } // (up against a fountain: out of its wall, leaning on it)
@@ -3148,6 +3162,7 @@ function frame(t) {
       const [hx, hz] = motion.heroPos(t);
       const pp = statuePerch(t); // (on a statue's square: up on its ledge, looking at it)
       if (walk.perch && walk.perch.side && renderer.brick) renderer.brick.setFountainSide(walk.perch.x, walk.perch.z, walk.perch.side); // (what lies on it: on its rim where you stand)
+      teleArrive(t); // (come down from a teleport trap: its light there too)
       const sw = heroSwim(t), sink = sw ? 0 : heroSink(dt, t, hx, hz, !!pp); // (in a pool: sunk in it, to the waist; falling in, crawling out)
       // (riding: the steed under you, saddled, your way, trotting as you go; you on its saddle, bobbing with it)
       const steed = !sw && !pp ? riddenSteed() : null, ground = world.heroLift ?? phys.y, going = motion.heroRemaining(t) > 0;

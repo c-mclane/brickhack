@@ -1803,7 +1803,7 @@ export class BrickWorld {
 
   // a trap at (x, z) sprung (items.json "_trap ..."; tools/build_items.py): what it does, in the world (the hero's own
   // part, falling, vanishing, stuck: the caller's). kind: arrow, dart, rock, squeak, bear, boulder, mine, gas, rust,
-  // fire, trapdoor, tele, level, portal, web, magic, antimagic, poly. urls: {arrow, dart, rock, boulder} (the items').
+  // fire, trapdoor, tele, level, portal, web, statue, magic, antimagic, poly. urls: {arrow, dart, rock, boulder} (the items').
   // Resolves when it's done
   async trapFx(kind, x, z, urls = {}) {
     const c = new THREE.Vector3(x + 0.5, STUD_H, z + 0.5), up = (h) => c.clone().setY(STUD_H + h);
@@ -1811,9 +1811,20 @@ export class BrickWorld {
     const trapItem = () => [...this.items.values()].find((g) => g.userData.square === `${x},${z}`) || null;
     const column = (color, n = 5, spread = 0.22) => { for (let i = 0; i < n; i++) setTimeout(() => this.fx.sparkles(up(0.15 + i * 0.32), 22, color, spread), i * 90); };
     switch (kind) {
-      case 'arrow': case 'dart': // (shot out at you, from the trap's square beside: flat and fast, stuck in the floor at your feet)
-        this.fx.launch(urls[kind], x - 1, z, x, z, { shot: true, from: 0.75 });
+      case 'arrow': // (shot out at you, from the trap's square beside: flat and fast, stuck in the floor at your feet)
+        this.fx.launch(urls.arrow, x - 1, z, x, z, { shot: true, from: 0.75 });
         return later(0.4);
+      case 'dart': // (dropped from a hole in the ceiling, point first, onto you, and stuck in the floor at your feet)
+        this.fx.launch(urls.dart, x, z, x, z, { shot: true, from: 2.6 });
+        return later(0.4);
+      case 'statue': { // (the statue there cracking, stone dust bursting off it: what was in it comes alive, the game says)
+        const g = trapItem();
+        if (g) this.shakeItem(g, 0.6, 0.03);
+        this.fx.splashStuds(up(0.5), 16, 2, { floor: STUD_H, ring: false, tint: 0x9a9a9a, solid: true, spread: 1.8 });
+        for (let i = 0; i < 5; i++) setTimeout(() => this.fx.vapor(up(0.2 + i * 0.2), 0xb0b0b0, 1.6), i * 100);
+        this.fx.sparkles(up(0.6), 20, 0xd8d8d8, 0.35);
+        return later(0.8);
+      }
       case 'rock': // (down from a trap door in the ceiling, onto your head, and off it)
         this.fx.drop(urls.rock, x, z, STUD_H + 2.8, { x: x + 0.5, z: z + 0.5 });
         return later(0.6, () => this.fx.splashStuds(up(1.4), 6, 0.8, { floor: STUD_H, ring: false, tint: 0x8a8a8a, solid: true }));

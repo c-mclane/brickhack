@@ -39,7 +39,7 @@ export const TRAP_ITEMS = ['_trap arrow trap', '_trap dart trap', '_trap falling
   '_trap anti-magic field', '_trap polymorph trap'];
 // ...and what each does when it's sprung (brickworld trapFx)
 export const TRAP_FX = ['arrow', 'dart', 'rock', 'squeak', 'bear', 'mine', 'boulder', 'gas', 'rust', 'fire', 'pit', 'spiked', 'hole', 'trapdoor',
-  'tele', 'level', 'portal', 'web', null, 'magic', 'antimagic', 'poly'];
+  'tele', 'level', 'portal', 'web', 'statue', 'magic', 'antimagic', 'poly'];
 const trapBase = () => CM.arrow_trap ?? CM.web - 17;
 
 export function setCmap(cm, tiles) {

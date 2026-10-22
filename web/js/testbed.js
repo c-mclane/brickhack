@@ -772,7 +772,7 @@ export async function runTestbed(data) {
         const fx = { arrow: url('arrow'), dart: url('dart'), rock: url('rock'), boulder: url('boulder') };
         const TRAPS = [
           ['arrow trap', 'arrow', 'An arrow shoots out at you! You are hit by an arrow.'],
-          ['dart trap', 'dart', 'A little dart shoots out at you! You are hit by a little dart.'],
+          ['dart trap', 'dart', 'A little dart drops on you! You are hit by a little dart.'],
           ['falling rock trap', 'rock', 'A trap door in the ceiling opens and a rock falls on your head! Fortunately, you are wearing a hard hat.'],
           ['squeaky board', 'squeak', 'A board beneath you squeaks loudly.'],
           ['bear trap', 'bear', 'A bear trap closes on your foot!'],

@@ -1476,7 +1476,8 @@ build_monsters(void)
             continue; /* not drawn as a monster there (e.g. mimicking) */
         /* [id, x, y, size, flies, name (for the name tag), 1 tame / 2 peaceful / 0, and for a priest whose god he
            serves: "lawful", "neutral", "chaotic", "unaligned" (Moloch), "jesus" (the lawful god, to his follower); for
-           a shopkeeper, the kind of shop he keeps: "delicatessen", "lighting store"...] */
+           a shopkeeper, the kind of shop he keeps: "delicatessen", "lighting store"... (else null); and 1 if it's down in a
+           pit, caught there] */
         fprintf(out, "%s[%u,%d,%d,%d,%d,", n++ ? "," : "", mtmp->m_id,
                 mtmp->mx, mtmp->my, (int) mtmp->data->msize,
                 (is_flyer(mtmp->data) || is_floater(mtmp->data)) ? 1 : 0);
@@ -1489,6 +1490,11 @@ build_monsters(void)
         } else if (mtmp->isshk && ESHK(mtmp)->shoptype >= SHOPBASE) {
             fputs(",", out);
             jstr(shtypes[ESHK(mtmp)->shoptype - SHOPBASE].name);
+        } else
+            fputs(",null", out);
+        {
+            struct trap *t = mtmp->mtrapped ? t_at(mtmp->mx, mtmp->my) : (struct trap *) 0;
+            fprintf(out, ",%d", t && (t->ttyp == PIT || t->ttyp == SPIKED_PIT) ? 1 : 0);
         }
         fputc(']', out);
     }

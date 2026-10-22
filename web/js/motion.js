@@ -75,7 +75,7 @@ export class Motion {
     this.heroPoly = !!msg.hero[3];
     const turn = Math.max(this.heroRemaining(now), IDLE_TURN_MS);
     const seen = new Set();
-    for (const [id, x, y, size, fly, name, peace, god] of msg.m) {
+    for (const [id, x, y, size, fly, name, peace, god, pit] of msg.m) {
       seen.add(id);
       let m = this.mobs.get(id);
       if (!m) {
@@ -92,6 +92,7 @@ export class Motion {
       m.name = name; // for the name tag
       m.peace = peace; // 1 tame, 2 peaceful, 0 hostile
       m.god = god || null; // (a priest: whose: his figure, monsters.json "aligned priest|lawful"...)
+      m.pit = !!pit; // (down in a pit, caught there: drawn down in it)
     }
     for (const id of [...this.mobs.keys()]) if (!seen.has(id)) this.mobs.delete(id);
     this.byCell = new Map([...this.mobs.values()].map((m) => [`${m.tx},${m.tz}`, m]));
