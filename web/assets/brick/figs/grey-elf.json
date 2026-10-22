@@ -2,22 +2,28 @@
  "label": "grey elf",
  "name": "grey elf",
  "torso": "973",
- "torsoColor": 72,
- "armColor": 72,
- "handColor": 78,
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
  "hips": "3815",
- "hipColor": 71,
- "legColor": 71,
- "head": "3626bp05",
- "headColor": 78,
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0f",
+ "headColor": 72,
  "hair": {
   "part": "10055p01",
-  "color": 15
+  "color": 15,
+  "recolor": {
+   "78": "72"
+  }
  },
  "neck": [
   {
    "part": "50231c01",
-   "color": 71
+   "color": 85
   }
- ]
+ ],
+ "headRecolor": {
+  "0": "4"
+ }
 }
