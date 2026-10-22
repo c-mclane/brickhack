@@ -209,6 +209,7 @@ export class ThrowFX {
         this.brick.model(s.url).then((m) => this.burst(m, new THREE.Vector3(s.x + 0.5, STUD_H + 0.2, s.z + 0.5), new THREE.Vector3(), s.splash)).catch(() => {});
       }
     for (const s of [...this.shards]) this.stepShards(s, dt);
+    this.stepDebris(dt);
     this.stepStreams(dt);
     this.stepPours(dt);
     this.stepNotes(dt);
@@ -420,20 +421,69 @@ export class ThrowFX {
     this.puddles.push({ mesh: puddle, t: 0, size: 0.28 + Math.random() * 0.12 });
   }
 
+  // a monster slain (brickworld.shatterFigure): its parts (holders in the world, each its own part round its middle)
+  // flung out from `from`, tumbling, bouncing off the floor and the walls of its square (box: [x0, z0, x1, z1]), lying
+  // there a moment, and fading away
+  explode(holders, box, from) {
+    const pieces = holders.map((obj) => {
+      const own = (m) => { const c = m.clone(); c.userData.op0 = m.transparent ? m.opacity : 1; c.transparent = true; return c; };
+      obj.traverse((o) => { if (o.isMesh) o.material = Array.isArray(o.material) ? o.material.map(own) : own(o.material); });
+      const out = obj.position.clone().sub(from).setY(0);
+      if (out.lengthSq() < 1e-4) out.set(Math.random() - 0.5, 0, Math.random() - 0.5);
+      out.normalize().multiplyScalar(0.9 + Math.random() * 1.3);
+      return { obj, v: out.setY(2 + Math.random() * 1.8), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(16) };
+    });
+    (this.debris = this.debris || []).push({ pieces, box, t: 0 });
+  }
+  stepDebris(dt) {
+    const LIE = 2.2, FADE = 0.8, bb = new THREE.Box3(), q = new THREE.Quaternion(), ax = new THREE.Vector3();
+    for (const d of [...(this.debris || [])]) {
+      d.t += dt;
+      const [x0, z0, x1, z1] = d.box;
+      for (const pc of d.pieces) {
+        const o = pc.obj;
+        pc.v.y += G * dt;
+        o.position.addScaledVector(pc.v, dt);
+        const ang = pc.w.length() * dt;
+        if (ang > 1e-5) { q.setFromAxisAngle(ax.copy(pc.w).normalize(), ang); o.quaternion.premultiply(q); }
+        o.updateMatrixWorld(true);
+        bb.setFromObject(o);
+        // (the floor: up out of it, bouncing, rolling to a stop; the square's walls: back off them, bounced)
+        if (bb.min.y < STUD_H) { o.position.y += STUD_H - bb.min.y; if (pc.v.y < 0) pc.v.y *= -0.38; pc.v.x *= 0.72; pc.v.z *= 0.72; pc.w.multiplyScalar(0.72); }
+        // (a part bigger than its square that way (a horse's body): kept in the middle of it, not shoved wall to wall)
+        if (bb.max.x - bb.min.x > x1 - x0) { o.position.x += (x0 + x1) / 2 - (bb.min.x + bb.max.x) / 2; pc.v.x = 0; }
+        else if (bb.min.x < x0) { o.position.x += x0 - bb.min.x; pc.v.x = Math.abs(pc.v.x) * 0.5; }
+        else if (bb.max.x > x1) { o.position.x -= bb.max.x - x1; pc.v.x = -Math.abs(pc.v.x) * 0.5; }
+        if (bb.max.z - bb.min.z > z1 - z0) { o.position.z += (z0 + z1) / 2 - (bb.min.z + bb.max.z) / 2; pc.v.z = 0; }
+        else if (bb.min.z < z0) { o.position.z += z0 - bb.min.z; pc.v.z = Math.abs(pc.v.z) * 0.5; }
+        else if (bb.max.z > z1) { o.position.z -= bb.max.z - z1; pc.v.z = -Math.abs(pc.v.z) * 0.5; }
+      }
+      if (d.t > LIE) {
+        const k = Math.max(0, 1 - (d.t - LIE) / FADE);
+        for (const pc of d.pieces) pc.obj.traverse((o) => { if (o.isMesh) for (const m of [].concat(o.material)) { m.opacity = m.userData.op0 * k; m.depthWrite = k > 0.98; } });
+      }
+      if (d.t > LIE + FADE) {
+        for (const pc of d.pieces) pc.obj.parent && pc.obj.parent.remove(pc.obj);
+        this.debris.splice(this.debris.indexOf(d), 1);
+      }
+    }
+  }
+
   // a fountain's water broken (something dipped in, a hand cupping a drink: the hero at its rim): its own clear
   // blue studs (mist.js fountainStud) popping up out of it at p (its surface), tumbling, and dropping back in out
   // of sight; and a ring spreading out over it. n: how many; up: how hard (squares/s); floor: where they go out
   // of sight (the water's surface: p's height; drips off someone: the floor), ring: a ring on the water
-  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true, lava = false, tint = null } = {}) { // (lava: its glowing orange studs, embers flying; tint: studs of that colour)
+  splashStuds(p, n = 8, up = 1.6, { floor = p.y, ring: rings = true, lava = false, tint = null, solid = false, spread = 1 } = {}) { // (lava: its glowing orange studs, embers flying; tint: studs of that colour; solid: not see-through; spread: how far out they fly)
     const piece = lava ? this.brick.lavaStud : fountainStud() || plainStud();
     if (lava) this.sparkles(p.clone().setY(p.y + 0.1), Math.round(n * 1.5), 0xff7a1a, 0.3);
     if (piece) {
       const mat = piece.mat.clone();
       if (tint !== null && mat.color) { mat.color.set(tint); if (mat.emissive) mat.emissive.set(0); }
+      if (solid) { mat.transparent = false; mat.opacity = 1; mat.depthWrite = true; }
       const mesh = new THREE.InstancedMesh(piece.geo.clone(), mat, n), parts = [];
       mesh.frustumCulled = false; mesh.renderOrder = 3;
       for (let i = 0; i < n; i++) {
-        const a = Math.random() * Math.PI * 2, s = 0.15 + Math.random() * 0.35;
+        const a = Math.random() * Math.PI * 2, s = (0.15 + Math.random() * 0.35) * spread;
         parts.push({ p: p.clone(), v: new THREE.Vector3(Math.cos(a) * s, up * (0.6 + Math.random() * 0.6), Math.sin(a) * s),
           q: new THREE.Quaternion().random(), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(18), s: MODEL_SCALE });
       }

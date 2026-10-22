@@ -311,6 +311,11 @@ const music = new Music({
 });
 const motion = new Motion();
 const fx = new CombatFX();
+fx.onKill = (x, z) => { // (a monster slain: its figure blown apart, white studs flying: it, by who it is, not whatever's on its square)
+  if (!(renderer && renderer.brickOn && renderer.brick)) return false;
+  const mob = motion.mobAt(x, z), g = !mob && [...gone].reverse().find((o) => o.x === x && o.z === z && performance.now() - o.t < 2500);
+  return renderer.brick.shatterFigureAt(x, z, mob ? mob.id : g ? g.id : undefined);
+};
 { // every attack (however it's made) holds the engine's replies until the blow lands (holdReplies)
   const attack = fx.attack.bind(fx);
   fx.attack = (x, y, now) => { attack(x, y, now); holdReplies(performance.now() + ATTACK_TIME * SLASH_CUT * 1000); };
@@ -590,7 +595,7 @@ function handle(m) {
       const before = new Map([...motion.mobs].map(([id, mob]) => [id, { x: mob.tx, z: mob.tz, size: mob.size }]));
       motion.setMobs(m, performance.now());
       const now = performance.now();
-      for (const [id, b] of before) if (!motion.mobs.has(id)) gone.push({ x: b.x, z: b.z, top: mobTop(id, b.size), t: now });
+      for (const [id, b] of before) if (!motion.mobs.has(id)) gone.push({ id, x: b.x, z: b.z, top: mobTop(id, b.size), t: now });
       while (gone.length && now - gone[0].t > 3000) gone.shift();
       break;
     }
@@ -1974,7 +1979,7 @@ function heroHaze(now, x, y, z) {
 // knocking against you, a statue... and comes to rest as it lies (throwfx.js drop). How high it
 // starts: dropTop, from the dropper's own model (a monster's measured as drawn: modelTop), so
 // nothing ever starts inside the one it fell from, whatever it looks like.
-const gone = []; // monsters gone: {x, z, top, t}
+const gone = []; // monsters gone: {id, x, z, top, t}
 const mobModel = new Map(); // monster id -> {url, lift}: its brick model, as drawn
 const urlTop = new Map(); // a model's url -> its height (world units), once measured
 function modelTop(url) {
@@ -2148,7 +2153,7 @@ function brickMonFigures(sprites, dt, now) {
       const L = e.creature === 'snake' ? lw : 0; // (a snake against a fountain: its back end up its side)
       const base = partMatrix(sx + 0.5, slift + STUD_H + SNAKE_UP * L, sz + 0.5, Math.PI - yaw);
       const cm = mul4(L > 0.01 ? mul4(base, tiltX(LEAN * L)) : base, local);
-      out.push({ prims: e.prims, url: e.url, matrix: cm, shade: s.shade, pose: null, hold: {} });
+      out.push({ prims: e.prims, url: e.url, matrix: cm, shade: s.shade, pose: null, hold: {}, mon: s.mob && s.mob.id });
       const r = e.rider;
       if (r && r.prims) { // (a centaur's man half: on its horse, where its neck is; shooting in the archer's stance, as you do)
         if (!st.riderAnim && r.prims.rig) st.riderAnim = new FigureAnimator(r.prims.rig, { phase: Math.random() * 3 });
@@ -2156,7 +2161,7 @@ function brickMonFigures(sprites, dt, now) {
         if (shot && shot > (st.shotT0 || 0)) { st.shotT0 = shot; st.looseAt = now / 1000; }
         const lt = st.looseAt != null ? now / 1000 - st.looseAt : 9, loosing = lt < FOUNT.loose.T, k = r.scale;
         const pose = st.riderAnim ? st.riderAnim.update(dt, { holdsR: !!e.hold || loosing, fount: loosing ? { act: 'loose', t: lt } : null }) : null;
-        out.push({ prims: r.prims, url: r.url, matrix: mul4(cm, new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r.at[0], r.at[1], r.at[2], 1])), shade: s.shade, pose,
+        out.push({ prims: r.prims, url: r.url, matrix: mul4(cm, new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r.at[0], r.at[1], r.at[2], 1])), shade: s.shade, pose, mon: s.mob && s.mob.id,
           hold: archerHold(e, loosing, lt) });
       }
       continue;
@@ -2173,10 +2178,10 @@ function brickMonFigures(sprites, dt, now) {
       : { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0, raise: warn }) : null; // (shooting: into the archer's stance, and back)
     if (e.slither) {
       const m = mul4(figureMatrix(sx + 0.5, slift + e.lift, sz + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: st.spitAt ?? -1e9 }));
-      out.push({ prims: e.prims, url: e.url, matrix: m, shade: s.shade, pose, hold: { R: e.hold } });
+      out.push({ prims: e.prims, url: e.url, matrix: m, shade: s.shade, pose, hold: { R: e.hold }, mon: s.mob && s.mob.id });
       continue;
     }
-    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(sx + 0.5, slift, sz + 0.5, yaw), shade: s.shade, pose, hold: loosing ? archerHold(e, true, now / 1000 - st.looseAt) : { R: e.hold } });
+    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(sx + 0.5, slift, sz + 0.5, yaw), shade: s.shade, pose, hold: loosing ? archerHold(e, true, now / 1000 - st.looseAt) : { R: e.hold }, mon: s.mob && s.mob.id });
   }
   return out;
 }

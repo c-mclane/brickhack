@@ -1695,11 +1695,55 @@ export class BrickWorld {
       const g = this.figObjs[i];
       g.matrix.fromArray(f.matrix);
       g.matrixWorldNeedsUpdate = true;
+      g.userData.mon = f.mon; // (whose figure it is: a monster's id, shatterFigureAt)
       poseJoints(g.userData.joints, f.pose);
       if (g.userData.joints) this.holdItems(g, f.hold || {});
       if (f.fade !== undefined) { fadeObject(g, f.fade); g.userData.faded = f.fade < 1; } // (coming into being, or going: see-through, 0..1)
       else if (g.userData.faded) { fadeObject(g, 1); g.userData.faded = false; } // (one that was fading, taken now for one that isn't)
+      const sh = g.userData.shattered; // (blown to bits (shatterFigureAt): not seen there again, should the game take a moment to say it's gone)
+      if (sh) { const e = g.matrix.elements; g.visible = !(performance.now() - sh.t < 1500 && Math.hypot(e[12] - sh.x, e[14] - sh.z) < 0.3); if (g.visible) g.userData.shattered = null; }
     });
+  }
+
+  // a monster slain at square (x, z) (mon: its id, its figures tagged with it: setFigures; else whatever's drawn there):
+  // the figure drawn there blown apart at its joints (head, body, each arm, its hands
+  // and what's in them, each leg; one all of a piece, a creature: the whole of it), the parts flung about its square,
+  // tumbling and bouncing (throwfx explode), and a burst of white studs. False if no figure's drawn there
+  shatterFigureAt(x, z, mon) {
+    const cx = x + 0.5, cz = z + 0.5;
+    const here = (this.figObjs || []).filter((g, i) => { // (its figures, all of them: a centaur's horse and its man half; not you)
+      if (!i || !g.visible || !g.children.length) return false;
+      if (mon != null) return g.userData.mon === mon;
+      const e = g.matrix.elements;
+      return Math.abs(e[12] - cx) < 0.5 && Math.abs(e[14] - cz) < 0.5;
+    });
+    if (!here.length) return false;
+    const box = new THREE.Box3(), holders = [];
+    for (const best of here) {
+      best.updateMatrixWorld(true);
+      const j = best.userData.joints;
+      const nodes = j ? Object.values(j.joints).filter((n) => { let mesh = false; n.traverse((o) => { if (o.isMesh) mesh = true; }); return mesh && n.visible; }) : [best.children[0]];
+      for (const n of nodes) {
+        box.setFromObject(n);
+        if (box.isEmpty()) continue;
+        const c = box.getCenter(new THREE.Vector3());
+        const holder = new THREE.Group();
+        holder.position.copy(c);
+        const part = n.clone(true);
+        part.matrixAutoUpdate = false;
+        part.matrix.copy(n.matrixWorld).premultiply(new THREE.Matrix4().makeTranslation(-c.x, -c.y, -c.z)); // (round its own middle)
+        holder.add(part);
+        this.world.add(holder);
+        holders.push(holder);
+      }
+      const e = best.matrix.elements;
+      best.userData.shattered = { x: e[12], z: e[14], t: performance.now() };
+      best.visible = false;
+    }
+    const m = 0.04; // (kept within its square)
+    this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.3, cz));
+    this.fx.splashStuds(new THREE.Vector3(cx, STUD_H + 0.45, cz), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
+    return true;
   }
 
   // a part of a floor item, by its joint (items.json "joint"), faded: k 1 as built, 0 gone (an altar's statues

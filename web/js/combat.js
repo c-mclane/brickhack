@@ -36,7 +36,7 @@ export class CombatFX {
     if (!a || now - a.t > 1500) return;
     const mob = motion.mobAt(a.x, a.y);
     if (/^You (kill|destroy)/i.test(s)) {
-      this.puff(a.x, a.y, now);
+      if (!(this.onKill && this.onKill(a.x, a.y))) this.puff(a.x, a.y, now); // (in brick: blown to bits, main.js; else a puff)
       this.lastAttack = null;
     } else if (/^You miss/i.test(s)) {
       if (mob) this.mobFX.set(mob.id, { kind: 'dodge', t0: now, dx: a.y - hero.y, dz: -(a.x - hero.x) });
