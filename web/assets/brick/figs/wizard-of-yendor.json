@@ -9,11 +9,45 @@
  "neck": [
   {
    "part": "50231c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/yendor-at.png"
+   }
+  },
+  {
+   "part": "20551c01",
    "color": 0
   },
   {
-   "part": "10052",
-   "color": 15
+   "part": "15501",
+   "color": 0
   }
- ]
+ ],
+ "head": "3626bp0fr",
+ "headColor": 14,
+ "torsoDecal": {
+  "image": "../decals/yendor-at.png"
+ },
+ "hatDecal": {
+  "image": "../decals/yendor-at.png",
+  "center": [
+   0,
+   -6,
+   -13
+  ],
+  "size": [
+   12,
+   12
+  ],
+  "side": "front"
+ },
+ "aura": {
+  "color": [
+   1.0,
+   0.0,
+   1.0
+  ],
+  "strength": 0.5,
+  "scale": 0.7
+ }
 }
