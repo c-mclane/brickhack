@@ -217,14 +217,15 @@ export function auraOf(THREE, root, cfg = {}) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(sh.pos, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(sh.nrm, 3));
+    const col = cfg.color || AURA_COLOR, dark = col[0] + col[1] + col[2] < 0.3; // (a dark aura: a shadow wreathing it, laid over what's behind, not light added: black adds nothing)
     const mat = new THREE.ShaderMaterial({
-      uniforms: { uStrength: { value: sh.strength * (cfg.strength ?? 1) }, uMistTime: uTime, uColor: { value: new THREE.Vector3(...(cfg.color || AURA_COLOR)) } },
+      uniforms: { uStrength: { value: sh.strength * (cfg.strength ?? 1) }, uMistTime: uTime, uColor: { value: new THREE.Vector3(...col) } },
       vertexShader: `varying vec3 vN; varying vec3 vP;
         void main() { vN = normalize(normalMatrix * normal); vec4 p = modelViewMatrix * vec4(position, 1.0); vP = p.xyz; gl_Position = projectionMatrix * p; }`,
       fragmentShader: `varying vec3 vN; varying vec3 vP; uniform float uStrength, uMistTime; uniform vec3 uColor;
         ${AURA_GLSL}
-        void main() { float a = auraGlow(normalize(vN), normalize(-vP), uStrength, uMistTime); gl_FragColor = vec4(uColor * a, 1.0); }`,
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+        void main() { float a = auraGlow(normalize(vN), normalize(-vP), uStrength, uMistTime); gl_FragColor = ${dark ? 'vec4(uColor, clamp(a * 1.6, 0.0, 0.85))' : 'vec4(uColor * a, 1.0)'}; }`,
+      transparent: true, depthWrite: false, blending: dark ? THREE.NormalBlending : THREE.AdditiveBlending, side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(g, mat);
     mesh.renderOrder = 3;

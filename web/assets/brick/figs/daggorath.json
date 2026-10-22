@@ -1,0 +1,58 @@
+{
+ "label": "Daggorath",
+ "name": "Daggorath",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 0,
+ "head": "3626cpxa",
+ "headColor": 0,
+ "dress": {
+  "part": "3678b",
+  "color": 0,
+  "decal": {
+   "image": "../decals/pixel-moon.png",
+   "center": [
+    0,
+    26,
+    10
+   ],
+   "size": [
+    20,
+    20
+   ]
+  }
+ },
+ "hat": "2338",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 0,
+   "decal": {
+    "image": "../decals/pixel-moon.png"
+   }
+  },
+  {
+   "part": "20551c01",
+   "color": 0
+  },
+  {
+   "part": "93069",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "95050",
+  "color": 0
+ },
+ "aura": {
+  "color": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "strength": 0.6,
+  "scale": 0.7
+ }
+}

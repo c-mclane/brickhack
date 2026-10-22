@@ -18226,5 +18226,8 @@
  "Colonel Blood": {
   "fig": "colonel-blood",
   "hold": "long sword"
+ },
+ "Daggorath": {
+  "fig": "daggorath"
  }
 }

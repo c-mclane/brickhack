@@ -177,6 +177,7 @@ DECAL_SPOTS = {
     '3876': {'center': (0, 0, -14), 'size': (36, 36), 'side': 'front'},    # round shield (rodela)
     '2587': {'center': (0, 12, -22), 'size': (18, 18), 'side': 'front'},   # classic armour plate: the chest
     '50231': {'center': (0, 28, 36), 'size': (28, 28), 'side': 'back'},    # cloth cape: between the shoulder blades
+    '38301': {'center': (0, 26, 10), 'size': (28, 28), 'side': 'back'},    # scalloped cloth cape: between the shoulder blades
     '973': {'center': (0, 15, -10), 'size': (17, 17), 'side': 'front'},     # torso: the chest
     '30381': {'center': (0, -3, -18), 'size': (9, 9), 'side': 'front'},     # hood: its brow, over the face
     '95228': {'center': (0, 32, -10), 'size': (16, 16), 'side': 'front'},  # minifig bottle: its body
