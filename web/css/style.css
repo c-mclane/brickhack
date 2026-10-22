@@ -366,20 +366,14 @@ body.brick3d #title .splash { bottom: -44px; right: -20px; } /* (below the brick
 /* an item made in brick: a rendered picture of its model (brickitems.js), drawn smooth */
 .icon.brick-icon { image-rendering: auto; background-repeat: no-repeat; background-position: center; }
 
-/* ---------- the interface in brick (web/js/brickui.js): words in letter tiles, buttons plates ---------- */
+/* ---------- the interface in brick (web/js/brickui.js): words in letter tiles ---------- */
 .brick-tiles { color: transparent !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; background-repeat: no-repeat; background-position: center;
   background-size: 100% 100%; display: inline-block; overflow: hidden; white-space: nowrap; }
 #nowplaying.brick-tiles { display: block; background-size: auto 100%; }
 #nowplaying.brick-tiles.show { animation: brickRainbow 2.5s linear infinite; }
 @keyframes brickRainbow { from { filter: hue-rotate(0deg) drop-shadow(2px 2px 0 #0006); } to { filter: hue-rotate(360deg) drop-shadow(2px 2px 0 #0006); } }
 #xp .lvl.brick-tiles { display: block; background-size: auto 100%; top: -22px; }
-.mc-btn.brick-btn { color: transparent !important; text-shadow: none; box-shadow: none; border: none; background: center / contain no-repeat;
-  filter: drop-shadow(0 3px 0 #0007); transition: transform .08s, filter .08s; }
-.mc-btn.brick-btn:hover, .mc-btn.brick-btn:focus-visible { background-color: transparent; transform: translateY(-2px); filter: brightness(1.18) drop-shadow(0 5px 0 #0007); }
-.mc-btn.brick-btn:active { transform: translateY(1px); filter: brightness(.95) drop-shadow(0 1px 0 #0007); }
-.mc-btn.brick-btn[disabled] { filter: grayscale(1) opacity(.5); transform: none; }
-.choice-menu .mc-btn.brick-btn.current { outline: none; filter: brightness(1.1) sepia(.6) drop-shadow(0 3px 0 #0007); }
-/* (hidden till it's in brick: never seen first in its plain dress; brickui.js drops html.brick-ui if there's no brick) */
-html.brick-ui .mc-btn:not([data-brick-ok]), html.brick-ui .screen h1:not([data-brick-ok]), html.brick-ui .screen h2:not([data-brick-ok]),
+.choice-menu /* (hidden till it's in brick: never seen first in its plain dress; brickui.js drops html.brick-ui if there's no brick) */
+html.brick-ui .screen h1:not([data-brick-ok]), html.brick-ui .screen h2:not([data-brick-ok]),
 html.brick-ui .menu-panel .title:not([data-brick-ok]), html.brick-ui #title .splash:not([data-brick-ok]),
 html.brick-ui #nowplaying:not([data-brick-ok]), html.brick-ui #xp .lvl:not([data-brick-ok]) { visibility: hidden; }

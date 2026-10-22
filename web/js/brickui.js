@@ -1,8 +1,7 @@
-// The interface in brick. Its words that stand out (titles, a button's label, the splash, the song playing, your
+// The interface in brick. Its words that stand out (titles, the splash, the song playing, your
 // level) spelled in 1x1 tiles printed with silver letters (tools/build_roster.py ui_glyph_*: A-Z, 0-8, - . @ _; a 9 is
-// a 6 turned round; anything else a gap), and a button a plate (ui_plate, tinted) with its label laid on its studs;
-// the experience bar a row of studs filling with green, the panels studded. Each picture drawn once (cached by what
-// it shows) and put on the element as its background, the element's own text kept (and still read) but not shown.
+// a 6 turned round; anything else a gap; brickText can lay them on a plate, ui_plate, tinted); the experience bar a
+// row of studs filling with green, the panels studded. Each picture drawn once (cached by what it shows) and put on the element as its background, the element's own text kept (and still read) but not shown.
 // Long text (messages, menus, item names) stays in its font.
 
 import * as THREE from 'three';
@@ -113,11 +112,9 @@ async function drawn1(text, { plate = null, tile = null, ink = null, wrap = 0, t
 }
 
 // ---- put on the page
-// what's made of tiles, and how: selector -> {opts, size (px a stud shown), box ('fit': drawn to fit the element as
-// it is, a button; else the element sized to the picture)}
-const BUTTON = { opts: { plate: 0xa0a5a9, tilt: 0.5 }, box: 'fit' };
+// what's made of tiles, and how: selector -> {opts (brickText's), size (px a stud shown: the element sized to the
+// picture), center (only its height set: the picture in the middle of it), max (letters: longer, left in its font)}
 const ROLES = [
-  ['.mc-btn', BUTTON],
   ['.screen h1', { opts: { wrap: 20 }, size: 44 }],
   ['.screen h2', { opts: { wrap: 26 }, size: 26 }],
   ['.menu-panel .title', { opts: { wrap: 30 }, size: 20, max: 60 }],
@@ -129,13 +126,12 @@ function apply(el, role) {
   const text = el.textContent.trim();
   if (el.dataset.brick === text) return;
   el.dataset.brick = text;
-  if (!text || (role.max && text.length > role.max)) { el.classList.remove('brick-tiles', 'brick-btn'); el.style.backgroundImage = ''; if (role.box !== 'fit') el.style.width = el.style.height = ''; el.dataset.brickOk = '1'; return; }
+  if (!text || (role.max && text.length > role.max)) { el.classList.remove('brick-tiles'); el.style.backgroundImage = ''; el.style.width = el.style.height = ''; el.dataset.brickOk = '1'; return; }
   brickText(text, role.opts).then((p) => {
     if (el.dataset.brick !== text) return;
     el.dataset.brickOk = '1'; // (shown now: in brick, or (no picture) as it was)
     if (!p) return;
     el.style.backgroundImage = `url(${p.url})`;
-    if (role.box === 'fit') { el.classList.add('brick-btn'); return; }
     el.classList.add('brick-tiles');
     const k = role.size / PX; // (shown at so many px a stud)
     if (role.center) { el.style.height = Math.round(p.h * k) + 'px'; el.style.backgroundSize = `${Math.round(p.w * k)}px ${Math.round(p.h * k)}px`; }
