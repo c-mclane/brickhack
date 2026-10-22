@@ -772,6 +772,7 @@ function handle(m) {
     case 'pray': prayFx(m); break; // praying, as it goes (prayFx)
     case 'rite': riteFx(m); break; // a rite at the altar of a follower of Jesus (riteFx)
     case 'altar': altarFx(m); break; // what happens at an altar: a sacrifice, a flash, a conversion (altarFx)
+    case 'priest': priestFx(m); break; // a contribution to a temple priest (priestFx)
     case 'boxfx': // a box or a chest kicked (brickworld.js boxFx): your kick, and what comes of it as your foot lands
       if (m.act === 'thud') fountNow('kick');
       if (renderer.brickOn && renderer.brick) {
@@ -878,6 +879,10 @@ function onMenu(m) {
 }
 
 function onGameOver() {
+  const a = hero3d.ascend; // (the ending played out first)
+  if (a && performance.now() < a.end) { setTimeout(onGameOver, a.end - performance.now() + 200); return; }
+  hero3d.ascend = null;
+  ambience.set('mass', false);
   game.playing = false;
   ambience.set('water', false);
   ambience.set('lava', false);
@@ -1629,6 +1634,12 @@ function altarFx(m) {
     altarSeq.next = now + 2500;
     return;
   }
+  if (m.act === 'water') { // (blessed by the prayer: when it's done, the potions on it glowing)
+    const P = hero3d.prayer;
+    setTimeout(() => b.altarFx(m.x, m.y, 'water', kind, m.n, hx, hz, spot), P ? Math.max(0, P.t0 + PRAY_OUTCOME * 1000 - now) : 0);
+    return;
+  }
+  if (m.act === 'ascend') { setTimeout(() => ascension(m, kind, hx, hz, spot), Math.max(0, altarSeq.next - now)); return; }
   const at = Math.max(now, altarSeq.next);
   altarSeq.next = at + (m.act === 'consume' ? 1400 : m.act === 'claim' || m.act === 'convert' ? 2600 : 1100);
   if (m.act === 'claim' || m.act === 'convert') b.convertAltar(m.x, m.y, (at - now) / 1000 + 0.6); // (before the map turns it: its old model kept a while)
@@ -1638,6 +1649,41 @@ function altarFx(m) {
     if ((m.act === 'wrath' && m.n) || m.act === 'reject') fx.shake = { t0: performance.now(), amp: 0.6 };
     b.altarFx(m.x, m.y, m.act, kind, m.n, hx, hz, spot);
   }, at - now);
+}
+
+// the Amulet of Yendor offered (the engine's "altar" "ascend"; the game ends straight after: its end held till
+// this is done): your own god's altar, an invisible choir (the Agnus Dei) and a column of radiance down onto you,
+// your arms raised, and you rising up into it, the view following, all gone to white; another god's, orange smoke
+// about you, and you gone into it. Letterboxed, the view slowly round you (cutsceneCamera)
+const ASCEND_T = 12, ASCEND_RISE = 3.5, ASCEND_WHITE = 9;
+function ascension(m, kind, hx, hz, spot) {
+  const now = performance.now(), win = !!m.n;
+  hero3d.ascend = { t0: now, win, end: now + (win ? ASCEND_T : 7) * 1000 };
+  renderer.brick.altarFx(m.x, m.y, 'ascend', kind, m.n, hx, hz, spot);
+  if (win) { ambience.set('mass', true); fountNow('orans'); }
+  cutscene = { t0: now, T: win ? ASCEND_T + 2 : 7.5, up: null, focus: [hx + 0.5, STUD_H + 0.75, hz + 0.5], side: [0, 1], lift: (t) => ascendLift(t) };
+  letterbox(true);
+  const veil = document.createElement('div'); // (all gone to white; or to the smoke)
+  Object.assign(veil.style, { position: 'fixed', inset: '0', background: win ? '#fffdf4' : '#3a1a08', opacity: '0', transition: `opacity ${win ? 2.5 : 1.5}s ease`, pointerEvents: 'none', zIndex: '45' });
+  document.body.appendChild(veil);
+  setTimeout(() => { veil.style.opacity = '1'; }, (win ? ASCEND_WHITE : 4.5) * 1000);
+  setTimeout(() => { veil.style.opacity = '0'; setTimeout(() => veil.remove(), 2600); }, (win ? ASCEND_T + 1.5 : 7.5) * 1000);
+}
+// (how far up you've risen, t s into it; and how much of you there is still, going into the smoke)
+function ascendLift(t) { const a = hero3d.ascend; if (!a || !a.win) return 0; const u = Math.max(0, t - ASCEND_RISE); return u * u * 0.18; }
+function ascendFade(now) { const a = hero3d.ascend; if (!a || a.win) return undefined; const t = (now - a.t0) / 1000; return Math.max(0, Math.min(1, 1 - (t - 2.5) / 2)); }
+
+// a contribution to a temple priest (winweb.c web_priestfx): your gold tossed to him (none, given nothing), and
+// what comes of it (brickworld.priestFx)
+function priestFx(m) {
+  if (!renderer.brickOn || !renderer.brick) return;
+  const b = renderer.brick, now = performance.now(), [hx, hz] = motion.heroPos(now);
+  const you = { x: hx + 0.5, z: hz + 0.5 }, him = { x: m.x + 0.5, z: m.y + 0.5 };
+  const coin = (brickBuilt('_coin') || {}).url, n = m.act === 'donate' ? [0, 3, 5, 8, 10][m.n] || 0 : 0;
+  if (m.act === 'donate' && n && coin) {
+    fountNow('alms');
+    b.tossCoins({ x: you.x, y: STUD_H + 0.95, z: you.z }, { x: him.x, y: STUD_H + 0.9, z: him.z }, n, coin).then(() => b.priestFx(m.act, m.n, him, you));
+  } else setTimeout(() => b.priestFx(m.act, m.n, him, you), m.act === 'blessing' ? 2200 : 0);
 }
 
 function prayFx(m) {
@@ -1717,8 +1763,9 @@ function cutsceneCamera(now) {
   if (!c.out && c.T - t < 0.9) { c.out = true; letterbox(false); } // (the bars going as the view comes back)
   const w = ease(t / 0.9) * ease((c.T - t) / 0.9);
   const ang = Math.atan2(c.side[1], c.side[0]) + 1.3 + 0.08 * t, k = c.up != null ? ease((t - c.up) / 0.8) : 0; // (k: drawn back and up a little, to the sword held high)
-  const eye = [c.focus[0] + Math.cos(ang) * (2.1 + 0.6 * k), c.focus[1] + 0.4 + 0.2 * k, c.focus[2] + Math.sin(ang) * (2.1 + 0.6 * k)];
-  const tgt = [c.focus[0] + c.side[0] * 0.5, c.focus[1] - 0.1 + 0.5 * k, c.focus[2] + c.side[1] * 0.5];
+  const up = c.lift ? c.lift(t) : 0; // (following you up: ascending)
+  const eye = [c.focus[0] + Math.cos(ang) * (2.1 + 0.6 * k + 0.5 * up), c.focus[1] + 0.4 + 0.2 * k + 0.55 * up, c.focus[2] + Math.sin(ang) * (2.1 + 0.6 * k + 0.5 * up)];
+  const tgt = [c.focus[0] + c.side[0] * 0.5, c.focus[1] - 0.1 + 0.5 * k + 0.9 * up, c.focus[2] + c.side[1] * 0.5];
   const d = [tgt[0] - eye[0], tgt[1] - eye[1], tgt[2] - eye[2]];
   const vy = Math.atan2(d[0], -d[2]), vp = Math.atan2(d[1], Math.hypot(d[0], d[2]));
   cam.eye = roundAbout(c.focus, cam.eye, eye, w);
@@ -2958,7 +3005,7 @@ function frame(t) {
       const steed = !sw && !pp ? riddenSteed() : null, ground = world.heroLift ?? phys.y, going = motion.heroRemaining(t) > 0;
       const m = steed ? figureMatrix(hx + 0.5, ground + steed.seat - 28 / 80 + (going ? 0.025 * Math.abs(Math.sin(t / 1000 * 9)) : 0), hz + 0.5, doll.yaw)
         : sw ? figureMatrix(sw.x + 0.5, (world.heroLift ?? phys.y) + sw.y, sw.z + 0.5, sw.yaw ?? doll.yaw)
-        : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift - kneelDrop(t), hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw) // (at an altar, knelt)
+        : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift - kneelDrop(t) + (hero3d.ascend ? ascendLift((t - hero3d.ascend.t0) / 1000) : 0), hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw) // (at an altar, knelt; ascending)
         : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink - kneelDrop(t) + stairStep(dt, hx, hz), hz + 0.5, doll.yaw); // (praying: down on your knees; on stairs, on a step)
       if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
       heroWisps(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : -sink), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw, pose ? mouthPoint(m, pose) : null);
@@ -2966,7 +3013,7 @@ function frame(t) {
       raiseGlint(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : 0), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw); // (something held high: glinting)
       const steedFig = steed ? [{ prims: steed.saddledPrims || steed.prims, url: steed.saddled || steed.url, shade: 1, pose: null, hold: {},
         matrix: mul4(partMatrix(hx + 0.5, ground, hz + 0.5, Math.PI - doll.yaw), creatureLocal(steed.creature, t / 1000, { moving: going, lungeT: -1e9 })) }] : [];
-      renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold) }, ...steedFig, // (you first: the hero, to the brick world)
+      renderer.brickFigures = [{ prims: hero3d.prims, url: hero3d.url, matrix: m, shade: 1, pose, hold, skip: skipped(hold), fade: ascendFade(t) }, ...steedFig, // (you first: the hero, to the brick world; going into the smoke)
         // (for the block levels' renderer, brick.js; the brick dungeon's hangs them on the hands itself)
         ...(rig && pose ? heldEntries(hold, rig, m, { R: pose.handR || pose.armR, L: pose.handL || pose.armL, body: pose.body }) : [])];
     } else renderer.brickFigures = [];

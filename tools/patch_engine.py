@@ -1092,4 +1092,31 @@ edit("src/sp_lev.c", [
      '\t/* check for existing features */\n\toldtyp = levl[x][y].typ;\n\tif (oldtyp == STAIRS || oldtyp == LADDER)\n\t    return;\n\n\ta->x = x;'),
 ], "WEB_HOOK_ALTAROK")
 
+# BrickHack: the last things done at an altar: water blessed (or cursed) by a prayer on it, the potions glowing
+# (pray.c water_prayer); the Amulet of Yendor offered, the ending played out (pray.c dosacrifice: "ascend", n 1
+# your own god's altar, 0 another's); a contribution to a temple priest (priest.c priest_talk: web_priestfx)
+edit("src/pray.c", [
+    ('    if(!Blind && changed) {\n\tpline("%s potion%s on the altar glow%s %s for a moment.",',
+     '    if(!Blind && changed) {\n\tweb_altarfx("water", bless_water ? 1 : -1, (struct obj *)0);\n\tpline("%s potion%s on the altar glow%s %s for a moment.",'),
+    ('    You("offer the Amulet of Yendor to %s...", a_gname());\n',
+     '    web_altarfx("ascend", u.ualign.type == altaralign, (struct obj *)0);\n    You("offer the Amulet of Yendor to %s...", a_gname());\n'),
+], "WEB_HOOK_ALTARFX2")
+edit("src/priest.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\n/* WEB_HOOK_PRIESTFX */\nextern void FDECL(web_priestfx, (const char *, int, struct monst *));\n'),
+    ('\t    if((offer = bribe(priest)) == 0) {\n\t\tverbalize("Thou shalt regret thine action!");',
+     '\t    if((offer = bribe(priest)) == 0) {\n\t\tweb_priestfx("donate", 0, priest), verbalize("Thou shalt regret thine action!");'),
+    ('\t\tif(u.ugold > (offer * 2L)) verbalize("Cheapskate.");',
+     '\t\tif(u.ugold > (offer * 2L)) web_priestfx("donate", 1, priest), verbalize("Cheapskate.");'),
+    ('\t\t    verbalize("I thank thee for thy contribution.");',
+     '\t\t    web_priestfx("donate", 1, priest), verbalize("I thank thee for thy contribution.");'),
+    ('\t\tverbalize("Thou art indeed a pious individual.");',
+     '\t\tweb_priestfx("donate", 2, priest), verbalize("Thou art indeed a pious individual.");'),
+    ('\t\t    verbalize("I bestow upon thee a blessing.");',
+     '\t\t    web_priestfx("blessing", 2, priest), verbalize("I bestow upon thee a blessing.");'),
+    ('\t\tverbalize("Thy devotion has been rewarded.");',
+     '\t\tweb_priestfx("donate", 3, priest), verbalize("Thy devotion has been rewarded.");'),
+    ('\t\tverbalize("Thy selfless generosity is deeply appreciated.");',
+     '\t\tweb_priestfx("donate", 4, priest), verbalize("Thy selfless generosity is deeply appreciated.");'),
+], "WEB_HOOK_PRIESTFX")
+
 print("engine hooks applied:", src)

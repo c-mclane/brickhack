@@ -754,6 +754,95 @@ export async function runTestbed(data) {
         await pray(1, 'bolt', 'Suddenly, a bolt of lightning strikes you!');
         say('');
       }
+      // a temple (?part=temple: a lawful altar, its priest): water blessed (and cursed) by a prayer on the altar, the
+      // potions glowing; contributions to the priest, gold tossed him, each way it's taken; and the Amulet of Yendor
+      // offered: at another god's altar, gone into orange smoke; at your own, the choir, the radiance, and up into it
+      const ta = at('altar_lawful'), tp = cobras.find((c) => /^aligned priest/.test(c.monster));
+      const part3 = (p) => doing('temple') || doing(p); // (or just one of them: ?part=water, donate, amulet)
+      if (ta && ['temple', 'water', 'donate', 'amulet'].some(doing)) {
+        const [ax, az] = ta.at, S = { x: ax + 0.5, y: 0, z: az + 0.5 + 46 / 80, yaw: 0 }, o = items.altar_lawful.offer || [0, 0.8, 0];
+        const spot = (i = 0) => ({ x: ax + 0.5 + o[0] + [0, -0.16, 0.16][i % 3], y: STUD_H + o[1], z: az + 0.5 + o[2] });
+        const go = async (to) => {
+          const from = hero.spot || { x: hero.pos[0] + 0.5, y: 0, z: hero.pos[1] + 0.5, yaw: hero.yaw }, t0 = clock, T = Math.max(0.4, Math.hypot(to.x - from.x, to.z - from.z) / 2.2);
+          const way = Math.atan2(to.x - from.x, -(to.z - from.z));
+          while (clock - t0 < T) { const u = (clock - t0) / T; hero.spot = { x: from.x + (to.x - from.x) * u, y: 0, z: from.z + (to.z - from.z) * u, yaw: u < 0.85 ? way : to.yaw, moving: true }; await wait(0); }
+          hero.spot = { ...to };
+          await wait(0.3);
+        };
+        let lying = [];
+        const show = () => { if (!rites.busy) rites.props = lying; };
+        const put = async (name) => { hero.hold = { R: url(name) }; hero.fount = { act: 'place', t0: clock, fired: 0 }; await wait(0.75); hero.hold = { R: null }; lying.push(rites.prop(name, spot(lying.length))); show(); await wait(0.8); };
+        const pray = async (water, said) => { // (a prayer, and the potions on the altar touched by it)
+          say('You begin praying to Lugh.');
+          hero.fount = { act: 'prayer', t0: clock, fired: 0 };
+          const st = brick.prayBegin(S.x, S.z, 3);
+          await wait(PRAY_OUTCOME); say('You finish your prayer.');
+          brick.prayOutcome(S.x, S.z, 'pleased', 2, st);
+          await wait(0.4); say(said);
+          brick.altarFx(ax, az, 'water', 'lawful', water, ax, az + 46 / 80, spot());
+          await wait(0.6); lying = lying.map((p, i) => rites.prop(water > 0 ? 'holy water' : 'unholy water', spot(i))); show();
+          await wait(PRAY_AFTER - PRAY_OUTCOME);
+        };
+        // holy water
+        if (part3('water')) {
+        await go(S);
+        for (let i = 0; i < 3; i++) await put('water');
+        await pray(1, 'The potions on the altar glow light blue for a moment.');
+        lying = []; show();
+        for (let i = 0; i < 2; i++) await put('water');
+        await pray(-1, 'The potions on the altar glow black for a moment.');
+        lying = []; show(); say('');
+        }
+        // contributions to the priest
+        if (tp && part3('donate')) {
+          const P = { x: tp.at[0] + 0.5, z: tp.at[1] + 0.5 }, near = { x: P.x - 1, y: 0, z: P.z, yaw: Math.PI / 2 };
+          await go(near);
+          for (const [n, asked, said] of [[0, 'You give the priest nothing.', '"Thou shalt regret thine action!"'], [1, 'You give the priest 20 gold pieces.', '"Cheapskate."'],
+            [2, 'You give the priest 300 gold pieces.', '"Thou art indeed a pious individual."'], ['blessing', '', '"I bestow upon thee a blessing."'],
+            [3, 'You give the priest 500 gold pieces.', '"Thy devotion has been rewarded."'], [4, 'You give the priest 900 gold pieces.', '"Thy selfless generosity is deeply appreciated."']]) {
+            say('The priest asks you for a contribution for the temple.'); await wait(1.0);
+            if (asked) { say(asked); await wait(0.9); }
+            const k = n === 'blessing' ? 0 : [0, 3, 5, 8, 10][n];
+            if (k) { hero.fount = { act: 'alms', t0: clock, fired: 0 }; await brick.tossCoins({ x: near.x, y: STUD_H + 0.95, z: near.z }, { x: P.x, y: STUD_H + 0.9, z: P.z }, k, url('_coin')); }
+            say(said);
+            brick.priestFx(n === 'blessing' ? 'blessing' : 'donate', n === 'blessing' ? 2 : n, P, { x: near.x, z: near.z });
+            await wait(3);
+          }
+          say('');
+        }
+        // the Amulet of Yendor offered
+        const offer = async (win) => {
+          await go(S);
+          hero.hold = { R: url('Amulet of Yendor') }; hero.fount = { act: 'sacrifice', t0: clock, fired: 0 };
+          await wait(2.0); hero.hold = { R: null }; lying = [rites.prop('Amulet of Yendor', spot())]; show();
+          await wait(0.5);
+          say(win ? 'You offer the Amulet of Yendor to Lugh...' : 'You offer the Amulet of Yendor to Moloch...');
+          const t0 = clock, veil = document.createElement('div');
+          Object.assign(veil.style, { position: 'fixed', inset: '0', background: win ? '#fffdf4' : '#3a1a08', opacity: '0', transition: `opacity ${win ? 2.5 : 1.5}s ease`, pointerEvents: 'none', zIndex: '45' });
+          document.body.appendChild(veil);
+          brick.altarFx(ax, az, 'ascend', 'lawful', win ? 1 : 0, ax, az + 46 / 80, spot());
+          lying = []; show();
+          const lift = (t) => (win ? Math.max(0, t - 3.5) ** 2 * 0.18 : 0);
+          cut = { t0: clock, T: win ? 14 : 7.5, up: null, focus: [S.x, STUD_H + 0.75, S.z], side: [0, 1], lift }; bars(true);
+          if (win) { amb.set('mass', true); hero.fount = { act: 'orans', t0: clock, fired: 0 }; }
+          const lines = win ? [[0.6, 'An invisible choir sings, and you are bathed in radiance...'], [3, 'The voice of Lugh booms out:  "Congratulations, mortal!"'],
+            [5.5, '"In return for thy service, I grant thee the gift of Immortality!"'], [8, 'You ascend to the status of Demigod...']]
+            : [[0.6, 'Moloch accepts your gift, and gains dominion over Lugh...'], [2, 'Lugh is enraged...'], [3.2, 'Fortunately, Moloch permits you to live...'], [4.4, 'A cloud of orange smoke surrounds you...']];
+          for (const [t, l] of lines) setTimeout(() => say(l), t * 1000 / SLOW);
+          setTimeout(() => { veil.style.opacity = '1'; }, (win ? 9 : 4.5) * 1000 / SLOW);
+          while (clock - t0 < (win ? 13.5 : 7)) {
+            const t = clock - t0;
+            hero.spot = { ...S, y: lift(t) };
+            hero.fade = win ? undefined : Math.max(0, Math.min(1, 1 - (t - 2.5) / 2));
+            await wait(0);
+          }
+          veil.style.opacity = '0'; setTimeout(() => veil.remove(), 2600);
+          if (win) amb.set('mass', false);
+          hero.fade = undefined; hero.fount = null; hero.spot = null;
+          say(''); await wait(2.5);
+        };
+        if (part3('amulet')) { await offer(false); await offer(true); }
+      }
       // the altars of the gods (?part=altars: lawful, neutral, chaotic, Moloch's), one after another, as a lawful hero
       // finds them: things set down on them flashing amber or black; sacrifices going up in light or in the altar's own
       // fire, and what comes of them (a four-leaf clover; a cross-aligned altar converted, glowing white; blood and a
@@ -1279,7 +1368,7 @@ export async function runTestbed(data) {
       m.set(figureMatrix(S.x, S.y - drop, S.z, S.yaw));
     }
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: heroFig.url, matrix: m, pose, hold: hero.spot ? hero.hold : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {
@@ -1326,8 +1415,9 @@ export async function runTestbed(data) {
       else {
         const ang = Math.atan2(cut.side[1], cut.side[0]) + 1.3 + 0.08 * t, f = cut.focus;
         const ku = cut.up != null ? Math.max(0, Math.min(1, (t - cut.up) / 0.8)) : 0, k2 = ku * ku * (3 - 2 * ku); // (drawn back and up, to the sword held high)
-        const eye = new THREE.Vector3(f[0] + Math.cos(ang) * (2.1 + 0.6 * k2), f[1] + 0.4 + 0.2 * k2, f[2] + Math.sin(ang) * (2.1 + 0.6 * k2));
-        const tgt = new THREE.Vector3(f[0] + cut.side[0] * 0.5, f[1] - 0.1 + 0.5 * k2, f[2] + cut.side[1] * 0.5);
+        const up = cut.lift ? cut.lift(t) : 0; // (following you up: ascending)
+        const eye = new THREE.Vector3(f[0] + Math.cos(ang) * (2.1 + 0.6 * k2 + 0.5 * up), f[1] + 0.4 + 0.2 * k2 + 0.55 * up, f[2] + Math.sin(ang) * (2.1 + 0.6 * k2 + 0.5 * up));
+        const tgt = new THREE.Vector3(f[0] + cut.side[0] * 0.5, f[1] - 0.1 + 0.5 * k2 + 0.9 * up, f[2] + cut.side[1] * 0.5);
         { // (round the fountain, not straight across: never through its walls; as main.js roundAbout)
           const a0 = Math.atan2(cut.pos0.z - f[2], cut.pos0.x - f[0]), r0 = Math.hypot(cut.pos0.x - f[0], cut.pos0.z - f[2]);
           const a1 = Math.atan2(eye.z - f[2], eye.x - f[0]), r1 = Math.hypot(eye.x - f[0], eye.z - f[2]);

@@ -1219,6 +1219,54 @@ export class BrickWorld {
     step();
   }
 
+  // gold tossed from (from) to (to), n coins (url: a coin's model), one after another in a little arc, each gone
+  // as it reaches him (a contribution to a temple priest); resolves when the last has arrived
+  tossCoins(from, to, n, url) {
+    return new Promise((res) => this.model(url).then((m) => {
+      const coins = [], t0 = performance.now();
+      for (let i = 0; i < n; i++) {
+        const c = m.clone(); c.scale.setScalar(MODEL_SCALE); c.visible = false; this.world.add(c);
+        coins.push({ c, t: 0.15 * i, sp: (Math.random() - 0.5) * 0.1 });
+      }
+      const tick = () => {
+        const t = (performance.now() - t0) / 1000;
+        let live = 0;
+        for (const k of coins) {
+          const u = (t - k.t) / 0.5;
+          if (u < 0) { live++; continue; }
+          if (u >= 1) { if (k.c.parent) { this.world.remove(k.c); this.fx.sparkles(new THREE.Vector3(to.x, to.y, to.z), 3, 0xffd34d, 0.05); } continue; }
+          live++;
+          k.c.visible = true;
+          k.c.position.set(from.x + (to.x - from.x) * u + k.sp, from.y + (to.y - from.y) * u + 0.35 * Math.sin(Math.PI * u), from.z + (to.z - from.z) * u);
+          k.c.rotation.set(u * 9, u * 4, 0);
+        }
+        if (live) requestAnimationFrame(tick); else res();
+      };
+      tick();
+    }));
+  }
+  // a contribution to a temple priest (the engine's "priest": winweb.c web_priestfx), what comes of it: at him (p),
+  // or on you (you): 0 his curse (a red flash at him); 1 nothing much; 2 pious (a soft glow on you); blessing (its
+  // clairvoyance: a bright eye of light over you); 3 devotion rewarded, his protection (a ring of gold shields
+  // round you, a column of light); 4 selfless generosity (warm light down on you)
+  priestFx(act, n, p, you) {
+    const fx = this.fx, P = new THREE.Vector3(p.x, STUD_H + 1.0, p.z), Y = new THREE.Vector3(you.x, STUD_H + 0.7, you.z);
+    if (act === 'blessing') { this.flash(Y.clone().setY(Y.y + 0.8), 0xa8e0ff, { size: 0.8, T: 1.2 }); fx.sparkles(Y.clone().setY(Y.y + 0.8), 30, 0xd8f0ff, 0.2); return; }
+    switch (n) {
+      case 0: this.flash(P, 0xff2a10, { size: 1.1, T: 0.8 }); fx.sparkles(P, 24, 0xff4020, 0.3); break;
+      case 2: fx.sparkles(Y, 26, 0xfff6d0, 0.35); break;
+      case 3: {
+        this.prayLight(you.x, you.z, 3.5, { size: 0.7 });
+        for (let i = 0; i < 12; i++) setTimeout(() => { // (a ring of shields of light about you, turning, closing in)
+          const a = (i / 12) * Math.PI * 2 + i * 0.3, r = 0.55 - i * 0.025;
+          fx.sparkles(new THREE.Vector3(you.x + Math.cos(a) * r, STUD_H + 0.5 + (i % 3) * 0.2, you.z + Math.sin(a) * r), 12, i % 2 ? 0xffe27a : 0x9fd0ff, 0.06);
+        }, 300 + i * 120);
+        break;
+      }
+      case 4: this.prayLight(you.x, you.z, 3, { size: 0.55 }); fx.sparkles(Y, 30, 0xffe9a0, 0.4); break;
+    }
+  }
+
   // a flash of light (or dark: dark, a black flash) swelling out of a point and gone: an altar's flash as
   // something blessed or cursed hits it, a sacrifice going up in light, an altar converted
   flash(p, color, { size = 1, T = 0.7, dark = false } = {}) {
@@ -1287,6 +1335,16 @@ export class BrickWorld {
         for (let i = 0; i < 6; i++) later(i * 0.12, () => fx.sparkles(top.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.5, 0, (Math.random() - 0.5) * 0.3)), 8, 0x8a0000, 0.06));
         break;
       case 'cloud': this.stormCloud(top.x, top.z, 5); break;
+      case 'water': // (the potions on it, blessed by a prayer: glowing light blue a moment; or cursed: black)
+        if (n > 0) { this.flash(top.clone().setY(top.y + 0.1), 0x8fd4ff, { size: 1.2, T: 1.2 }); for (let i = 0; i < 5; i++) later(i * 0.2, () => fx.sparkles(top.clone().setY(top.y + 0.1), 14, i % 2 ? 0xbfe8ff : 0x6ab8ff, 0.2)); }
+        else { this.flash(top.clone().setY(top.y + 0.1), 0x050508, { size: 1.2, T: 1.2, dark: true }); for (let i = 0; i < 5; i++) later(i * 0.2, () => fx.haze(top.clone().setY(top.y - 0.1), 0.5, 6, 0x0a0a12)); }
+        break;
+      case 'ascend': // (the Amulet offered: your own god's, an invisible choir, a column of radiance down onto you; another's: orange smoke)
+        if (n) {
+          this.prayLight(hx + 0.5, hz + 0.5, 11, { size: 2.4, color: 0xfff6dc, motes: [0xffffff, 0xffe9a0] });
+          for (let i = 0; i < 40; i++) later(0.5 + i * 0.22, () => fx.sparkles(new THREE.Vector3(hx + 0.5 + (Math.random() - 0.5) * 1.6, STUD_H + Math.random() * 2.5, hz + 0.5 + (Math.random() - 0.5) * 1.6), 10, i % 3 ? 0xfff6d0 : 0xffffff, 0.2));
+        } else for (let i = 0; i < 22; i++) later(0.3 + i * 0.16, () => fx.vapor(you.clone().add(new THREE.Vector3((Math.random() - 0.5) * 0.6, Math.random() * 0.8 - 0.3, (Math.random() - 0.5) * 0.6)), 0xff8a2a, 1.5));
+        break;
       case 'claim': // (a chalice set down on it by his follower: a brilliant white, the old god's altar burning away, his rising)
         this.flash(top.clone().setY(top.y - 0.2), 0xffffff, { size: 3.2, T: 2.0 });
         this.prayLight(top.x, top.z, 4.5, { size: 1.2 });

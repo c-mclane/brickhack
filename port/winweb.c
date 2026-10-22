@@ -412,6 +412,20 @@ web_altarfx(const char *act, int n, struct obj *obj)
     endmsg();
 }
 
+/* priest.c priest_talk: a contribution to a temple priest (#chat), played out (the client: gold tossed to him, and
+   what comes of it): "donate" (n: 0 nothing given, his curse; 1 a little, thanked or not; 2 pious; 3 your
+   devotion rewarded, his protection; 4 selfless generosity), "blessing" (a pious gift's clairvoyance); at him,
+   you where you are */
+void
+web_priestfx(const char *act, int n, struct monst *priest)
+{
+    if (!out || !priest)
+        return;
+    fprintf(out, "{\"t\":\"priest\",\"act\":\"%s\",\"n\":%d,\"x\":%d,\"y\":%d,\"hx\":%d,\"hy\":%d", act, n,
+            priest->mx, priest->my, u.ux, u.uy);
+    endmsg();
+}
+
 /* mklev.c mkaltar, mkroom.c mktemple: may an altar go at (x, y)? Never facing a wall: the client turns an
    altar with its back to a wall beside it, and plays what's done at it before its front, where you stand (and a
    grand one's steps run out): so beside a wall, the square across from it must be open floor; beside none,
