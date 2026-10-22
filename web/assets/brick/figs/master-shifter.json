@@ -1,0 +1,13 @@
+{
+ "label": "Master Shifter",
+ "name": "Master Shifter",
+ "base": "doppelganger",
+ "torsoColor": 85,
+ "armColor": 85,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 85
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "label": "Lord Sato",
+ "name": "Lord Sato",
+ "base": "samurai-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

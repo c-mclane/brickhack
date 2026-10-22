@@ -1,0 +1,13 @@
+{
+ "label": "Ashikaga Takauji",
+ "name": "Ashikaga Takauji",
+ "base": "samurai-m",
+ "torsoColor": 4,
+ "armColor": 4,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "label": "gypsy",
+ "name": "gypsy",
+ "torso": "973",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 84,
+ "dress": {
+  "part": "3678b",
+  "color": 4
+ },
+ "head": "3626bp09",
+ "headColor": 84,
+ "hair": {
+  "part": "13766p01",
+  "color": 0
+ },
+ "neck": [
+  {
+   "part": "10183",
+   "color": 14
+  }
+ ]
+}

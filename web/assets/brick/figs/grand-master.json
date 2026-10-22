@@ -1,0 +1,11 @@
+{
+ "label": "Grand Master",
+ "name": "Grand Master",
+ "base": "monk-m",
+ "neck": [
+  {
+   "part": "10052",
+   "color": 15
+  }
+ ]
+}

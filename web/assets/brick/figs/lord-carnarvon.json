@@ -1,0 +1,13 @@
+{
+ "label": "Lord Carnarvon",
+ "name": "Lord Carnarvon",
+ "base": "johnny-thunder",
+ "hat": "30172",
+ "hatColor": 19,
+ "neck": [
+  {
+   "part": "10052",
+   "color": 70
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "label": "Orion",
+ "name": "Orion",
+ "base": "ranger-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 288
+  }
+ ]
+}

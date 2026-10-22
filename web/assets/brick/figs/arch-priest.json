@@ -1,0 +1,11 @@
+{
+ "label": "Arch Priest",
+ "name": "Arch Priest",
+ "base": "catholic-bishop",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 334
+  }
+ ]
+}

@@ -17691,7 +17691,8 @@
    }
   ],
   "scale": 1,
-  "creature": "beast"
+  "creature": "beast",
+  "aura": true
  },
  "Smaug": {
   "parts": [
@@ -18080,5 +18081,150 @@
   ],
   "scale": 1,
   "creature": "beast"
+ },
+ "nurse": {
+  "fig": "nurse"
+ },
+ "gypsy": {
+  "fig": "gypsy"
+ },
+ "black marketeer": {
+  "fig": "black-marketeer"
+ },
+ "guard": {
+  "fig": "guard",
+  "hold": "spear"
+ },
+ "prisoner": {
+  "fig": "prisoner"
+ },
+ "captain": {
+  "fig": "captain",
+  "hold": "long sword"
+ },
+ "Medusa": {
+  "fig": "medusa",
+  "slither": true,
+  "lift": 0.1
+ },
+ "Wizard of Yendor": {
+  "fig": "wizard-of-yendor",
+  "fx": "vapors"
+ },
+ "Croesus": {
+  "fig": "croesus"
+ },
+ "Charon": {
+  "fig": "charon",
+  "hold": "quarterstaff"
+ },
+ "Lord Carnarvon": {
+  "fig": "lord-carnarvon"
+ },
+ "Pelias": {
+  "fig": "pelias"
+ },
+ "Shaman Karnov": {
+  "fig": "shaman-karnov"
+ },
+ "Master Shifter": {
+  "fig": "master-shifter"
+ },
+ "Earendil": {
+  "fig": "earendil"
+ },
+ "Elwing": {
+  "fig": "elwing"
+ },
+ "High Flame Mage": {
+  "fig": "high-flame-mage"
+ },
+ "Hippocrates": {
+  "fig": "hippocrates"
+ },
+ "King Arthur": {
+  "fig": "king-arthur",
+  "hold": "long sword"
+ },
+ "High Ice Mage": {
+  "fig": "high-ice-mage"
+ },
+ "High Lycanthrope": {
+  "fig": "high-lycanthrope"
+ },
+ "Grand Master": {
+  "fig": "grand-master"
+ },
+ "Dark Lord": {
+  "fig": "dark-lord",
+  "fx": "smoke"
+ },
+ "Arch Priest": {
+  "fig": "arch-priest"
+ },
+ "Orion": {
+  "fig": "orion"
+ },
+ "Master of Thieves": {
+  "fig": "master-of-thieves"
+ },
+ "Lord Sato": {
+  "fig": "lord-sato"
+ },
+ "Twoflower": {
+  "fig": "twoflower"
+ },
+ "Van Helsing": {
+  "fig": "van-helsing",
+  "hold": "crossbow"
+ },
+ "Norn": {
+  "fig": "norn"
+ },
+ "Neferet the Green": {
+  "fig": "neferet-the-green"
+ },
+ "Chief Yeoman Warder": {
+  "fig": "chief-yeoman-warder"
+ },
+ "Thoth Amon": {
+  "fig": "thoth-amon",
+  "fx": "hellfire"
+ },
+ "Transmuter": {
+  "fig": "transmuter"
+ },
+ "Water Mage": {
+  "fig": "water-mage",
+  "fx": "vapors"
+ },
+ "Lareth": {
+  "fig": "lareth"
+ },
+ "Earth Mage": {
+  "fig": "earth-mage"
+ },
+ "Sir Lorimar": {
+  "fig": "sir-lorimar",
+  "hold": "long sword"
+ },
+ "Master Kaen": {
+  "fig": "master-kaen"
+ },
+ "Master Assassin": {
+  "fig": "master-assassin",
+  "hold": "dagger"
+ },
+ "Ashikaga Takauji": {
+  "fig": "ashikaga-takauji",
+  "hold": "katana"
+ },
+ "Dark One": {
+  "fig": "dark-one",
+  "fx": "smoke"
+ },
+ "Colonel Blood": {
+  "fig": "colonel-blood",
+  "hold": "long sword"
  }
 }

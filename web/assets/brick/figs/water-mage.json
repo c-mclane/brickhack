@@ -1,0 +1,9 @@
+{
+ "label": "Water Mage",
+ "name": "Water Mage",
+ "base": "ice-mage-m",
+ "torsoColor": 272,
+ "armColor": 272,
+ "hat": "6131",
+ "hatColor": 272
+}

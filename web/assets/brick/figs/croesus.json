@@ -1,0 +1,21 @@
+{
+ "label": "Croesus",
+ "name": "Croesus",
+ "torso": "973",
+ "torsoColor": 334,
+ "armColor": 334,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 4,
+ "legColor": 4,
+ "head": "3626bp0f",
+ "headColor": 14,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ],
+ "hat": "71015",
+ "hatColor": 334
+}

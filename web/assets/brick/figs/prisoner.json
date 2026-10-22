@@ -1,0 +1,17 @@
+{
+ "label": "prisoner",
+ "name": "prisoner",
+ "torso": "973",
+ "torsoColor": 14,
+ "armColor": 14,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 14,
+ "legColor": 14,
+ "head": "3626bp0f",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 70
+ }
+}

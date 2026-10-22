@@ -1,0 +1,11 @@
+{
+ "label": "Hippocrates",
+ "name": "Hippocrates",
+ "base": "healer-m",
+ "neck": [
+  {
+   "part": "10052",
+   "color": 15
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+{
+ "label": "High Flame Mage",
+ "name": "High Flame Mage",
+ "base": "flame-mage-m",
+ "hat": "6131",
+ "hatColor": 4,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "label": "Wizard of Yendor",
+ "name": "Wizard of Yendor",
+ "base": "wizard-m",
+ "torsoColor": 85,
+ "armColor": 85,
+ "hat": "6131",
+ "hatColor": 85,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  },
+  {
+   "part": "10052",
+   "color": 15
+  }
+ ]
+}

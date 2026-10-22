@@ -1,0 +1,13 @@
+{
+ "label": "Earendil",
+ "name": "Earendil",
+ "base": "elf-ranger-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 73
+  }
+ ],
+ "hat": "33322",
+ "hatColor": 383
+}

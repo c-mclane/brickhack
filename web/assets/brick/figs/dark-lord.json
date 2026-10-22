@@ -1,0 +1,13 @@
+{
+ "label": "Dark Lord",
+ "name": "Dark Lord",
+ "base": "necromancer-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "hat": "30381",
+ "hatColor": 0
+}

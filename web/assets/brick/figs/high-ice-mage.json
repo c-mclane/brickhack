@@ -1,0 +1,13 @@
+{
+ "label": "High Ice Mage",
+ "name": "High Ice Mage",
+ "base": "ice-mage-m",
+ "hat": "6131",
+ "hatColor": 1,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 1
+  }
+ ]
+}

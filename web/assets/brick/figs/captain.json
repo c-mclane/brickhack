@@ -1,0 +1,15 @@
+{
+ "label": "captain",
+ "name": "captain",
+ "base": "soldier",
+ "torsoColor": 272,
+ "armColor": 272,
+ "hipColor": 272,
+ "legColor": 272,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 272
+  }
+ ]
+}

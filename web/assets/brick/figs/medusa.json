@@ -1,0 +1,21 @@
+{
+ "label": "Medusa",
+ "name": "Medusa",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 2,
+ "handColor": 2,
+ "head": "3626bp0f",
+ "headColor": 2,
+ "headRecolor": {
+  "0": "4"
+ },
+ "hair": {
+  "part": "12889",
+  "color": 2
+ },
+ "shortLegs": {
+  "part": "98140",
+  "color": 2
+ }
+}

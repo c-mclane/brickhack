@@ -1,0 +1,13 @@
+{
+ "label": "Lareth",
+ "name": "Lareth",
+ "base": "priest-m",
+ "torsoColor": 0,
+ "armColor": 0,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 320
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "label": "Elwing",
+ "name": "Elwing",
+ "base": "elf-ranger-f",
+ "torsoColor": 15,
+ "armColor": 15,
+ "dress": {
+  "part": "3678b",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15
+  }
+ ]
+}

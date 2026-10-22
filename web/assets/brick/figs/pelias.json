@@ -1,0 +1,13 @@
+{
+ "label": "Pelias",
+ "name": "Pelias",
+ "base": "barbarian-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ],
+ "hat": "71015",
+ "hatColor": 334
+}

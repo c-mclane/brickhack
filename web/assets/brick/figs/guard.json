@@ -1,0 +1,7 @@
+{
+ "label": "guard",
+ "name": "guard",
+ "base": "watchman",
+ "torsoColor": 72,
+ "armColor": 72
+}

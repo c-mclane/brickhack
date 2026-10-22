@@ -1,0 +1,13 @@
+{
+ "label": "Sir Lorimar",
+ "name": "Sir Lorimar",
+ "base": "knight",
+ "torsoColor": 0,
+ "armColor": 0,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ]
+}

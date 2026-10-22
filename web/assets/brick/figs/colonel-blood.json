@@ -1,0 +1,15 @@
+{
+ "label": "Colonel Blood",
+ "name": "Colonel Blood",
+ "base": "soldier",
+ "torsoColor": 4,
+ "armColor": 4,
+ "hipColor": 0,
+ "legColor": 0,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

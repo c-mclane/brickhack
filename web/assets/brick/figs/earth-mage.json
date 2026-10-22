@@ -1,0 +1,9 @@
+{
+ "label": "Earth Mage",
+ "name": "Earth Mage",
+ "base": "flame-mage-m",
+ "torsoColor": 70,
+ "armColor": 70,
+ "hat": "6131",
+ "hatColor": 70
+}

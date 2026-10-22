@@ -1,0 +1,11 @@
+{
+ "label": "Norn",
+ "name": "Norn",
+ "base": "valkyrie",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 15
+  }
+ ]
+}

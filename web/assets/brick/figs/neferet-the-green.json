@@ -1,0 +1,15 @@
+{
+ "label": "Neferet the Green",
+ "name": "Neferet the Green",
+ "base": "wizard-f",
+ "torsoColor": 2,
+ "armColor": 2,
+ "hat": "6131",
+ "hatColor": 2,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 288
+  }
+ ]
+}

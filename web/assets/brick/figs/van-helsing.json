@@ -1,0 +1,13 @@
+{
+ "label": "Van Helsing",
+ "name": "Van Helsing",
+ "base": "undead-slayer-m",
+ "hat": "3629",
+ "hatColor": 0,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ]
+}

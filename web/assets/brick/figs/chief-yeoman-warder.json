@@ -1,0 +1,15 @@
+{
+ "label": "Chief Yeoman Warder",
+ "name": "Chief Yeoman Warder",
+ "base": "yeoman-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  },
+  {
+   "part": "10052",
+   "color": 15
+  }
+ ]
+}

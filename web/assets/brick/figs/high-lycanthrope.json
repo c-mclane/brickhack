@@ -1,0 +1,11 @@
+{
+ "label": "High Lycanthrope",
+ "name": "High Lycanthrope",
+ "base": "were-barbarian-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ]
+}

@@ -233,6 +233,7 @@ def main():
                                       + f" {p['part']}.dat\n" for p in m['parts'])
         name = 'mon-' + mon.replace(' ', '-') + ('-saddled' if saddled else '')
         extras = {'fx': m['fx']} if m.get('fx') else None   # (its element in particles all over it: a hell hound's fire, mist.js addEffects)
+        if m.get('aura'): extras = {**(extras or {}), 'aura': m['aura']}   # (an angel's glowing corona round it: mist.js addAura)
         key = hashlib.sha1((ldr + json.dumps(extras)).encode()).hexdigest()[:12]
         glb, ldr_path, keyfile = (os.path.join(OUT, name + ext) for ext in ('.glb', '.ldr', '.key'))
         if not (os.path.exists(glb) and os.path.exists(keyfile) and open(keyfile).read() == key):
