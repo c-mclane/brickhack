@@ -653,6 +653,7 @@ function handle(m) {
     }
     case 'msg':
       if (m.raw) console.log('[slashem]', m.s);
+      if (chest.active) { const e = m.s.match(/^(.*) is empty\.$/); if (e) { chest.sawMenu = true; chest.title = chestName(e[1]); chest.contents = []; } } // (nothing in it: its screen, empty)
       if (/For instructions type a \?/.test(m.s)) { game.mode = 'getpos'; break; }
       fx.onMessage(m.s, motion, world.hero, performance.now());
       // digging (a boulder, a statue, rock, down): a blow for each the engine tells of, each landing
@@ -2543,8 +2544,13 @@ function closeChestScreen() {
 }
 
 // answer the loot prompts NetHack asks; false = not ours, show it normally
+const chestName = (s) => s.replace(/^(the |your |an? )/i, '').replace(/^./, (c) => c.toUpperCase());
 function chestYN(m) {
   if (/loot it\?/i.test(m.q)) { post('K' + hex('y')); return true; }
+  // (asked, not given a menu (SLASH'EM, as its menu style has it): to take something out: yes, to see what's in it or to
+  // take the thing out; not to put something in)
+  const out = m.q.match(/take something out of (.*?)\?/i);
+  if (out) { chest.sawMenu = true; chest.title = chestName(out[1]); post('K' + hex(chest.op.kind === 'put' ? 'n' : 'y')); return true; }
   if (/put something in\?/i.test(m.q)) { post('K' + hex(chest.op.kind === 'put' ? 'y' : 'n')); return true; }
   return false;
 }
