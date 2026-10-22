@@ -1674,26 +1674,31 @@ export class BrickWorld {
 
   // the figures to draw this frame: [{url, matrix, pose}] (the hero); pose:
   // a matrix per joint (minifig-anim.js), for a figure in joints
+  // (each figure kept from frame to frame, by its model: one come into view, or the list in another order, takes
+  // one of its model's left over, or a new one; only those left over are let go. Not all of them thrown away and
+  // loaded again whenever the list changes: everyone, the hero too, gone a frame, flashing)
   setFigures(list) {
-    const key = list.map((f) => f.url).join('|');
-    if (key !== this.figKey) {
-      this.figKey = key;
-      this.figures.clear();
-      this.figObjs = list.map((f) => {
-        const g = new THREE.Group();
-        g.matrixAutoUpdate = false;
-        this.figures.add(g);
-        this.model(f.url).then((m) => { const c = m.clone(); g.add(c); g.userData.joints = figureJoints(c); });
-        return g;
-      });
-    }
+    const pool = new Map(); // url -> its figures from last frame, not yet taken
+    for (const g of this.figObjs || []) { if (!pool.has(g.userData.url)) pool.set(g.userData.url, []); pool.get(g.userData.url).push(g); }
+    this.figObjs = list.map((f) => {
+      const free = pool.get(f.url);
+      if (free && free.length) return free.shift();
+      const g = new THREE.Group();
+      g.matrixAutoUpdate = false;
+      g.userData.url = f.url;
+      this.figures.add(g);
+      this.model(f.url).then((m) => { const c = m.clone(); g.add(c); g.userData.joints = figureJoints(c); });
+      return g;
+    });
+    for (const left of pool.values()) for (const g of left) this.figures.remove(g);
     list.forEach((f, i) => {
       const g = this.figObjs[i];
       g.matrix.fromArray(f.matrix);
       g.matrixWorldNeedsUpdate = true;
       poseJoints(g.userData.joints, f.pose);
       if (g.userData.joints) this.holdItems(g, f.hold || {});
-      if (f.fade !== undefined) fadeObject(g, f.fade); // (coming into being, or going: see-through, 0..1)
+      if (f.fade !== undefined) { fadeObject(g, f.fade); g.userData.faded = f.fade < 1; } // (coming into being, or going: see-through, 0..1)
+      else if (g.userData.faded) { fadeObject(g, 1); g.userData.faded = false; } // (one that was fading, taken now for one that isn't)
     });
   }
 
