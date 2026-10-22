@@ -1,0 +1,15 @@
+{
+ "label": "gibberling",
+ "name": "gibberling",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 71,
+ "handColor": 71,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "head": "43745p01",
+ "headColor": 71,
+ "headY": 0
+}

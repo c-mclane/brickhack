@@ -1,0 +1,19 @@
+{
+ "label": "pyrolisk",
+ "name": "pyrolisk",
+ "torso": "973pde7",
+ "torsoColor": 320,
+ "armColor": 320,
+ "head": "3626b",
+ "headColor": 0,
+ "hat": "11262p01",
+ "hatColor": 320,
+ "shortLegs": {
+  "part": "98140",
+  "color": 320
+ },
+ "armL": "11263",
+ "armR": "11263m",
+ "noHands": true,
+ "fx": "fire"
+}

@@ -1,0 +1,23 @@
+{
+ "label": "grey elf",
+ "name": "grey elf",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 78,
+ "hips": "3815",
+ "hipColor": 71,
+ "legColor": 71,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 71
+  }
+ ]
+}

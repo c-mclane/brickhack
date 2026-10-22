@@ -1,0 +1,17 @@
+{
+ "label": "wraith",
+ "name": "wraith",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 151,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bpc15",
+ "headColor": 151,
+ "hat": "30381",
+ "hatColor": 0,
+ "static": true,
+ "fx": "smoke"
+}

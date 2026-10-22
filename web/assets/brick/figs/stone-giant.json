@@ -1,0 +1,18 @@
+{
+ "label": "stone giant",
+ "name": "stone giant",
+ "torso": "973",
+ "torsoColor": 71,
+ "armColor": 71,
+ "handColor": 71,
+ "longLegs": {
+  "color": 72
+ },
+ "longArms": true,
+ "head": "3626cpxa",
+ "headColor": 71,
+ "hair": {
+  "part": "40233",
+  "color": 72
+ }
+}

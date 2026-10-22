@@ -1,0 +1,58 @@
+{
+ "label": "succubus",
+ "name": "succubus",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 78,
+ "dress": {
+  "part": "3678b",
+  "color": 320
+ },
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 0
+ },
+ "extras": [
+  {
+   "part": "15082",
+   "color": 320,
+   "pos": [
+    -8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "15082",
+   "color": 320,
+   "pos": [
+    8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 60
+    }
+   ]
+  }
+ ]
+}
