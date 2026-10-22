@@ -15,7 +15,8 @@ SPEC example:
 "dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs
 (its "decal" printed down its front: a habit's embroidered band).
 "shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece);
-"noLegs": true none at all (a centaur's man half, on its horse's body).
+"noLegs": true none at all (a centaur's man half, on its horse's body); "longLegs": {"color": 19} extra long
+ones, each striding on its own (a giant: 87857's legs); "longArms": true long arms (87774, 87773), the hands at their ends.
 "boots": {"bands": [[y, colour], ...], "feet": {"part", "color", "pos"}} gives boots
 or shoes: the legs moulded in a second colour from height y down (booted), and
 anything strapped under the feet (snowshoes; "pos" under the right foot).
@@ -62,6 +63,11 @@ ARM_R = ((-15.552, 9, 0), (0.985, -0.17, 0, 0.17, 0.985, 0, 0, 0, 1))
 ARM_L = ((15.552, 9, 0), (0.985, 0.17, 0, -0.17, 0.985, 0, 0, 0, 1))
 HAND_R = ((-23.6904, 26.774, -9.8982), (0.985, -0.1202, 0.1202, 0.17, 0.6964, -0.6964, 0, 0.707, 0.707))
 HAND_L = ((23.6904, 26.774, -9.8982), (0.985, 0.1202, -0.1202, -0.17, 0.6964, -0.6964, 0, 0.707, 0.707))
+# ...on long arms (87774, 87773: "longArms", a giant's): the hand that much further down the arm, where its longer
+# arm ends (6.4 LDU further along it, 5.2 further forward at the wrist, in the arm's own frame)
+def _long_hand(arm, hand, d=(0.0, 6.4, -5.2)):
+    return (tuple(np.add(hand[0], np.array(arm[1], float).reshape(3, 3) @ np.array(d))), hand[1])
+HAND_R_LONG, HAND_L_LONG = _long_hand(ARM_R, HAND_R), _long_hand(ARM_L, HAND_L)
 
 # The hand's grip hole (from 3820.dat): centre and axis in the hand's own frame.
 # The axis points out of the top of the fist (toward the thumb side).
@@ -519,8 +525,9 @@ def build(spec, base_dir='.'):
     out.append(line(spec.get('torsoColor', 15), (0, 0, 0), I, recolored(spec.get('torso', '973'), spec.get('torsoRecolor'))))
     sides, rig = {}, {}
     skel = spec.get('skeleton')
-    for side, arm, hand, part in (('right', ARM_R, HAND_R, spec.get('armR', '3818')),
-                                  ('left', ARM_L, HAND_L, spec.get('armL', '3819'))):
+    long_arms = spec.get('longArms')   # (a giant's: long arms, its hands further down them)
+    for side, arm, hand, part in (('right', ARM_R, HAND_R_LONG if long_arms else HAND_R, '87774' if long_arms else spec.get('armR', '3818')),
+                                  ('left', ARM_L, HAND_L_LONG if long_arms else HAND_L, '87773' if long_arms else spec.get('armL', '3819'))):
         if skel:   # a skeleton's arm: one bone, claw and all, on a ball at the shoulder (skeleton_arm)
             rig['arm' + side[0].upper()] = skeleton_arm(out, G, spec, side)
             continue
@@ -581,6 +588,16 @@ def build(spec, base_dir='.'):
     elif spec.get('shortLegs'):
         # short legs (a dwarf, a child): hips and legs in one piece
         out.append(line(spec['shortLegs'].get('color', 16), (0, 32, 0), I, spec['shortLegs'].get('part', '16709')))
+    elif spec.get('longLegs'):
+        # extra long legs (a giant): the hips, and each long leg on the hip pin of its own (87857's own pieces), so they
+        # stride as any figure's do
+        c = spec['longLegs'].get('color', 16)
+        out.append(line(spec['longLegs'].get('hipColor', c), (0, 32, 0), I, '3815b'))
+        G('legR')
+        out.append(line(c, (0, 44, 0), I, '87776'))
+        G('legL')
+        out.append(line(c, (0, 44, 0), I, '87775'))
+        rig['legs'] = {'pivot': [0.0, 44.0, 0.0], 'axis': [1.0, 0.0, 0.0]}   # the hip pin
     else:
         out.append(line(spec.get('hipColor', 1), (0, 32, 0), I, spec.get('hips', '3815')))
         boots = spec.get('boots') or {}   # boots or shoes: the legs dual-moulded (booted), and anything under the feet
@@ -703,7 +720,7 @@ def piece(spec, slot, base_dir='.'):
             return None
         with_decal(spec['left'], (0, 0, 0), I)
     elif slot == 'boots':
-        if spec.get('dress') or spec.get('shortLegs') or spec.get('skeleton') or spec.get('noLegs'):
+        if spec.get('dress') or spec.get('shortLegs') or spec.get('longLegs') or spec.get('skeleton') or spec.get('noLegs'):
             return None
         bands = (spec.get('boots') or {}).get('bands')
         for leg in (spec.get('legR', '3816'), spec.get('legL', '3817')):
@@ -716,13 +733,15 @@ def piece(spec, slot, base_dir='.'):
 def body_dy(spec):
     """How far the whole figure is moved (LDraw Y) to stand on the floor: a dress brick (48 LDU)
     is 8 taller than hips and legs (40), so she's lifted; short legs end 16 higher, so a dwarf
-    or a child is lowered. (Its neck, then, is at (0, dy, 0).)"""
+    or a child is lowered; long legs 20 lower, so a giant is lifted. (Its neck, then, is at (0, dy, 0).)"""
     if spec.get('dress'):
         return -(48 - 40)
     if spec.get('skeleton'):
         return 0
     if spec.get('shortLegs'):
         return 16
+    if spec.get('longLegs'):   # (they end 20 lower: lifted)
+        return -20
     return 0
 
 

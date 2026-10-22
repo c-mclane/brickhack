@@ -8,14 +8,23 @@
  "hips": "3815",
  "hipColor": 308,
  "legColor": 308,
- "head": "3626bpc15",
+ "head": null,
  "headColor": 378,
  "extras": [
   {
    "part": "3626bpc15",
    "color": 378,
    "pos": [
-    18,
+    -11,
+    -24,
+    0
+   ]
+  },
+  {
+   "part": "3626bpc15",
+   "color": 378,
+   "pos": [
+    11,
     -24,
     0
    ]

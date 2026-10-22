@@ -5,13 +5,14 @@
  "torsoColor": 28,
  "armColor": 28,
  "handColor": 28,
- "hips": "3815",
- "hipColor": 28,
- "legColor": 28,
  "head": "3626bpa2",
  "headColor": 28,
  "hair": {
   "part": "40233",
   "color": 308
- }
+ },
+ "longLegs": {
+  "color": 28
+ },
+ "longArms": true
 }
