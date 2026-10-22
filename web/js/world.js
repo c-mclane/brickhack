@@ -135,7 +135,7 @@ export class World {
         const isHero = x === this.hero.x && y === this.hero.y;
         // the brick dungeon: everything lying here as brick models, the bottom one first, each
         // on the one below (brickworld.js stacks them), even under you or a monster
-        const pile = this.piles.get(y * this.w + x) || (c.k === 'o' ? [c.t] : null);
+        const pile = this.piles.get(y * this.w + x) || (c.k === 'o' || c.k === 'C' ? [c.t] : null); // (a chest, a box: winweb.c's 'C', its own model, its lid on its hinge)
         if (pile) {
           let level = fountain ? 1 : 0;
           for (let i = pile.length - 1; i >= 0; i--) {
