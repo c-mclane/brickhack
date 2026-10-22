@@ -8108,5 +8108,10 @@
   ],
   "scale": 1,
   "creature": "beast"
+ },
+ "cockatrice": {
+  "fig": "cockatrice",
+  "slither": true,
+  "lift": 0.1
  }
 }

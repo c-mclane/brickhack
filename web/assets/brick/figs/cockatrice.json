@@ -1,0 +1,18 @@
+{
+ "label": "cockatrice",
+ "name": "cockatrice",
+ "torso": "973pde7",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bp01",
+ "headColor": 14,
+ "hat": "11262p01",
+ "hatColor": 15,
+ "shortLegs": {
+  "part": "98140",
+  "color": 2
+ },
+ "armL": "11263",
+ "armR": "11263m"
+}
