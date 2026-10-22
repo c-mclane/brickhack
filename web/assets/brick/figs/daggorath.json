@@ -54,5 +54,8 @@
   ],
   "strength": 0.6,
   "scale": 0.7
- }
+ },
+ "role": "wizard",
+ "gender": "male",
+ "race": "human"
 }

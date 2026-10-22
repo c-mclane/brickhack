@@ -1584,7 +1584,10 @@ async function menagerie(level, brick, cam, ctl, canvas) {
   const items = await (await fetch('assets/brick/items.built.json', { cache: 'no-store' })).json(); // (what each holds, as the game gives it)
   ctl.screenSpacePanning = true; ctl.zoomSpeed = 0.6; // (a big menagerie, looked over: the wheel zooms in on the middle of the view, right-drag slides it along)
   ctl.minDistance = 1.2; ctl.maxDistance = 60; ctl.maxPolarAngle = Math.PI * 0.47; // (never through the floor, nor under it; never lost)
-  const beasts = level.monsters.filter((m) => mons[m.monster]).map((m, i) => ({ ...m, ...mons[m.monster], phase: (i * 0.53) % 7 }));
+  // (or a playable character, not a monster: {character, at}, its own figure off the roster: Daggorath, a wizard you can be)
+  const roster = level.monsters.some((m) => m.character) ? Object.fromEntries((await (await fetch('assets/brick/roster.built.json', { cache: 'no-store' })).json()).map((r) => [r.id, r])) : {};
+  const look = (m) => (m.character ? roster[m.character] && { url: roster[m.character].url, label: roster[m.character].label } : mons[m.monster]);
+  const beasts = level.monsters.filter(look).map((m, i) => ({ ...m, ...look(m), phase: (i * 0.53) % 7 }));
   for (const b of beasts) if (!b.creature) brick.model(b.url).then((m) => { // (a minifig monster: alive as the hero is)
     let rig = null;
     m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; });
@@ -1596,7 +1599,7 @@ async function menagerie(level, brick, cam, ctl, canvas) {
     m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; });
     b.riderAnim = new FigureAnimator(rig, { phase: b.phase });
   });
-  const missing = level.monsters.filter((m) => !mons[m.monster]).map((m) => m.monster);
+  const missing = level.monsters.filter((m) => !look(m)).map((m) => m.monster || m.character);
   const el = document.getElementById('status');
   if (el) el.textContent = `${level.title ? level.title + ' · ' : ''}menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom, right-drag to slide`;
   // their names, kept over them on screen
