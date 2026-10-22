@@ -4,9 +4,8 @@
  "torso": "973pde7",
  "torsoColor": 15,
  "armColor": 15,
- "handColor": 14,
- "head": "3626bp01",
- "headColor": 14,
+ "head": "3626b",
+ "headColor": 0,
  "hat": "11262p01",
  "hatColor": 15,
  "shortLegs": {
@@ -14,5 +13,6 @@
   "color": 2
  },
  "armL": "11263",
- "armR": "11263m"
+ "armR": "11263m",
+ "noHands": true
 }

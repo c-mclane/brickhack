@@ -547,7 +547,8 @@ def build(spec, base_dir='.'):
         # the hand: a joint of its own (it turns at the wrist, about its own Z axis: pose_arm's roll)
         rig['hand' + side[0].upper()] = {'pivot': [float(v) for v in h[0]], 'axis': [float(v) for v in np.array(h[1]).reshape(3, 3)[:, 2]]}
         G('hand' + side[0].upper())
-        out.append(line(spec.get('handColor', 14), h[0], h[1], '3820'))
+        if not spec.get('noHands'):   # ("noHands": wings with nothing at their ends, a chicken suit's: the joint kept, the hand gone)
+            out.append(line(spec.get('handColor', 14), h[0], h[1], '3820'))
     G('body')
     neck = spec.get('neck') or []   # capes, armour and other neck-bracket items sit between head and torso
     for item in neck if isinstance(neck, list) else [neck]:
