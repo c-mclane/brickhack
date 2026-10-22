@@ -1,0 +1,18 @@
+{
+ "label": "quickling",
+ "name": "quickling",
+ "torso": "973",
+ "torsoColor": 73,
+ "armColor": 73,
+ "handColor": 78,
+ "shortLegs": {
+  "part": "16709",
+  "color": 73
+ },
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 15
+ }
+}

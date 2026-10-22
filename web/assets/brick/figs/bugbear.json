@@ -1,0 +1,17 @@
+{
+ "label": "bugbear",
+ "name": "bugbear",
+ "torso": "973",
+ "torsoColor": 70,
+ "armColor": 484,
+ "handColor": 484,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626cpxa",
+ "headColor": 484,
+ "hair": {
+  "part": "40233",
+  "color": 308
+ }
+}

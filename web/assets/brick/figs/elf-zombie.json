@@ -1,0 +1,17 @@
+{
+ "label": "elf zombie",
+ "name": "elf zombie",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 378,
+ "handColor": 378,
+ "hips": "3815",
+ "hipColor": 288,
+ "legColor": 288,
+ "head": "3626bpc15",
+ "headColor": 378,
+ "hair": {
+  "part": "10055p01",
+  "color": 72
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "label": "pixie",
+ "name": "pixie",
+ "torso": "973",
+ "torsoColor": 13,
+ "armColor": 13,
+ "handColor": 78,
+ "shortLegs": {
+  "part": "16709",
+  "color": 13
+ },
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 13
+ },
+ "neck": [
+  {
+   "part": "10183",
+   "color": 45
+  }
+ ],
+ "aura": {
+  "color": [
+   1.0,
+   0.6,
+   0.85
+  ],
+  "strength": 0.45,
+  "scale": 0.6
+ }
+}

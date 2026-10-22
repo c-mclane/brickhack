@@ -1,0 +1,18 @@
+{
+ "label": "jermlaine",
+ "name": "jermlaine",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 28,
+ "handColor": 28,
+ "shortLegs": {
+  "part": "16709",
+  "color": 308
+ },
+ "head": "3626cpxa",
+ "headColor": 28,
+ "hair": {
+  "part": "10066",
+  "color": 308
+ }
+}

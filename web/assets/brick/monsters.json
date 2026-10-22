@@ -2119,5 +2119,302 @@
  },
  "ghoul": {
   "fig": "ghoul"
+ },
+ "jermlaine": {
+  "fig": "jermlaine",
+  "hold": "knife"
+ },
+ "kobold shaman": {
+  "fig": "kobold-shaman",
+  "hold": "quarterstaff"
+ },
+ "barrow wight": {
+  "fig": "barrow-wight",
+  "hold": "long sword"
+ },
+ "bugbear": {
+  "fig": "bugbear",
+  "hold": "morning star"
+ },
+ "elf zombie": {
+  "fig": "elf-zombie"
+ },
+ "galltrit": {
+  "fig": "galltrit"
+ },
+ "kobold mummy": {
+  "fig": "kobold-mummy"
+ },
+ "pixie": {
+  "fig": "pixie"
+ },
+ "quickling": {
+  "fig": "quickling"
+ },
+ "wax golem": {
+  "fig": "wax-golem"
+ },
+ "athol": {
+  "parts": [
+   {
+    "part": "30103",
+    "color": 320
+   }
+  ],
+  "scale": 1.3,
+  "creature": "bat"
+ },
+ "rhumbat": {
+  "parts": [
+   {
+    "part": "30103",
+    "color": 4
+   }
+  ],
+  "scale": 1.1,
+  "creature": "bat"
+ },
+ "centipede": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 14
+   }
+  ],
+  "scale": 1.0,
+  "creature": "snake",
+  "center": true
+ },
+ "dung worm": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 308
+   }
+  ],
+  "scale": 0.7,
+  "creature": "snake",
+  "center": true
+ },
+ "giant badger": {
+  "parts": [
+   {
+    "part": "98389",
+    "color": 0
+   }
+  ],
+  "scale": 1.7,
+  "creature": "beast"
+ },
+ "rock mole": {
+  "parts": [
+   {
+    "part": "98389",
+    "color": 72
+   }
+  ],
+  "scale": 1.4,
+  "creature": "beast"
+ },
+ "rabid rat": {
+  "parts": [
+   {
+    "part": "36756p01",
+    "color": 308
+   }
+  ],
+  "scale": 1.6,
+  "creature": "beast"
+ },
+ "rabid rabbit": {
+  "parts": [
+   {
+    "part": "33207p01",
+    "color": 15
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "scramper": {
+  "parts": [
+   {
+    "part": "11568",
+    "color": 70
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "sheep": {
+  "parts": [
+   {
+    "part": "1569p01",
+    "color": 15
+   },
+   {
+    "part": "1570",
+    "color": 15
+   }
+  ],
+  "scale": 1.4,
+  "creature": "beast"
+ },
+ "rhaumbusun": {
+  "parts": [
+   {
+    "part": "15678",
+    "color": 4
+   }
+  ],
+  "scale": 0.9,
+  "creature": "beast"
+ },
+ "spark bug": {
+  "parts": [
+   {
+    "part": "95827",
+    "color": 1
+   }
+  ],
+  "scale": 1.2,
+  "creature": "bug",
+  "center": true,
+  "fx": "sparks"
+ },
+ "carrion crawler": {
+  "parts": [
+   {
+    "part": "30238",
+    "color": 288
+   }
+  ],
+  "scale": 1.6,
+  "creature": "bug",
+  "center": true
+ },
+ "recluse spider": {
+  "parts": [
+   {
+    "part": "30238",
+    "color": 70
+   }
+  ],
+  "scale": 1.0,
+  "creature": "bug",
+  "center": true
+ },
+ "tsetse fly": {
+  "parts": [
+   {
+    "part": "95827",
+    "color": 0
+   },
+   {
+    "part": "80674",
+    "color": 47,
+    "pos": [
+     0,
+     -11.7,
+     0
+    ]
+   }
+  ],
+  "scale": 0.8,
+  "creature": "bat",
+  "center": true
+ },
+ "cockatoo": {
+  "parts": [
+   {
+    "part": "6333p01",
+    "color": 15
+   }
+  ],
+  "scale": 1.8,
+  "creature": "bat",
+  "center": true
+ },
+ "fog cloud": {
+  "parts": [
+   {
+    "part": "3941",
+    "color": 47
+   }
+  ],
+  "scale": 1.0,
+  "creature": "float",
+  "center": true,
+  "fx": "vapors"
+ },
+ "gray ooze": {
+  "parts": [
+   {
+    "part": "23925",
+    "color": 72
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     7,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     33,
+     -62,
+     -21
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 0.5,
+  "creature": "blob",
+  "center": true
+ },
+ "violet fungus": {
+  "parts": [
+   {
+    "part": "3062b",
+    "color": 22
+   },
+   {
+    "part": "4740p02",
+    "color": 85,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "fungus"
  }
 }

@@ -1,0 +1,16 @@
+{
+ "label": "kobold shaman",
+ "name": "kobold shaman",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 70,
+ "handColor": 70,
+ "shortLegs": {
+  "part": "16709",
+  "color": 272
+ },
+ "head": "3626bpc15",
+ "headColor": 70,
+ "hat": "30381",
+ "hatColor": 272
+}

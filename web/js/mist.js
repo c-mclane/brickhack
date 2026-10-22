@@ -334,6 +334,9 @@ const FX = {
   vapors: { n: 120, size: 0.13, color: 'mix(vec3(0.78, 0.7, 0.92), vec3(0.92, 0.88, 0.98), t)', alpha: 'smoothstep(0.0, 0.15, t) * (1.0 - t) * 0.35',
     move: 'float ang = ph * 6.2832 + t * 3.0; float r = h * (0.12 + 0.1 * t); vec3 fwd = cross(up, side); p = vec3(0.0, uLo, 0.0) + (side * cos(ang) + fwd * sin(ang)) * r + up * t * h * 0.9;',
     speed: '0.18 + ph * 0.1' },
+  // (sparks: little blue-white arcs crackling off it, flickering: a spark bug's)
+  sparks: { n: 70, size: 0.06, color: 'mix(vec3(0.85, 0.95, 1.0), vec3(0.3, 0.6, 1.0), t)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 3.0), 0.0), 8.0)',
+    move: 'p += away * h * 0.22 * t + side * sin(t * 40.0 + ph * 9.0) * h * 0.05;', speed: '1.2 + ph' },
   frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
     move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
 };
