@@ -684,6 +684,10 @@ function handle(m) {
         const from = m.shot ? (mon && mon.rider ? 1.25 : mon && mon.creature ? 1.15 : 1.05) : undefined, wait = stance ? LOOSE_AT * 1000 : 0;
         if (m.by !== 'monster' && m.shot) hero3d.nockUrl = l.url; // (the arrow on your string, till it's loosed)
         if (!(pun && renderer.brick.tossBall(m.tx, m.ty))) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit, shot: !!m.shot, from, delay: wait / 1000 }); // (in the air from now: not seen where it lands till it gets there)
+        // (what it did (a hit, a kill, the monster gone, the messages) waits till it gets there, as an attack's waits for
+        // the blade: the replies held through the draw and the flight (throwfx.js launch: its time in the air))
+        const dist = Math.hypot(m.tx - m.fx, m.ty - m.fy), flight = m.shot ? 0.12 + 0.045 * dist : spit ? 0.28 + 0.1 * dist : 0.7 + 0.13 * dist;
+        holdReplies(performance.now() + wait + flight * 1000 + 80);
         if (spit) renderer.brick.fx.shatter(l.url, m.tx, m.ty, 'venom');
       }
       const shooter = m.by === 'monster' && brickMons.get(world.cells[m.fy * world.w + m.fx] && world.cells[m.fy * world.w + m.fx].t);
@@ -960,6 +964,11 @@ const CYCLES = {
   gender: ['Gender', ['random', 'male', 'female']],
   align: ['Alignment', ['random', 'lawful', 'neutral', 'chaotic']],
 };
+// the pet each role starts with (SLASH'EM role.c petnum; the rest a kitten or a little dog: dog.c pet_type), and the
+// names a dog of some of them is given, unnamed (dog.c makedog)
+const PET_OF = { caveman: 'little dog', 'flame mage': 'hell hound pup', 'ice mage': 'winter wolf cub', knight: 'pony', necromancer: 'ghoul',
+  ranger: 'little dog', samurai: 'little dog', wizard: 'kitten', yeoman: 'pony' };
+const PET_NAMES = { caveman: 'Slasher', samurai: 'Hachi', barbarian: 'Idefix', ranger: 'Sirius' };
 const SPLASHES = ['Now in 3D!', 'Elbereth!', 'Now with studs!', 'The DevTeam thinks of everything!', 'Do not eat the cockatrice!',
   'You hear the footsteps of a guard on patrol.', '100% tiles!', 'Ascend!', 'Mind your bare feet!', 'Watch out for soldier ants!'];
 
@@ -1134,7 +1143,28 @@ function buildScreens() {
     swear(fig);
   });
   loadRoster().then((r) => r.forEach((f) => figNames.add(f.label)));
-  syncPicker = () => { figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender], CYCLES.race[1][choice.race]); swear(figPicker.current()); };
+  // your pet: the one your role starts with (role.c petnum), turning in its window, a kitten or a little dog (a click
+  // swaps them) where the role's isn't fixed; and its name, yours to give (a dog's default, its role's: dog.c makedog)
+  const petView = figureView($('#petpick canvas'), () => !$('#create').classList.contains('hidden'), { near: 3.2 });
+  const petIn = $('#petname');
+  let petType = localGet('bh.pettype') || (Math.random() < 0.5 ? 'c' : 'd'), petDefault = '', petMons = null;
+  fetch('assets/brick/monsters.built.json', { cache: 'no-store' }).then((r) => r.json()).then((m) => { petMons = m; petSync(); }).catch(() => {});
+  const petRole = () => CYCLES.role[1][choice.role].toLowerCase();
+  const petKind = () => PET_OF[petRole()] || (petType === 'c' ? 'kitten' : 'little dog');
+  let petShown = null;
+  const petSync = () => {
+    const role = petRole(), kind = petKind(), swap = !PET_OF[role];
+    $('#petpick .pet-kind').textContent = role === 'random' ? `${kind}?` : kind;
+    $('#petpick canvas').classList.toggle('swap', swap);
+    $('#petpick canvas').title = swap ? 'Your pet (click: a kitten or a little dog)' : 'Your pet';
+    const def = kind === 'little dog' ? PET_NAMES[role] || '' : '';
+    if (!petIn.value || petIn.value === petDefault) petIn.value = def; // (a name you gave it kept)
+    petDefault = def;
+    const url = petMons && petMons[kind] && petMons[kind].url;
+    if (url && url !== petShown) { petShown = url; petView && petView.show(url); }
+  };
+  $('#petpick canvas').onclick = () => { if (PET_OF[petRole()]) return; petType = petType === 'c' ? 'd' : 'c'; petSync(); };
+  syncPicker = () => { figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender], CYCLES.race[1][choice.race]); swear(figPicker.current()); petSync(); };
   syncPicker();
   $('#create [data-act=go]').onclick = () => {
     localSet('bh.create', JSON.stringify(choice));
@@ -1154,6 +1184,8 @@ function buildScreens() {
     if (fig) for (const k of ['kit', 'god', 'perks']) if (fig[k]) o[k] = fig[k]; // (what its design starts it with besides, its deity, its gifts)
     o.dreamland = !!game.createDream;
     o.variant = game.variant;
+    o.petname = petIn.value.trim(); // (your pet's name, and which it is where your role leaves it to you)
+    if (!PET_OF[petRole()]) { o.pettype = petType; localSet('bh.pettype', petType); }
     startGame(o);
   };
 

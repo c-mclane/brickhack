@@ -48,7 +48,7 @@ const lset = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
 // A small 3D view of one minifig on its own canvas, turning slowly and
 // pausing a moment facing you each time round.  visible(): is it on screen
 // (only then is it drawn).  Returns {show(url), gl}.
-export function figureView(canvas, visible) {
+export function figureView(canvas, visible, { near = 7.4 } = {}) { // (near: how close it may come, framing something small: a pet)
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: true, premultipliedAlpha: false });
   if (!gl) return null;
   const brick = new BrickRenderer(gl);
@@ -74,7 +74,7 @@ export function figureView(canvas, visible) {
     const yaw = Math.PI + (a < hold ? 0 : ((a - hold) / (Math.PI * 2 - hold)) * Math.PI * 2);
     // frame the whole figure, however tall (a flame held overhead...)
     const fov = (28 * Math.PI) / 180, mid = (fit.lo + fit.hi) / 2;
-    const dist = Math.max(7.4, ((fit.hi - fit.lo) / 2 + 0.45) / Math.tan(fov / 2));
+    const dist = Math.max(near, ((fit.hi - fit.lo) / 2 + 0.45) / Math.tan(fov / 2));
     const proj = perspective(fov, w / h, 0.1, 50 + dist);
     const view = lookAt([0, mid + dist * 0.07, dist], [0, mid, 0]);
     const pose = anim ? anim.update(dt) : null;

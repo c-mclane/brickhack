@@ -2116,5 +2116,8 @@
  },
  "shopkeeper|general store": {
   "fig": "shopkeeper"
+ },
+ "ghoul": {
+  "fig": "ghoul"
  }
 }
