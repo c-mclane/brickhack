@@ -1591,6 +1591,11 @@ async function menagerie(level, brick, cam, ctl, canvas) {
     b.anim = new FigureAnimator(rig, { phase: b.phase });
     b.anim.spawn();
   });
+  for (const b of beasts) if (b.rider) brick.model(b.rider.url).then((m) => { // (a centaur's man half: alive too, on its horse)
+    let rig = null;
+    m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; });
+    b.riderAnim = new FigureAnimator(rig, { phase: b.phase });
+  });
   const missing = level.monsters.filter((m) => !mons[m.monster]).map((m) => m.monster);
   const el = document.getElementById('status');
   if (el) el.textContent = `${level.title ? level.title + ' · ' : ''}menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom, right-drag to slide`;
@@ -1609,7 +1614,7 @@ async function menagerie(level, brick, cam, ctl, canvas) {
     const dt = Math.min(0.1, (now - last) / 1000);
     last = now;
     clock += dt;
-    const figs = beasts.map((b) => {
+    const figs = beasts.flatMap((b) => {
       const u = (clock + b.phase) % PERIOD, moving = u >= TROT[0] && u < TROT[1];
       const lungeT = clock - (u - BITE) - (u < BITE ? PERIOD : 0); // (when it last bit, on its own clock)
       if (!b.creature) { // (a minifig: walking on the spot, then a swing)
@@ -1618,7 +1623,12 @@ async function menagerie(level, brick, cam, ctl, canvas) {
         const held = b.hold && items[b.hold] ? items[b.hold].url : null;
         return { url: b.url, matrix: figureMatrix(b.at[0] + 0.5, b.lift || 0, b.at[1] + 0.5, Math.PI), pose: b.anim ? b.anim.update(dt, { moving, holdsR: !!held }) : null, hold: held ? { R: held } : {} };
       }
-      return { url: b.url, matrix: mul(partMatrix(b.at[0] + 0.5, STUD_H, b.at[1] + 0.5, 0), creatureLocal(b.creature, clock, { moving, lungeT })), pose: null, hold: {} };
+      const cm = mul(partMatrix(b.at[0] + 0.5, STUD_H, b.at[1] + 0.5, 0), creatureLocal(b.creature, clock, { moving, lungeT }));
+      const horse = { url: b.url, matrix: cm, pose: null, hold: {} };
+      if (!b.rider) return [horse];
+      const r = b.rider, k = r.scale, held = b.hold && items[b.hold] ? items[b.hold].url : null; // (a centaur: its man half where its neck is, its bow in hand)
+      return [horse, { url: r.url, matrix: mul(cm, new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r.at[0], r.at[1], r.at[2], 1])),
+        pose: b.riderAnim ? b.riderAnim.update(dt, { holdsR: !!held }) : null, hold: held ? { R: held } : {} }];
     });
     brick.setFigures(figs);
     brick.setItems([]);
