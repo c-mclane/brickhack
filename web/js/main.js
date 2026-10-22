@@ -141,6 +141,7 @@ const game = {
     ui.renderHotbar();
     if (ui.inventoryOpen) ui.renderInventory();
   },
+  relock() { relock(); },
   hotbarKey() { return `nh3d.hotbar.${this.variant}.${this.charName || ''}`; },
   loadHotbar() {
     const h = safeJSON(localGet(this.hotbarKey()));
@@ -151,6 +152,12 @@ const game = {
 
   // issue a NetHack command for an item; prompts for the item get answered automatically
   itemCmd(action, it, count) {
+    if (action === 'fire') { // (a bow, a crossbow, a sling: what's quivered shot from it; wielded first, if it isn't)
+      if (ui.inventoryOpen) { closeInventory(); relock(); }
+      if (it.w !== 'weapon') { this.pending.push({ key: it.l }); this.afterReady = () => this.sendKeys('f'); this.sendKeys('w'); }
+      else this.sendKeys('f');
+      return;
+    }
     const a = itemActions(it).find((x) => x.key === action) || { cmd: { drop: 'd' }[action] };
     if (!a.cmd) return;
     if (a.arg) { this.pending.push({ key: a.arg }); }
@@ -958,7 +965,7 @@ const SPLASHES = ['Now in 3D!', 'Elbereth!', 'Now with studs!', 'The DevTeam thi
 const CONTROLS = [
   ['Mouse', 'Look around'], ['W A S D', 'Move (relative to camera, 8 directions)'], ['Shift + WASD', 'Rush in a direction'],
   ['Left click', 'Attack / fight in the direction you look'], ['Right click', 'Use held item · open/close doors · travel to clicked spot'],
-  ['Middle click', 'Look at what is under the crosshair'], ['1-9 / wheel', 'Select hotbar slot'], ['I', 'Inventory (and its Actions tab: every command as a button)'],
+  ['Middle click', 'Look at what is under the crosshair'], ['1-9', 'Select hotbar slot'], ['Mouse wheel', 'Zoom the camera in and out'], ['I', 'Inventory (and its Actions tab: every command as a button)'],
   ['Delete / Shift+Delete', 'Drop one / drop stack of held item'], ['Space', 'Use stairs (on stairs) · otherwise search'],
   ['Shift+1..4', 'Do a Recommended action: row 1, 2, 3, 4'], ['↑ (up arrow)', 'Do the first Recommended action'], ['Enter', 'Command bar (extended commands, "give <item>"...)'],
   ['Every other key', "NetHack's own, as ever: e eat, q quaff, r read, z zap, t throw, f fire, , pick up, # extended command, P put on, Alt+I invoke, Ctrl+D kick..."],
@@ -1838,9 +1845,12 @@ function fountainDries(x, y, delay = 0) {
 const STAIR_STEP = { down: -0.4 }, STAIR_RISE = 0.3, STAIR_AHEAD = 0.12;
 function upStairAt(x, z) { const c = renderer.brickOn && world.classAt(x, z); return !!c && c.cmap === CM.upstair; }
 function stairFront(x, z) { const t = world.backToWall(x, z); return { x: x + Math.round(Math.sin(t)), z: z + Math.round(Math.cos(t)) }; }
-function stairHeight(px, pz) { // (the flight's top at point (px, pz), squares' units: 0 off it)
+function stairHeight(px, pz, hx, hz) { // (the flight's top at point (px, pz), squares' units: 0 off it, or a flight you're
+  // not on (you at (hx, hz)) nor coming onto from its front: up against its side or its back, not stood up on it)
   const x = Math.round(px), z = Math.round(pz);
   if (!upStairAt(x, z)) return 0;
+  const sx = Math.round(hx), sz = Math.round(hz);
+  if (sx !== x || sz !== z) { const f = stairFront(x, z); if (f.x !== sx || f.z !== sz) return 0; }
   const t = world.backToWall(x, z), dx = px - x, dz = pz - z;
   const lz = dx * Math.sin(t) + dz * Math.cos(t); // (along the flight: +0.5 its front, -0.5 its back)
   return STAIR_RISE * Math.min(4, Math.max(1, 1 + Math.floor((0.5 - lz) / 0.25)));
@@ -1853,7 +1863,7 @@ function stairStep(dt, hx, hz) {
   let want = c && renderer.brickOn && c.cmap === CM.dnstair ? STAIR_STEP.down : 0;
   for (let i = -2; i <= 2; i++) // (the body's footprint, and it pushed on a little ahead)
     for (let j = -2; j <= 2; j++)
-      for (const k of [0, 1]) want = Math.max(want, stairHeight(hx + (i / 2) * BODY_R + ax * STAIR_AHEAD * k, hz + (j / 2) * BODY_R + az * STAIR_AHEAD * k));
+      for (const k of [0, 1]) want = Math.max(want, stairHeight(hx + (i / 2) * BODY_R + ax * STAIR_AHEAD * k, hz + (j / 2) * BODY_R + az * STAIR_AHEAD * k, hx, hz));
   const cur = hero3d.stairY || 0;
   hero3d.stairY = cur + (want - cur) * Math.min(1, dt * (want > cur ? 22 : 9));
   return hero3d.stairY;
@@ -2278,7 +2288,8 @@ function updateCameraBase(now) {
     // overhead map view: high above the hero, looking down along the view yaw
     const p = Math.min(cam.pitch, -0.7);
     const g = [Math.sin(cam.yaw) * Math.cos(p), Math.sin(p), -Math.cos(cam.yaw) * Math.cos(p)];
-    cam.eye = [tx - g[0] * 16, phys.y + 0.5 - g[1] * 16, tz - g[2] * 16];
+    const D = 16 * (opts.zoom ?? 1); // (zoomed: the wheel)
+    cam.eye = [tx - g[0] * D, phys.y + 0.5 - g[1] * D, tz - g[2] * D];
     cam.vyaw = cam.yaw;
     cam.vpitch = p;
     return;
@@ -2287,7 +2298,7 @@ function updateCameraBase(now) {
   // (a minifig is taller than Steve: the camera stands further back, and looks over the helmet)
   const fig = !!motion.figHeight && heroH === motion.figHeight;
   const target = [tx, (world.heroLift ?? phys.y) + up + heroH * (fig ? 1.0 : 0.85), tz];
-  let dist = 5.4 * Math.max(1, heroH / 1.8);
+  let dist = 5.4 * Math.max(1, heroH / 1.8) * (opts.zoom ?? 1); // (zoomed: the wheel)
   let overHaze = false;
   for (let t = 0.3; t < dist; t += 0.05) {
     const p = [target[0] + f[0] * t * sign, target[1] + f[1] * t * sign, target[2] + f[2] * t * sign];
@@ -2555,7 +2566,7 @@ document.addEventListener('mousemove', (e) => {
 
 $('#view').addEventListener('mousedown', (e) => {
   if (!game.playing || anyScreen()) return;
-  if (!locked()) { relock(); return; }
+  if (!locked()) { ui.hideCtx(); relock(); return; }
   e.preventDefault();
   const tgt = crosshairTarget();
   const h = world.hero;
@@ -2592,7 +2603,11 @@ $('#view').addEventListener('mousedown', (e) => {
     const cl = tgt && world.classAt(tgt.x, tgt.y);
     if (tgt && cl && cl.chest && tgt.kind !== 'mob') { openChest(tgt); return; }
     if (adj && cl && (cl.type === 'door' || cl.type === 'odoor')) game.sendKeys((cl.type === 'door' ? 'o' : 'c') + dirKey(towards));
-    else if (it) game.useItem(it);
+    else if (it) { // (what's in your hand: its menu, as the inventory's, over its hotbar slot; the mouse let go to choose)
+      const r = $('#hotbar').children[ui.hotbarSel].getBoundingClientRect();
+      releaseLock();
+      ui.showCtx(it, r.left, r.top - 8, true);
+    }
     else if (tgt && !(tgt.x === h.x && tgt.y === h.y)) game.sendLine(`C ${tgt.x} ${tgt.y} 1`);
   } else if (e.button === 1) {
     if (tgt) { game.pendingClick = tgt; game.mode = 'getpos'; game.sendKeys(';'); game.mode = 'getpos'; }
@@ -2600,9 +2615,16 @@ $('#view').addEventListener('mousedown', (e) => {
 });
 window.addEventListener('mouseup', (e) => { if (e.button === 0) lmbHeld = false; });
 window.addEventListener('contextmenu', (e) => { if (game.playing) e.preventDefault(); });
+// the mouse wheel: the camera zoomed in and out (opts.zoom: how far back it stands, behind you, before you, over you);
+// out of your own eyes, rolled back out behind you, and in again, all the way, back into them
+const ZOOM_MIN = 0.3, ZOOM_MAX = 2.5;
 window.addEventListener('wheel', (e) => {
-  if (!game.playing || anyScreen() || modalOpen()) return;
-  ui.selectHotbar(ui.hotbarSel + Math.sign(e.deltaY));
+  if (!game.playing || anyScreen() || modalOpen() || !e.deltaY) return;
+  if (opts.camera === 0) { if (e.deltaY > 0) { opts.camera = 1; opts.zoom = ZOOM_MIN; saveOpts(); } return; }
+  const z = (opts.zoom ?? 1) * Math.exp(Math.max(-0.4, Math.min(0.4, e.deltaY * 0.0015)));
+  if (z < ZOOM_MIN && opts.camera === 1) { opts.camera = 0; opts.zoom = ZOOM_MIN; }
+  else opts.zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z));
+  saveOpts();
 }, { passive: true });
 
 function rawKey(e) {
@@ -2619,6 +2641,7 @@ function rawKey(e) {
 
 window.addEventListener('keydown', (e) => {
   if (!game.playing) return;
+  if (e.key === 'Escape' && !$('#ctxmenu').classList.contains('hidden') && !ui.inventoryOpen) { ui.hideCtx(); relock(); return; } // (an item's menu, from your hand: shut)
   if (['F1', 'F2', 'F3', 'F5', 'Tab'].includes(e.key) || (e.key === ' ' && !modalOpen())) e.preventDefault();
   if (!$('#pause').classList.contains('hidden')) { if (e.key === 'Escape') resume(); return; }
   if (anyScreen()) return;

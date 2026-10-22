@@ -83,14 +83,18 @@ const ACTIONS = {
   remove: ['Remove', 'R'], eat: ['Eat', 'e'], quaff: ['Quaff', 'q'], read: ['Read', 'r'],
   zap: ['Zap', 'z'], apply: ['Apply', 'a'], throw: ['Throw', 't'], quiver: ['Quiver', 'Q'],
   drop: ['Drop', 'd'], invoke: ['Invoke', '\xe9'], rub: ['Rub', '\xf2'], dip: ['Dip', '\xe4'],
-  engrave: ['Engrave with', 'E'], unwield: ['Unwield', 'w', '-'],
+  engrave: ['Engrave with', 'E'], unwield: ['Unwield', 'w', '-'], fire: ['Fire', 'f'],
 };
+
+const LAUNCHER = /\b(bows?|crossbows?|slings?|yumi)\b/i;
 
 export function itemActions(it) {
   const worn = !!it.w;
   const a = [];
   switch (it.c) {
-    case ')': a.push(it.w === 'weapon' ? 'unwield' : 'wield', 'throw', 'quiver', 'engrave'); break;
+    case ')':
+      if (LAUNCHER.test(it.n) && !/\bbolts?\b/i.test(it.n)) a.push('fire'); // (a bow, a crossbow, a sling: shot from; not its bolts)
+      a.push(it.w === 'weapon' ? 'unwield' : 'wield', 'throw', 'quiver', 'engrave'); break;
     case '[': a.push(worn ? 'takeoff' : 'wear'); break;
     case '=': case '"': a.push(worn ? 'remove' : 'puton'); break;
     case '%': a.push('eat'); break;
@@ -493,25 +497,31 @@ export class UI {
     $('#tooltip').classList.add('hidden');
   }
 
-  showCtx(it, x, y) {
+  // an item's menu (right-clicked: in the inventory, or in your hand in the game, `above` its hotbar slot: the
+  // mouse taken back for the game once one's chosen)
+  showCtx(it, x, y, above = false) {
     const m = $('#ctxmenu');
     m.textContent = '';
+    const pick = (f) => (e) => { e.stopPropagation(); this.hideCtx(); f(); if (above && !this.inventoryOpen) this.g.relock(); };
     for (const a of it.block ? [] : itemActions(it)) {
       const d = el('div', '', a.label);
-      d.onmousedown = (e) => { e.stopPropagation(); this.hideCtx(); this.g.itemCmd(a.key, it); };
+      d.onmousedown = pick(() => this.g.itemCmd(a.key, it));
       m.appendChild(d);
     }
     if (it.q > 1 && !it.block) {
       const d = el('div', '', 'Drop one');
-      d.onmousedown = (e) => { e.stopPropagation(); this.hideCtx(); this.g.itemCmd('drop', it, 1); };
+      d.onmousedown = pick(() => this.g.itemCmd('drop', it, 1));
       m.appendChild(d);
     }
-    const hb = el('div', '', 'Put in hotbar');
-    hb.onmousedown = (e) => { e.stopPropagation(); this.hideCtx(); this.g.addToHotbar(it.l, true); };
-    m.appendChild(hb);
+    if (!above) {
+      const hb = el('div', '', 'Put in hotbar');
+      hb.onmousedown = pick(() => this.g.addToHotbar(it.l, true));
+      m.appendChild(hb);
+    }
+    if (!m.children.length) return;
     m.classList.remove('hidden');
     m.style.left = Math.min(window.innerWidth - 180, x) + 'px';
-    m.style.top = Math.min(window.innerHeight - m.offsetHeight - 4, y) + 'px';
+    m.style.top = Math.max(4, Math.min(window.innerHeight - m.offsetHeight - 4, above ? y - m.offsetHeight : y)) + 'px';
     this.hideTooltip();
   }
 
