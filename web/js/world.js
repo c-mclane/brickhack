@@ -1,10 +1,13 @@
 // Client-side copy of the NetHack map as reported by the window port.
-import { classify, isSolidClass, WALL_H, DOOR_H, CM } from './terrain.js';
+import { classify, isSolidClass, WALL_H, DOOR_H, CM, TRAP_ITEMS } from './terrain.js';
 
 const WALK_THROUGH = new Set(['gateOpen']);
 import { posAt as motionPos, sizeHeight } from './motion.js';
 import { mobAnim } from './anim.js';
 import { brickItemForTile, gameTile, brickBuilt } from './brickitems.js';
+
+// a trap's brick model (terrain.js TRAP_ITEMS: items.built.json), if it's been made: for the class of a square
+const trapBuilt = (cl) => (cl && cl.trap != null && TRAP_ITEMS[cl.trap] && brickBuilt(TRAP_ITEMS[cl.trap])) || null;
 
 export class World {
   constructor() {
@@ -25,6 +28,7 @@ export class World {
   reset() {
     this.cells = new Array(this.w * this.h).fill(null);
     this.floorMem = new Array(this.w * this.h).fill(null);
+    this.trapMem = new Map(); // square -> the kind of trap seen there (terrain.js classify)
     this.solidSeen = new Set(); // squares of rock we've seen (or stood beside): known not to lead anywhere
     this.besideHero = new Set(); // squares we've stood next to
     this.piles = new Map(); // square -> the tiles of everything lying there, top first (as last seen)
@@ -131,7 +135,10 @@ export class World {
         const fountain = model && brickBuilt(model);
         if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders, perch: fountain.perch, offer: fountain.offer, anchored: fountain.anchored, spots: fountain.spots, item: model,
           turn: furn === 'fountain' ? 0 : this.backToWall(x, y) });
-        else if (cl && cl.sprite) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade });
+        else if (cl && cl.sprite && !trapBuilt(cl)) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade }); // (a web: in brick, if it's been made)
+        // (a trap, in brick (terrain.js TRAP_ITEMS): square to its square; a pit, a hole, its shaft down where its floor isn't, render.js)
+        const trapB = trapBuilt(cl);
+        if (trapB) this.brickDrops.push({ x, z: y, url: trapB.url, level: 0, upright: true, name: TRAP_ITEMS[cl.trap], sunk: !!trapB.sunk, trap: cl.trap });
         const isHero = x === this.hero.x && y === this.hero.y;
         // the brick dungeon: everything lying here as brick models, the bottom one first, each
         // on the one below (brickworld.js stacks them), even under you or a monster

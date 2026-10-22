@@ -414,6 +414,17 @@ web_altarfx(const char *act, int n, struct obj *obj)
     endmsg();
 }
 
+/* trap.c: a trap sprung at (x, y) (ttyp: its kind, trap.h; mon: 1 a monster set it off, there, in sight; 0 you), played
+   out there (the client: brickworld trapFx) */
+void
+web_trapfx(int ttyp, int x, int y, int mon)
+{
+    if (!out)
+        return;
+    fprintf(out, "{\"t\":\"trap\",\"k\":%d,\"x\":%d,\"y\":%d,\"m\":%d", ttyp, x, y, mon);
+    endmsg();
+}
+
 /* priest.c priest_talk: a contribution to a temple priest (#chat), played out (the client: gold tossed to him, and
    what comes of it): "donate" (n: 0 nothing given, his curse; 1 a little, thanked or not; 2 pious; 3 your
    devotion rewarded, his protection; 4 selfless generosity), "blessing" (a pious gift's clairvoyance); at him,

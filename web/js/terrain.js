@@ -31,6 +31,17 @@ export function setCmapBase(meta) {
 export const wallTile = () => cmapTile(CM.hwall); // brick
 const roomTile = () => cmapTile(CM.room);
 
+// the traps (trap.h's order, ARROW_TRAP first) and the brick model of each (items.json; a land mine its own item; a
+// statue trap: its statue, there already), and those that are a shaft down into the floor (its floor taken away)
+export const TRAP_ITEMS = ['_trap arrow trap', '_trap dart trap', '_trap falling rock trap', '_trap squeaky board', '_trap bear trap', 'land mine',
+  '_trap rolling boulder trap', '_trap sleeping gas trap', '_trap rust trap', '_trap fire trap', '_trap pit', '_trap spiked pit', '_trap hole',
+  '_trap trap door', '_trap teleportation trap', '_trap level teleporter', '_trap magic portal', '_trap web', null, '_trap magic trap',
+  '_trap anti-magic field', '_trap polymorph trap'];
+// ...and what each does when it's sprung (brickworld trapFx)
+export const TRAP_FX = ['arrow', 'dart', 'rock', 'squeak', 'bear', 'mine', 'boulder', 'gas', 'rust', 'fire', 'pit', 'spiked', 'hole', 'trapdoor',
+  'tele', 'level', 'portal', 'web', null, 'magic', 'antimagic', 'poly'];
+const trapBase = () => CM.arrow_trap ?? CM.web - 17;
+
 export function setCmap(cm, tiles) {
   for (const k of Object.keys(CM)) delete CM[k];
   Object.assign(CM, cm);
@@ -51,6 +62,7 @@ const isCorrCell = (n) => isCorr(n.k === 'c' ? n.c : n.bc);
 // floorMem keeps the last known floor cmap for cells that are now covered.
 export function classify(world, x, y) {
   const c = classifyCell(world, x, y);
+  if (c && world.trapMem && world.trapMem.has(y * world.w + x)) c.trap = world.trapMem.get(y * world.w + x); // (a trap there: its kind, 0 an arrow trap: TRAP_ITEMS)
   // chests and large boxes are drawn as chest blocks on top of the floor
   if (c && c.type !== 'wall' && c.type !== 'rock') {
     const cell = world.cell(x, y);
@@ -80,6 +92,10 @@ function classifyCell(world, x, y) {
   }
   let cm = cell.k === 'c' || cell.k === 't' ? cell.c : cell.bc;
   let decal = null, sprite = null;
+  // (a trap: remembered there, under whoever stands on it, till the floor's seen bare there again)
+  const tm = (world.trapMem = world.trapMem || new Map()), ti = y * world.w + x;
+  if (cell.k === 't') tm.set(ti, cell.c - trapBase());
+  else if (cell.k === 'c' && cell.c >= 0) tm.delete(ti);
   if (cell.k === 't') {
     decal = cell.t;
     cm = cell.bc >= 0 ? cell.bc : world.floorMem[y * world.w + x] ?? CM.room;

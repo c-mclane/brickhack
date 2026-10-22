@@ -2,7 +2,7 @@
 import { Renderer } from './render.js';
 import { World } from './world.js';
 import { UI, setAtlas, itemActions, SLOT_LETTERS, tileIcon } from './ui.js';
-import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H } from './terrain.js';
+import { CM, cmapTile, wallTile, setCmap, setCmapBase, WALL_H, TRAP_FX } from './terrain.js';
 import { Motion, sizeHeight, posAt } from './motion.js';
 import * as THREE3 from 'three'; // (measuring models: modelTop)
 import { BlockWorld, BLOCKS, BUILD_LIMIT, breakTime, minedAs } from './blocks.js';
@@ -798,6 +798,7 @@ function handle(m) {
     case 'furnfx': furnFx(m); break; // a sink, a toilet: its doings (furnFx)
     case 'pray': prayFx(m); break; // praying, as it goes (prayFx)
     case 'rite': riteFx(m); break; // a rite at the altar of a follower of Jesus (riteFx)
+    case 'trap': trapFx(m); break; // a trap sprung: what it does, played out there (brickworld trapFx)
     case 'altar': altarFx(m); break; // what happens at an altar: a sacrifice, a flash, a conversion (altarFx)
     case 'priest': priestFx(m); break; // a contribution to a temple priest (priestFx)
     case 'boxfx': // a box or a chest kicked (brickworld.js boxFx): your kick, and what comes of it as your foot lands
@@ -1916,6 +1917,22 @@ function stairStep(dt, hx, hz) {
   const cur = hero3d.stairY || 0;
   hero3d.stairY = cur + (want - cur) * Math.min(1, dt * (want > cur ? 22 : 9));
   return hero3d.stairY;
+}
+// a trap sprung (winweb.c web_trapfx: m.k its kind, trap.h; m.m a monster set it off), played out where it is
+// (brickworld trapFx); you, in a pit you've fallen into: down in it till you're out of it (pitStep)
+function trapFx(m) {
+  const kind = TRAP_FX[m.k - 1];
+  if (!kind || !renderer.brickOn || !renderer.brick) return;
+  const u = (n) => { const b = brickItemByName(n); return b && b.url; };
+  renderer.brick.trapFx(kind, m.x, m.y, { arrow: u('arrow'), dart: u('dart'), rock: u('rock'), boulder: u('boulder') });
+  if (!m.m && /^(pit|spiked|hole|trapdoor)$/.test(kind)) hero3d.pit = { x: m.x, y: m.y, deep: /^(hole|trapdoor)$/.test(kind) ? 1.6 : 0.55 };
+}
+function pitStep(dt, hx, hz) {
+  const p = hero3d.pit, inIt = p && Math.round(hx) === p.x && Math.round(hz) === p.y;
+  if (p && !inIt && Math.abs(hero3d.pitY || 0) < 0.01) hero3d.pit = null; // (out of it, and back up)
+  const want = inIt ? -p.deep : 0;
+  hero3d.pitY = (hero3d.pitY || 0) + (want - (hero3d.pitY || 0)) * Math.min(1, dt * (want < (hero3d.pitY || 0) ? 14 : 5)); // (dropped in quick; out slower)
+  return hero3d.pitY;
 }
 // praying: how far down onto your knees you are, now (minifig-anim.js FOUNT.prayer drop)
 function kneelDrop(now) { const a = fountAct(now); return a ? fountKey(a.act, 'drop', a.t) : 0; } // (and the rites': Communion, confession, a genuflection)
@@ -3137,7 +3154,7 @@ function frame(t) {
       const m = steed ? figureMatrix(hx + 0.5, ground + steed.seat - 28 / 80 + (going ? 0.025 * Math.abs(Math.sin(t / 1000 * 9)) : 0), hz + 0.5, doll.yaw)
         : sw ? figureMatrix(sw.x + 0.5, (world.heroLift ?? phys.y) + sw.y, sw.z + 0.5, sw.yaw ?? doll.yaw)
         : pp ? figureMatrix(hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift - kneelDrop(t) + (hero3d.ascend ? ascendLift((t - hero3d.ascend.t0) / 1000) : 0), hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw) // (at an altar, knelt; ascending)
-        : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink - kneelDrop(t) + stairStep(dt, hx, hz), hz + 0.5, doll.yaw); // (praying: down on your knees; on stairs, on a step)
+        : figureMatrix(hx + 0.5, (world.heroLift ?? phys.y) - sink - kneelDrop(t) + stairStep(dt, hx, hz) + pitStep(dt, hx, hz), hz + 0.5, doll.yaw); // (praying: down on your knees; on stairs, on a step)
       if (pp) fountSplash(t, hx + 0.5 + pp.dx, (world.heroLift ?? phys.y) + pp.lift, hz + 0.5 + pp.dz, pp.k > 0.5 ? pp.yaw : doll.yaw);
       heroWisps(t, hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (pp ? pp.lift : -sink), hz + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : doll.yaw, pose ? mouthPoint(m, pose) : null);
       heroHaze(t, sw ? sw.x + 0.5 : hx + 0.5 + (pp ? pp.dx : 0), (world.heroLift ?? phys.y) + (sw ? sw.y : pp ? pp.lift : -sink), sw ? sw.z + 0.5 : hz + 0.5 + (pp ? pp.dz : 0));

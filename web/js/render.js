@@ -2,8 +2,8 @@
 // billboards for monsters / objects / the hero.  All art comes from the
 // NetHack tile atlas.
 
-import { brickItemForTile } from './brickitems.js';
-import { CM, classify, wallTile, cmapTile, WALL_H, DOOR_H } from './terrain.js';
+import { brickItemForTile, brickBuilt } from './brickitems.js';
+import { CM, classify, wallTile, cmapTile, WALL_H, DOOR_H, TRAP_ITEMS } from './terrain.js';
 import { BrickRenderer, STUD_H, PARTS, DOOR_TOP, partMatrix } from './brick.js';
 import { BrickWorld } from './brickworld.js';
 
@@ -698,9 +698,11 @@ export class Renderer {
               // (stairs: built in brick, running toward a wall beside them: up, out of the floor; down, a hole in it)
               const stair = c.cmap === CM.upstair ? 'up' : c.cmap === CM.dnstair ? 'down' : null;
               if (stair) bricks.stairs.push({ x, z: y, up: stair === 'up', turn: world.backToWall ? world.backToWall(x, y) : 0, shade });
-              if (stair !== 'down') bricks.floors.push({ x, z: y, shade, studs: plain || !!stair || c.cmap === CM.altar });
-              if (!plain && !stair && c.cmap !== CM.altar) this.floor(out, x, y, 0.002, ft, shade); // (an altar: built in brick, world.js)
-              if (c.decal != null) this.floor(out, x, y, STUD_H + 0.005, c.decal, shade, 1);
+              // (a trap in brick (world.js): no picture of it on the floor; a pit, a hole, a trap door: no floor, its shaft down)
+              const trapB = c.trap != null && TRAP_ITEMS[c.trap] && brickBuilt(TRAP_ITEMS[c.trap]);
+              if (stair !== 'down' && !(trapB && trapB.sunk)) bricks.floors.push({ x, z: y, shade, studs: plain || !!stair || c.cmap === CM.altar });
+              if (!plain && !stair && c.cmap !== CM.altar && !(trapB && trapB.sunk)) this.floor(out, x, y, 0.002, ft, shade); // (an altar: built in brick, world.js)
+              if (c.decal != null && !trapB) this.floor(out, x, y, STUD_H + 0.005, c.decal, shade, 1);
               // an open door swung back in its frame; a doorway (no door, or a broken one): the frame alone
               if (c.type === 'odoor') doorPiece(x, y, 'door_open', doorAlongZ(x, y, c), shade);
               else if (c.cmap === CM.ndoor) doorPiece(x, y, 'doorway', doorAlongZ(x, y, c), shade);

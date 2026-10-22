@@ -1119,4 +1119,15 @@ edit("src/priest.c", [
      '\t\tweb_priestfx("donate", 4, priest), verbalize("Thy selfless generosity is deeply appreciated.");'),
 ], "WEB_HOOK_PRIESTFX")
 
+# trap.c: a trap sprung, played out where it is (winweb.c web_trapfx: the client's brickworld trapFx): on you, once
+# it's not been escaped (dotrap, its "You escape" past); on a monster you can see there (mintrap)
+edit("src/trap.c", [
+    ('extern void FDECL(web_swim, (int, int, int)); /* WEB_HOOK_SWIM */\n',
+     'extern void FDECL(web_swim, (int, int, int)); /* WEB_HOOK_SWIM */\nextern void FDECL(web_trapfx, (int, int, int, int)); /* WEB_HOOK_TRAPFX */\n'),
+    ("#ifdef STEED\n\tif (u.usteed) u.usteed->mtrapseen |= (1 << (ttype-1));\n#endif\n\n\tswitch(ttype) {",
+     "#ifdef STEED\n\tif (u.usteed) u.usteed->mtrapseen |= (1 << (ttype-1));\n#endif\n\n\tweb_trapfx(ttype, trap->tx, trap->ty, 0);\n\tswitch(ttype) {"),
+    ("#endif\n\t    switch (tt) {\n\t\tcase ARROW_TRAP:\n\t\t\tif (trap->once && trap->tseen && !rn2(15)) {",
+     "#endif\n\t    if (see_it) web_trapfx(tt, trap->tx, trap->ty, 1);\n\t    switch (tt) {\n\t\tcase ARROW_TRAP:\n\t\t\tif (trap->once && trap->tseen && !rn2(15)) {"),
+], "WEB_HOOK_TRAPFX")
+
 print("engine hooks applied:", src)
