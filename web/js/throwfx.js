@@ -430,8 +430,8 @@ export class ThrowFX {
       obj.traverse((o) => { if (o.isMesh) o.material = Array.isArray(o.material) ? o.material.map(own) : own(o.material); });
       const out = obj.position.clone().sub(from).setY(0);
       if (out.lengthSq() < 1e-4) out.set(Math.random() - 0.5, 0, Math.random() - 0.5);
-      out.normalize().multiplyScalar(0.9 + Math.random() * 1.3);
-      return { obj, v: out.setY(2 + Math.random() * 1.8), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(16) };
+      out.normalize().multiplyScalar(1.6 + Math.random() * 2.4); // (violently: hard out, high, spinning fast)
+      return { obj, v: out.setY(2.8 + Math.random() * 2.4), w: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(30) };
     });
     (this.debris = this.debris || []).push({ pieces, box, t: 0 });
   }

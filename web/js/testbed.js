@@ -759,6 +759,19 @@ export async function runTestbed(data) {
         await pray(1, 'bolt', 'Suddenly, a bolt of lightning strikes you!');
         say('');
       }
+      // a monster slain (?part=explode, on its own: it goes on and on): blown apart into its bricks, scattering about its
+      // square, white studs flying; and back again, to be slain again
+      if (part === 'explode') {
+        const c = cobras[0];
+        if (c) for (;;) {
+          await wait(1.6);
+          say(`You kill the ${c.monster}!`);
+          brick.shatterFigureAt(c.at[0], c.at[1]);
+          c.gone = true;
+          await wait(3.4);
+          c.gone = false; say('');
+        }
+      }
       // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the
       // floor where it comes down, left lying there; each archer (you, the centaur's man half) into the stance, aimed, drawn,
       // let go, held, and back to how it stood (FOUNT.loose)
@@ -1407,6 +1420,7 @@ export async function runTestbed(data) {
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {
+      if (c.gone) continue; // (slain: blown to bits, brickworld shatterFigureAt)
       let rp = null; // (out of a fountain: up out of its water, over the rim, off to its square: perch.js risePath)
       const half = 0.55, out = c.kind === 'snake' ? half * Math.cos(0.45) : 0.22, up = half * Math.sin(0.45); // (a snake: half its length; as main.js SNAKE_OUT, SNAKE_UP)
       if (c.rise) { const u = (clock - c.rise.t0) / RISE_T; if (u < 0) continue; if (u < 1) rp = risePath(c.rise.f, c.at, u, out, c.rise.sink); }

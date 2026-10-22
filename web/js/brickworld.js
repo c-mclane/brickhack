@@ -56,6 +56,66 @@ function fadeObject(root, k) {
     for (const m of [].concat(o.material)) { m.opacity = m.userData.op0 * k; m.depthWrite = k > 0.98; }
   });
 }
+// A figure (its meshes, as drawn now) in its pieces: the bricks it's built of, each a run of triangles joined to one
+// another (welded where they meet), the biggest `most` kept apart and every smaller bit (a stud, a print) joined to the
+// one it's nearest. [{center (world), parts: [Mesh, its triangles round the centre, in world space]}]
+function brickPieces(meshes, most) {
+  const geos = meshes.map((o) => { const g = (o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()); g.applyMatrix4(o.matrixWorld); return { g, mat: o.material }; });
+  const keyId = new Map(), parent = [];
+  const find = (a) => { while (parent[a] !== a) a = parent[a] = parent[parent[a]]; return a; };
+  const vid = []; // per geometry, per vertex: its welded id
+  for (const { g } of geos) {
+    const P = g.attributes.position, ids = new Int32Array(P.count);
+    for (let v = 0; v < P.count; v++) {
+      const k = `${Math.round(P.getX(v) * 400)},${Math.round(P.getY(v) * 400)},${Math.round(P.getZ(v) * 400)}`;
+      let id = keyId.get(k);
+      if (id === undefined) { id = parent.length; parent.push(id); keyId.set(k, id); }
+      ids[v] = id;
+    }
+    for (let t = 0; t + 2 < P.count; t += 3) { const a = find(ids[t]), b = find(ids[t + 1]), c = find(ids[t + 2]); parent[b] = a; parent[find(c)] = a; }
+    vid.push(ids);
+  }
+  // each run: its triangles, how many, its middle
+  const runs = new Map();
+  geos.forEach(({ g }, gi) => {
+    const P = g.attributes.position;
+    for (let t = 0; t + 2 < P.count; t += 3) {
+      const r = find(vid[gi][t]);
+      let run = runs.get(r);
+      if (!run) runs.set(r, (run = { tris: [], n: 0, sum: new THREE.Vector3() }));
+      run.tris.push([gi, t]); run.n++;
+      run.sum.x += P.getX(t); run.sum.y += P.getY(t); run.sum.z += P.getZ(t);
+    }
+  });
+  const list = [...runs.values()].map((r) => ({ ...r, mid: r.sum.divideScalar(r.n) })).sort((a, b) => b.n - a.n);
+  const keep = list.slice(0, most).map((r) => ({ tris: [...r.tris], mid: r.mid }));
+  for (const r of list.slice(most)) { // (a small bit: with the nearest big one)
+    let best = keep[0], bd = Infinity;
+    for (const k of keep) { const d = k.mid.distanceToSquared(r.mid); if (d < bd) { bd = d; best = k; } }
+    best.tris.push(...r.tris);
+  }
+  return keep.map((k) => {
+    const byGeo = new Map();
+    for (const [gi, t] of k.tris) { if (!byGeo.has(gi)) byGeo.set(gi, []); byGeo.get(gi).push(t); }
+    const box = new THREE.Box3();
+    for (const [gi, ts] of byGeo) { const P = geos[gi].g.attributes.position; for (const t of ts) for (let v = 0; v < 3; v++) box.expandByPoint(new THREE.Vector3(P.getX(t + v), P.getY(t + v), P.getZ(t + v))); }
+    const center = box.getCenter(new THREE.Vector3());
+    const parts = [];
+    for (const [gi, ts] of byGeo) {
+      const src = geos[gi].g, out = new THREE.BufferGeometry();
+      for (const [name, a] of Object.entries(src.attributes)) {
+        const arr = new Float32Array(ts.length * 3 * a.itemSize);
+        let o = 0;
+        for (const t of ts) for (let v = 0; v < 3; v++) for (let c = 0; c < a.itemSize; c++) arr[o++] = a.array[(t + v) * a.itemSize + c];
+        out.setAttribute(name, new THREE.BufferAttribute(arr, a.itemSize, a.normalized));
+      }
+      out.translate(-center.x, -center.y, -center.z);
+      const mat = Array.isArray(geos[gi].mat) ? geos[gi].mat[0] : geos[gi].mat;
+      parts.push(new THREE.Mesh(out, mat));
+    }
+    return { center, parts };
+  });
+}
 // (and a toilet's water, down in its bowl)
 const TOILET_WATER = [0, 0.5, 0.125];
 const HERO_R = 0.2; // a minifig's body, round its middle (squares): what the ball keeps out of
@@ -1690,7 +1750,9 @@ export class BrickWorld {
       this.model(f.url).then((m) => { const c = m.clone(); g.add(c); g.userData.joints = figureJoints(c); });
       return g;
     });
-    for (const left of pool.values()) for (const g of left) this.figures.remove(g);
+    const now = performance.now();
+    this.goneFigs = (this.goneFigs || []).filter((o) => now - o.t < 1500);
+    for (const left of pool.values()) for (const g of left) { this.figures.remove(g); if (g.visible && g.children.length) this.goneFigs.push({ g, t: now }); } // (kept a moment: a monster slain may be told of after it's gone from the list, shatterFigureAt)
     list.forEach((f, i) => {
       const g = this.figObjs[i];
       g.matrix.fromArray(f.matrix);
@@ -1710,38 +1772,31 @@ export class BrickWorld {
   // and what's in them, each leg; one all of a piece, a creature: the whole of it), the parts flung about its square,
   // tumbling and bouncing (throwfx explode), and a burst of white studs. False if no figure's drawn there
   shatterFigureAt(x, z, mon) {
-    const cx = x + 0.5, cz = z + 0.5;
-    const here = (this.figObjs || []).filter((g, i) => { // (its figures, all of them: a centaur's horse and its man half; not you)
-      if (!i || !g.visible || !g.children.length) return false;
-      if (mon != null) return g.userData.mon === mon;
-      const e = g.matrix.elements;
-      return Math.abs(e[12] - cx) < 0.5 && Math.abs(e[14] - cz) < 0.5;
-    });
+    const cx = x + 0.5, cz = z + 0.5, now = performance.now();
+    const all = [...(this.figObjs || []).slice(1), ...(this.goneFigs || []).filter((o) => now - o.t < 1500).map((o) => o.g)]; // (not you; and those just gone)
+    const live = all.filter((g) => g.visible && g.children.length);
+    const onSquare = (g) => { const e = g.matrix.elements; return Math.abs(e[12] - cx) < 0.5 && Math.abs(e[14] - cz) < 0.5; };
+    let here = mon != null ? live.filter((g) => g.userData.mon === mon) : [];
+    if (!here.length) here = live.filter(onSquare); // (its figures, all of them: a centaur's horse and its man half; else what's drawn there)
     if (!here.length) return false;
-    const box = new THREE.Box3(), holders = [];
-    for (const best of here) {
-      best.updateMatrixWorld(true);
-      const j = best.userData.joints;
-      const nodes = j ? Object.values(j.joints).filter((n) => { let mesh = false; n.traverse((o) => { if (o.isMesh) mesh = true; }); return mesh && n.visible; }) : [best.children[0]];
-      for (const n of nodes) {
-        box.setFromObject(n);
-        if (box.isEmpty()) continue;
-        const c = box.getCenter(new THREE.Vector3());
-        const holder = new THREE.Group();
-        holder.position.copy(c);
-        const part = n.clone(true);
-        part.matrixAutoUpdate = false;
-        part.matrix.copy(n.matrixWorld).premultiply(new THREE.Matrix4().makeTranslation(-c.x, -c.y, -c.z)); // (round its own middle)
-        holder.add(part);
-        this.world.add(holder);
-        holders.push(holder);
-      }
-      const e = best.matrix.elements;
-      best.userData.shattered = { x: e[12], z: e[14], t: performance.now() };
-      best.visible = false;
+    const meshes = [];
+    for (const g of here) {
+      g.updateMatrixWorld(true);
+      g.traverse((o) => { if (o.isMesh && o.visible && o.geometry && o.geometry.attributes.position) { let v = true; for (let p = o; p && p !== g; p = p.parent) if (!p.visible) v = false; if (v) meshes.push(o); } });
+      const e = g.matrix.elements;
+      g.userData.shattered = { x: e[12], z: e[14], t: now };
+      g.visible = false;
+      this.goneFigs = (this.goneFigs || []).filter((o) => o.g !== g);
     }
+    const holders = brickPieces(meshes, 16).map(({ center, parts }) => {
+      const holder = new THREE.Group();
+      holder.position.copy(center);
+      for (const p of parts) holder.add(p);
+      this.world.add(holder);
+      return holder;
+    });
     const m = 0.04; // (kept within its square)
-    this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.3, cz));
+    this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.25, cz));
     this.fx.splashStuds(new THREE.Vector3(cx, STUD_H + 0.45, cz), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
     return true;
   }
