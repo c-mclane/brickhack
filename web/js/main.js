@@ -1829,13 +1829,33 @@ function fountainDries(x, y, delay = 0) {
 }
 
 // drinking from a fountain, or dipping something in it, now: {act, t (s in)}, or null
-// on stairs: stood on a step, up the flight (stairs up) or down it in its hole (stairs down), at the square's middle
-// (render.js, brickworld.js: four steps, a brick each); eased as you come onto them and off
-const STAIR_STEP = { up: 0.6, down: -0.4 };
+// on stairs: down them, stood on a step in their hole, at the square's middle; up them, on whichever step you're on.
+// A flight up (tools/build_roster.py stairs_up): four steps, a 1x4 brick each, a quarter of the square deep, rising
+// a brick (STAIR_RISE) at a time from its front (the model's +Z, turned (render.js, world.backToWall) away from its
+// wall) to its back. Climbed only from the front (stairFront: squareIs keeps you out from the sides and the back);
+// how high you stand: the highest step under your body (BODY_R each way), and under it a little ahead the way
+// you're going (STAIR_AHEAD), so you're up each step as your feet reach it, never into its riser; eased, up quick
+const STAIR_STEP = { down: -0.4 }, STAIR_RISE = 0.3, STAIR_AHEAD = 0.12;
+function upStairAt(x, z) { const c = renderer.brickOn && world.classAt(x, z); return !!c && c.cmap === CM.upstair; }
+function stairFront(x, z) { const t = world.backToWall(x, z); return { x: x + Math.round(Math.sin(t)), z: z + Math.round(Math.cos(t)) }; }
+function stairHeight(px, pz) { // (the flight's top at point (px, pz), squares' units: 0 off it)
+  const x = Math.round(px), z = Math.round(pz);
+  if (!upStairAt(x, z)) return 0;
+  const t = world.backToWall(x, z), dx = px - x, dz = pz - z;
+  const lz = dx * Math.sin(t) + dz * Math.cos(t); // (along the flight: +0.5 its front, -0.5 its back)
+  return STAIR_RISE * Math.min(4, Math.max(1, 1 + Math.floor((0.5 - lz) / 0.25)));
+}
 function stairStep(dt, hx, hz) {
   const c = world.classAt(Math.round(hx), Math.round(hz));
-  const want = !c || !renderer.brickOn ? 0 : c.cmap === CM.upstair ? STAIR_STEP.up : c.cmap === CM.dnstair ? STAIR_STEP.down : 0;
-  hero3d.stairY = (hero3d.stairY || 0) + (want - (hero3d.stairY || 0)) * Math.min(1, dt * 7);
+  const prev = hero3d.stairAt || [hx, hz], mx = hx - prev[0], mz = hz - prev[1], ml = Math.hypot(mx, mz);
+  hero3d.stairAt = [hx, hz];
+  const [ax, az] = ml > 1e-4 ? [mx / ml, mz / ml] : [0, 0]; // (the way you're going)
+  let want = c && renderer.brickOn && c.cmap === CM.dnstair ? STAIR_STEP.down : 0;
+  for (let i = -2; i <= 2; i++) // (the body's footprint, and it pushed on a little ahead)
+    for (let j = -2; j <= 2; j++)
+      for (const k of [0, 1]) want = Math.max(want, stairHeight(hx + (i / 2) * BODY_R + ax * STAIR_AHEAD * k, hz + (j / 2) * BODY_R + az * STAIR_AHEAD * k));
+  const cur = hero3d.stairY || 0;
+  hero3d.stairY = cur + (want - cur) * Math.min(1, dt * (want > cur ? 22 : 9));
   return hero3d.stairY;
 }
 // praying: how far down onto your knees you are, now (minifig-anim.js FOUNT.prayer drop)
@@ -2745,6 +2765,7 @@ function squareIs(x, z) {
   if (motion.mobAt(x, z) && !(x === walk.at.x && z === walk.at.z)) return 'mob';
   const cl = world.classAt(x, z);
   if (cl && cl.type === 'door') return 'door';
+  if (upStairAt(x, z) && !(x === walk.at.x && z === walk.at.z)) { const f = stairFront(x, z); if (f.x !== walk.at.x || f.z !== walk.at.z) return 'solid'; } // (stairs up: onto them from the front, only; a bump on any other side)
   if ((world.brickDrops || []).some((o) => o.x === x && o.z === z && o.name === 'boulder')) return 'boulder';
   const plain = phys.y < 0.01 && phys.y > -0.5 && !blocks.hasColumn(x, z) && !(cl && (cl.type === 'wall' || cl.type === 'rock'));
   if (plain) return 'floor';
