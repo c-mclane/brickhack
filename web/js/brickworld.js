@@ -591,7 +591,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
@@ -617,7 +617,7 @@ export class BrickWorld {
           lay.updateMatrixWorld(true);
           const box = new THREE.Box3().setFromObject(lay);
           const c = box.getCenter(new THREE.Vector3());
-          lay.position.set(it.anchored ? 0 : -c.x, -box.min.y, it.anchored ? 0 : -c.z); // centred on the square (or by its own origin: anchored), its underside at the group's height
+          lay.position.set(it.anchored ? 0 : -c.x, it.sunk ? 0 : -box.min.y, it.anchored ? 0 : -c.z); // centred on the square (or by its own origin: anchored), its underside at the group's height (sunk: its origin, down into the floor)
           g.add(lay);
           g.userData.lay = lay; // (a chest: its lid swings open, setLids)
           if (g.userData.rising) this.altarIn(g, g.userData.rising);
@@ -1799,6 +1799,66 @@ export class BrickWorld {
     this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.25, cz));
     this.fx.splashStuds(new THREE.Vector3(cx, STUD_H + 0.45, cz), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
     return true;
+  }
+
+  // a trap at (x, z) sprung (items.json "_trap ..."; tools/build_items.py): what it does, in the world (the hero's own
+  // part, falling, vanishing, stuck: the caller's). kind: arrow, dart, rock, squeak, bear, boulder, mine, gas, rust,
+  // fire, trapdoor, tele, level, portal, web, magic, antimagic, poly. urls: {arrow, dart, rock, boulder} (the items').
+  // Resolves when it's done
+  async trapFx(kind, x, z, urls = {}) {
+    const c = new THREE.Vector3(x + 0.5, STUD_H, z + 0.5), up = (h) => c.clone().setY(STUD_H + h);
+    const later = (s, f) => new Promise((res) => setTimeout(() => { f && f(); res(); }, s * 1000));
+    const trapItem = () => [...this.items.values()].find((g) => g.userData.square === `${x},${z}`) || null;
+    const column = (color, n = 5, spread = 0.22) => { for (let i = 0; i < n; i++) setTimeout(() => this.fx.sparkles(up(0.15 + i * 0.32), 22, color, spread), i * 90); };
+    switch (kind) {
+      case 'arrow': case 'dart': // (shot out at you, from the trap's square beside: flat and fast, stuck in the floor at your feet)
+        this.fx.launch(urls[kind], x - 1, z, x, z, { shot: true, from: 0.75 });
+        return later(0.4);
+      case 'rock': // (down from a trap door in the ceiling, onto your head, and off it)
+        this.fx.drop(urls.rock, x, z, STUD_H + 2.8, { x: x + 0.5, z: z + 0.5 });
+        return later(0.6, () => this.fx.splashStuds(up(1.4), 6, 0.8, { floor: STUD_H, ring: false, tint: 0x8a8a8a, solid: true }));
+      case 'squeak': { const g = trapItem(); if (g) this.shakeItem(g, 0.5, 0.02); this.fx.notes(up(0.5), 4); return later(0.8); }
+      case 'bear': this.setLid(x, z, true, 0.07); return later(0.1, () => this.fx.sparkles(up(0.15), 16, 0xc8c8d0, 0.25));
+      case 'boulder': { // (rolling in from three squares off, through you, and on, out of sight)
+        if (!urls.boulder) return;
+        const B = this.boulderFX(), m = await this.model(urls.boulder), b = B.place(m, x - 3, z);
+        for (let i = -2; i <= 2; i++) await B.push(b, x + i, z);
+        B.all.delete(b); b.holder.parent && b.holder.parent.remove(b.holder);
+        return;
+      }
+      case 'mine': // (KAABLAMM: a flash, fire, smoke, the ground thrown up in studs)
+        this.flash(up(0.3), 0xffa030, { size: 2.4, T: 0.5 });
+        this.fx.sparkles(up(0.2), 50, 0xffc040, 0.5); this.fx.sparkles(up(0.3), 30, 0xff6010, 0.4);
+        for (let i = 0; i < 6; i++) setTimeout(() => this.fx.vapor(up(0.2 + i * 0.15), 0x3a3a3a, 1.8), i * 90);
+        this.fx.splashStuds(up(0.1), 22, 3, { floor: STUD_H, ring: false, tint: 0x5a4a3a, solid: true, spread: 2.5 });
+        return later(0.8);
+      case 'gas': // (a cloud of purple gas puffing up out of the vent, round you)
+        this.fx.haze(up(0), 1.4, 9, 0x9a5ad8);
+        for (let i = 0; i < 5; i++) setTimeout(() => this.fx.vapor(up(0.1 + Math.random() * 0.6), 0xb48ae0, 1.6), i * 140);
+        return later(1.2);
+      case 'rust': // (a gush of water up out of it, all over you)
+        this.fx.splashStuds(up(0.1), 26, 3.2, { floor: STUD_H, ring: true, tint: 0x5ab4f0 });
+        setTimeout(() => this.fx.splashStuds(up(0.1), 18, 2.6, { floor: STUD_H, ring: false, tint: 0x8ad0ff }), 180);
+        return later(1);
+      case 'fire': // (a tower of flame up out of the vent)
+        this.lightning(x, z, 2.4, { core: 0xffe090, glow: 0xff6a10, to: 0.25, ground: false, sparks: [0xffc040, 0xff6010] });
+        column(0xff8a20, 7, 0.3); this.flash(up(0.6), 0xff7a1a, { size: 1.6, T: 0.8 });
+        for (let i = 0; i < 4; i++) setTimeout(() => this.fx.vapor(up(1 + i * 0.3), 0x2a2a2a, 1.4), 300 + i * 120);
+        return later(1.1);
+      case 'trapdoor': this.setLid(x, z, true, 0.18); return later(0.25);
+      case 'tele': column(0xc070ff); this.flash(up(0.7), 0xb060ff, { size: 1.4 }); return later(0.6);
+      case 'level': column(0xffa040, 8); this.flash(up(0.9), 0xff9a30, { size: 1.6 }); return later(0.8);
+      case 'portal': // (a swirl of light round you, going round and round)
+        for (let i = 0; i < 16; i++) setTimeout(() => { const a = i * 0.8; this.fx.sparkles(up(0.2 + i * 0.07).add(new THREE.Vector3(Math.cos(a) * 0.35, 0, Math.sin(a) * 0.35)), 10, 0x60a0ff, 0.06); }, i * 60);
+        this.flash(up(0.7), 0x4080ff, { size: 1.5, T: 1.2 }); return later(1.1);
+      case 'web': { const g = trapItem(); if (g) this.shakeItem(g, 1.2, 0.03); this.fx.sparkles(up(0.3), 14, 0xffffff, 0.3); return later(0.3); }
+      case 'magic': // (a flash of light, and stars of every colour)
+        this.flash(up(0.7), 0xffffff, { size: 2.2, T: 0.5 });
+        for (const col of [0xff4040, 0xffd040, 0x40ff60, 0x40a0ff, 0xd060ff]) this.fx.sparkles(up(0.5 + Math.random() * 0.6), 14, col, 0.4);
+        return later(0.6);
+      case 'antimagic': this.fx.haze(up(0), 1.3, 7, 0x2a1a3a); this.flash(up(0.6), 0x200830, { size: 1.6, T: 1, dark: true }); return later(1);
+      case 'poly': column(0x40ff70, 6); this.flash(up(0.7), 0x30e060, { size: 1.5 }); return later(0.6);
+    }
   }
 
   // a part of a floor item, by its joint (items.json "joint"), faded: k 1 as built, 0 gone (an altar's statues

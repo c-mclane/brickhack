@@ -159,11 +159,13 @@ def main():
             aura = dict(aura, tip=dict({'dir': [0, 1, 0]}, **aura['tip']))
         extras = dict({'aura': aura} if aura else {}, **({'lightning': True} if item.get('lightning') else {}),
                       **({'fx': item['fx']} if item.get('fx') else {}), **({'fxJoint': item['fxJoint']} if item.get('fxJoint') else {}), **({'fxPool': item['fxPool']} if item.get('fxPool') else {}), **({'hue': True} if item.get('hue') else {})) or None   # (its element in particles: mist.js addEffects; fxPool: a fountain's water level, LDU up from its foot)
-        hinge = item.get('hinge')   # a part that swings on a hinge (a chest's lid): {joint, pivot, axis (LDraw), open (degrees)}
-        if hinge:   # (in the model's units and axes, as ldraw2glb writes it: studs, Y up, Z to the front)
-            hp = held_point(item, hinge['pivot'])
-            extras = dict(extras or {}, hinge={'joint': hinge['joint'], 'pivot': [round(hp[0] / 20, 5), round(-hp[1] / 20, 5), round(-hp[2] / 20, 5)],
-                                               'axis': [hinge['axis'][0], -hinge['axis'][1], -hinge['axis'][2]], 'open': hinge.get('open', 100)})
+        hinge = item.get('hinge')   # a part that swings on a hinge (a chest's lid): {joint, pivot, axis (LDraw), open (degrees),
+        if hinge:   # more: [others swinging with it, each its own {joint, pivot, axis, open}: a beartrap's two jaws]}
+            def glb_hinge(h):   # (in the model's units and axes, as ldraw2glb writes it: studs, Y up, Z to the front)
+                hp = held_point(item, h['pivot'])
+                return {'joint': h['joint'], 'pivot': [round(hp[0] / 20, 5), round(-hp[1] / 20, 5), round(-hp[2] / 20, 5)],
+                        'axis': [h['axis'][0], -h['axis'][1], -h['axis'][2]], 'open': h.get('open', 100)}
+            extras = dict(extras or {}, hinge=dict(glb_hinge(hinge), **({'more': [glb_hinge(m) for m in hinge['more']]} if hinge.get('more') else {})))
         if item.get('blink'):   # a part that blinks (a land mine's light): {joint} (mist.js addBlink)
             extras = dict(extras or {}, blink=item['blink'])
         glow = item.get('glow')   # its tip glowing: {"fraction": of its length from the tip, "color": a translucent one}
@@ -226,6 +228,8 @@ def main():
             built[name]['spots'] = {k: [round(o[0] / 80, 4), round(-o[1] / 80, 4), round(-o[2] / 80, 4)] for k, o in item['spots'].items()}
         if item.get('anchored'):   # set down by its own origin, not centred on its square (an altar whose steps run out before it)
             built[name]['anchored'] = True
+        if item.get('sunk'):   # ...its origin at the floor's top, what's under it down in the floor (a pit, a hole: the square's floor taken away)
+            built[name]['sunk'] = True
         if item.get('perch'):   # where you stand at it (perch.js PERCHES: R, H, OUT, HOP, LOOK, in squares), if not as its kind's
             built[name]['perch'] = item['perch']
         if item.get('offer'):   # where an offering lies on it (an altar's top), LDU off its foot's middle: in squares, the model's axes

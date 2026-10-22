@@ -84,7 +84,8 @@ export async function runTestbed(data) {
         if (x === 0 || z === 0 || x === W - 1 || z === H - 1) walls.push({ x, z, shade: 1 });
         else if (wet.some(([px, pz]) => px === x && pz === z)) pools.push({ x, z, shade: 1 });
         else if ((level.lava || []).some(([px, pz]) => px === x && pz === z)) pools.push({ x, z, shade: 1, lava: true }); // (scene.json "lava")
-        else if (!(level.stairs || []).some((st) => !st.up && st.at[0] === x && st.at[1] === z)) floors.push({ x, z, studs: true, shade: 1 }); // (stairs down: a hole)
+        else if (!(level.stairs || []).some((st) => !st.up && st.at[0] === x && st.at[1] === z)
+          && !(level.items || []).some((it) => it.at[0] === x && it.at[1] === z && (items[it.item] || {}).sunk)) floors.push({ x, z, studs: true, shade: 1 }); // (stairs down: a hole; a pit, a hole: its own shaft)
       }
     // stairs (scene.json "stairs": [{at, up}]), run toward the wall nearest, as the game's (world.js backToWall)
     const wallBy = (x, z) => x === 0 || z === 0 || x === W - 1 || z === H - 1;
@@ -106,7 +107,7 @@ export async function runTestbed(data) {
   const lay = (list) => {
     const n = new Map(); // (things on one square: stacked, one on another, as world.js has them)
     drops = list.filter(Boolean).map((i) => { const k = i.at.join(','), level = n.get(k) || 0; n.set(k, level + 1);
-      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, offer: (items[i.item] || {}).offer, spots: (items[i.item] || {}).spots, name: i.item }; });
+      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, sunk: !!(items[i.item] || {}).sunk, offer: (items[i.item] || {}).offer, spots: (items[i.item] || {}).spots, name: i.item }; });
     // (as the game watches its list: a statue broken comes apart; up on it, you jump down)
     for (const [x, z] of brick.watchStatues(drops, 'test', (n) => (items[n] ? { name: n, ...items[n] } : null)))
       if (hero.sq.x === x && hero.sq.y === z && hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz } };
@@ -165,6 +166,8 @@ export async function runTestbed(data) {
   // a steed's saddle: how high you sit on it (your feet, astride: the saddle's top, less your hips' height), and how
   // long getting up onto it or down off it takes
   const SADDLE_Y = STUD_H + 96 * 0.85 / 80 - 28 / 80, MOUNT_T = 0.9;
+  // (a trap's: you flinching, or caught fast and struggling: hero.shake {t0, T, amp, fast}; your x, shaken)
+  const trapShake = () => { const s = hero.shake; if (!s) return 0; const u = (clock - s.t0) / s.T; if (u >= 1) { hero.shake = null; return 0; } return s.amp * (1 - u) * Math.sin(u * (s.fast ? 120 : 60)); };
   let shake = null; // the view shaken a moment ({t0, T}: a god's voice, lightning)
   let punished = null; // the ball and chain, when punished (brickworld.setPunished, as the game sets it)
   // the monsters: creatures (creature.js) facing you
@@ -757,6 +760,78 @@ export async function runTestbed(data) {
         await pray(1, 'blackglow', 'A black glow surrounds you.');
         await pray(1, 'lessons', '"Thou hast strayed from the path, mortal.  Thou must relearn thy lessons!"');
         await pray(1, 'bolt', 'Suddenly, a bolt of lightning strikes you!');
+        say('');
+      }
+      // traps (?part=traps: every kind, items.json "_trap ...", in rows): walked up to from the south, stepped onto,
+      // sprung (brickworld trapFx: what it does in the world), what it does to you (dropped into a pit, down a hole,
+      // gone in a flash and back, caught fast, turned into something else a moment), and back off it
+      if (doing('traps')) {
+        const ease = async (key, to, T) => { const from = hero[key] || 0, t0 = clock; while (clock - t0 < T) { const u = (clock - t0) / T; hero[key] = from + (to - from) * u * u * (3 - 2 * u); await wait(0); } hero[key] = to; };
+        const flinch = (T = 0.35) => { hero.shake = { t0: clock, T, amp: 0.05 }; };
+        const stuck = (T = 1.6) => { hero.shake = { t0: clock, T, amp: 0.035, fast: true }; };
+        const fx = { arrow: url('arrow'), dart: url('dart'), rock: url('rock'), boulder: url('boulder') };
+        const TRAPS = [
+          ['arrow trap', 'arrow', 'An arrow shoots out at you! You are hit by an arrow.'],
+          ['dart trap', 'dart', 'A little dart shoots out at you! You are hit by a little dart.'],
+          ['falling rock trap', 'rock', 'A trap door in the ceiling opens and a rock falls on your head! Fortunately, you are wearing a hard hat.'],
+          ['squeaky board', 'squeak', 'A board beneath you squeaks loudly.'],
+          ['bear trap', 'bear', 'A bear trap closes on your foot!'],
+          ['land mine', 'mine', 'KAABLAMM!!! You triggered a land mine!'],
+          ['rolling boulder trap', 'boulder', 'Click! You trigger a rolling boulder trap! You are hit by a boulder!'],
+          ['sleeping gas trap', 'gas', 'A cloud of gas puts you to sleep!'],
+          ['rust trap', 'rust', 'A gush of water hits you!'],
+          ['fire trap', 'fire', 'A tower of flame erupts from the floor!'],
+          ['pit', 'pit', 'You fall into a pit!'],
+          ['spiked pit', 'spiked', 'You fall into a pit! You land on a set of sharp iron spikes!'],
+          ['hole', 'hole', 'There\'s a gaping hole under you! You fall through...'],
+          ['trap door', 'trapdoor', 'A trap door opens up under you! You fall through...'],
+          ['teleportation trap', 'tele', 'You feel a wrenching sensation.'],
+          ['level teleporter', 'level', 'You feel a wrenching sensation. You are momentarily blinded by a flash of light.'],
+          ['magic portal', 'portal', 'You feel dizzy for a moment, but the sensation passes.'],
+          ['web', 'web', 'You stumble into a spider web.'],
+          ['magic trap', 'magic', 'You are caught in a magical explosion!'],
+          ['anti-magic field', 'antimagic', 'You feel momentarily lethargic.'],
+          ['polymorph trap', 'poly', 'You feel a change coming over you. You turn into a Keystone Kop!'],
+        ];
+        const at = (name) => (level.items || []).find((it) => it.item === name || it.item === '_trap ' + name);
+        for (const [name, kind, msg] of TRAPS) {
+          const it = at(name);
+          if (!it) continue;
+          const [tx, tz] = it.at;
+          // (round to the square south of it (down a column between the traps, to another row), and up onto it)
+          if (hero.sq.y !== tz + 1) {
+            while (hero.sq.x !== tx - 1) await step(Math.sign(tx - 1 - hero.sq.x), 0);
+            while (hero.sq.y !== tz + 1) await step(0, Math.sign(tz + 1 - hero.sq.y));
+          }
+          while (hero.sq.x !== tx) await step(Math.sign(tx - hero.sq.x), 0);
+          await step(0, -1);
+          say(msg);
+          const sprung = brick.trapFx(kind, tx, tz, fx);
+          switch (kind) {
+            case 'arrow': case 'dart': case 'rock': await wait(0.35); flinch(); break;
+            case 'bear': case 'web': await wait(0.1); stuck(1.8); await wait(1.8); if (kind === 'bear') brick.setLid(tx, tz, false, 0.4); break;
+            case 'mine': flinch(0.6); await ease('trapY', 0.7, 0.25); await ease('trapY', 0, 0.3); lay((level.items = level.items.filter((o) => o !== it))); break;
+            case 'boulder': await wait(1.1); flinch(0.5); break;
+            case 'gas': await wait(0.4); await ease('trapY', -0.25, 0.5); await wait(1.2); await ease('trapY', 0, 0.4); break;
+            case 'rust': case 'fire': case 'magic': case 'antimagic': await wait(0.25); flinch(0.6); break;
+            case 'pit': case 'spiked': // (down into it, a while, and clambering out)
+              await ease('trapY', -0.55, 0.22); if (kind === 'spiked') { flinch(0.5); brick.flash(new THREE.Vector3(tx + 0.5, 0.2, tz + 0.5), 0xff2020, { size: 0.8, T: 0.4 }); }
+              await wait(1.2); say('You crawl to the edge of the pit.'); await ease('trapY', 0, 0.7); break;
+            case 'hole': case 'trapdoor': // (down through it, out of sight; and back, as if from the level above)
+              await wait(0.15); await Promise.all([ease('trapY', -1.6, 0.5), ease('fade', 0, 0.5)]); hero.fade = 0; await wait(0.8);
+              if (kind === 'trapdoor') brick.setLid(tx, tz, false, 0.5);
+              hero.trapY = 0; place(tx, tz + 1, 0); await ease('fade', 1, 0.5); hero.fade = undefined; break;
+            case 'tele': case 'level': case 'portal': // (gone, and back somewhere else)
+              await wait(0.2); await Promise.all([ease('fade', 0, 0.35), kind === 'level' ? ease('trapY', 0.8, 0.35) : wait(0)]); hero.fade = 0; await wait(0.5);
+              hero.trapY = 0; place(tx, tz + 1, 0); await ease('fade', 1, 0.45); hero.fade = undefined; break;
+            case 'poly': // (a Keystone Kop a while, and yourself again)
+              await wait(0.2); hero.polyUrl = (mons['Keystone Kop'] || {}).url; await wait(2.2);
+              say('You return to human form!'); brick.trapFx('poly', tx, tz, fx); hero.polyUrl = null; break;
+          }
+          await sprung;
+          await wait(0.6);
+          if (hero.sq.y === tz) await step(0, 1); // (back off it)
+        }
         say('');
       }
       // a monster slain (?part=explode, on its own: it goes on and on): blown apart into its bricks, scattering about its
@@ -1410,13 +1485,13 @@ export async function runTestbed(data) {
     }
     const kneel = fo && fo.act === 'prayer' ? fountKey('prayer', 'drop', fo.t) : 0; // (praying: down on your knees)
     const m = rideAt ? figureMatrix(rideAt.x + 0.5, rideAt.y, rideAt.z + 0.5, hero.yaw) // (astride a steed)
-      : sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0), (pp ? pp.lift : -hero.sink) - kneel, hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
+      : sw ? figureMatrix(sw.x + 0.5, sw.y, sw.z + 0.5, sw.yaw ?? hero.yaw) : figureMatrix(hero.pos[0] + 0.5 + (pp ? pp.dx : 0) + trapShake(), (pp ? pp.lift : -hero.sink) - kneel + (hero.trapY || 0), hero.pos[1] + 0.5 + (pp ? pp.dz : 0), pp && pp.k > 0.5 ? pp.yaw : hero.yaw);
     if (hero.spot) { // (the Mass: on the altar's step, as the script has you; a genuflection, down on a knee)
       const S = hero.spot, drop = fo ? fountKey(fo.act, 'drop', fo.t) : 0;
       m.set(figureMatrix(S.x, S.y - drop, S.z, S.yaw));
     }
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo && fo.act === 'loose' ? { ...hero.hold, L: null, nock: fo.t > NOCKED[0] && fo.t < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(fo.t) } : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: hero.polyUrl || heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo && fo.act === 'loose' ? { ...hero.hold, L: null, nock: fo.t > NOCKED[0] && fo.t < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(fo.t) } : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {

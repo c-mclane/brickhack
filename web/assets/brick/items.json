@@ -34741,5 +34741,1865 @@
    -40
   ],
   "anchored": true
+ },
+ "_trap arrow trap": {
+  "brick": "A dark grey vent, black grilles, an arrow's shaft poking up out of it, waiting (a arrow trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "18041",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 62
+     }
+    ]
+   }
+  ]
+ },
+ "_trap dart trap": {
+  "brick": "A dark grey vent, light grey grilles, a dart's fins poking up out of it (a dart trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 71,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 71,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "24482",
+    "color": 179,
+    "pos": [
+     0,
+     -8,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 50
+     }
+    ]
+   }
+  ]
+ },
+ "_trap falling rock trap": {
+  "brick": "A dark grey plate strewn with rocks fallen from a crack above (a falling rock trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "35646",
+    "color": 70,
+    "pos": [
+     -9,
+     -8,
+     -7
+    ]
+   },
+   {
+    "part": "35646",
+    "color": 70,
+    "pos": [
+     10,
+     -8,
+     5
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 70
+     }
+    ]
+   },
+   {
+    "part": "35646",
+    "color": 70,
+    "pos": [
+     -3,
+     -8,
+     12
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 140
+     }
+    ]
+   }
+  ]
+ },
+ "_trap squeaky board": {
+  "brick": "Two reddish brown planks, loose on a dark brown plate, nail heads at their ends (a squeaky board)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3020",
+    "color": 308,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2431",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "2431",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 71,
+    "pos": [
+     -32,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 71,
+    "pos": [
+     -32,
+     -16,
+     10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 71,
+    "pos": [
+     32,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 71,
+    "pos": [
+     32,
+     -16,
+     10
+    ]
+   }
+  ]
+ },
+ "_trap bear trap": {
+  "brick": "The beartrap's two fanged jaws laid open, flat on a dark grey round plate, set: they snap shut (the hinge) (a bear trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "4032a",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2576",
+    "color": 72,
+    "pos": [
+     0,
+     -8,
+     -3
+    ],
+    "rot": [
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": 80
+     }
+    ],
+    "joint": "jawA"
+   },
+   {
+    "part": "2576",
+    "color": 72,
+    "pos": [
+     0,
+     -8,
+     3
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 180
+     },
+     {
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "deg": -80
+     }
+    ],
+    "joint": "jawB"
+   }
+  ],
+  "hinge": {
+   "joint": "jawA",
+   "pivot": [
+    0,
+    -8,
+    -3
+   ],
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "open": 80,
+   "more": [
+    {
+     "joint": "jawB",
+     "pivot": [
+      0,
+      -8,
+      3
+     ],
+     "axis": [
+      -1,
+      0,
+      0
+     ],
+     "open": 80
+    }
+   ]
+  }
+ },
+ "_trap rolling boulder trap": {
+  "brick": "A light grey pressure plate, a red button in its middle (a rolling boulder trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3068b",
+    "color": 71,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 4,
+    "pos": [
+     0,
+     -16,
+     0
+    ]
+   }
+  ]
+ },
+ "_trap sleeping gas trap": {
+  "brick": "A dark grey vent, its grilles see-through purple (a sleeping gas trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 22,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 22,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   }
+  ]
+ },
+ "_trap rust trap": {
+  "brick": "A dark grey vent, black grilles, puddles of clear blue on it (a rust trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 43,
+    "pos": [
+     -10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 43,
+    "pos": [
+     10,
+     -16,
+     10
+    ]
+   }
+  ]
+ },
+ "_trap fire trap": {
+  "brick": "A dark grey vent, black grilles, see-through orange flames licking up out of it (a fire trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "2412b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "4589",
+    "color": 57,
+    "pos": [
+     -10,
+     -32,
+     0
+    ]
+   },
+   {
+    "part": "4589",
+    "color": 57,
+    "pos": [
+     10,
+     -32,
+     0
+    ]
+   }
+  ]
+ },
+ "_trap pit": {
+  "brick": "A pit down into the floor: dark brown brick walls two bricks deep, black at the bottom (a pit)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3031",
+    "color": 0,
+    "pos": [
+     0,
+     48,
+     0
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     0,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     0,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     -30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     24,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     24,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     -30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ],
+  "sunk": true
+ },
+ "_trap spiked pit": {
+  "brick": "A pit, grey cones standing up out of its bottom for spikes (a spiked pit)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3031",
+    "color": 0,
+    "pos": [
+     0,
+     48,
+     0
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     0,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     0,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     -30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     24,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     0,
+     24,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     -30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 308,
+    "pos": [
+     30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "4589",
+    "color": 71,
+    "pos": [
+     -10,
+     24,
+     -10
+    ]
+   },
+   {
+    "part": "4589",
+    "color": 71,
+    "pos": [
+     -10,
+     24,
+     10
+    ]
+   },
+   {
+    "part": "4589",
+    "color": 71,
+    "pos": [
+     10,
+     24,
+     -10
+    ]
+   },
+   {
+    "part": "4589",
+    "color": 71,
+    "pos": [
+     10,
+     24,
+     10
+    ]
+   }
+  ],
+  "sunk": true
+ },
+ "_trap hole": {
+  "brick": "A hole down through the floor: black brick walls going down into the dark (a hole)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3031",
+    "color": 0,
+    "pos": [
+     0,
+     96,
+     0
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     0,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     0,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     24,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     24,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     48,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     48,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     48,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     48,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     72,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     72,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     72,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     72,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "35646",
+    "color": 72,
+    "pos": [
+     -30,
+     -8,
+     -30
+    ]
+   },
+   {
+    "part": "35646",
+    "color": 72,
+    "pos": [
+     30,
+     -8,
+     30
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ],
+  "sunk": true
+ },
+ "_trap trap door": {
+  "brick": "A shaft down through the floor, two reddish brown 2 x 4 leaves over it that swing down (a trap door)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3031",
+    "color": 0,
+    "pos": [
+     0,
+     96,
+     0
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     0,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     0,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     24,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     24,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     24,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     48,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     48,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     48,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     48,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     72,
+     -30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     0,
+     72,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     -30,
+     72,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 0,
+    "pos": [
+     30,
+     72,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "87079",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     -20
+    ],
+    "joint": "leafA"
+   },
+   {
+    "part": "87079",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     20
+    ],
+    "joint": "leafB"
+   }
+  ],
+  "hinge": {
+   "joint": "leafA",
+   "pivot": [
+    0,
+    -4,
+    -40
+   ],
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "open": 100,
+   "more": [
+    {
+     "joint": "leafB",
+     "pivot": [
+      0,
+      -4,
+      40
+     ],
+     "axis": [
+      -1,
+      0,
+      0
+     ],
+     "open": 100
+    }
+   ]
+  },
+  "sunk": true
+ },
+ "_trap teleportation trap": {
+  "brick": "A magic circle: a see-through purple round 4 x 4 plate, a purple spiral in its middle, a ring of purple studs (a teleportation trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "60474",
+    "color": 52,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "14769p0e",
+    "color": 22,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     30.0,
+     -8,
+     0.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     21.2,
+     -8,
+     21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     -0.0,
+     -8,
+     30.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     -21.2,
+     -8,
+     21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     -30.0,
+     -8,
+     -0.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     -21.2,
+     -8,
+     -21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     0.0,
+     -8,
+     -30.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     21.2,
+     -8,
+     -21.2
+    ]
+   }
+  ]
+ },
+ "_trap level teleporter": {
+  "brick": "A magic circle in see-through orange, an orange spiral in its middle (a level teleporter)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "60474",
+    "color": 57,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "14769p0e",
+    "color": 25,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     30.0,
+     -8,
+     0.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     21.2,
+     -8,
+     21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     -0.0,
+     -8,
+     30.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     -21.2,
+     -8,
+     21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     -30.0,
+     -8,
+     -0.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     -21.2,
+     -8,
+     -21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     0.0,
+     -8,
+     -30.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 57,
+    "pos": [
+     21.2,
+     -8,
+     -21.2
+    ]
+   }
+  ]
+ },
+ "_trap magic portal": {
+  "brick": "A see-through dark blue round plate, a blue spiral, a ring of clear studs (a magic portal)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "60474",
+    "color": 33,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "14769p0e",
+    "color": 1,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     30.0,
+     -8,
+     0.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     21.2,
+     -8,
+     21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     -0.0,
+     -8,
+     30.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     -21.2,
+     -8,
+     21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     -30.0,
+     -8,
+     -0.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     -21.2,
+     -8,
+     -21.2
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     0.0,
+     -8,
+     -30.0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 47,
+    "pos": [
+     21.2,
+     -8,
+     -21.2
+    ]
+   }
+  ]
+ },
+ "_trap web": {
+  "brick": "A white spider web, lying flat (a web)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30240",
+    "color": 15,
+    "pos": [
+     23.4,
+     -4,
+     34.6
+    ],
+    "mat": [
+     0.6,
+     0,
+     0,
+     0,
+     0.6,
+     0,
+     0,
+     0,
+     0.6
+    ]
+   }
+  ]
+ },
+ "_trap magic trap": {
+  "brick": "A see-through yellow tile on a dark grey plate, clear round tiles at its corners (a magic trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3068b",
+    "color": 46,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 47,
+    "pos": [
+     -10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 47,
+    "pos": [
+     -10,
+     -16,
+     10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 47,
+    "pos": [
+     10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "98138",
+    "color": 47,
+    "pos": [
+     10,
+     -16,
+     10
+    ]
+   }
+  ]
+ },
+ "_trap anti-magic field": {
+  "brick": "A black tile, see-through purple studs at its corners (a anti-magic field)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 0,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3068b",
+    "color": 0,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     -10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     -10,
+     -16,
+     10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 52,
+    "pos": [
+     10,
+     -16,
+     10
+    ]
+   }
+  ]
+ },
+ "_trap polymorph trap": {
+  "brick": "A green spiral tile on a dark grey plate, see-through green studs at its corners (a polymorph trap)",
+  "oc": "trap",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3022",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "14769p0e",
+    "color": 2,
+    "pos": [
+     0,
+     -8,
+     0
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 34,
+    "pos": [
+     -10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 34,
+    "pos": [
+     -10,
+     -16,
+     10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 34,
+    "pos": [
+     10,
+     -16,
+     -10
+    ]
+   },
+   {
+    "part": "6141",
+    "color": 34,
+    "pos": [
+     10,
+     -16,
+     10
+    ]
+   }
+  ]
  }
 }

@@ -605,20 +605,22 @@ export function wristMatrix(rig, side) {
 }
 
 // A hinged part (a chest's lid: tools/build_items.py "hinge", in the model's
-// extras) swung open by `deg` degrees about its hinge. root: a loaded model
+// extras; and any it carries with it, "more") swung open by `deg` degrees about its hinge. root: a loaded model
 // (or a clone); its hinged node is posed by matrix from then on.
 export function setHinge(THREE, root, deg) {
   let h = null;
   root.traverse((o) => { if (!h && o.userData && o.userData.hinge) h = o.userData.hinge; });
-  if (!h) return false;
-  const part = root.getObjectByName(h.joint);
-  if (!part) return false;
-  const p = new THREE.Vector3(...h.pivot), ax = new THREE.Vector3(...h.axis).normalize();
-  const m = new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)
-    .multiply(new THREE.Matrix4().makeRotationAxis(ax, (deg * Math.PI) / 180))
-    .multiply(new THREE.Matrix4().makeTranslation(-p.x, -p.y, -p.z));
-  part.matrixAutoUpdate = false;
-  part.matrix.copy(m);
-  part.matrixWorldNeedsUpdate = true;
+  if (!h || !root.getObjectByName(h.joint)) return false;
+  for (const j of [h, ...(h.more || [])]) { // (and any swinging with it, as far through their own swing: a beartrap's other jaw)
+    const part = root.getObjectByName(j.joint);
+    if (!part) continue;
+    const p = new THREE.Vector3(...j.pivot), ax = new THREE.Vector3(...j.axis).normalize(), d = deg * (j.open / h.open);
+    const m = new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)
+      .multiply(new THREE.Matrix4().makeRotationAxis(ax, (d * Math.PI) / 180))
+      .multiply(new THREE.Matrix4().makeTranslation(-p.x, -p.y, -p.z));
+    part.matrixAutoUpdate = false;
+    part.matrix.copy(m);
+    part.matrixWorldNeedsUpdate = true;
+  }
   return h.open;
 }
