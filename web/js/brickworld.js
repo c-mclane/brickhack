@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { isMist, mistify, quantumPart, strobify, addAura, auraOf, addLightning, addEffects, addHueShift, addBlink, roil, setWaterStud, smokeVents } from './mist.js';
+import { isMist, mistify, isStatic, staticify, quantumPart, strobify, addAura, auraOf, addLightning, addEffects, addHueShift, addBlink, roil, setWaterStud, smokeVents } from './mist.js';
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
@@ -72,7 +72,63 @@ const PIECES = {
   lavabed: 'assets/brick/parts/lava_bed.glb', // ...on a bed of clear red
   stairs_down: 'assets/brick/parts/stairs_down.glb', // stairs down: brick steps into a hole in the floor, origin at the floor's top, the square's middle
   stairs_up: 'assets/brick/parts/stairs_up.glb', // stairs up: brick steps rising out of it
+  // the Gnomish Mines (minesWalls): its floor, brown; its walls of rock, tiled along each run of wall
+  plate_mines: 'assets/brick/parts/plate4x4_mines.glb',
+  panel_a: 'assets/brick/parts/mines_panel_a.glb', // a rock panel, 10 studs long, 4 deep, a wall's height: its rock face to +Z
+  panel_b: 'assets/brick/parts/mines_panel_b.glb', // ...in dark tan
+  rock4: 'assets/brick/parts/mines_rock4.glb', // a rock column, 4x4, a wall's height
+  fill2: 'assets/brick/parts/mines_fill2.glb', // a stack of 2x4 bricks, 2 studs along X, 4 deep
 };
+// the Gnomish Mines' walls (setTerrain: data.style 'mines'), tiled out of real pieces, each a wall's height: every
+// straight run of wall (squares with wall to either side along it, and not across it) filled along its length with
+// rock panels, 10 studs each, as many as fit, the rest (its length, 4 studs a square, less the panels') in 4-stud
+// rock columns and, if 2 studs short, one stack of 2x4 bricks, in an order of its own (by where it is: not the same
+// run after run); each panel's rock face to the side the floor is (the more of it). A corner, a junction, a wall
+// standing alone: a rock column, turned any way. -> {piece: [[matrix, shade]...]}
+function minesWalls(data) {
+  const W = data.w, S = MODEL_SCALE, TOP = 144 / 80;
+  const wallAt = new Set(data.walls.map((w) => w.z * W + w.x)), open = new Set();
+  for (const list of [data.floors, data.pools, data.stairs, data.doors]) for (const c of list || []) open.add(c.z * W + c.x);
+  const inMap = (x, z) => x >= 0 && x < W && z >= 0; // (no wrapping round off one edge onto the next row)
+  const isWall = (x, z) => inMap(x, z) && wallAt.has(z * W + x), isOpen = (x, z) => inMap(x, z) && open.has(z * W + x);
+  const hash = (a, b) => { const h = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return h - Math.floor(h); };
+  const out = { panel_a: [], panel_b: [], rock4: [], fill2: [] };
+  const put = (k, x, z, turn) => out[k].push([new THREE.Matrix4().makeTranslation(x, TOP, z).multiply(new THREE.Matrix4().makeRotationY(turn)).scale(new THREE.Vector3(S, S, S)), 1]);
+  const kind = (x, z) => { const h = isWall(x - 1, z) || isWall(x + 1, z), v = isWall(x, z - 1) || isWall(x, z + 1); return h && !v ? 'h' : v && !h ? 'v' : 'p'; };
+  for (const w of data.walls) if (kind(w.x, w.z) === 'p') put('rock4', w.x + 0.5, w.z + 0.5, Math.floor(hash(w.x, w.z) * 4) * Math.PI / 2);
+  const run = (cells, along) => { // (cells: the run's squares in order; along: 'h' (x) or 'v' (z))
+    const [x0, z0] = cells[0], L = cells.length * 4, n = Math.floor(L / 10);
+    const parts = Array(n).fill(10);
+    for (let r = L - 10 * n; r > 0; r -= r >= 4 ? 4 : 2) parts.push(r >= 4 ? 4 : 2);
+    for (let i = parts.length - 1; i > 0; i--) { const j = Math.floor(hash(x0 + i, z0 - i) * (i + 1)); [parts[i], parts[j]] = [parts[j], parts[i]]; }
+    // (its face: toward the side with the more floor)
+    let a = 0, b = 0;
+    for (const [x, z] of cells) { if (along === 'h') { a += isOpen(x, z + 1); b += isOpen(x, z - 1); } else { a += isOpen(x + 1, z); b += isOpen(x - 1, z); } }
+    const face = along === 'h' ? (a >= b ? 0 : Math.PI) : (a >= b ? Math.PI / 2 : -Math.PI / 2), across = along === 'h' ? 0 : Math.PI / 2;
+    let at = 0;
+    for (const [i, len] of parts.entries()) {
+      const mid = (at + len / 2) / 4, x = along === 'h' ? x0 + mid : x0 + 0.5, z = along === 'h' ? z0 + 0.5 : z0 + mid;
+      if (len === 10) put(hash(x0 + i * 3, z0 + i * 7) < 0.7 ? 'panel_a' : 'panel_b', x, z, face);
+      else if (len === 4) put('rock4', x, z, Math.floor(hash(x * 3, z * 5) * 4) * Math.PI / 2);
+      else put('fill2', x, z, across);
+      at += len;
+    }
+  };
+  for (const along of ['h', 'v']) {
+    const seen = new Set();
+    for (const w of data.walls) {
+      if (kind(w.x, w.z) !== along || seen.has(w.z * W + w.x)) continue;
+      // (back to its start, then along it to its end)
+      let [x, z] = [w.x, w.z];
+      const [dx, dz] = along === 'h' ? [1, 0] : [0, 1];
+      while (isWall(x - dx, z - dz) && kind(x - dx, z - dz) === along) { x -= dx; z -= dz; }
+      const cells = [];
+      while (isWall(x, z) && kind(x, z) === along) { cells.push([x, z]); seen.add(z * W + x); x += dx; z += dz; }
+      run(cells, along);
+    }
+  }
+  return out;
+}
 const CHUNK = 8; // (squares a side: the map in pieces, each drawn only when in view)
 const WALL_GREY = 0xa0a5a9, GROUND_GREY = WALL_GREY; // (the floor, under it all, the grey of the walls)
 // a wall: this many courses of bricks, and a course of real bricks, studs and all, on top (six
@@ -148,6 +204,7 @@ export class BrickWorld {
           if (o.material.metalness > 0.5) { o.material.envMap = this.env; o.material.envMapIntensity = 1.2; } // chrome: reflects (envmap.js)
           // a doppelganger's other half is shimmering mist
           if (isMist(o.material)) { mistify(o); return; }
+          if (isStatic(o.material)) { staticify(o); return; } // (a shade of the dead: the manes)
           if (quantumPart(o.material) !== null) strobify(o);
           // translucent brick (flames, ice) glows
           if (o.material.transparent && o.material.map) o.castShadow = false; // (printed see-through plastic: solid ink, its own alpha)
@@ -239,7 +296,8 @@ export class BrickWorld {
       if (f.studs) plates.push([M().makeTranslation(f.x + 0.5, 0, f.z + 0.5).scale(new THREE.Vector3(S, S, S)), f.shade]);
       else smooth.push([M().makeTranslation(f.x, -PLATE_H, f.z).scale(new THREE.Vector3(1, PLATE_H, 1)), f.shade]); // a printed tile goes on top
     }
-    for (const w of data.walls) {
+    const mines = data.style === 'mines'; // (the Gnomish Mines: brown floors, walls of rock: minesWalls)
+    for (const w of mines ? [] : data.walls) {
       // under the wall, the floor's plate; then WALL_COURSES courses of two 2x4 bricks, crossing each course
       // (the Castle's: its outer walls RISE_COURSES[1] more, its towers [2], every other
       // square a course higher again: the battlements)
@@ -282,7 +340,10 @@ export class BrickWorld {
     this.place('lavapool', lavas);
     this.setLavaSmoke(wet.filter((p) => p.lava).map((p) => [p.x, p.z])); // (smoking)
     this.place('lavabed', lavaBeds);
-    this.place('plate', plates);
+    this.place('plate', mines ? [] : plates);
+    this.place('plate_mines', mines ? plates : []);
+    const rock = mines ? minesWalls(data) : {};
+    for (const k of ['panel_a', 'panel_b', 'rock4', 'fill2']) this.place(k, rock[k] || []);
     // stairs: the brick flights, each turned to run toward its wall (render.js)
     const flight = (up) => (data.stairs || []).filter((st) => st.up === up)
       .map((st) => [M().makeTranslation(st.x + 0.5, 0, st.z + 0.5).multiply(M().makeRotationY(st.turn || 0)).scale(new THREE.Vector3(S, S, S)), st.shade]);

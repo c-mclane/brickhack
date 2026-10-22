@@ -1,0 +1,19 @@
+{
+ "label": "orc shaman",
+ "name": "orc-shaman",
+ "torso": "973",
+ "torsoColor": 73,
+ "armColor": 73,
+ "handColor": 330,
+ "head": "3626bpma",
+ "headColor": 330,
+ "hat": "30381",
+ "hatColor": 73,
+ "hips": "3815",
+ "hipColor": 73,
+ "legColor": 73,
+ "right": {
+  "part": "95049",
+  "color": 70
+ }
+}

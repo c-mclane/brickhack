@@ -41,6 +41,10 @@ def load_colors(root):
                     FINISH[code] = fin
     # ours: a doppelganger's other half, a misty liquid green (the renderers make it shimmer)
     colors[MIST] = ([0.45, 1.0, 0.55], 0.5, 'Doppel_Mist')
+    # a shade of the dead (the manes): wispy grey, crawling with static like a television (the renderers make it so);
+    # what was dark on it (a face's print, hair) a darker grey, so it's still seen
+    colors[STATIC] = ([0.8, 0.82, 0.84], 0.6, 'Shade_Static')
+    colors[STATIC_DARK] = ([0.22, 0.23, 0.25], 0.7, 'Shade_Static_Dark')
     # and a quantum mechanic's parts, each its own colour so each can flash on its own
     for i in range(QUANTUM_PARTS):
         colors[QUANTUM + i] = ([1.0, 1.0, 1.0], 1.0, f'Quantum_Strobe_{i}')
@@ -48,6 +52,7 @@ def load_colors(root):
 
 
 MIST = 9001
+STATIC, STATIC_DARK = 9002, 9003
 QUANTUM, QUANTUM_PARTS = 9100, 100
 
 
@@ -210,10 +215,24 @@ def split(geom, d, t, code):
             for (c, tx), (tr, u) in out.items() if tr]
 
 
+_lum = {}
+def shaded(geom, ldr_text):
+    """A shade (the manes): if the model says '0 !BRICKHACK STATIC', every part turns to static, light grey, or
+    dark where it was dark (a face's print, black hair: by the colour's lightness); prints' pictures dropped."""
+    if '0 !BRICKHACK STATIC' not in ldr_text:
+        return geom
+    if not _lum:
+        for code, (rgb, _, _) in load_colors(LDRAW).items():
+            _lum[code] = 0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2]
+    return [(STATIC_DARK if tex is not None or _lum.get(code, 1) < 0.35 else STATIC, None, arr, None) for code, tex, arr, uv in geom]
+
+
 def ghosted(geom, ldr_text):
     """A doppelganger: if the model says '0 !BRICKHACK GHOST <side>', everything
     on that side of the middle (x > 0 for side 1, x < 0 for -1) turns to mist.
-    Triangles across the middle are cut in two; the shape stays the same."""
+    Triangles across the middle are cut in two; the shape stays the same.
+    (And a shade: all of it static: shaded.)"""
+    geom = shaded(geom, ldr_text)
     side = next((float(l.split()[3]) for l in ldr_text.splitlines() if l.startswith('0 !BRICKHACK GHOST')), None)
     if side is None:
         return geom

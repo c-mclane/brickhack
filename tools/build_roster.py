@@ -43,6 +43,20 @@ DUNGEON_PARTS = {
 """,
     'brick2x4': """1 71 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat
 """,
+    # the Gnomish Mines (brickworld.js minesWalls): its floor, reddish brown plates; its walls, tiled along each run
+    # of wall: rock panels (10 studs long, 4 deep, 6 bricks tall: a wall's height), the rest in rock columns (two
+    # 4x4x3 rocks, the upper turned) and, a run 2 studs short, a stack of 2x4 bricks; all in the rock's grey (a
+    # panel in dark tan too), origin at its top middle
+    'plate4x4_mines': """1 70 0 0 0 1 0 0 0 1 0 0 0 1 3031.dat
+""",
+    'mines_panel_a': """1 72 0 0 0 1 0 0 0 1 0 0 0 1 6082.dat
+""",
+    'mines_panel_b': """1 28 0 0 0 1 0 0 0 1 0 0 0 1 6082.dat
+""",
+    'mines_rock4': """1 72 0 72 0 1 0 0 0 1 0 0 0 1 30294c01.dat
+1 72 0 0 0 0 0 1 0 1 0 -1 0 0 30294c01.dat
+""",
+    'mines_fill2': ''.join(f"1 72 0 {24 * i} 0 0 0 1 0 1 0 -1 0 0 3001.dat\n" for i in range(6)),
     # stairs (render.js: a stair's square): built of 1x4 bricks, a square's width, four steps running from its front
     # toward its back (LDraw +Z: turned to run toward a wall), in brown (reddish brown treads, dark brown under). Down: no floor, the steps going down into the hole a
     # brick at a time (the deeper, the darker the shadow on them), into the black; up: the steps rising out of the floor, a brick at a time

@@ -1,0 +1,13 @@
+{
+ "label": "gnomish wizard",
+ "name": "gnomish-wizard",
+ "base": "gnome",
+ "torsoColor": 73,
+ "armColor": 73,
+ "hat": "6131",
+ "hatColor": 73,
+ "right": {
+  "part": "30385",
+  "color": 43
+ }
+}

@@ -1,18 +1,24 @@
 {
  "label": "manes",
  "name": "manes",
+ "static": true,
  "torso": "973",
- "torsoColor": 85,
- "armColor": 85,
- "handColor": 85,
+ "torsoColor": 71,
+ "armColor": 71,
+ "handColor": 71,
  "shortLegs": {
   "part": "16709",
-  "color": 85
+  "color": 71
  },
- "head": "3626bpc15",
- "headColor": 85,
+ "head": "3626bp01g",
+ "headColor": 71,
  "hair": {
-  "part": "24230p01",
-  "color": 85
+  "part": "62810",
+  "color": 72
+ },
+ "fx": "smoke",
+ "right": {
+  "part": "10053",
+  "color": 72
  }
 }

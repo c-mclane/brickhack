@@ -81,6 +81,45 @@ export function mistify(mesh) {
   mesh.renderOrder = 2; // after the solid half and other glass
 }
 
+// A shade of the dead (the manes: tools/ldraw2glb.py's 'Shade_Static' colours): a wisp of grey, crawling with
+// static like a television's snow, scanlines rolling up it, flickering, now and then a band of it jerked aside;
+// fading away to nothing at its feet. Its darker grey (a face, hair) stays darker, so it's still a face
+export const isStatic = (material) => /^Shade_Static/.test(material.name || '');
+export function staticify(mesh) {
+  const m = mesh.material, dark = /Dark/.test(m.name);
+  startTicking();
+  m.flatShading = true;
+  m.transparent = true;
+  m.depthWrite = false;
+  m.emissive = m.color.clone();
+  m.emissiveIntensity = dark ? 0.02 : 0.5;
+  m.roughness = 0.9;
+  m.metalness = 0;
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uMistTime = uTime;
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vMistPos;\nuniform float uMistTime;')
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+  vMistPos = position;
+  { float band = floor(position.y * 5.0), f = floor(uMistTime * 9.0); // (a band of it jerked aside, now and then)
+    float g = fract(sin(band * 12.9898 + f * 78.233) * 43758.5453);
+    if (g > 0.94) transformed.x += (g - 0.97) * 3.0; }`);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vMistPos;\nuniform float uMistTime;')
+      .replace('#include <dithering_fragment>', `#include <dithering_fragment>
+  { float f = floor(uMistTime * 24.0);
+    float snow = fract(sin(dot(floor(gl_FragCoord.xy / 1.5) + f * vec2(7.13, 13.7), vec2(12.9898, 78.233))) * 43758.5453);
+    float scan = 0.72 + 0.28 * sin(gl_FragCoord.y * 1.6 + uMistTime * 40.0);
+    float roll = 0.75 + 0.25 * smoothstep(0.0, 0.2, fract(vMistPos.y * 0.3 - uMistTime * 0.35)); // (a bar rolling up it)
+    float flick = 0.8 + 0.2 * step(0.35, fract(sin(floor(uMistTime * 11.0) * 91.7) * 43758.5453));
+    float wisp = smoothstep(-3.6, -1.2, vMistPos.y); // (gone to nothing at its feet: its feet 3.6 studs under its neck)
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(${dark ? '0.08' : '0.85'}) * (0.55 + 0.75 * snow), ${dark ? '0.2' : '0.55'}) * scan * roll;
+    gl_FragColor.a = (${dark ? '0.9' : '0.55'} + ${dark ? '0.1' : '0.25'} * snow) * wisp * flick; }`);
+  };
+  mesh.castShadow = false;
+  mesh.renderOrder = dark ? 3 : 2; // (after what's solid; its face over the rest of it)
+}
+
 // An angel (tools/ldraw2glb.py marks the model {aura: true}): the whole figure
 // outlined in a glowing white corona. Shells round the figure, each puffed out
 // along the smoothed normals, light up towards the figure's outline (where
@@ -285,6 +324,12 @@ const FX = {
   // (hellfire: the same, red: Moloch's altar)
   hellfire: { n: 140, size: 0.09, color: 'mix(vec3(1.0, 0.42, 0.3), vec3(0.55, 0.02, 0.02), t)', alpha: '(1.0 - t) * 0.9',
     move: 'p += up * t * h * 0.45 + side * sin(t * 9.0 + ph * 6.3) * h * 0.03;', speed: '0.9 + ph * 0.8' },
+  // (smoke: a vortex of it, thick, grey: up off the floor about its feet, spiralling round it and widening as it
+  // climbs, faster as it goes, thinning away at the top, about its own upright (its model's origin: a figure's
+  // middle, whatever it holds out): a shade of the dead's, the manes)
+  smoke: { n: 260, size: 0.14, color: 'mix(vec3(0.62, 0.63, 0.67), vec3(0.82, 0.83, 0.86), t)', alpha: 'smoothstep(0.0, 0.08, t) * (1.0 - t * t) * 0.45',
+    move: 'float ang = ph * 6.2832 + t * 9.0 + t * t * 8.0; float r = h * (0.07 + 0.2 * t) * (0.85 + 0.3 * fract(ph * 5.7)); vec3 fwd = cross(up, side); p = vec3(0.0, uLo, 0.0) + (side * cos(ang) + fwd * sin(ang)) * r + up * t * h * 0.8;',
+    speed: '0.3 + ph * 0.1', glitch: true }, // (and glitching, as the shade does: static, jerks, flicker)
   frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
     move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
 };
@@ -325,8 +370,8 @@ function addFxOn(THREE, root, fx, src) {
   g.setAttribute('aOut', new THREE.Float32BufferAttribute(out, 3));
   g.setAttribute('aPh', new THREE.Float32BufferAttribute(ph, 1));
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uMistTime: uTime, uH: { value: h }, uVH: { value: 600 } },
-    vertexShader: `attribute vec3 aOut; attribute float aPh; uniform float uMistTime, uH, uVH; varying float vT, vPh;
+    uniforms: { uMistTime: uTime, uH: { value: h }, uVH: { value: 600 }, uC: { value: center }, uLo: { value: box.min.y } }, // (its middle, and its foot: a vortex up off the floor)
+    vertexShader: `attribute vec3 aOut; attribute float aPh; uniform float uMistTime, uH, uVH, uLo; uniform vec3 uC; varying float vT, vPh;
       void main() {
         float ph = aPh, h = uH;
         float t = fract(uMistTime * (${fx.speed}) * 0.6 + ph);
@@ -335,6 +380,9 @@ function addFxOn(THREE, root, fx, src) {
         vec3 side = normalize(cross(up, vec3(0.3, 0.1, 0.9)));
         vec3 away = aOut, p = position;
         ${fx.move}
+        ${fx.glitch ? `{ float band = floor(p.y * 5.0), f = floor(uMistTime * 9.0); // (a band of it jerked aside, now and then: staticify's)
+          float g = fract(sin(band * 12.9898 + f * 78.233) * 43758.5453);
+          if (g > 0.9) p += side * (g - 0.95) * h * 0.6; }` : ''}
         vT = t; vPh = ph;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         // (a true size in the world: the model's own scale, the lens and the screen's height, as any
@@ -351,6 +399,12 @@ function addFxOn(THREE, root, fx, src) {
         float a = (${fx.alpha}) * smoothstep(0.5, 0.1, d);
         if (a < 0.01) discard;
         gl_FragColor = vec4(${fx.color}, a);
+        ${fx.glitch ? `{ float f = floor(uMistTime * 24.0); // (static: snow crawling over it, scanlines rolling, a flicker)
+          float snow = fract(sin(dot(floor(gl_FragCoord.xy / 1.5) + f * vec2(7.13, 13.7), vec2(12.9898, 78.233))) * 43758.5453);
+          float scan = 0.7 + 0.3 * sin(gl_FragCoord.y * 1.6 + uMistTime * 40.0);
+          float flick = 0.75 + 0.25 * step(0.35, fract(sin(floor(uMistTime * 11.0) * 91.7 + vPh * 3.0) * 43758.5453));
+          gl_FragColor.rgb *= (0.6 + 0.7 * snow) * scan;
+          gl_FragColor.a *= (0.65 + 0.35 * snow) * flick; }` : ''}
       }`,
     transparent: true, depthWrite: false, // (not additive: fire stays orange and frost white over green grass)
   });

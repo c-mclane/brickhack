@@ -1,0 +1,23 @@
+{
+ "label": "gnome king",
+ "name": "gnome-king",
+ "base": "gnome",
+ "torsoColor": 26,
+ "armColor": 26,
+ "hat": "25516",
+ "hatColor": 297,
+ "neck": [
+  {
+   "part": "60749",
+   "color": 15
+  },
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ],
+ "right": {
+  "part": "49492",
+  "color": 297
+ }
+}

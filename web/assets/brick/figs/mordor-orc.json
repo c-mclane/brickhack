@@ -1,0 +1,39 @@
+{
+ "label": "Mordor orc",
+ "name": "mordor-orc",
+ "torso": "973pm0",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 330,
+ "head": "3626bpma",
+ "headColor": 330,
+ "hair": {
+  "part": "10066p03",
+  "color": 0
+ },
+ "hat": "10051p01",
+ "hatColor": 0,
+ "hips": "3815bpm0",
+ "legR": "3816cpm0",
+ "legL": "3817cpm0",
+ "hipColor": 272,
+ "legColor": 272,
+ "right": {
+  "part": "10053",
+  "color": 72
+ },
+ "left": {
+  "part": "10049p01",
+  "color": 0,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ }
+}

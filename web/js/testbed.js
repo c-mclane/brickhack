@@ -92,7 +92,7 @@ export async function runTestbed(data) {
       const [x, z] = st.at, d = [[0, -1], [1, 0], [0, 1], [-1, 0]].find(([dx, dz]) => wallBy(x + dx, z + dz));
       return { x, z, up: !!st.up, turn: d ? Math.atan2(-d[0], -d[1]) : 0, shade: 1 };
     });
-    brick.setTerrain({ floors, walls, pools, doors: [], fog: [], stairs, w: W, h: H });
+    brick.setTerrain({ floors, walls, pools, doors: [], fog: [], stairs, w: W, h: H, style: level.style || null }); // (scene.json "style": "mines")
   };
   await brick.ready;
   room();

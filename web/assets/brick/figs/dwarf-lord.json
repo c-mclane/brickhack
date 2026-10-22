@@ -1,0 +1,30 @@
+{
+ "torso": "973pm5",
+ "handColor": 14,
+ "head": "3626cpm7",
+ "headColor": 14,
+ "label": "dwarf lord",
+ "name": "dwarf-lord",
+ "torsoColor": 1,
+ "armColor": 1,
+ "hat": "3844",
+ "hatColor": 71,
+ "shortLegs": {
+  "part": "16709",
+  "color": 272
+ },
+ "neck": [
+  {
+   "part": "60750",
+   "color": 0
+  },
+  {
+   "part": "50231c01",
+   "color": 1
+  }
+ ],
+ "right": {
+  "part": "2674d",
+  "color": 72
+ }
+}

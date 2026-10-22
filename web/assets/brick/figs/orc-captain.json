@@ -1,0 +1,33 @@
+{
+ "label": "orc-captain",
+ "name": "orc-captain",
+ "torso": "973pm6",
+ "torsoColor": 26,
+ "armColor": 26,
+ "handColor": 330,
+ "head": "3626bpma",
+ "headColor": 330,
+ "hair": {
+  "part": "10066p03",
+  "color": 0
+ },
+ "hips": "3815bpm1",
+ "legR": "3816cpm1",
+ "legL": "3817cpm1",
+ "hipColor": 26,
+ "legColor": 26,
+ "neck": [
+  {
+   "part": "38301c01",
+   "color": 4
+  },
+  {
+   "part": "12618",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "10053",
+  "color": 72
+ }
+}

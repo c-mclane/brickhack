@@ -1324,5 +1324,38 @@
  },
  "high priest": {
   "fig": "high-priest-neutral"
+ },
+ "gnome lord": {
+  "fig": "gnome-lord"
+ },
+ "gnomish wizard": {
+  "fig": "gnomish-wizard"
+ },
+ "gnome king": {
+  "fig": "gnome-king"
+ },
+ "dwarf": {
+  "fig": "dwarf"
+ },
+ "dwarf lord": {
+  "fig": "dwarf-lord"
+ },
+ "dwarf king": {
+  "fig": "dwarf-king"
+ },
+ "hill orc": {
+  "fig": "hill-orc"
+ },
+ "Mordor orc": {
+  "fig": "mordor-orc"
+ },
+ "Uruk-hai": {
+  "fig": "uruk-hai"
+ },
+ "orc shaman": {
+  "fig": "orc-shaman"
+ },
+ "orc-captain": {
+  "fig": "orc-captain"
  }
 }

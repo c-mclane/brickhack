@@ -26,6 +26,8 @@ turned by "rot": [{"axis": [x, y, z], "deg": d}, ...] (in order) if given.
 "base": "barbarian-m" starts from another recipe; "ghost": "right" or "left"
 turns that side of the figure (as you face it) to doppelganger mist;
 "quantum": true makes every part plain and flashing (a quantum mechanic);
+"fx": "smoke" wraps it in particles (mist.js addEffects: smoke swirling about it, fire...);
+"static": true makes it a shade of the dead: all wispy grey static, like a television (the manes);
 "aura": true wraps the figure in a glowing white corona (an angel);
 "marble": {"color": 15, "detail": 71, "keep": ["11264p01"]} makes a statue: every
 part (but those kept) the one colour, its prints in the detail colour.
@@ -503,6 +505,10 @@ def build(spec, base_dir='.'):
         out.append(f"0 !BRICKHACK GHOST {1 if spec['ghost'] == 'right' else -1}")
     if spec.get('aura'):   # an angel: the renderers wrap the figure in a white glow (or as its "aura" says: {color, strength, scale})
         out.append("0 !BRICKHACK AURA" + (" " + json.dumps(spec['aura']) if isinstance(spec['aura'], dict) else ""))
+    if spec.get('fx'):   # its element in particles all about it (mist.js addEffects: "smoke", swirling about a shade)
+        out.append(f"0 !BRICKHACK FX {spec['fx']}")
+    if spec.get('static'):   # a shade of the dead (the manes): all of it wispy grey static (ldraw2glb.shaded, mist.js staticify)
+        out.append("0 !BRICKHACK STATIC")
     if spec.get('quantum'):   # a quantum mechanic: every part a plain colour, strobing (ldraw2glb.figure_geom)
         out.append("0 !BRICKHACK QUANTUM")
     G = lambda g: out.append(f'0 !BRICKHACK GROUP {g}')   # what follows moves with this joint (animation)

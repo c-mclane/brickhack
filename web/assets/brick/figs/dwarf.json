@@ -1,0 +1,26 @@
+{
+ "torso": "973pm5",
+ "handColor": 14,
+ "head": "3626cpm7",
+ "headColor": 14,
+ "label": "dwarf",
+ "name": "dwarf",
+ "torsoColor": 4,
+ "armColor": 4,
+ "hat": "3844",
+ "hatColor": 71,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "10052",
+   "color": 70
+  }
+ ],
+ "right": {
+  "part": "3841",
+  "color": 72
+ }
+}

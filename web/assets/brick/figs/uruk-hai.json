@@ -1,0 +1,39 @@
+{
+ "label": "Uruk-hai",
+ "name": "uruk-hai",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "head": "3626cpm0",
+ "headColor": 72,
+ "hat": "10051p01",
+ "hatColor": 0,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "neck": [
+  {
+   "part": "12618",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "10050",
+  "color": 72
+ },
+ "left": {
+  "part": "10049p01",
+  "color": 0,
+  "face": [
+   0,
+   0,
+   -1
+  ],
+  "aim": [
+   0,
+   -1,
+   0
+  ]
+ }
+}

@@ -591,6 +591,7 @@ function handle(m) {
     case 'piles': world.applyPiles(m.p); break;
     case 'level':
       world.castle = m.castle || null; // the Castle: [x0, y0, x1, y1], where its stone walls stand (render.js raises them)
+      world.style = /Gnomish Mines/i.test(m.dname || '') ? 'mines' : null; // (the Mines: brown floors, rock walls: brickworld minesWalls)
       ui.showTitle(`Level ${m.depth}`, m.dname);
       cam.snap = true;
       break;

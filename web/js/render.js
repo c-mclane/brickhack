@@ -584,7 +584,7 @@ export class Renderer {
     // not yet explored (a path you haven't followed yet fades into it)
     const brickLevel = true; // (every level is: the dungeon, Ascend's baseplate)
     // what the BrickWorld builds: floor plates, walls, doors, fog
-    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [], pools: [], stairs: [] };
+    const bricks = { w: W, h: H, floors: [], walls: [], doors: [], fog: [], pools: [], stairs: [], style: world.style || null }; // (style: the Mines')
     // a square of fog; `into`: the known squares beside it that wisps drift into ([dx, dz]...)
     const passable = (xx, yy) => {
       const n = xx >= 0 && yy >= 0 && xx < W && yy < H && cls[yy * W + xx];

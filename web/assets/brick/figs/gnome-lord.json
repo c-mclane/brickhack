@@ -1,0 +1,12 @@
+{
+ "label": "gnome lord",
+ "name": "gnome-lord",
+ "base": "gnome",
+ "torsoColor": 1,
+ "armColor": 1,
+ "hatColor": 1,
+ "right": {
+  "part": "2570",
+  "color": 70
+ }
+}
