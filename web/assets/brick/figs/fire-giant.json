@@ -1,0 +1,19 @@
+{
+ "label": "fire giant",
+ "name": "fire giant",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 25,
+ "longLegs": {
+  "color": 320
+ },
+ "longArms": true,
+ "head": "3626cpxa",
+ "headColor": 25,
+ "hair": {
+  "part": "40233",
+  "color": 4
+ },
+ "fx": "fire"
+}

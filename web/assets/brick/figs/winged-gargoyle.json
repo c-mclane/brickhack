@@ -1,0 +1,55 @@
+{
+ "label": "winged gargoyle",
+ "name": "winged gargoyle",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626cpxa",
+ "headColor": 72,
+ "hat": "24636",
+ "hatColor": 72,
+ "extras": [
+  {
+   "part": "5984",
+   "color": 72,
+   "pos": [
+    -8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "5984",
+   "color": 72,
+   "pos": [
+    8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 60
+    }
+   ]
+  }
+ ]
+}

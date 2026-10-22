@@ -1,0 +1,70 @@
+{
+ "label": "umber hulk",
+ "name": "umber hulk",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "longLegs": {
+  "color": 0
+ },
+ "longArms": true,
+ "head": "3626bp55",
+ "headColor": 0,
+ "extras": [
+  {
+   "part": "53451",
+   "color": 72,
+   "pos": [
+    -6,
+    -6,
+    -10
+   ],
+   "rot": [
+    {
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "deg": -110
+    },
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 20
+    }
+   ]
+  },
+  {
+   "part": "53451",
+   "color": 72,
+   "pos": [
+    6,
+    -6,
+    -10
+   ],
+   "rot": [
+    {
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "deg": -110
+    },
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -20
+    }
+   ]
+  }
+ ]
+}

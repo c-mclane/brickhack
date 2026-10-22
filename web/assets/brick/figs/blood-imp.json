@@ -1,0 +1,16 @@
+{
+ "label": "blood imp",
+ "name": "blood imp",
+ "torso": "973",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 320,
+ "head": "3626cpxa",
+ "headColor": 320,
+ "shortLegs": {
+  "part": "16709",
+  "color": 320
+ },
+ "hat": "24636",
+ "hatColor": 0
+}

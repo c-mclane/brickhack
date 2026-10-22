@@ -1,0 +1,55 @@
+{
+ "label": "nabassu",
+ "name": "nabassu",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 0,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 0,
+ "head": "3626cpxa",
+ "headColor": 72,
+ "hat": "24636",
+ "hatColor": 0,
+ "extras": [
+  {
+   "part": "15082",
+   "color": 0,
+   "pos": [
+    -8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "15082",
+   "color": 0,
+   "pos": [
+    8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 60
+    }
+   ]
+  }
+ ]
+}

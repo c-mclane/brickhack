@@ -1,0 +1,25 @@
+{
+ "label": "ogre king",
+ "name": "ogre king",
+ "torso": "973",
+ "torsoColor": 1,
+ "armColor": 330,
+ "handColor": 330,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626cpxa",
+ "headColor": 330,
+ "hair": {
+  "part": "40233",
+  "color": 308
+ },
+ "hat": "39262",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

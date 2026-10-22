@@ -1,0 +1,17 @@
+{
+ "label": "bone devil",
+ "name": "bone devil",
+ "skeleton": true,
+ "torso": "6260",
+ "torsoColor": 15,
+ "armColor": 15,
+ "legColor": 15,
+ "head": "3626bpc15",
+ "headColor": 15,
+ "hat": "24636",
+ "hatColor": 0,
+ "right": {
+  "part": "4496",
+  "color": 0
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "label": "elvenking",
+ "name": "elvenking",
+ "torso": "973",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 78,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0f",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 14
+ },
+ "hat": "71015",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 22
+  }
+ ]
+}

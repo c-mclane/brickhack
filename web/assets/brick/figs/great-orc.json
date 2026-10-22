@@ -1,0 +1,25 @@
+{
+ "label": "great orc",
+ "name": "great orc",
+ "torso": "973pm0",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 28,
+ "head": "3626bpma",
+ "headColor": 28,
+ "hair": {
+  "part": "10066p01",
+  "color": 0
+ },
+ "hips": "3815bpm0",
+ "legR": "3816cpm0",
+ "legL": "3817cpm0",
+ "hipColor": 308,
+ "legColor": 308,
+ "right": {
+  "part": "10053",
+  "color": 72
+ },
+ "hat": "53450c01",
+ "hatColor": 72
+}

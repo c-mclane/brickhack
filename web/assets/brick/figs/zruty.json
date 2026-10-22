@@ -1,0 +1,18 @@
+{
+ "label": "zruty",
+ "name": "zruty",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 308,
+ "handColor": 308,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "13809p01",
+ "headColor": 308,
+ "headY": 0,
+ "longLegs": {
+  "color": 308
+ },
+ "longArms": true
+}

@@ -24,6 +24,7 @@ anything strapped under the feet (snowshoes; "pos" under the right foot).
 turned by "rot": [{"axis": [x, y, z], "deg": d}, ...] (in order) if given.
 "headRecolor": {"0": "4"} swaps colours in the face's print (black eyes made red...);
 "headY": 0 seats a head whose origin is at its foot, not its top (a serpent's: 98150, 98154); "head": null, none at all;
+"headTurn": 180 turns the head round on its neck (a two-sided head's other face: angry, asleep);
 "hatY": 8 seats the hat lower, a headdress worn down over the whole head to the shoulders (an Anubis jackal's);
 "base": "barbarian-m" starts from another recipe; "ghost": "right" or "left"
 turns that side of the figure (as you face it) to doppelganger mist;
@@ -532,7 +533,13 @@ def build(spec, base_dir='.'):
     for side, arm, hand, part in (('right', ARM_R, HAND_R_LONG if long_arms else HAND_R, '87774' if long_arms else spec.get('armR', '3818')),
                                   ('left', ARM_L, HAND_L_LONG if long_arms else HAND_L, '87773' if long_arms else spec.get('armL', '3819'))):
         if skel:   # a skeleton's arm: one bone, claw and all, on a ball at the shoulder (skeleton_arm)
-            rig['arm' + side[0].upper()] = skeleton_arm(out, G, spec, side)
+            rig['arm' + side[0].upper()] = r = skeleton_arm(out, G, spec, side)
+            item = spec.get(side)
+            if item:   # (something in its claw: at the claw's grip, by its handle (HELD), its 'up' along the bone)
+                gm = np.array(r['grip']['mat']).reshape(3, 3)
+                G('item' + side[0].upper())
+                r['holds'] = True
+                out.append(line(item.get('color', 16), np.array(r['grip']['pos']) - gm @ np.array(held_info(item['part'])['center'], float), gm, item['part']))
             continue
         item = spec.get(side) or {}
         if 'aim' in item:
@@ -561,7 +568,8 @@ def build(spec, base_dir='.'):
         out.append(line(item.get('color', 16), (0, 0, 0), R, item['part']))
     G('head')
     if not ('head' in spec and spec['head'] is None):   # ("head": null: none, its headdress the whole head)
-        out.append(line(spec.get('headColor', 14), (0, spec.get('headY', -24), 0), I, recolored(spec.get('head', '3626bp01'), spec.get('headRecolor'))))
+        HT = rot_axis((0, 1, 0), np.radians(spec.get('headTurn', 0)))   # ("headTurn": 180, a two-sided head's other face to the front)
+        out.append(line(spec.get('headColor', 14), (0, spec.get('headY', -24), 0), HT, recolored(spec.get('head', '3626bp01'), spec.get('headRecolor'))))
     if spec.get('hair'):   # hair under a helmet (or alone): {"part", "color"}
         out.append(line(spec['hair'].get('color', 70), (0, -24, 0), I, recolored(spec['hair']['part'], spec['hair'].get('recolor'))))
     if spec.get('hat'):

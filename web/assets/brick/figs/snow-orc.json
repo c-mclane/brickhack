@@ -1,0 +1,25 @@
+{
+ "label": "snow orc",
+ "name": "snow orc",
+ "torso": "973pm0",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 28,
+ "head": "3626bpma",
+ "headColor": 28,
+ "hair": {
+  "part": "10066p01",
+  "color": 0
+ },
+ "hips": "3815bpm0",
+ "legR": "3816cpm0",
+ "legL": "3817cpm0",
+ "hipColor": 15,
+ "legColor": 15,
+ "right": {
+  "part": "10053",
+  "color": 72
+ },
+ "hat": "30287",
+ "hatColor": 15
+}
