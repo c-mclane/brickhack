@@ -77,13 +77,14 @@ se = sys.argv[1]
 p = se + '/include/autoconf.h'
 s = open(p).read()
 if 'WEB_GRAPHICS' not in s:
-    s += '\n#define HACKDIR "%s/slashemdir"\n' % sys.argv[2]
+    s += '\n#define HACKDIR "."\n'
     s = s.replace('#define DEFAULT_WINDOW_SYS "tty"', '#define DEFAULT_WINDOW_SYS "web"')
     s = s.replace('#define TTY_GRAPHICS', '/* web build: no tty */ #undef TTY_GRAPHICS')
     s += '\n#define WEB_GRAPHICS\n'
     open(p, 'w').write(s)
-# (the game data's folder: kept where the project is now, should it have moved)
-s2 = re.sub(r'#define HACKDIR "[^"]*"', '#define HACKDIR "%s/slashemdir"' % sys.argv[2].replace('\\', '\\\\'), s)
+# (the game data's folder: the one it's started in (the server starts it in its slashemdir), wherever that is: a release
+# unzipped anywhere, the project moved; not a path written into it when it was built)
+s2 = re.sub(r'#define HACKDIR "[^"]*"', '#define HACKDIR "."', s)
 if s2 != s:
     open(p, 'w').write(s2)
 p = se + '/sys/share/unixtty.c'

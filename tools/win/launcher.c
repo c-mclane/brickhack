@@ -1,4 +1,4 @@
-/* MineHack.exe: the Windows launcher.
+/* BrickHack.exe: the Windows launcher.
  *
  * Starts the game server (node\node.exe server\server.js) in the background,
  * opens the game in a window of its own (Edge's app mode: no tabs, no address
@@ -20,7 +20,7 @@
 
 static void fail(const char *what)
 {
-    MessageBoxA(NULL, what, "MineHack", MB_OK | MB_ICONERROR);
+    MessageBoxA(NULL, what, "BrickHack", MB_OK | MB_ICONERROR);
     ExitProcess(1);
 }
 
@@ -54,7 +54,7 @@ static HANDLE open_window(void)
     /* a profile of its own, so closing the game's window ends its process */
     if (SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, profile) != S_OK)
         GetTempPathA(MAX_PATH, profile);
-    strcat(profile, "\\MineHack\\window");
+    strcat(profile, "\\BrickHack\\window");
     snprintf(args, sizeof args,
              "--app=" URL " --user-data-dir=\"%s\" --no-first-run --no-default-browser-check "
              "--window-size=1280,800 --autoplay-policy=no-user-gesture-required",
@@ -86,7 +86,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
     int i;
     (void) inst; (void) prev; (void) cmdline; (void) show;
 
-    /* everything lives next to MineHack.exe */
+    /* everything lives next to BrickHack.exe */
     GetModuleFileNameA(NULL, dir, MAX_PATH);
     if ((slash = strrchr(dir, '\\')) != NULL) *slash = '\0';
     SetCurrentDirectoryA(dir);
@@ -118,8 +118,8 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
     if ((window = open_window()) != NULL)
         WaitForSingleObject(window, INFINITE);
     else
-        MessageBoxA(NULL, "MineHack is running in your web browser.\n\nClick OK when you're done playing.",
-                    "MineHack", MB_OK | MB_ICONINFORMATION);
+        MessageBoxA(NULL, "BrickHack is running in your web browser.\n\nClick OK when you're done playing.",
+                    "BrickHack", MB_OK | MB_ICONINFORMATION);
 
     /* save every game, give it a moment, then the job takes the rest down */
     http("POST /api/quit HTTP/1.0\r\nContent-Length: 0\r\n\r\n");

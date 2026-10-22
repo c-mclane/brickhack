@@ -1,5 +1,5 @@
 #!/bin/sh
-# Cross-compile MineHack's SLASH'EM for Windows (64-bit, MinGW-w64), from the
+# Cross-compile BrickHack's SLASH'EM for Windows (64-bit, MinGW-w64), from the
 # Linux build's patched sources (run tools/build-slashem.sh first).
 #
 # The game's data files (compiled levels, the dungeon, quest texts) hold
@@ -44,7 +44,7 @@ sed -i '0,/#include <windows.h>/s//#undef Protection \/* (a NetHack macro; a fie
 sed -i '0,/^#include "hack.h"/s//#include "hack.h"\n#undef Protection \/* (MinGW'"'"'s dos.h brings windows.h in early) *\//' sys/winnt/winnt.c
 # stand-ins for bits of the console port the rest of the game still calls
 cat > sys/winnt/webshim.c <<'SHIM'
-/* MineHack (Windows): the console port isn't built; these are what the rest
+/* BrickHack (Windows): the console port isn't built; these are what the rest
    of the game still asks of it */
 #include "hack.h"
 #include <string.h>

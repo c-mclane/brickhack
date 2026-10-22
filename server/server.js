@@ -103,7 +103,7 @@ function startGame(sid, opts) {
     const args = process.env.BRICKHACK_WIZARD === '1' ? ['-D', '-u', name] : ['-u', name];
     const proc = spawn(path.join(V.dir, V.bin), args, {
       cwd: V.dir,
-      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, BRICKHACK_KIT: kit, BRICKHACK_GOD: god, BRICKHACK_PERKS: perks },
+      env: { ...process.env, NETHACKOPTIONS: o.join(','), HOME: V.dir, HACKDIR: V.dir, BRICKHACK_KIT: kit, BRICKHACK_GOD: god, BRICKHACK_PERKS: perks }, // (HACKDIR: its game folder wherever it is, a release unzipped anywhere; not the one it was built in)
       stdio: ['pipe', 'pipe', 'pipe', 'pipe'],
     });
     sess.proc = proc;
