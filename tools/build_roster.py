@@ -86,6 +86,18 @@ DUNGEON_PARTS = {
 1 308 0 -48 30 1 0 0 0 1 0 0 0 1 3010.dat
 1 308 0 -24 30 1 0 0 0 1 0 0 0 1 3010.dat
 """,
+    # the status bars' icons (web/js/ui.js hudIcons: each drawn once, a little picture): a heart of two red 3x2 plates
+    # with a hole, their round ends its lobes, crossed at its point, studs to you; a turkey leg (food); an armour plate
+    # (armour class); a clear round 1x1 plate, a bubble (power)
+    'hud_heart': """1 4 -0.000 -28.284 -0.400 -0.7071 -0.0000 0.7071 0.7071 -0.0000 0.7071 0.0000 1.0000 0.0000 3176.dat
+1 4 -0.000 -28.284 0.400 -0.7071 0.0000 -0.7071 -0.7071 -0.0000 0.7071 0.0000 1.0000 0.0000 3176.dat
+""",
+    'hud_food': """1 70 0 0 0 1 0 0 0 1 0 0 0 1 33057.dat
+""",
+    'hud_armor': """1 80 0 0 0 1 0 0 0 1 0 0 0 1 2587.dat
+""",
+    'hud_bubble': """1 43 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat
+""",
     # water (a pool, a moat): clear blue 1x1 round plates, heaped in the square's hole and roiling
     'water_stud': """1 43 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat
 """,    # ...and the bottom of its hole, still under them: the same clear blue 1x1 round plates, one on each of the

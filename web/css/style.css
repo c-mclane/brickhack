@@ -67,6 +67,7 @@ button { font-family: inherit; }
 .icons .ic { width: 18px; height: 18px; position: relative; image-rendering: pixelated; background-size: 18px 18px; }
 .icons .ic > i { position: absolute; left: 0; top: 0; bottom: 0; background-size: 18px 18px; image-rendering: pixelated; }
 .icons .ic.hidden-ic { visibility: hidden; }
+.icons.brick .ic, .icons.brick .ic > i { image-rendering: auto; background-repeat: no-repeat; background-position: left center; } /* (in brick: ui.js hudIcons) */
 .icons.flash .ic { animation: flash .25s 2; }
 @keyframes flash { 50% { filter: brightness(3); } }
 

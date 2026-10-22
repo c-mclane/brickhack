@@ -1,5 +1,5 @@
 // HUD + Minecraft-style panels (inventory, menus, text windows, prompts).
-import { brickIconForTile, gameTile } from './brickitems.js';
+import { brickIconForTile, gameTile, renderIcon } from './brickitems.js';
 import { BLOCKS } from './blocks.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -59,6 +59,22 @@ const IC = {
   orb: pix(ORB, { K: '#000', W: '#fff', B: '#3a7bff' }),
   orbE: pix(ORB, { K: '#000', W: '#123', B: '#123' }),
 };
+
+// ...and the same bars in brick (tools/build_roster.py hud_*: a heart of two plates, a turkey leg, an armour plate, a
+// clear round plate for a bubble), each pictured once from its model, full and spent (dark, see-through), and put in
+// the pixel art's place (IC) as they're ready
+const HUD_BRICK = { heart: ['hud_heart', { rot: [0.45, 0, 0], turn: 0 }], drum: ['hud_food', { rot: [1.2, 0, 0], turn: -Math.PI / 4 }],
+  plate: ['hud_armor', { rot: [0.2, 0.35, 0], turn: 0 }], orb: ['hud_bubble', { rot: [0.9, 0, 0], turn: 0 }] };
+async function hudIcons(redraw) {
+  for (const [k, [part, pose]] of Object.entries(HUD_BRICK)) {
+    const url = `assets/brick/parts/${part}.glb`;
+    const [full, spent] = [await renderIcon(url, pose), await renderIcon(url, { ...pose, empty: true })];
+    if (!full || !spent) continue;
+    IC[k] = `url(${full})`; IC[k + 'E'] = `url(${spent})`;
+    document.querySelectorAll('.icons').forEach((r) => r.classList.add('brick'));
+    redraw();
+  }
+}
 
 function iconRow(container, halves, full, empty, n = 10) {
   container.textContent = '';
@@ -126,6 +142,7 @@ export class UI {
     this.hotbarSel = 0;
     this.selectMode = null; // {letters:Set, allowDash, allowHere} when inventory answers a prompt
     this.buildStatic();
+    hudIcons(() => { if (this.stat) this.updateStatus(this.stat); }).catch((e) => console.warn('status icons:', e));
   }
 
   buildStatic() {

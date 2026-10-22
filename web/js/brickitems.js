@@ -134,8 +134,10 @@ function kit() {
   scene.add(sun);
   return (iconKit = { canvas, r, scene, loader: new GLTFLoader(), env: gradientEnvironment(THREE, r) });
 }
-// a model's picture: laid diagonally, blade to the top right, turned a little toward you
-async function renderIcon(url) {
+// a model's picture: laid diagonally, blade to the top right, turned a little toward you; or (opts.rot: [x, y, z]
+// radians, opts.turn: about the view) posed as asked; opts.empty: drawn as a ghost of itself, dark and see-through
+// (the status bars' spent hearts: ui.js hudIcons)
+export async function renderIcon(url, opts = {}) {
   const { canvas, r, scene, loader, env } = kit();
   const g = await new Promise((res, rej) => loader.load(url, res, undefined, rej)).catch(() => null);
   if (!g) return null;
@@ -145,11 +147,12 @@ async function renderIcon(url) {
     o.material.flatShading = true;
     if (o.material.metalness > 0.5) { o.material.envMap = env; o.material.envMapIntensity = 1.2; } // chrome: reflects (envmap.js)
     if (o.material.transparent) { o.material.emissive = o.material.color.clone(); o.material.emissiveIntensity = 0.8; o.material.opacity = 0.85; }
+    if (opts.empty) { o.material = o.material.clone(); o.material.color.setRGB(0.16, 0.16, 0.18); o.material.emissive = new THREE.Color(0); o.material.envMap = null; o.material.transparent = true; o.material.opacity = 0.5; o.material.depthWrite = false; }
   });
   const holder = new THREE.Group();
   holder.add(m);
-  m.rotation.set(0.35, 0.5, 0);
-  holder.rotation.z = -Math.PI / 4;
+  m.rotation.set(...(opts.rot || [0.35, 0.5, 0]));
+  holder.rotation.z = opts.turn ?? -Math.PI / 4;
   scene.add(holder);
   holder.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(holder);
