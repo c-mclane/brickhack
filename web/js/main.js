@@ -987,7 +987,7 @@ const CONTROLS = [
   ['Left click', 'Attack / fight in the direction you look'], ['Right click', 'Use held item · open/close doors · travel to clicked spot'],
   ['Middle click', 'Look at what is under the crosshair'], ['1-9', 'Select hotbar slot'], ['Mouse wheel', 'Zoom the camera in and out'], ['I', 'Inventory (and its Actions tab: every command as a button)'],
   ['Delete / Shift+Delete', 'Drop one / drop stack of held item'], ['Space', 'Use stairs (on stairs) · otherwise search'],
-  ['Shift+1..4', 'Do a Recommended action: row 1, 2, 3, 4'], ['↑ (up arrow)', 'Do the first Recommended action'], ['Enter', 'Command bar (extended commands, "give <item>"...)'],
+  ['Shift+1..4', 'Do a Recommended action: row 1, 2, 3, 4'], ['Arrow keys', 'Turn the camera (left, right) and tilt it (up, down)'], ['Enter', 'Command bar (extended commands, "give <item>"...)'],
   ['Every other key', "NetHack's own, as ever: e eat, q quaff, r read, z zap, t throw, f fire, , pick up, # extended command, P put on, Alt+I invoke, Ctrl+D kick..."],
   ['Tab', 'Message history'], ['F2', 'Overhead map view on/off'], ['F5', 'Change camera (1st / 3rd back / 3rd front)'], ['F1', 'Hide HUD'],
   ['F3', 'Debug info'], ['`', 'Raw NetHack keys on/off (W A S D too)'], ['Esc', 'Cancel prompt / game menu'],
@@ -2793,6 +2793,7 @@ window.addEventListener('keydown', (e) => {
   // ---- normal play controls
   const lower = k.length === 1 ? k.toLowerCase() : k;
   if ('wasd'.includes(lower) && k.length === 1) { held.add(lower); return; }
+  if (/^Arrow(Left|Right|Up|Down)$/.test(k)) { e.preventDefault(); held.add(k.toLowerCase()); return; } // (the camera, turned and tipped: lookKeys)
   if (/^[1-9]$/.test(k)) { ui.selectHotbar(+k - 1); return; }
   // Shift+1..4: the Recommended actions, down the list (row 1, row 2...)
   if (e.shiftKey && /^Digit[1-4]$/.test(e.code)) {
@@ -2812,12 +2813,6 @@ window.addEventListener('keydown', (e) => {
     case ' ': { // the stairs (or ladder) you're on; anywhere else, search
       const cl = world.classAt(world.hero.x, world.hero.y), c = cl && cl.cmap;
       game.sendKeys(c === CM.upstair || c === CM.upladder ? '<' : c === CM.dnstair || c === CM.dnladder ? '>' : 's');
-      return;
-    }
-    case 'ArrowUp': { // the first Recommended action (shown above the hotbar)
-      e.preventDefault();
-      const r = game.recs && game.recs[0];
-      if (r) game.runAction(r);
       return;
     }
     case 'tab': case 'Tab': ui.toggleHistory(); if (ui.history) releaseLock(); else relock(); return;
@@ -2973,7 +2968,17 @@ function keepClear(F) {
   return statue;
 }
 
+// the arrow keys, held: the camera turned left and right, tipped up and down, as the mouse does it
+const LOOK_TURN = 2.4, LOOK_TIP = 1.6; // (radians a second)
+function lookKeys(dt) {
+  const turn = (held.has('arrowright') ? 1 : 0) - (held.has('arrowleft') ? 1 : 0), tip = (held.has('arrowup') ? 1 : 0) - (held.has('arrowdown') ? 1 : 0);
+  if (!turn && !tip) return;
+  cam.yaw += turn * LOOK_TURN * dt;
+  cam.pitch = Math.max(-1.5, Math.min(1.5, cam.pitch + tip * LOOK_TIP * dt));
+}
+
 function processMovement(now, dt) {
+  if (game.playing && !game.mode && !modalOpen() && !anyScreen()) lookKeys(dt);
   if (!game.playing) { motion.free = null; walk.at = null; walk.sent = []; walk.perch = null; walk.bumped = false; return; }
   const sq = { x: world.hero.x, z: world.hero.y };
   if (!motion.free || !walk.at) { motion.free = { ...sq }; walk.at = { ...sq }; walk.sent = []; }

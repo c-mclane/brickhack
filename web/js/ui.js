@@ -553,8 +553,8 @@ export class UI {
     list.textContent = '';
     recs.slice(0, 4).forEach((r, i) => {
       const row = el('div', 'rec');
-      // its key: Shift and its row's number (the first: the up arrow too)
-      const keys = [i === 0 ? '\u2191' : '', `\u21e7${i + 1}`].filter(Boolean).join(' ');
+      // its key: Shift and its row's number
+      const keys = `\u21e7${i + 1}`;
       row.appendChild(el('span', 'k', keys));
       row.appendChild(el('span', 'l', r.label));
       if (r.why) row.appendChild(el('span', 'why', r.why));
