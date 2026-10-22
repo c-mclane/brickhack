@@ -15854,5 +15854,395 @@
   ],
   "scale": 1,
   "creature": "beast"
+ },
+ "student": {
+  "fig": "archaeologist-f"
+ },
+ "chieftain": {
+  "fig": "barbarian-m"
+ },
+ "neanderthal": {
+  "fig": "caveman"
+ },
+ "shifter": {
+  "fig": "doppelganger"
+ },
+ "igniter": {
+  "fig": "flame-mage-f"
+ },
+ "froster": {
+  "fig": "ice-mage-f"
+ },
+ "fiend": {
+  "fig": "necromancer-f"
+ },
+ "attendant": {
+  "fig": "healer-f"
+ },
+ "proudfoot": {
+  "fig": "hobbit"
+ },
+ "intern": {
+  "fig": "healer-m"
+ },
+ "page": {
+  "fig": "knight2"
+ },
+ "abbot": {
+  "fig": "dominican-friar"
+ },
+ "embalmer": {
+  "fig": "necromancer-m"
+ },
+ "acolyte": {
+  "fig": "catholic-priest"
+ },
+ "hunter": {
+  "fig": "ranger-f"
+ },
+ "thug": {
+  "fig": "rogue-f"
+ },
+ "ninja": {
+  "fig": "samurai-f"
+ },
+ "roshi": {
+  "fig": "samurai-m"
+ },
+ "guide": {
+  "fig": "tourist-f"
+ },
+ "warrior": {
+  "fig": "valkyrie"
+ },
+ "apprentice": {
+  "fig": "wizard-f"
+ },
+ "Yeoman Warder": {
+  "fig": "yeoman-m"
+ },
+ "dwarf thief": {
+  "fig": "dwarf-thief"
+ },
+ "dwarf warrior": {
+  "fig": "dwarf-warrior"
+ },
+ "duergar": {
+  "fig": "duergar"
+ },
+ "swamp kobold": {
+  "fig": "swamp-kobold"
+ },
+ "rock kobold": {
+  "fig": "rock-kobold"
+ },
+ "orc": {
+  "fig": "orc",
+  "hold": "orcish spear"
+ },
+ "gnome thief": {
+  "fig": "gnome-thief"
+ },
+ "gnome warrior": {
+  "fig": "gnome-warrior"
+ },
+ "deep gnome": {
+  "fig": "deep-gnome"
+ },
+ "mugger": {
+  "fig": "mugger"
+ },
+ "shadow": {
+  "fig": "shadow"
+ },
+ "giant tick": {
+  "parts": [
+   {
+    "part": "30238",
+    "color": 308,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.9,
+  "creature": "bug",
+  "center": true
+ },
+ "giant flea": {
+  "parts": [
+   {
+    "part": "95827",
+    "color": 70,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.8,
+  "creature": "bug",
+  "center": true
+ },
+ "giant louse": {
+  "parts": [
+   {
+    "part": "95827",
+    "color": 19,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.8,
+  "creature": "bug",
+  "center": true
+ },
+ "black rat": {
+  "parts": [
+   {
+    "part": "36756p01",
+    "color": 0,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "beast"
+ },
+ "pack rat": {
+  "parts": [
+   {
+    "part": "36756p01",
+    "color": 19,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.1,
+  "creature": "beast"
+ },
+ "woodchuck": {
+  "parts": [
+   {
+    "part": "11568",
+    "color": 70,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.2,
+  "creature": "beast"
+ },
+ "red naga hatchling": {
+  "parts": [
+   {
+    "part": "38801",
+    "color": 4,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.7,
+  "creature": "snake",
+  "center": true
+ },
+ "black naga hatchling": {
+  "parts": [
+   {
+    "part": "38801",
+    "color": 0,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.7,
+  "creature": "snake",
+  "center": true
+ },
+ "golden naga hatchling": {
+  "parts": [
+   {
+    "part": "38801",
+    "color": 334,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.7,
+  "creature": "snake",
+  "center": true
+ },
+ "guardian naga hatchling": {
+  "parts": [
+   {
+    "part": "38801",
+    "color": 2,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.7,
+  "creature": "snake",
+  "center": true
+ },
+ "jellyfish": {
+  "parts": [
+   {
+    "part": "6086",
+    "color": 43,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.5,
+  "creature": "float",
+  "center": true
+ },
+ "piranha": {
+  "parts": [
+   {
+    "part": "64648",
+    "color": 4,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "snake",
+  "center": true
+ },
+ "giant eel": {
+  "parts": [
+   {
+    "part": "30115",
+    "color": 288,
+    "pos": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.6,
+  "creature": "snake",
+  "center": true
+ },
+ "rot worm": {
+  "parts": [
+   {
+    "part": "87081",
+    "color": 330,
+    "pos": [
+     0.0,
+     -24.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3960",
+    "color": 288,
+    "pos": [
+     0.0,
+     -40.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3960",
+    "color": 288,
+    "pos": [
+     0.0,
+     16.0,
+     0.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     -14,
+     -14,
+     -41
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     14,
+     -14,
+     -41
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 1,
+  "creature": "blob",
+  "center": true
  }
 }

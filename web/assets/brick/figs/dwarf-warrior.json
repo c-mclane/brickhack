@@ -1,0 +1,26 @@
+{
+ "label": "dwarf warrior",
+ "name": "dwarf warrior",
+ "torso": "973pm5",
+ "handColor": 14,
+ "head": "3626cpm7",
+ "headColor": 14,
+ "torsoColor": 72,
+ "armColor": 72,
+ "hat": "53450c01",
+ "hatColor": 72,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "10052",
+   "color": 70
+  }
+ ],
+ "right": {
+  "part": "3835",
+  "color": 72
+ }
+}

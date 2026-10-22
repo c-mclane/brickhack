@@ -1,0 +1,18 @@
+{
+ "label": "rock kobold",
+ "name": "rock kobold",
+ "torso": "973",
+ "torsoColor": 71,
+ "armColor": 72,
+ "handColor": 72,
+ "shortLegs": {
+  "part": "16709",
+  "color": 71
+ },
+ "head": "3626bpc15",
+ "headColor": 72,
+ "hair": {
+  "part": "10066",
+  "color": 72
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "label": "dwarf thief",
+ "name": "dwarf thief",
+ "torso": "973",
+ "handColor": 14,
+ "head": "3626cpm7",
+ "headColor": 14,
+ "torsoColor": 0,
+ "armColor": 0,
+ "hat": "30381",
+ "hatColor": 0,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "10052",
+   "color": 70
+  }
+ ],
+ "right": {
+  "part": "37341b",
+  "color": 72
+ }
+}

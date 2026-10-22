@@ -1,0 +1,18 @@
+{
+ "label": "swamp kobold",
+ "name": "swamp kobold",
+ "torso": "973",
+ "torsoColor": 330,
+ "armColor": 288,
+ "handColor": 288,
+ "shortLegs": {
+  "part": "16709",
+  "color": 330
+ },
+ "head": "3626bpc15",
+ "headColor": 288,
+ "hair": {
+  "part": "10066",
+  "color": 288
+ }
+}

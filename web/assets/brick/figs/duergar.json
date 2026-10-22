@@ -1,0 +1,26 @@
+{
+ "label": "duergar",
+ "name": "duergar",
+ "torso": "973",
+ "handColor": 71,
+ "head": "3626cpm7",
+ "headColor": 71,
+ "torsoColor": 72,
+ "armColor": 72,
+ "hat": "3844",
+ "hatColor": 0,
+ "shortLegs": {
+  "part": "16709",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "10052",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "3841",
+  "color": 72
+ }
+}
