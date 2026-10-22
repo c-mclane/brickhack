@@ -1,0 +1,55 @@
+{
+ "label": "statue gargoyle",
+ "name": "statue gargoyle",
+ "torso": "973",
+ "torsoColor": 71,
+ "armColor": 71,
+ "handColor": 71,
+ "hips": "3815",
+ "hipColor": 71,
+ "legColor": 71,
+ "head": "3626cpxa",
+ "headColor": 71,
+ "hat": "24636",
+ "hatColor": 71,
+ "extras": [
+  {
+   "part": "15082",
+   "color": 71,
+   "pos": [
+    -8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "15082",
+   "color": 71,
+   "pos": [
+    8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 60
+    }
+   ]
+  }
+ ]
+}

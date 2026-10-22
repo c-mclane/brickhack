@@ -1,0 +1,17 @@
+{
+ "label": "human zombie",
+ "name": "human zombie",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 378,
+ "handColor": 378,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "head": "3626bpc15",
+ "headColor": 378,
+ "hair": {
+  "part": "40233",
+  "color": 308
+ }
+}

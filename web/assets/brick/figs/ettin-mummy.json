@@ -1,0 +1,24 @@
+{
+ "label": "ettin mummy",
+ "name": "ettin mummy",
+ "torso": "973pq0",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 28,
+ "hips": "3815",
+ "hipColor": 28,
+ "legColor": 28,
+ "head": "3626bpa2",
+ "headColor": 28,
+ "extras": [
+  {
+   "part": "3626bpa2",
+   "color": 28,
+   "pos": [
+    18,
+    -24,
+    0
+   ]
+  }
+ ]
+}

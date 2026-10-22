@@ -1,0 +1,17 @@
+{
+ "label": "troll mummy",
+ "name": "troll mummy",
+ "torso": "973pq0",
+ "torsoColor": 378,
+ "armColor": 378,
+ "handColor": 378,
+ "hips": "3815",
+ "hipColor": 378,
+ "legColor": 378,
+ "head": "3626bpa2",
+ "headColor": 378,
+ "hair": {
+  "part": "10066",
+  "color": 2
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "label": "woodland elf",
+ "name": "woodland elf",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 78,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626bp05",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 2
+  }
+ ]
+}

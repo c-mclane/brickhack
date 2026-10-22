@@ -1,0 +1,24 @@
+{
+ "label": "ettin zombie",
+ "name": "ettin zombie",
+ "torso": "973",
+ "torsoColor": 70,
+ "armColor": 378,
+ "handColor": 378,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626bpc15",
+ "headColor": 378,
+ "extras": [
+  {
+   "part": "3626bpc15",
+   "color": 378,
+   "pos": [
+    18,
+    -24,
+    0
+   ]
+  }
+ ]
+}

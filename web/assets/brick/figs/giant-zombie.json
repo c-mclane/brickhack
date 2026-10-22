@@ -1,0 +1,17 @@
+{
+ "label": "giant zombie",
+ "name": "giant zombie",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 378,
+ "handColor": 378,
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "head": "3626bpc15",
+ "headColor": 378,
+ "hair": {
+  "part": "40233",
+  "color": 0
+ }
+}

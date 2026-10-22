@@ -1,0 +1,17 @@
+{
+ "label": "orc mummy",
+ "name": "orc mummy",
+ "torso": "973pq0",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 28,
+ "hips": "3815",
+ "hipColor": 28,
+ "legColor": 28,
+ "head": "3626bpa2",
+ "headColor": 28,
+ "hair": {
+  "part": "10066",
+  "color": 0
+ }
+}

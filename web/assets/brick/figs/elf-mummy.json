@@ -1,0 +1,17 @@
+{
+ "label": "elf mummy",
+ "name": "elf mummy",
+ "torso": "973pq0",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 19,
+ "hips": "3815",
+ "hipColor": 19,
+ "legColor": 19,
+ "head": "3626bpa2",
+ "headColor": 19,
+ "hair": {
+  "part": "10055p01",
+  "color": 28
+ }
+}

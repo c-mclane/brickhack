@@ -1,0 +1,22 @@
+{
+ "label": "dwarf mummy",
+ "name": "dwarf mummy",
+ "torso": "973pq0",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 19,
+ "shortLegs": {
+  "part": "16709",
+  "color": 19
+ },
+ "head": "3626bpa2",
+ "headColor": 19,
+ "hat": "3844",
+ "hatColor": 72,
+ "neck": [
+  {
+   "part": "10052",
+   "color": 28
+  }
+ ]
+}
