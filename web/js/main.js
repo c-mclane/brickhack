@@ -314,7 +314,10 @@ const fx = new CombatFX();
 fx.onKill = (x, z) => { // (a monster slain: its figure blown apart, white studs flying: it, by who it is, not whatever's on its square)
   if (!(renderer && renderer.brickOn && renderer.brick)) return false;
   const mob = motion.mobAt(x, z), g = !mob && [...gone].reverse().find((o) => o.x === x && o.z === z && performance.now() - o.t < 2500);
-  return renderer.brick.shatterFigureAt(x, z, mob ? mob.id : g ? g.id : undefined);
+  if (renderer.brick.shatterFigureAt(x, z, mob ? mob.id : g ? g.id : undefined)) return true;
+  // (no figure of it to blow apart (a monster not yet in brick): the white studs, still; not the flat puff, black in brick)
+  renderer.brick.fx.splashStuds(new THREE3.Vector3(x + 0.5, STUD_H + 0.45, z + 0.5), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
+  return true;
 };
 { // every attack (however it's made) holds the engine's replies until the blow lands (holdReplies)
   const attack = fx.attack.bind(fx);

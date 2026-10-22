@@ -2,7 +2,7 @@
 // billboards for monsters / objects / the hero.  All art comes from the
 // NetHack tile atlas.
 
-import { brickItemForTile, brickBuilt } from './brickitems.js';
+import { brickBuilt } from './brickitems.js';
 import { CM, classify, wallTile, cmapTile, WALL_H, DOOR_H, TRAP_ITEMS } from './terrain.js';
 import { BrickRenderer, STUD_H, PARTS, DOOR_TOP, partMatrix } from './brick.js';
 import { BrickWorld } from './brickworld.js';
@@ -709,8 +709,8 @@ export class Renderer {
             } else this.floor(out, x, y, 0, c.floorTile ?? c.tile, shade);
             if (c.decal != null && !brickLevel) this.floor(out, x, y, 0.01, c.decal, shade, 1);
             if (c.lintel && !brickLevel) column(DOOR_H, null, shade, (l) => wallLayer(l, WALL_TILE)); // (brick: the BrickWorld's own stone over the door)
-            if (c.chest && T.chestSide != null && !(brickLevel && brickItemForTile(world.cell(x, y).t))) {
-              // NetHack chests and boxes as Minecraft-style chest blocks (a brick level: its brick model instead, world.js)
+            if (c.chest && T.chestSide != null && !brickLevel) {
+              // NetHack chests and boxes as Minecraft-style chest blocks (a brick level: never; its brick model, world.js)
               const m = 0.0625;
               this.box(out, x + m, 0, y + m, x + 1 - m, 0.875, y + 1 - m,
                 { n: T.chestSide, s: T.chestFront, w: T.chestSide, e: T.chestSide, top: T.chestTop }, shade);
