@@ -87,7 +87,8 @@ export class ThrowFX {
   // venom spat (straight and quick from the mouth, not lofted or tumbling, dripping as it goes,
   // and it splats on whatever it reaches); opts.shot: an arrow, a bolt, a stone loosed from a bow, a
   // crossbow, a sling (fast and nearly flat, from the bow's height (opts.from: up from the floor),
-  // pointing the way it flies, not tumbling, and stuck where it comes down, its tip in the floor)
+  // pointing the way it flies, not tumbling, and stuck where it comes down, its tip in the floor); opts.delay: s till
+  // it's away (the archer's draw, FOUNT.loose), counted in the air already, so it isn't seen lying where it'll land
   async launch(url, fx, fz, tx, tz, opts = {}) {
     const k = key(tx, tz, url);
     this.incoming.set(k, (this.incoming.get(k) || 0) + 1);
@@ -99,7 +100,11 @@ export class ThrowFX {
     this.flying.push(b);
     this.brick.redrawItems(k); // (already lying there, if the engine dropped it first: hidden till it lands)
     let m;
-    try { m = (await this.brick.model(url)).clone(); } catch { this.flying.splice(this.flying.indexOf(b), 1); this.land(k); return; }
+    try {
+      const got = this.brick.model(url);
+      if (opts.delay) await new Promise((r) => setTimeout(r, opts.delay * 1000));
+      m = (await got).clone();
+    } catch { this.flying.splice(this.flying.indexOf(b), 1); this.land(k); return; }
     // the body: its model inside a holder whose origin is the model's middle (its centre of mass)
     m.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(m);

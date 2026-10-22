@@ -675,7 +675,7 @@ function handle(m) {
         const stance = m.shot && !(mon && mon.creature && !mon.rider);
         const from = m.shot ? (mon && mon.rider ? 1.25 : mon && mon.creature ? 1.15 : 1.05) : undefined, wait = stance ? LOOSE_AT * 1000 : 0;
         if (m.by !== 'monster' && m.shot) hero3d.nockUrl = l.url; // (the arrow on your string, till it's loosed)
-        if (!(pun && renderer.brick.tossBall(m.tx, m.ty))) setTimeout(() => renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit, shot: !!m.shot, from }), wait);
+        if (!(pun && renderer.brick.tossBall(m.tx, m.ty))) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit, shot: !!m.shot, from, delay: wait / 1000 }); // (in the air from now: not seen where it lands till it gets there)
         if (spit) renderer.brick.fx.shatter(l.url, m.tx, m.ty, 'venom');
       }
       const shooter = m.by === 'monster' && brickMons.get(world.cells[m.fy * world.w + m.fx] && world.cells[m.fy * world.w + m.fx].t);
