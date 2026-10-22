@@ -1,0 +1,53 @@
+{
+ "label": "chasme",
+ "name": "chasme",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 0,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp55",
+ "headColor": 72,
+ "extras": [
+  {
+   "part": "15082",
+   "color": 47,
+   "pos": [
+    -8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "15082",
+   "color": 47,
+   "pos": [
+    8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 60
+    }
+   ]
+  }
+ ]
+}

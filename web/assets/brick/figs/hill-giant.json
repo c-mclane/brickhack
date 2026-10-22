@@ -1,0 +1,18 @@
+{
+ "label": "hill giant",
+ "name": "hill giant",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 78,
+ "longLegs": {
+  "color": 308
+ },
+ "longArms": true,
+ "head": "3626cpxa",
+ "headColor": 78,
+ "hair": {
+  "part": "40233",
+  "color": 0
+ }
+}

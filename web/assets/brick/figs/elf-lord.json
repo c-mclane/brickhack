@@ -1,0 +1,23 @@
+{
+ "label": "elf lord",
+ "name": "elf lord",
+ "torso": "973",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 78,
+ "hips": "3815",
+ "hipColor": 288,
+ "legColor": 288,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "18835",
+  "color": 14
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 288
+  }
+ ]
+}

@@ -314,7 +314,10 @@ const fx = new CombatFX();
 fx.onKill = (x, z) => { // (a monster slain: its figure blown apart, white studs flying: it, by who it is, not whatever's on its square)
   if (!(renderer && renderer.brickOn && renderer.brick)) return false;
   const mob = motion.mobAt(x, z), g = !mob && [...gone].reverse().find((o) => o.x === x && o.z === z && performance.now() - o.t < 2500);
-  if (renderer.brick.shatterFigureAt(x, z, mob ? mob.id : g ? g.id : undefined, mob ? mob.name : g ? g.name : undefined)) return true;
+  // (a long worm: its tail's segments blown apart with it: winweb.c build_monsters numbers each 1e12 + its id * 1000 + its place)
+  const id = mob ? mob.id : g ? g.id : undefined;
+  if (id !== undefined && id < 1e12) for (const t of motion.mobs.values()) if (t.id > 1e12 && Math.floor((t.id - 1e12) / 1000) === id) renderer.brick.shatterFigureAt(t.tx, t.tz, t.id, t.name);
+  if (renderer.brick.shatterFigureAt(x, z, id, mob ? mob.name : g ? g.name : undefined)) return true;
   // (no figure of it to blow apart (a monster not yet in brick): the white studs, still; not the flat puff, black in brick)
   renderer.brick.fx.splashStuds(new THREE3.Vector3(x + 0.5, STUD_H + 0.45, z + 0.5), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });
   return true;

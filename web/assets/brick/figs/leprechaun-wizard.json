@@ -1,0 +1,22 @@
+{
+ "label": "leprechaun wizard",
+ "name": "leprechaun wizard",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 2
+ },
+ "head": "3626bp01",
+ "headColor": 14,
+ "hat": "6131",
+ "hatColor": 2,
+ "neck": [
+  {
+   "part": "10052",
+   "color": 25
+  }
+ ]
+}

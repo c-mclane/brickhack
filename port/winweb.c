@@ -1503,6 +1503,24 @@ build_monsters(void)
             fprintf(out, ",%d", t && (t->ttyp == PIT || t->ttyp == SPIKED_PIT) ? 1 : 0);
         }
         fputc(']', out);
+        if (mtmp->wormno) { /* a long worm: its tail's segments too, each where it's seen ("<its kind> tail"), its id
+                               its place behind the head (so each follows the one ahead of it as the worm crawls) */
+            extern int FDECL(web_wsegs, (struct monst *, xchar *, xchar *, int));
+            xchar xs[64], ys[64];
+            int k, ns = web_wsegs(mtmp, xs, ys, 64);
+            for (k = 0; k < ns; k++) {
+                int g = isok(xs[k], ys[k]) ? mapglyph_buf[ys[k]][xs[k]] : NO_GLYPH;
+                if (!glyph_is_monster(g) || glyph_to_mon(g) != PM_LONG_WORM_TAIL)
+                    continue; /* (not seen there) */
+                fprintf(out, ",[%.0f,%d,%d,%d,0,", 1e12 + (double) mtmp->m_id * 1000.0 + k + 1, xs[k], ys[k], (int) mtmp->data->msize);
+                {
+                    char tname[BUFSZ];
+                    Sprintf(tname, "%s tail", Hallucination ? x_monnam(mtmp, ARTICLE_NONE, (char *) 0, 0, FALSE) : mtmp->data->mname);
+                    jstr(tname);
+                }
+                fprintf(out, ",%d,null,0]", mtmp->mtame ? 1 : mtmp->mpeaceful ? 2 : 0);
+            }
+        }
     }
     fputs("]", out);
     web_mem_close(out, &buf, &len);

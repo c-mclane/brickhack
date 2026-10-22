@@ -1745,7 +1745,7 @@ export class BrickWorld {
     const m = 0.04; // (kept within its square)
     // (its corpse: one of its bricks, left lying where it lands, the rest fading away; the corpse's own model not shown
     // there while it's there: stepCorpses)
-    const keep = holders.length ? holders[pieceOf(name || '', sizesOf(holders))] : null;
+    const keep = holders.length && !/ tail$/.test(name || '') ? holders[pieceOf(name || '', sizesOf(holders))] : null; // (a long worm's tail segment: none of its own, the worm's corpse is the head's)
     if (keep) { const old = (this.corpseParts = this.corpseParts || new Map()).get(`${x},${z}`); if (old) old.g.parent && old.g.parent.remove(old.g); this.corpseParts.set(`${x},${z}`, { g: keep, t: now }); }
     this.fx.explode(holders, [x + m, z + m, x + 1 - m, z + 1 - m], new THREE.Vector3(cx, STUD_H + 0.25, cz), keep);
     this.fx.splashStuds(new THREE.Vector3(cx, STUD_H + 0.45, cz), 18, 2.6, { floor: STUD_H, ring: false, tint: 0xffffff, solid: true, spread: 2.2 });

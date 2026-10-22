@@ -1,0 +1,14 @@
+{
+ "label": "fire elemental",
+ "name": "fire elemental",
+ "torso": "973",
+ "torsoColor": 182,
+ "armColor": 182,
+ "handColor": 182,
+ "hips": "3815",
+ "hipColor": 182,
+ "legColor": 182,
+ "head": "3626cpxa",
+ "headColor": 182,
+ "fx": "fire"
+}

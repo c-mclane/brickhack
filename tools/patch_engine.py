@@ -1130,4 +1130,29 @@ edit("src/trap.c", [
      "#endif\n\t    if (see_it) web_trapfx(tt, trap->tx, trap->ty, 1);\n\t    switch (tt) {\n\t\tcase ARROW_TRAP:\n\t\t\tif (trap->once && trap->tseen && !rn2(15)) {"),
 ], "WEB_HOOK_TRAPFX")
 
+# ---- a long worm's tail, for the client: its segments' squares, from the head back (winweb.c build_monsters: each
+# drawn as a body segment following the one ahead of it)
+edit("src/worm.c", [("/*worm.c*/",
+"""/* WEB_HOOK_WSEGS: where a worm's tail segments are, nearest the head first (not the head's own square); how many */
+int
+web_wsegs(worm, xs, ys, max)
+struct monst *worm;
+xchar *xs, *ys;
+int max;
+{
+    struct wseg *curr;
+    int n = 0, i;
+
+    if (!worm->wormno) return 0;
+    for (curr = wtails[worm->wormno]; curr && curr != wheads[worm->wormno]; curr = curr->nseg)
+	if (n < max) { xs[n] = curr->wx; ys[n] = curr->wy; n++; }
+    for (i = 0; i < n / 2; i++) { /* (the list runs tail to head: turned round) */
+	xchar t = xs[i]; xs[i] = xs[n - 1 - i]; xs[n - 1 - i] = t;
+	t = ys[i]; ys[i] = ys[n - 1 - i]; ys[n - 1 - i] = t;
+    }
+    return n;
+}
+
+/*worm.c*/""")], "WEB_HOOK_WSEGS")
+
 print("engine hooks applied:", src)
