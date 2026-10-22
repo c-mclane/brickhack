@@ -1,0 +1,11 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (delicatessen)",
+ "name": "shop-delicatessen",
+ "hat": "3898",
+ "hatColor": 15,
+ "right": {
+  "part": "33057",
+  "color": 70
+ }
+}

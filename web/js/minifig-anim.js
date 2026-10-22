@@ -95,6 +95,10 @@ function SHIVER(base, amp, T = 2.0) {
   for (let t = 0.31, i = 0; t < 1.6; t += 0.06, i++) k.push([t, base + (i % 2 ? amp : -amp) * (1 - (t - 0.25) / 1.6)]);
   return k.concat([[1.6, base], [T, 0]]);
 }
+export const LOOSE_AT = 1.8; // (the arrow away: FOUNT.loose, so many seconds in)
+export const NOCKED = [0.45, LOOSE_AT]; // (an arrow in the string hand, seen: FOUNT.loose, from the bow's coming up to its loosing)
+export const NOCK = [0.8, 1.15]; // (...brought onto the bow's own arrow (brickworld holdItems hold.nockK): then aimed)
+export const nockAt = (t) => { const u = Math.max(0, Math.min(1, (t - NOCK[0]) / (NOCK[1] - NOCK[0]))); return u * u * (3 - 2 * u); };
 export const FOUNT = {
   drink: { T: 2.6, cup: 0.6, sip: [1.15, 1.9],
     lean: [[0, 0], [0.4, 0.8], [0.75, 0.8], [1.15, 0.05], [2.2, 0.05], [2.6, 0]],
@@ -250,6 +254,24 @@ export const FOUNT = {
     armR: [[0, -30], [0.6, -150], [1.3, -150], [1.8, -64], [2.2, -64], [2.6, null], [4.0, null]], armL: 'R',
     inn: [[0, 0], [0.6, 14], [1.3, 14], [1.8, 10], [2.2, 10], [2.6, 0], [4.0, 0]],
     head: [[0, 0], [0.6, 0.45], [1.3, 0.45], [1.8, -0.35], [2.2, -0.35], [2.6, 0.1], [3.6, 0.1], [4.0, 0]] },
+  // a shot from a bow (a crossbow, a sling: what's wielded, in the right hand), the whole of it, from however you were
+  // stood and back to it: into the stance (a step forward, side on to the mark, the bow arm out before you, an arrow
+  // in the string hand, the head turned to sight), a breath, drawn (the shoulders turned further, the arrow brought
+  // onto the bow's own: NOCK), aimed (the bow arm swung so the arrow points dead ahead, level: aim, AimSolve), held,
+  // let go (LOOSE_AT: the arrow away, the string hand flung back, the bow kicking), held there a moment watching it
+  // go, and back to how you were
+  loose: { T: 2.95,
+    lean: [[0, 0], [0.55, -0.03], [1.15, -0.05], [1.8, -0.05], [1.87, 0.03], [2.35, -0.02], [2.95, 0]],
+    twist: [[0, 0], [0.55, 0.38], [0.8, 0.38], [1.15, 0.6], [1.8, 0.6], [1.87, 0.48], [2.35, 0.45], [2.95, 0]],
+    yaw: [[0, 0], [0.55, -0.4], [0.8, -0.4], [1.15, -0.62], [1.8, -0.62], [1.87, -0.5], [2.35, -0.46], [2.95, 0]],
+    armR: [[0, null], [0.55, -90], [1.15, -92], [1.8, -92], [1.87, -84], [2.35, -90], [2.95, null]],
+    armL: [[0, null], [0.55, -86], [0.8, -86], [1.15, -93], [1.8, -93], [1.87, -64], [2.35, -82], [2.95, null]],
+    innR: [[0, 0], [0.55, -16], [1.15, -26], [1.8, -26], [1.87, -20], [2.35, -20], [2.95, 0]],
+    innL: [[0, 0], [0.55, 30], [0.8, 30], [1.15, 50], [1.5, 68], [1.8, 68], [1.87, 24], [2.35, 26], [2.95, 0]],
+    inn: [[0, 0], [2.95, 0]],
+    aim: [[0, 0], [1.15, 0], [1.5, 1], [1.8, 1], [1.87, 0], [2.95, 0]],
+    head: [[0, 0], [0.55, -0.06], [1.8, -0.08], [1.87, -0.04], [2.35, -0.04], [2.95, 0]],
+    legR: [[0, 0], [0.55, -16], [2.35, -16], [2.95, 0]], legL: [[0, 0], [0.55, 12], [2.35, 12], [2.95, 0]] },
   // carrying something up before you, held upright (the chalice, brought up to the altar)
   carry: { T: 60.0, armR: [[0, null], [0.4, -100], [60.0, -100]], armL: [[0, null], [60.0, null]], inn: [[0, 0], [60.0, 0]], lean: [[0, 0], [60.0, 0]], head: [[0, 0], [60.0, 0]] },
   // ...and the deacons' (the altar's two statues, come down): hands joined before them; down on their knees, heads
@@ -295,6 +317,32 @@ function keyAt(keys, t, rest = 0) {
     if (t <= b[0]) return v(a[1]) + (v(b[1]) - v(a[1])) * ease((t - a[0]) / (b[0] - a[0]));
   }
   return v(keys[keys.length - 1][1]);
+}
+
+// The bow arm (rig arm j, the body turned B) swung (swing, out: degrees, as FigureAnimator's arms) so what it holds
+// points its +Z (a bow's own arrow, tools/minifig.py HELD 4499: in the grip's frame) dead ahead, level: the
+// figure's +Z. Searched from (a, o), finer each round.
+function aimSolve(B, j, a, o) {
+  const G = j.grip, side = j.pivot[0] < 0 ? -1 : 1;
+  const zf = [G[8], G[9], G[10]];
+  const err = (sw, ou) => {
+    const M = mul(B, mul(turnAbout(j.pivot, j.axis, (sw - j.swing) * DEG), turnAbout(j.pivot, [0, 0, side < 0 ? -1 : 1], ou * DEG)));
+    const d = [M[0] * zf[0] + M[4] * zf[1] + M[8] * zf[2], M[1] * zf[0] + M[5] * zf[1] + M[9] * zf[2], M[2] * zf[0] + M[6] * zf[1] + M[10] * zf[2]];
+    const l = Math.hypot(d[0], d[1], d[2]) || 1;
+    return 1 - d[2] / l; // (0: straight ahead)
+  };
+  let best = [a, o], be = err(a, o);
+  for (const step of [16, 6, 2, 0.6, 0.2]) {
+    let moved = true;
+    while (moved) {
+      moved = false;
+      for (const [da, dout] of [[step, 0], [-step, 0], [0, step], [0, -step]]) {
+        const e = err(best[0] + da, best[1] + dout);
+        if (e < be - 1e-7) { be = e; best = [best[0] + da, best[1] + dout]; moved = true; }
+      }
+    }
+  }
+  return best;
 }
 
 export class FigureAnimator {
@@ -366,13 +414,13 @@ export class FigureAnimator {
     const F = state.fount && FOUNT[state.fount.act] && state.fount.t < FOUNT[state.fount.act].T ? FOUNT[state.fount.act] : null, ft = F ? state.fount.t : 0;
     const bend = turnAbout(waist, [1, 0, 0], A.lean - 0.14 * heavy - 0.1 * A.raise + (F ? keyAt(F.lean, ft) : 0));
     // the upper body: breathing, twisting into a slash, waddling
-    const B = mul(bend, mul(waddle, mul(slash ? turnAbout(waist, [0, -1, 0], lefty ? -slash.twist : slash.twist) : ident(), swellY(waist[1], 1 + breath))));
+    const B = mul(bend, mul(waddle, mul(F && F.twist ? turnAbout(waist, [0, 1, 0], keyAt(F.twist, ft)) : ident(), mul(slash ? turnAbout(waist, [0, -1, 0], lefty ? -slash.twist : slash.twist) : ident(), swellY(waist[1], 1 + breath)))));
 
     const P = this.poses;
     P.body = B;
     P.amulet = B; // (an amulet worn: on the chest, moving with it)
     const hp = rig.head ? rig.head.pivot : [0, 0, 0];
-    P.head = mul(B, mul(turnAbout(hp, [0, 1, 0], this.headYaw * (F ? 0 : 1)), turnAbout(hp, [1, 0, 0], this.headPitch * (F ? 0 : 1) - (F ? keyAt(F.head, ft) : 0))));
+    P.head = mul(B, mul(turnAbout(hp, [0, 1, 0], this.headYaw * (F ? 0 : 1) + (F && F.yaw ? keyAt(F.yaw, ft) : 0)), turnAbout(hp, [1, 0, 0], this.headPitch * (F ? 0 : 1) - (F ? keyAt(F.head, ft) : 0))));
 
     // the arms: swing (degrees, as tools/minifig.py's pose_arm: negative raises the arm forward)
     for (const side of ['R', 'L']) {
@@ -397,7 +445,12 @@ export class FigureAnimator {
       let out = 0;
       // (fighting with two weapons, the left slashes too, a moment after the right)
       const slashL = side === 'L' && !lefty && state.twoweap && atk >= 0.25 && atk < 1.25 ? slashAt(atk - 0.25, this.arm.L) : null;
-      if (F) { a = keyAt(F[F['arm' + side] === 'R' ? 'armR' : 'arm' + side], ft, a); out = keyAt(F.inn, ft); this.arm[side] = a; }
+      if (F) {
+        a = keyAt(F[F['arm' + side] === 'R' ? 'armR' : 'arm' + side], ft, a); out = keyAt(F['inn' + side] || F.inn, ft);
+        const k = side === 'R' && F.aim ? keyAt(F.aim, ft) : 0;
+        if (k > 0 && j.grip) { const s = aimSolve(B, j, a, out); a += (s[0] - a) * k; out += (s[1] - out) * k; } // (aimed: the bow's arrow dead ahead)
+        this.arm[side] = a;
+      }
       else if (slash && side === (lefty ? 'L' : 'R')) { a = slash.swing; out = slash.out; }
       else if (slashL) { a = slashL.swing; out = slashL.out; }
       else this.arm[side] = a;

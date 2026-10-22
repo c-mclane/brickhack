@@ -1,0 +1,13 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (frozen food store)",
+ "name": "shop-frozen-food-store",
+ "hat": "30287",
+ "hatColor": 15,
+ "torsoColor": 1,
+ "armColor": 1,
+ "right": {
+  "part": "30385",
+  "color": 47
+ }
+}

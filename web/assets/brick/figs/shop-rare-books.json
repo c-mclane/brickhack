@@ -1,0 +1,13 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (rare books)",
+ "name": "shop-rare-books",
+ "hat": "6131",
+ "hatColor": 1,
+ "torsoColor": 1,
+ "armColor": 1,
+ "right": {
+  "part": "33009-f1",
+  "color": 4
+ }
+}

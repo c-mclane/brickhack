@@ -1,0 +1,16 @@
+{
+ "label": "quasit",
+ "name": "quasit",
+ "torso": "973",
+ "torsoColor": 1,
+ "armColor": 1,
+ "handColor": 1,
+ "head": "3626cpxa",
+ "headColor": 1,
+ "shortLegs": {
+  "part": "16709",
+  "color": 1
+ },
+ "hat": "24636",
+ "hatColor": 1
+}

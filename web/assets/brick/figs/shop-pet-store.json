@@ -1,0 +1,13 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (pet store)",
+ "name": "shop-pet-store",
+ "hat": "30172",
+ "hatColor": 19,
+ "torsoColor": 28,
+ "armColor": 28,
+ "right": {
+  "part": "64648",
+  "color": 71
+ }
+}

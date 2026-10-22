@@ -1,0 +1,25 @@
+{
+ "label": "Oracle",
+ "name": "oracle",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "11264p01",
+  "color": 19
+ },
+ "dress": {
+  "part": "3678b",
+  "color": 1
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 1
+  }
+ ],
+ "fx": "vapors"
+}

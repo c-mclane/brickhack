@@ -1,0 +1,15 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (hardware store)",
+ "name": "shop-hardware-store",
+ "torso": "973p8i",
+ "torsoColor": 25,
+ "armColor": 1,
+ "hat": "3833",
+ "hatColor": 14,
+ "right": {
+  "part": "4006",
+  "color": 71
+ },
+ "head": "3626bp8n"
+}

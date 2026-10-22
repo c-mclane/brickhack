@@ -1758,6 +1758,32 @@ export class BrickWorld {
       held[side] = { url: want, obj };
       this.model(want).then((m) => { if (held[side] && held[side].obj === obj) obj.add(m.clone()); });
     }
+    // an arrow nocked (hold.nock: its url): in the string hand (the left: the bow's in the right), held at its nock, out
+    // along the arm; brought, as it's drawn (hold.nockK 0..1), onto the bow's own arrow, lying exactly along it (the
+    // bow, 4499: its moulded arrow 0.57 over the grip, along the grip frame's +Z, its tip 1.2 ahead; the arrow, 18041:
+    // its tip the model's +Y, 2.4 up)
+    {
+      const want = hold.nock, bowHand = j.joints.handR || j.joints.armR, hand = j.joints.handL || j.joints.armL, h = j.rig.handL, grip = j.rig.armR && j.rig.armR.grip;
+      let cur = held.nock;
+      if (cur && cur.url !== want) { cur.obj.parent && cur.obj.parent.remove(cur.obj); delete held.nock; cur = null; }
+      if (!cur && want && bowHand && hand && h && grip) {
+        const obj = new THREE.Group();
+        obj.matrixAutoUpdate = false;
+        bowHand.add(obj);
+        const [ax, ay, az] = h.axis, n = Math.hypot(ax, ay, az) || 1;
+        const inHand = new THREE.Matrix4().makeTranslation(h.pivot[0] - 0.42 * ax / n, h.pivot[1] - 0.42 * ay / n + 0.45, h.pivot[2] - 0.42 * az / n); // (its nock in the fist, the shaft out ahead)
+        const onBow = new THREE.Matrix4().fromArray(grip).multiply(new THREE.Matrix4().makeTranslation(0, 0.57, 1.2 - 2.4)).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        cur = held.nock = { url: want, obj, inHand, onBow };
+        this.model(want).then((m) => { if (held.nock && held.nock.obj === obj) obj.add(m.clone()); });
+      }
+      if (cur) { // (where it is this frame, in the bow hand's frame: from the string hand's, onto the bow)
+        const k = hold.nockK || 0, A = new THREE.Matrix4().copy(bowHand.matrix).invert().multiply(hand.matrix).multiply(cur.inHand);
+        const pa = new THREE.Vector3(), qa = new THREE.Quaternion(), pb = new THREE.Vector3(), qb = new THREE.Quaternion(), sc = new THREE.Vector3();
+        A.decompose(pa, qa, sc); cur.onBow.decompose(pb, qb, sc);
+        cur.obj.matrix.compose(pa.lerp(pb, k), qa.slerp(qb, k), new THREE.Vector3(1, 1, 1));
+        cur.obj.matrixWorldNeedsUpdate = true;
+      }
+    }
     // something lugged in both arms, held before you at the belly (hold.hug: its url: the heavy iron ball)
     {
       const want = hold.hug, body = j.joints.body, cur = held.hug;

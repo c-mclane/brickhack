@@ -1,0 +1,33 @@
+{
+ "label": "mountain nymph",
+ "name": "mountain-nymph",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "40251",
+  "color": 70
+ },
+ "dress": {
+  "part": "3678b",
+  "color": 28
+ },
+ "neck": [
+  {
+   "part": "10183",
+   "color": 47
+  }
+ ],
+ "aura": {
+  "color": [
+   0.95,
+   0.78,
+   0.45
+  ],
+  "strength": 0.45,
+  "scale": 0.7
+ }
+}

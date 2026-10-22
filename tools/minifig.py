@@ -14,7 +14,8 @@ SPEC example:
 "torsoDecal": {"image": ...} prints a picture on the chest; "hatDecal" one on the hat.
 "dress": {"part": "3678b", "color": 1} stands her on a sloped brick instead of legs
 (its "decal" printed down its front: a habit's embroidered band).
-"shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece).
+"shortLegs": {"part": "16709", "color": 28} gives short legs (hips and legs in one piece);
+"noLegs": true none at all (a centaur's man half, on its horse's body).
 "boots": {"bands": [[y, colour], ...], "feet": {"part", "color", "pos"}} gives boots
 or shoes: the legs moulded in a second colour from height y down (booted), and
 anything strapped under the feet (snowshoes; "pos" under the right foot).
@@ -575,6 +576,8 @@ def build(spec, base_dir='.'):
             G(g)
             out.append(line(spec.get('legColor', 15), (x, SKEL_HIP, 0), I, spec.get(g, '6266')))
         rig['legs'] = {'pivot': [0.0, SKEL_HIP, 0.0], 'axis': [1.0, 0.0, 0.0]}
+    elif spec.get('noLegs'):
+        pass   # (no legs at all: a centaur's man half, set on its horse's body by the client)
     elif spec.get('shortLegs'):
         # short legs (a dwarf, a child): hips and legs in one piece
         out.append(line(spec['shortLegs'].get('color', 16), (0, 32, 0), I, spec['shortLegs'].get('part', '16709')))
@@ -700,7 +703,7 @@ def piece(spec, slot, base_dir='.'):
             return None
         with_decal(spec['left'], (0, 0, 0), I)
     elif slot == 'boots':
-        if spec.get('dress') or spec.get('shortLegs') or spec.get('skeleton'):
+        if spec.get('dress') or spec.get('shortLegs') or spec.get('skeleton') or spec.get('noLegs'):
             return None
         bands = (spec.get('boots') or {}).get('bands')
         for leg in (spec.get('legR', '3816'), spec.get('legL', '3817')):

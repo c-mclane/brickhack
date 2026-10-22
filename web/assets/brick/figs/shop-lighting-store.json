@@ -1,0 +1,10 @@
+{
+ "base": "shopkeeper",
+ "label": "Izchak",
+ "name": "shop-lighting-store",
+ "head": "3626bp0e",
+ "right": {
+  "part": "3959",
+  "color": 70
+ }
+}

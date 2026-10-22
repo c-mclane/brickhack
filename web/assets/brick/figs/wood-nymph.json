@@ -1,0 +1,33 @@
+{
+ "label": "wood nymph",
+ "name": "wood-nymph",
+ "torso": "973",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "40251",
+  "color": 288
+ },
+ "dress": {
+  "part": "3678b",
+  "color": 2
+ },
+ "neck": [
+  {
+   "part": "10183",
+   "color": 34
+  }
+ ],
+ "aura": {
+  "color": [
+   0.45,
+   0.95,
+   0.45
+  ],
+  "strength": 0.45,
+  "scale": 0.7
+ }
+}

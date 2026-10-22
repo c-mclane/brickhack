@@ -1,0 +1,12 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (second-hand bookstore)",
+ "name": "shop-second-hand-bookstore",
+ "head": "3626bp0e",
+ "torsoColor": 28,
+ "armColor": 28,
+ "right": {
+  "part": "33009-f1",
+  "color": 70
+ }
+}

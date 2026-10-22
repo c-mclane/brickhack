@@ -221,14 +221,23 @@ def main():
             open(ldr_path, 'w').write(ldr)
             print(f'  {name}: {ldraw2glb.to_glb(lib.parse(ldr_path), colors, 71, glb, extras)} tris')
             open(keyfile, 'w').write(key)
-        return f'assets/brick/roster/{name}.glb?v={key}'
+        url = f'assets/brick/roster/{name}.glb?v={key}'
+        if m.get('rider') and not saddled:   # (a centaur: its man half a figure of its own, animated, set where its neck is ("riderAt", in the parts' frame): in the model's units, and its scale)
+            at = (np.array(m['riderAt'], float) + shift) * s / 20 * np.array([1, -1, -1])
+            return url, {'url': figure(m['rider'], character=False)[1], 'at': at.round(4).tolist(), 'scale': s}
+        return url
 
     for mon, m in json.load(open(os.path.join(ASSETS, 'monsters.json'))).items():
         if m.get('creature'):
-            mons[mon] = {'url': creature(mon, m), 'creature': m['creature'],
+            url = creature(mon, m)
+            if m.get('rider'):
+                url, rider = url
+                mons[mon] = {'url': url, 'creature': m['creature'], 'rider': rider, 'hold': m.get('hold'), **({'archer': True} if m.get('archer') else {})}
+                continue
+            mons[mon] = {'url': url, 'creature': m['creature'],
                          **({'saddled': creature(mon, m, True), 'seat': m.get('seat', 1)} if m.get('saddle') else {})}   # (with a saddle on: ridden; how high its seat)
             continue
-        mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold'),
+        mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold'), **({'archer': True} if m.get('archer') else {}),   # (archer: shoots with a bow: drawn and loosed in the stance, FOUNT.loose)
                      # a serpent's tail for legs (a naga): it slithers (web/js/creature.js slitherLocal), lifted so its coils rest on the floor
                      **({'slither': True} if m.get('slither') else {}), **({'lift': m['lift']} if m.get('lift') else {})}
     json.dump(mons, open(os.path.join(ASSETS, 'monsters.built.json'), 'w'), indent=1)

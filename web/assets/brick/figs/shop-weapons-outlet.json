@@ -1,0 +1,11 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (weapons outlet)",
+ "name": "shop-weapons-outlet",
+ "hat": "3844",
+ "hatColor": 72,
+ "right": {
+  "part": "3847",
+  "color": 71
+ }
+}

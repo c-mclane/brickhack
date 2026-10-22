@@ -330,6 +330,10 @@ const FX = {
   smoke: { n: 260, size: 0.14, color: 'mix(vec3(0.62, 0.63, 0.67), vec3(0.82, 0.83, 0.86), t)', alpha: 'smoothstep(0.0, 0.08, t) * (1.0 - t * t) * 0.45',
     move: 'float ang = ph * 6.2832 + t * 9.0 + t * t * 8.0; float r = h * (0.07 + 0.2 * t) * (0.85 + 0.3 * fract(ph * 5.7)); vec3 fwd = cross(up, side); p = vec3(0.0, uLo, 0.0) + (side * cos(ang) + fwd * sin(ang)) * r + up * t * h * 0.8;',
     speed: '0.3 + ph * 0.1', glitch: true }, // (and glitching, as the shade does: static, jerks, flicker)
+  // (vapours: lavender fumes curling up about it, soft, slow, thinning away: the Oracle's, breathing them in at Delphi)
+  vapors: { n: 120, size: 0.13, color: 'mix(vec3(0.78, 0.7, 0.92), vec3(0.92, 0.88, 0.98), t)', alpha: 'smoothstep(0.0, 0.15, t) * (1.0 - t) * 0.35',
+    move: 'float ang = ph * 6.2832 + t * 3.0; float r = h * (0.12 + 0.1 * t); vec3 fwd = cross(up, side); p = vec3(0.0, uLo, 0.0) + (side * cos(ang) + fwd * sin(ang)) * r + up * t * h * 0.9;',
+    speed: '0.18 + ph * 0.1' },
   frost: { n: 140, size: 0.09, color: 'vec3(0.88, 0.96, 1.0)', alpha: 'pow(max(sin((t + ph) * 6.2832 * 2.0), 0.0), 6.0)',
     move: 'p += away * h * 0.12 - up * t * h * 0.18;', speed: '0.25 + ph * 0.3' },
 };

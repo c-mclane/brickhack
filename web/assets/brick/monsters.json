@@ -1326,7 +1326,8 @@
   "fig": "high-priest-neutral"
  },
  "gnome lord": {
-  "fig": "gnome-lord"
+  "fig": "gnome-lord",
+  "archer": true
  },
  "gnomish wizard": {
   "fig": "gnomish-wizard"
@@ -1374,6 +1375,746 @@
   "fig": "kop-kaptain"
  },
  "shopkeeper": {
+  "fig": "shopkeeper"
+ },
+ "giant ant": {
+  "parts": [
+   {
+    "part": "23714",
+    "color": 0
+   }
+  ],
+  "scale": 1.5,
+  "creature": "bug",
+  "center": true
+ },
+ "soldier ant": {
+  "parts": [
+   {
+    "part": "23714",
+    "color": 1
+   }
+  ],
+  "scale": 1.7,
+  "creature": "bug",
+  "center": true
+ },
+ "fire ant": {
+  "parts": [
+   {
+    "part": "23714",
+    "color": 4
+   }
+  ],
+  "scale": 1.5,
+  "creature": "bug",
+  "center": true,
+  "fx": "fire"
+ },
+ "snow ant": {
+  "parts": [
+   {
+    "part": "23714",
+    "color": 15
+   }
+  ],
+  "scale": 1.5,
+  "creature": "bug",
+  "center": true,
+  "fx": "frost"
+ },
+ "killer bee": {
+  "parts": [
+   {
+    "part": "95827",
+    "color": 14
+   },
+   {
+    "part": "80674",
+    "color": 47,
+    "pos": [
+     0,
+     -11.7,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "bat",
+  "center": true
+ },
+ "rothe": {
+  "parts": [
+   {
+    "part": "95341",
+    "color": 308
+   }
+  ],
+  "scale": 1.4,
+  "creature": "beast"
+ },
+ "monkey": {
+  "parts": [
+   {
+    "part": "2550",
+    "color": 70,
+    "pos": [
+     0.0,
+     7.263,
+     -10.464
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     0.707107,
+     0.0,
+     -0.707107,
+     0.707107
+    ]
+   },
+   {
+    "part": "3819",
+    "color": 70,
+    "pos": [
+     10.0,
+     -9.0,
+     -14.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     0.707107,
+     0.0,
+     -0.707107,
+     0.707107
+    ]
+   },
+   {
+    "part": "3818",
+    "color": 70,
+    "pos": [
+     -10.0,
+     -9.0,
+     -14.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "3819",
+    "color": 70,
+    "pos": [
+     -10.0,
+     10.799,
+     5.799
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     -0.707107,
+     0.0,
+     -0.707107,
+     -0.707107
+    ]
+   },
+   {
+    "part": "3818",
+    "color": 70,
+    "pos": [
+     10.0,
+     10.799,
+     5.799
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     -0.707107,
+     0.0,
+     -0.707107,
+     -0.707107
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 19,
+    "pos": [
+     -15.0,
+     9.9,
+     -23.9
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     -0.707107,
+     0.0,
+     0.707107,
+     0.707107
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 19,
+    "pos": [
+     15.0,
+     -2.636,
+     -34.365
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 19,
+    "pos": [
+     15.0,
+     31.163,
+     -0.566
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 19,
+    "pos": [
+     -15.0,
+     31.163,
+     -0.566
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 0.8,
+  "creature": "beast"
+ },
+ "ape": {
+  "parts": [
+   {
+    "part": "2550",
+    "color": 308,
+    "pos": [
+     0.0,
+     7.263,
+     -10.464
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     0.707107,
+     0.0,
+     -0.707107,
+     0.707107
+    ]
+   },
+   {
+    "part": "3819",
+    "color": 308,
+    "pos": [
+     10.0,
+     -9.0,
+     -14.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     0.707107,
+     0.0,
+     -0.707107,
+     0.707107
+    ]
+   },
+   {
+    "part": "3818",
+    "color": 308,
+    "pos": [
+     -10.0,
+     -9.0,
+     -14.0
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "3819",
+    "color": 308,
+    "pos": [
+     -10.0,
+     10.799,
+     5.799
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     -0.707107,
+     0.0,
+     -0.707107,
+     -0.707107
+    ]
+   },
+   {
+    "part": "3818",
+    "color": 308,
+    "pos": [
+     10.0,
+     10.799,
+     5.799
+    ],
+    "mat": [
+     -1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     -0.707107,
+     0.0,
+     -0.707107,
+     -0.707107
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 308,
+    "pos": [
+     -15.0,
+     9.9,
+     -23.9
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.707107,
+     -0.707107,
+     0.0,
+     0.707107,
+     0.707107
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 308,
+    "pos": [
+     15.0,
+     -2.636,
+     -34.365
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 308,
+    "pos": [
+     15.0,
+     31.163,
+     -0.566
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "part": "3820",
+    "color": 308,
+    "pos": [
+     -15.0,
+     31.163,
+     -0.566
+    ],
+    "mat": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -1.0,
+     0.0,
+     1.0,
+     0.0
+    ]
+   }
+  ],
+  "scale": 1.3,
+  "creature": "beast"
+ },
+ "imp": {
+  "fig": "imp"
+ },
+ "quasit": {
+  "fig": "quasit"
+ },
+ "wood nymph": {
+  "fig": "wood-nymph"
+ },
+ "mountain nymph": {
+  "fig": "mountain-nymph"
+ },
+ "rock piercer": {
+  "parts": [
+   {
+    "part": "49309",
+    "color": 72
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     -7,
+     12,
+     -17
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   },
+   {
+    "part": "98138p07",
+    "color": 15,
+    "pos": [
+     7,
+     12,
+     -17
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     -1,
+     0,
+     1,
+     0
+    ]
+   }
+  ],
+  "scale": 1.0,
+  "creature": "float",
+  "center": true
+ },
+ "yellow light": {
+  "parts": [
+   {
+    "part": "20953",
+    "color": 46
+   }
+  ],
+  "scale": 1.0,
+  "creature": "float",
+  "center": true
+ },
+ "paper golem": {
+  "fig": "paper-golem"
+ },
+ "straw golem": {
+  "fig": "straw-golem"
+ },
+ "rope golem": {
+  "fig": "rope-golem"
+ },
+ "plains centaur": {
+  "parts": [
+   {
+    "part": "10352c01",
+    "color": 19,
+    "pos": [
+     0,
+     -13.5,
+     40.9
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "10354c01",
+    "color": 19,
+    "pos": [
+     0,
+     -13.5,
+     40.9
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   }
+  ],
+  "scale": 0.85,
+  "creature": "horse",
+  "rider": "centaur-plains",
+  "riderAt": [
+   0,
+   -52,
+   -30
+  ],
+  "hold": "bow",
+  "archer": true
+ },
+ "forest centaur": {
+  "parts": [
+   {
+    "part": "10352c01",
+    "color": 70,
+    "pos": [
+     0,
+     -13.5,
+     40.9
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "10354c01",
+    "color": 70,
+    "pos": [
+     0,
+     -13.5,
+     40.9
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   }
+  ],
+  "scale": 0.85,
+  "creature": "horse",
+  "rider": "centaur-forest",
+  "riderAt": [
+   0,
+   -52,
+   -30
+  ],
+  "hold": "bow",
+  "archer": true
+ },
+ "mountain centaur": {
+  "parts": [
+   {
+    "part": "10352c01",
+    "color": 72,
+    "pos": [
+     0,
+     -13.5,
+     40.9
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   {
+    "part": "10354c01",
+    "color": 72,
+    "pos": [
+     0,
+     -13.5,
+     40.9
+    ],
+    "mat": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   }
+  ],
+  "scale": 0.9,
+  "creature": "horse",
+  "rider": "centaur-mountain",
+  "riderAt": [
+   0,
+   -52,
+   -30
+  ],
+  "archer": true
+ },
+ "Oracle": {
+  "fig": "oracle"
+ },
+ "shopkeeper|used armor dealership": {
+  "fig": "shop-used-armor-dealership"
+ },
+ "shopkeeper|second-hand bookstore": {
+  "fig": "shop-second-hand-bookstore"
+ },
+ "shopkeeper|liquor emporium": {
+  "fig": "shop-liquor-emporium"
+ },
+ "shopkeeper|weapons outlet": {
+  "fig": "shop-weapons-outlet"
+ },
+ "shopkeeper|antique weapons outlet": {
+  "fig": "shop-antique-weapons-outlet"
+ },
+ "shopkeeper|delicatessen": {
+  "fig": "shop-delicatessen"
+ },
+ "shopkeeper|jewelers": {
+  "fig": "shop-jewelers"
+ },
+ "shopkeeper|quality apparel and accessories": {
+  "fig": "shop-quality-apparel-and-accessories"
+ },
+ "shopkeeper|hardware store": {
+  "fig": "shop-hardware-store"
+ },
+ "shopkeeper|pet store": {
+  "fig": "shop-pet-store"
+ },
+ "shopkeeper|frozen food store": {
+  "fig": "shop-frozen-food-store"
+ },
+ "shopkeeper|rare books": {
+  "fig": "shop-rare-books"
+ },
+ "shopkeeper|lighting store": {
+  "fig": "shop-lighting-store"
+ },
+ "shopkeeper|black market": {
+  "fig": "shop-black-market"
+ },
+ "shopkeeper|general store": {
   "fig": "shopkeeper"
  }
 }

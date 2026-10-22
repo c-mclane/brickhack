@@ -1,0 +1,18 @@
+{
+ "label": "paper golem",
+ "name": "paper-golem",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 15,
+ "head": "3626bp01",
+ "headColor": 15,
+ "hat": "24131",
+ "hatColor": 15,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "torsoDecal": {
+  "image": "../decals/scroll-tile-blank.png"
+ }
+}

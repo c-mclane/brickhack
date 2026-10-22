@@ -1,0 +1,18 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (used armor dealership)",
+ "name": "shop-used-armor-dealership",
+ "hat": "3844",
+ "hatColor": 71,
+ "neck": [
+  {
+   "part": "2587",
+   "color": 71
+  }
+ ],
+ "head": "3626bpc21",
+ "right": {
+  "part": "3847",
+  "color": 71
+ }
+}

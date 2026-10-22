@@ -1,0 +1,13 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (liquor emporium)",
+ "name": "shop-liquor-emporium",
+ "torso": "973p0t",
+ "torsoColor": 0,
+ "armColor": 15,
+ "head": "3626bp7f",
+ "right": {
+  "part": "95228",
+  "color": 10
+ }
+}

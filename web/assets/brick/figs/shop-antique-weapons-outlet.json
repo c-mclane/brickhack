@@ -1,0 +1,12 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (antique weapons outlet)",
+ "name": "shop-antique-weapons-outlet",
+ "head": "3626bpa7",
+ "hat": "3878",
+ "hatColor": 0,
+ "right": {
+  "part": "2530",
+  "color": 71
+ }
+}

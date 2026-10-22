@@ -19,7 +19,7 @@ import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './bri
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, perchOf, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
-import { FigureAnimator, FOUNT, fountKey, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
+import { FigureAnimator, FOUNT, LOOSE_AT, NOCKED, nockAt, fountKey, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { AltarRites } from './rites.js';
@@ -669,11 +669,20 @@ function handle(m) {
         const spit = / venom$/.test(l.name); // (spit: straight and dripping, and it splats where it reaches)
         // (the ball you're chained to: it itself flung, the chain after it, not a copy of it flown there)
         const pun = m.by !== 'monster' && l.name === 'heavy iron ball' && punishment();
-        if (!(pun && renderer.brick.tossBall(m.tx, m.ty))) renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit });
+        // (shot from a bow: loosed, flat and fast, from the bow's height, the arrow away as the string's let go, in the
+        // archer's stance (FOUNT.loose: the hero, a minifig monster, a centaur's man half); a creature's lunge)
+        const mon = m.by === 'monster' ? brickMons.get(world.cells[m.fy * world.w + m.fx] && world.cells[m.fy * world.w + m.fx].t) : null;
+        const stance = m.shot && !(mon && mon.creature && !mon.rider);
+        const from = m.shot ? (mon && mon.rider ? 1.25 : mon && mon.creature ? 1.15 : 1.05) : undefined, wait = stance ? LOOSE_AT * 1000 : 0;
+        if (m.by !== 'monster' && m.shot) hero3d.nockUrl = l.url; // (the arrow on your string, till it's loosed)
+        if (!(pun && renderer.brick.tossBall(m.tx, m.ty))) setTimeout(() => renderer.brick.fx.launch(l.url, m.fx, m.fy, m.tx, m.ty, { spit, shot: !!m.shot, from }), wait);
         if (spit) renderer.brick.fx.shatter(l.url, m.tx, m.ty, 'venom');
       }
-      if (m.by === 'monster') spitAt.set(`${m.fx},${m.fy}`, performance.now()); // (a creature there lunges: brickMonFigures)
-      if (m.by !== 'monster' && hero3d.anim) hero3d.anim.attack('L'); // (you threw it: a swing of your left arm)
+      const shooter = m.by === 'monster' && brickMons.get(world.cells[m.fy * world.w + m.fx] && world.cells[m.fy * world.w + m.fx].t);
+      if (m.by === 'monster' && !(m.shot && shooter && shooter.rider)) spitAt.set(`${m.fx},${m.fy}`, performance.now()); // (a creature there lunges: brickMonFigures; a centaur shoots instead)
+      if (m.by === 'monster' && m.shot) shotAt.set(`${m.fx},${m.fy}`, performance.now()); // (a minifig there draws and looses)
+      if (m.by !== 'monster' && m.shot) fountNow('loose'); // (you shot it: into the stance, drawn, aimed, let go, and back)
+      else if (m.by !== 'monster' && hero3d.anim) hero3d.anim.attack('L'); // (you threw it: a swing of your left arm)
       break;
     }
     case 'shatter': { // something broke there: shards
@@ -1397,7 +1406,8 @@ function heroHold() {
   if (statuePerch(performance.now()) && performance.now() - (game.lastApplyT || 0) > 8000) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free; unless digging down from up there)
   if (hero3d.raise && hero3d.raise.url) { hold.R = hero3d.raise.url; hold.L = null; hold.two = false; } // (Excalibur: in hand from the blessing on, up there, jumping down, and held high)
   const fo = fountAct(performance.now());
-  if (fo) { // (at a fountain: what's dipped in hand; a gem pulled out, in hand as it comes up)
+  if (fo && fo.act === 'loose') { hold.L = null; hold.two = false; hold.nock = fo.t > NOCKED[0] && fo.t < NOCKED[1] ? hero3d.nockUrl : undefined; hold.nockK = nockAt(fo.t); } // (shooting: the bow kept in hand, an arrow on its string)
+  else if (fo) { // (at a fountain: what's dipped in hand; a gem pulled out, in hand as it comes up)
     hold.R = fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero3d.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero3d.fount.grab : hero3d.fount.url || null) : null;
     hold.L = null; hold.two = false;
   }
@@ -1957,6 +1967,8 @@ function statuePerch(now) {
 // alive as the hero is (breathing, looking about, walking, swinging what
 // they hold when they lunge at you), always facing you
 const spitAt = new Map(); // x,y -> when a monster there last threw or spat something (its creature lunges)
+const shotAt = new Map(); // x,y -> when a monster there last loosed an arrow (a minifig: drawn and let go, FOUNT.loose)
+const archeryUrls = { bow: null, arrow: null }; // (a monster shooting: a bow in its hand for it, if it holds none; the arrow on its string)
 const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, creature, slither, lift} (each monster's own state: monStateOf)
 const brickMonGods = new Map(); // `${tile}|${god}` -> the same, a priest of that god (monsters.json "aligned priest|lawful": his own figure)
 const brickMonOf = (s) => (s.mob && s.mob.god && brickMonGods.get(`${s.tile}|${s.mob.god}`)) || brickMons.get(s.tile);
@@ -1964,6 +1976,7 @@ async function loadBrickMonsters() {
   const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   const [mons, tiles, items] = await Promise.all([get('assets/brick/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/brick/items.built.json')]);
   const tileOf = new Map((tiles.names || []).map((n, i) => [n, i]));
+  archeryUrls.bow = items.bow && items.bow.url; archeryUrls.arrow = items.arrow && items.arrow.url;
   for (const [k, m] of Object.entries(mons)) { // (a priest, by his god)
     const [base, god] = k.split('|');
     if (!god || !tileOf.has(base)) continue;
@@ -1974,9 +1987,11 @@ async function loadBrickMonsters() {
   (tiles.names || []).forEach((n, i) => {
     const m = mons[n];
     if (!m) return;
-    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null,
-      creature: m.creature, slither: m.slither, lift: m.lift || 0, saddled: m.saddled || null, seat: m.seat || 1, saddledPrims: null };
+    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, archer: !!m.archer,
+      creature: m.creature, slither: m.slither, lift: m.lift || 0, saddled: m.saddled || null, seat: m.seat || 1, saddledPrims: null,
+      rider: m.rider ? { ...m.rider, prims: null } : null }; // (a centaur: its man half, a figure of its own)
     brickMons.set(i, e);
+    if (e.rider) renderer.figRender.model(e.rider.url).then((p) => { e.rider.prims = p; }).catch(() => {});
     if (m.saddled) renderer.figRender.model(m.saddled).then((p) => { e.saddledPrims = p; }).catch(() => {}); // (ridden: with its saddle on)
     renderer.figRender.model(m.url).then((p) => { e.prims = p; }) // (each one's animator its own: monStateOf)
       .catch((err) => console.warn('brick monster:', n, err));
@@ -2058,7 +2073,18 @@ function brickMonFigures(sprites, dt, now) {
       const local = creatureLocal(e.creature, now / 1000, { moving, lungeT: st.lungeAt ?? -1e9 });
       const L = e.creature === 'snake' ? lw : 0; // (a snake against a fountain: its back end up its side)
       const base = partMatrix(sx + 0.5, slift + STUD_H + SNAKE_UP * L, sz + 0.5, Math.PI - yaw);
-      out.push({ prims: e.prims, url: e.url, matrix: mul4(L > 0.01 ? mul4(base, tiltX(LEAN * L)) : base, local), shade: s.shade, pose: null, hold: {} });
+      const cm = mul4(L > 0.01 ? mul4(base, tiltX(LEAN * L)) : base, local);
+      out.push({ prims: e.prims, url: e.url, matrix: cm, shade: s.shade, pose: null, hold: {} });
+      const r = e.rider;
+      if (r && r.prims) { // (a centaur's man half: on its horse, where its neck is; shooting in the archer's stance, as you do)
+        if (!st.riderAnim && r.prims.rig) st.riderAnim = new FigureAnimator(r.prims.rig, { phase: Math.random() * 3 });
+        const shot = shotAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
+        if (shot && shot > (st.shotT0 || 0)) { st.shotT0 = shot; st.looseAt = now / 1000; }
+        const lt = st.looseAt != null ? now / 1000 - st.looseAt : 9, loosing = lt < FOUNT.loose.T, k = r.scale;
+        const pose = st.riderAnim ? st.riderAnim.update(dt, { holdsR: !!e.hold || loosing, fount: loosing ? { act: 'loose', t: lt } : null }) : null;
+        out.push({ prims: r.prims, url: r.url, matrix: mul4(cm, new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r.at[0], r.at[1], r.at[2], 1])), shade: s.shade, pose,
+          hold: archerHold(e, loosing, lt) });
+      }
       continue;
     }
     // (a naga: spitting, it leans in, arms out, and its coils lunge; moving, it slithers)
@@ -2066,15 +2092,26 @@ function brickMonFigures(sprites, dt, now) {
     if (spat && spat > (st.spatT0 || 0)) { st.spatT0 = spat; st.spitAt = now / 1000; }
     const spitting = st.spitAt != null && now / 1000 - st.spitAt < LUNGE_TIME;
     const wt = st.warnAt != null ? (now - st.warnAt) / 1000 : 9, warn = wt < 1.8 ? ease(wt / 0.3) * ease((1.8 - wt) / 0.4) : 0; // (brandishing his weapon at you: a warning)
-    const pose = st.anim ? st.anim.update(dt, { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0, raise: warn }) : null;
+    const shot = shotAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
+    if (shot && shot > (st.shotT0 || 0)) { st.shotT0 = shot; st.looseAt = now / 1000; }
+    const loosing = st.looseAt != null && now / 1000 - st.looseAt < FOUNT.loose.T;
+    const pose = st.anim ? st.anim.update(dt, loosing ? { moving, holdsR: true, fount: { act: 'loose', t: now / 1000 - st.looseAt } }
+      : { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0, raise: warn }) : null; // (shooting: into the archer's stance, and back)
     if (e.slither) {
       const m = mul4(figureMatrix(sx + 0.5, slift + e.lift, sz + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: st.spitAt ?? -1e9 }));
       out.push({ prims: e.prims, url: e.url, matrix: m, shade: s.shade, pose, hold: { R: e.hold } });
       continue;
     }
-    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(sx + 0.5, slift, sz + 0.5, yaw), shade: s.shade, pose, hold: { R: e.hold } });
+    out.push({ prims: e.prims, url: e.url, matrix: figureMatrix(sx + 0.5, slift, sz + 0.5, yaw), shade: s.shade, pose, hold: loosing ? archerHold(e, true, now / 1000 - st.looseAt) : { R: e.hold } });
   }
   return out;
+}
+// what a monster holds as it shoots (FOUNT.loose, t s in): its own launcher, or a bow put in its hand for it; an arrow on
+// the string from the bow's coming up to its loosing, brought onto the bow's own as it's drawn
+function archerHold(e, loosing, t) {
+  if (!loosing) return { R: e.hold ?? null, L: null };
+  const bow = e.hold && /bow|sling/.test(e.hold) ? e.hold : archeryUrls.bow;
+  return { R: bow, L: null, nock: t > NOCKED[0] && t < NOCKED[1] ? archeryUrls.arrow : undefined, nockK: nockAt(t) };
 }
 
 // ---- the hero's walk cycle and facing (used to turn the minifig)

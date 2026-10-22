@@ -1,0 +1,14 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (quality apparel and accessories)",
+ "name": "shop-quality-apparel-and-accessories",
+ "head": "3626bpap",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 26
+  }
+ ],
+ "torsoColor": 26,
+ "armColor": 26
+}

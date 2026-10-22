@@ -1,0 +1,21 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (black market)",
+ "name": "shop-black-market",
+ "head": "3626bp8n",
+ "hat": "13565",
+ "hatColor": 0,
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "37341b",
+  "color": 71
+ }
+}

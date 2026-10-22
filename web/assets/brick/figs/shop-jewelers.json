@@ -1,0 +1,14 @@
+{
+ "base": "shopkeeper",
+ "label": "shopkeeper (jewelers)",
+ "name": "shop-jewelers",
+ "torso": "973p5t",
+ "torsoColor": 0,
+ "armColor": 0,
+ "hat": "3878",
+ "hatColor": 0,
+ "right": {
+  "part": "30152a",
+  "color": 297
+ }
+}

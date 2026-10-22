@@ -36,6 +36,7 @@ const E_FLOOR = 0.28, E_WALL = 0.4, FRICTION = 0.55;
 const REST_V = 0.06, REST_W = 0.35, REST_TIME = 0.3, MAX_TIME = 6;
 const SHARDS = 36, SHARD_LIFE = 1.6;
 const SPIT_H = 0.32; // a spit leaves the mouth this high (a cobra's raised head)
+const SHOT_H = 1.05; // (a shot: from a bow held up, at the shoulder)
 const DRIPS = 40; // the most a spit's trail lets fall
 // venom glows a little in its own colour (acid green, blinding purple), gob, drips and splat alike
 const venomGlow = (c) => c.clone().lerp(new THREE.Color(0xffffff), 0.15).multiplyScalar(1.6);
@@ -84,7 +85,9 @@ export class ThrowFX {
 
   // the hero threw (the item's model url) from square (fx, fz) to (tx, tz); opts.spit: a gob of
   // venom spat (straight and quick from the mouth, not lofted or tumbling, dripping as it goes,
-  // and it splats on whatever it reaches)
+  // and it splats on whatever it reaches); opts.shot: an arrow, a bolt, a stone loosed from a bow, a
+  // crossbow, a sling (fast and nearly flat, from the bow's height (opts.from: up from the floor),
+  // pointing the way it flies, not tumbling, and stuck where it comes down, its tip in the floor)
   async launch(url, fx, fz, tx, tz, opts = {}) {
     const k = key(tx, tz, url);
     this.incoming.set(k, (this.incoming.get(k) || 0) + 1);
@@ -114,14 +117,21 @@ export class ThrowFX {
     // the arc: from the hand, lofted, to high on the far wall of the square it was thrown to
     const dx = tx - fx, dz = tz - fz, dist = Math.hypot(dx, dz);
     const dir = dist ? new THREE.Vector3(dx / dist, 0, dz / dist) : new THREE.Vector3(0, 0, 1);
-    const spit = !!opts.spit;
+    const spit = !!opts.spit, shot = !spit && !!opts.shot;
     const p = spit ? new THREE.Vector3(fx + 0.5, STUD_H + SPIT_H, fz + 0.5).addScaledVector(dir, 0.3)
+      : shot ? new THREE.Vector3(fx + 0.5, STUD_H + (opts.from ?? SHOT_H), fz + 0.5).addScaledVector(dir, 0.3)
       : new THREE.Vector3(fx + 0.5, STUD_H + HAND, fz + 0.5).addScaledVector(dir, 0.25);
     const aim = spit ? new THREE.Vector3(tx + 0.5, STUD_H + 0.42, tz + 0.5) // (a spit: straight at you, chest high)
+      : shot ? new THREE.Vector3(tx + 0.5, STUD_H + 0.06, tz + 0.5).addScaledVector(dir, 0.3) // (a shot: down into the floor past the middle)
       : new THREE.Vector3(tx + 0.5, STUD_H + 0.75, tz + 0.5).addScaledVector(dir, 0.6);
-    const T = spit ? 0.28 + 0.1 * dist : 0.7 + 0.13 * dist; // (slow: you can watch it go; a spit, quick)
+    const T = spit ? 0.28 + 0.1 * dist : shot ? 0.12 + 0.045 * dist : 0.7 + 0.13 * dist; // (slow: you can watch it go; a spit, quick; a shot, quicker)
     const v = aim.clone().sub(p).divideScalar(T);
     v.y -= 0.5 * G * T;
+    if (shot) { // (pointing the way it flies, its tip (its model's +Y: as held) first; stuck, then, where it comes down)
+      Object.assign(b, { holder, m, c, corners, inertia, p, v, q: new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), v.clone().normalize()),
+        w: new THREE.Vector3(), t: 0, rest: 0, grounded: false, loading: false, spit: false, shot: true, T });
+      return;
+    }
     // end over end, about the axis across its flight, and a little of everything (a spit: barely turning)
     const across = new THREE.Vector3(-dir.z, 0, dir.x);
     const w = spit ? across.multiplyScalar(1.5)
@@ -214,6 +224,24 @@ export class ThrowFX {
   // one step of a body; true when it's done (at rest, or burst)
   integrate(b, dt) {
     b.t += dt;
+    if (b.shot) { // a shot: flying true, nose first; at the floor (or its time up), stuck there as it came, or broken
+      b.v.y += G * dt;
+      b.p.addScaledVector(b.v, dt);
+      b.q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.v.clone().normalize());
+      if (b.p.y <= STUD_H + 0.05 || b.t >= b.T * 1.4) {
+        if (b.breaks) { this.finish(b, true); return true; }
+        b.done = true;
+        this.flying.splice(this.flying.indexOf(b), 1);
+        this.brick.world.remove(b.holder);
+        b.p.x = Math.min(Math.max(b.p.x, b.tx + 0.08), b.tx + 0.92);
+        b.p.z = Math.min(Math.max(b.p.z, b.tz + 0.08), b.tz + 0.92);
+        b.p.y = Math.max(b.p.y, STUD_H + 0.05);
+        this.poses.set(b.k, { p: b.p.clone(), q: b.q.clone(), c: b.c.clone() });
+        this.land(b.k);
+        return true;
+      }
+      return false;
+    }
     if (b.spit) { // a spit: drips falling from it as it flies; and it splats on reaching you
       b.trail.due -= dt;
       if (b.trail.due <= 0 && b.trail.parts.length < DRIPS) {

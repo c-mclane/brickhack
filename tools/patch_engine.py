@@ -1097,7 +1097,7 @@ edit("src/sp_lev.c", [
 # your own god's altar, 0 another's); a contribution to a temple priest (priest.c priest_talk: web_priestfx)
 edit("src/pray.c", [
     ('    if(!Blind && changed) {\n\tpline("%s potion%s on the altar glow%s %s for a moment.",',
-     '    if(!Blind && changed) {\n\tweb_altarfx("water", bless_water ? 1 : -1, (struct obj *)0);\n\tpline("%s potion%s on the altar glow%s %s for a moment.",'),
+     '    if(!Blind && changed) {\n\tweb_altarfx("water", bless_water ? 1 : -1, (struct obj *)0); /* WEB_HOOK_ALTARFX2 */\n\tpline("%s potion%s on the altar glow%s %s for a moment.",'),
     ('    You("offer the Amulet of Yendor to %s...", a_gname());\n',
      '    web_altarfx("ascend", u.ualign.type == altaralign, (struct obj *)0);\n    You("offer the Amulet of Yendor to %s...", a_gname());\n'),
 ], "WEB_HOOK_ALTARFX2")

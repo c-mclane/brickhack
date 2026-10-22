@@ -25,7 +25,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { BrickWorld } from './brickworld.js';
-import { FigureAnimator, FOUNT, fountKey } from './minifig-anim.js';
+import { FigureAnimator, FOUNT, LOOSE_AT, NOCKED, nockAt, fountKey } from './minifig-anim.js';
 import { Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, FALL_T, CRAWL_T } from './swim.js';
 import { figureMatrix, partMatrix, STUD_H } from './brick.js';
@@ -170,6 +170,11 @@ export async function runTestbed(data) {
   // the monsters: creatures (creature.js) facing you
   const mons = await (await fetch('assets/brick/monsters.built.json', { cache: 'no-store' })).json();
   const cobras = (level.monsters || []).filter((m) => mons[m.monster]).map((m) => ({ ...m, ...mons[m.monster], kind: mons[m.monster].creature, lungeAt: -1e9 }));
+  for (const c of cobras) if (c.rider) brick.model(c.rider.url).then((m) => { // (a centaur: its man half alive as the hero is, on its horse)
+    let rig = null;
+    m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; });
+    c.riderAnim = new FigureAnimator(rig, { phase: Math.random() * 3 });
+  });
   for (const c of cobras) if (!c.kind) brick.model(c.url).then((m) => { // (a minifig monster: alive as the hero is)
     let rig = null;
     m.traverse((o) => { if (!rig && o.userData && o.userData.rig) rig = o.userData.rig; });
@@ -753,6 +758,36 @@ export async function runTestbed(data) {
         await pray(1, 'lessons', '"Thou hast strayed from the path, mortal.  Thou must relearn thy lessons!"');
         await pray(1, 'bolt', 'Suddenly, a bolt of lightning strikes you!');
         say('');
+      }
+      // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the
+      // floor where it comes down, left lying there; each archer (you, the centaur's man half) into the stance, aimed, drawn,
+      // let go, held, and back to how it stood (FOUNT.loose)
+      const archer = cobras.find((c) => /centaur/.test(c.monster));
+      if (doing('archery') && archer) {
+        const stuck = [];
+        const shoot = async (fromSq, toSq, by) => {
+          if (by === 'hero') { // (turned smoothly to the target first)
+            const want = Math.atan2(toSq[0] - fromSq[0], -(toSq[1] - fromSq[1])), y0 = hero.yaw, d = Math.atan2(Math.sin(want - y0), Math.cos(want - y0)), t0 = clock;
+            while (clock - t0 < 0.35) { const u = (clock - t0) / 0.35; hero.yaw = y0 + d * u * u * (3 - 2 * u); await wait(0); }
+            hero.yaw = want;
+            hero.fount = { act: 'loose', t0: clock, fired: 0 };
+          }
+          else archer.looseAt = clock;
+          await wait(LOOSE_AT);
+          brick.fx.launch(url('arrow'), fromSq[0], fromSq[1], toSq[0], toSq[1], { shot: true, from: by === 'hero' ? 1.05 : 1.25 });
+          await wait(0.6);
+          stuck.push({ item: 'arrow', at: toSq }); lay(stuck.slice()); // (stuck where it came down: as the game lays it)
+          await wait(FOUNT.loose.T - LOOSE_AT - 0.6 + 0.7); // (back as it stood, and a moment)
+        };
+        place(level.start[0], level.start[1], Math.PI / 2);
+        hero.hold = { R: url('bow') };
+        await wait(0.8);
+        for (let i = 0; i < 3; i++) {
+          say(`The ${archer.monster} shoots an arrow!`); await shoot(archer.at, [hero.sq.x, hero.sq.y], 'centaur');
+          say('You shoot an arrow.'); await shoot([hero.sq.x, hero.sq.y], archer.at, 'hero');
+        }
+        await wait(1.5);
+        lay([]); hero.hold = { R: url('pick-axe') }; say('');
       }
       // a temple (?part=temple: a lawful altar, its priest): water blessed (and cursed) by a prayer on the altar, the
       // potions glowing; contributions to the priest, gold tossed him, each way it's taken; and the Amulet of Yendor
@@ -1368,7 +1403,7 @@ export async function runTestbed(data) {
       m.set(figureMatrix(S.x, S.y - drop, S.z, S.yaw));
     }
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo && fo.act === 'loose' ? { ...hero.hold, L: null, nock: fo.t > NOCKED[0] && fo.t < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(fo.t) } : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {
@@ -1386,7 +1421,14 @@ export async function runTestbed(data) {
       const base = partMatrix(cx + 0.5, STUD_H + (rp ? rp.y : 0) + up * L, cz + 0.5, Math.PI - yaw);
       if (hero.ride && hero.ride.c === c) hero.ride.at = { x: cx, z: cz, yaw }; // (where the saddle is, this frame: you on it)
       tagList.push({ id: c, x: cx + 0.5, y: STUD_H + (rp ? rp.y : 0) + (c.kind ? 0.55 : 1.55), z: cz + 0.5, text: c.monster, cls: c.tame ? 'tame' : c.peaceful ? 'peaceful' : 'hostile' });
-      if (c.kind) figs.push({ url: c.saddled || c.url, matrix: mul(L > 0.01 ? mul(base, new Float32Array([1, 0, 0, 0, 0, ca, sa, 0, 0, -sa, ca, 0, 0, 0, 0, 1])) : base, creatureLocal(c.kind, clock, { lungeT: c.lungeAt, moving: !!rp || (hero.ride && hero.ride.c === c && moving) })), pose: null, hold: {} });
+      const cm = c.kind ? mul(L > 0.01 ? mul(base, new Float32Array([1, 0, 0, 0, 0, ca, sa, 0, 0, -sa, ca, 0, 0, 0, 0, 1])) : base, creatureLocal(c.kind, clock, { lungeT: c.lungeAt, moving: !!rp || (hero.ride && hero.ride.c === c && moving) })) : null;
+      if (c.kind) figs.push({ url: c.saddled || c.url, matrix: cm, pose: null, hold: {} });
+      if (c.rider) { // (a centaur's man half: on its horse, where its neck is; shooting as you do (FOUNT.loose), its bow in hand for it)
+        const lt = c.looseAt != null ? clock - c.looseAt : 9, loosing = lt < FOUNT.loose.T, r = c.rider, k = r.scale;
+        const pose = c.riderAnim ? c.riderAnim.update(dt, { holdsR: !!c.hold || loosing, fount: loosing ? { act: 'loose', t: lt } : null }) : null;
+        figs.push({ url: r.url, matrix: mul(cm, new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r.at[0], r.at[1], r.at[2], 1])), pose,
+          hold: { R: c.hold ? url(c.hold) : loosing ? url('bow') : null, L: null, nock: loosing && lt > NOCKED[0] && lt < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(lt) } });
+      }
       else { // (a naga: leaning in to spit, on coils that weave and lunge)
         const spitting = clock - c.lungeAt < LUNGE_TIME;
         const wt = c.warnAt != null ? clock - c.warnAt : 9, sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u)), warn = wt < 1.8 ? sm(wt / 0.3) * sm((1.8 - wt) / 0.4) : 0;
