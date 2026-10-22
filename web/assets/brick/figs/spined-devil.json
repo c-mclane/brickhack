@@ -1,0 +1,74 @@
+{
+ "label": "spined devil",
+ "name": "spined devil",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 320,
+ "hips": "3815",
+ "hipColor": 4,
+ "legColor": 320,
+ "head": "3626cpxa",
+ "headColor": 4,
+ "hat": "24636",
+ "hatColor": 0,
+ "extras": [
+  {
+   "part": "53451",
+   "color": 0,
+   "pos": [
+    0,
+    6,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "53451",
+   "color": 0,
+   "pos": [
+    -8,
+    16,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "deg": -50
+    }
+   ]
+  },
+  {
+   "part": "53451",
+   "color": 0,
+   "pos": [
+    8,
+    16,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "deg": -50
+    }
+   ]
+  }
+ ]
+}

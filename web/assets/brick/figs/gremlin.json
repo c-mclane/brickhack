@@ -1,0 +1,70 @@
+{
+ "label": "gremlin",
+ "name": "gremlin",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 288,
+ "shortLegs": {
+  "part": "16709",
+  "color": 288
+ },
+ "head": "3626cpxa",
+ "headColor": 288,
+ "extras": [
+  {
+   "part": "53451",
+   "color": 288,
+   "pos": [
+    -10,
+    -30,
+    0
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -90
+    },
+    {
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "deg": -30
+    }
+   ]
+  },
+  {
+   "part": "53451",
+   "color": 288,
+   "pos": [
+    10,
+    -30,
+    0
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 90
+    },
+    {
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "deg": 30
+    }
+   ]
+  }
+ ]
+}

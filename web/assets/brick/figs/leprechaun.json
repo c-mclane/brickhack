@@ -1,0 +1,22 @@
+{
+ "label": "leprechaun",
+ "name": "leprechaun",
+ "torso": "973",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 14,
+ "shortLegs": {
+  "part": "16709",
+  "color": 2
+ },
+ "head": "3626bp01",
+ "headColor": 14,
+ "hat": "3878",
+ "hatColor": 2,
+ "neck": [
+  {
+   "part": "10052",
+   "color": 25
+  }
+ ]
+}

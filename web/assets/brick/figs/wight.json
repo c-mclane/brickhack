@@ -1,0 +1,25 @@
+{
+ "label": "wight",
+ "name": "wight",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 151,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "head": "3626bpc15",
+ "headColor": 151,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "static": true,
+ "fx": "smoke",
+ "right": {
+  "part": "59",
+  "color": 80
+ }
+}

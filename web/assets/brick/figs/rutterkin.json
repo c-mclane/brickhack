@@ -1,0 +1,16 @@
+{
+ "label": "rutterkin",
+ "name": "rutterkin",
+ "torso": "973",
+ "torsoColor": 484,
+ "armColor": 484,
+ "handColor": 484,
+ "shortLegs": {
+  "part": "16709",
+  "color": 484
+ },
+ "head": "3626cpxa",
+ "headColor": 484,
+ "hat": "24636",
+ "hatColor": 320
+}
