@@ -1,0 +1,11 @@
+{
+ "label": "skeleton",
+ "name": "skeleton",
+ "skeleton": true,
+ "torso": "6260",
+ "torsoColor": 15,
+ "armColor": 15,
+ "legColor": 15,
+ "head": "3626bpc15",
+ "headColor": 15
+}

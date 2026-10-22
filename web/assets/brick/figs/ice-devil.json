@@ -1,0 +1,19 @@
+{
+ "label": "ice devil",
+ "name": "ice devil",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 15,
+ "hips": "3815",
+ "hipColor": 15,
+ "legColor": 15,
+ "head": "3626cpxa",
+ "headColor": 15,
+ "hat": "24636",
+ "hatColor": 43,
+ "right": {
+  "part": "4496",
+  "color": 0
+ }
+}

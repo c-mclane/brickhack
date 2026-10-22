@@ -1,0 +1,29 @@
+{
+ "label": "Planetar",
+ "name": "Planetar",
+ "base": "angel-knight-m",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 2,
+ "headColor": 2,
+ "aura": {
+  "color": [
+   0.3,
+   1.0,
+   0.4
+  ],
+  "strength": 0.6,
+  "scale": 0.7
+ },
+ "marble": {
+  "color": 2,
+  "detail": 288,
+  "keep": [
+   "11264p01",
+   "33322",
+   "18395",
+   "30385",
+   "71015"
+  ]
+ }
+}

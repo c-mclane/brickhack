@@ -1,0 +1,11 @@
+{
+ "label": "Nazgul",
+ "name": "Nazgul",
+ "base": "wraith",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ]
+}

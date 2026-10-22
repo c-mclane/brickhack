@@ -1,0 +1,19 @@
+{
+ "label": "gnoll shaman",
+ "name": "gnoll shaman",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 28,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626cpxa",
+ "headColor": 28,
+ "hair": {
+  "part": "10066",
+  "color": 308
+ },
+ "hat": "30381",
+ "hatColor": 308
+}

@@ -1,0 +1,10 @@
+{
+ "label": "Doctor Frankenstein",
+ "name": "Doctor Frankenstein",
+ "base": "quantum-mechanic",
+ "quantum": false,
+ "hair": {
+  "part": "3901",
+  "color": 15
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "label": "water hulk",
+ "name": "water hulk",
+ "base": "umber-hulk",
+ "torsoColor": 272,
+ "armColor": 272,
+ "headColor": 272,
+ "longLegs": {
+  "color": 272
+ }
+}

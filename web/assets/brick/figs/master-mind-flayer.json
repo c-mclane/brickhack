@@ -1,0 +1,11 @@
+{
+ "label": "master mind flayer",
+ "name": "master mind flayer",
+ "base": "mind-flayer",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 85
+  }
+ ]
+}

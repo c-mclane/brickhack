@@ -1,0 +1,13 @@
+{
+ "label": "Grund the Orc King",
+ "name": "Grund the Orc King",
+ "base": "orc-captain",
+ "hat": "71015",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

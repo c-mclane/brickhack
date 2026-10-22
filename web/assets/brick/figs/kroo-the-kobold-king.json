@@ -1,0 +1,11 @@
+{
+ "label": "Kroo the Kobold King",
+ "name": "Kroo the Kobold King",
+ "base": "kobold-lord",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

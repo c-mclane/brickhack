@@ -1,0 +1,32 @@
+{
+ "label": "arch-lich",
+ "name": "arch-lich",
+ "skeleton": true,
+ "torso": "6260",
+ "torsoColor": 15,
+ "armColor": 15,
+ "legColor": 15,
+ "head": "3626bpc15",
+ "headColor": 15,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  },
+  {
+   "part": "20551c01",
+   "color": 0
+  }
+ ],
+ "hat": "39262",
+ "hatColor": 334,
+ "aura": {
+  "color": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "strength": 0.8,
+  "scale": 0.8
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "label": "deeper one",
+ "name": "deeper one",
+ "base": "deep-one",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 272,
+ "headColor": 272,
+ "hipColor": 272,
+ "legColor": 272
+}

@@ -1,0 +1,11 @@
+{
+ "label": "Thorin",
+ "name": "Thorin",
+ "base": "dwarf-king",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 272
+  }
+ ]
+}

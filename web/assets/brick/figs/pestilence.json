@@ -1,0 +1,16 @@
+{
+ "label": "Pestilence",
+ "name": "Pestilence",
+ "torso": "973",
+ "torsoColor": 330,
+ "armColor": 330,
+ "handColor": 15,
+ "dress": {
+  "part": "3678b",
+  "color": 330
+ },
+ "head": "3626bpc15",
+ "headColor": 15,
+ "hat": "30381",
+ "hatColor": 330
+}

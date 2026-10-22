@@ -1,0 +1,12 @@
+{
+ "label": "Bilbo Baggins",
+ "name": "Bilbo Baggins",
+ "base": "hobbit",
+ "torsoColor": 4,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 1
+  }
+ ]
+}

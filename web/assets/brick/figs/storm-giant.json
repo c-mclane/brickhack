@@ -1,0 +1,18 @@
+{
+ "label": "storm giant",
+ "name": "storm giant",
+ "torso": "973",
+ "torsoColor": 1,
+ "armColor": 1,
+ "handColor": 78,
+ "head": "3626cpxa",
+ "headColor": 78,
+ "hair": {
+  "part": "40233",
+  "color": 72
+ },
+ "longLegs": {
+  "color": 272
+ },
+ "longArms": true
+}

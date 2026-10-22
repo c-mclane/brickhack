@@ -1,0 +1,29 @@
+{
+ "label": "Solar",
+ "name": "Solar",
+ "base": "angel-knight-m",
+ "torsoColor": 334,
+ "armColor": 334,
+ "hat": "71015",
+ "hatColor": 334,
+ "aura": {
+  "color": [
+   1.0,
+   0.85,
+   0.3
+  ],
+  "strength": 0.8,
+  "scale": 0.8
+ },
+ "marble": {
+  "color": 334,
+  "detail": 297,
+  "keep": [
+   "11264p01",
+   "33322",
+   "18395",
+   "30385",
+   "71015"
+  ]
+ }
+}

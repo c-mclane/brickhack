@@ -1,0 +1,20 @@
+{
+ "label": "Death",
+ "name": "Death",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 15,
+ "dress": {
+  "part": "3678b",
+  "color": 0
+ },
+ "head": "3626bpc15",
+ "headColor": 15,
+ "hat": "30381",
+ "hatColor": 0,
+ "right": {
+  "part": "37341d",
+  "color": 72
+ }
+}

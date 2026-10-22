@@ -1,0 +1,15 @@
+{
+ "label": "Count Dracula",
+ "name": "Count Dracula",
+ "base": "vampire-rogue-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  },
+  {
+   "part": "20551c01",
+   "color": 0
+  }
+ ]
+}

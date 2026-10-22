@@ -1,0 +1,14 @@
+{
+ "label": "Cyclops",
+ "name": "Cyclops",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 78,
+ "handColor": 78,
+ "head": "3626cp02",
+ "headColor": 78,
+ "longLegs": {
+  "color": 70
+ },
+ "longArms": true
+}

@@ -1,0 +1,17 @@
+{
+ "label": "star vampire",
+ "name": "star vampire",
+ "base": "vampire-rogue-m",
+ "torsoColor": 36,
+ "armColor": 36,
+ "handColor": 36,
+ "headColor": 36,
+ "hipColor": 36,
+ "legColor": 36,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 36
+  }
+ ]
+}

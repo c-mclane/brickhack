@@ -1,0 +1,13 @@
+{
+ "label": "ghoul queen",
+ "name": "ghoul queen",
+ "base": "ghoul",
+ "hat": "71015",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ]
+}

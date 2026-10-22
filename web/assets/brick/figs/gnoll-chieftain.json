@@ -1,0 +1,25 @@
+{
+ "label": "gnoll chieftain",
+ "name": "gnoll chieftain",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 28,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626cpxa",
+ "headColor": 28,
+ "hair": {
+  "part": "10066",
+  "color": 308
+ },
+ "hat": "71015",
+ "hatColor": 72,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

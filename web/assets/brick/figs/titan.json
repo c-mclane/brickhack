@@ -1,0 +1,26 @@
+{
+ "label": "titan",
+ "name": "titan",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 78,
+ "handColor": 78,
+ "head": "3626bp0f",
+ "headColor": 78,
+ "hair": {
+  "part": "36806",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "10052",
+   "color": 15
+  }
+ ],
+ "hat": "33322",
+ "hatColor": 334,
+ "longLegs": {
+  "color": 15
+ },
+ "longArms": true
+}

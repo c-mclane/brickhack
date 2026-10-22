@@ -1,0 +1,13 @@
+{
+ "label": "Goblin King",
+ "name": "Goblin King",
+ "base": "goblin",
+ "hat": "71015",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 22
+  }
+ ]
+}

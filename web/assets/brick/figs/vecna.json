@@ -1,0 +1,28 @@
+{
+ "label": "Vecna",
+ "name": "Vecna",
+ "skeleton": true,
+ "torso": "6260",
+ "torsoColor": 15,
+ "armColor": 15,
+ "legColor": 15,
+ "head": "3626cp02",
+ "headColor": 15,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 320
+  }
+ ],
+ "hat": "71015",
+ "hatColor": 334,
+ "aura": {
+  "color": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "strength": 0.8,
+  "scale": 0.8
+ }
+}

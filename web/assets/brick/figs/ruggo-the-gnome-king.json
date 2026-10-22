@@ -1,0 +1,11 @@
+{
+ "label": "Ruggo the Gnome King",
+ "name": "Ruggo the Gnome King",
+ "base": "gnome-king",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

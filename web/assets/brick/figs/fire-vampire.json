@@ -1,0 +1,13 @@
+{
+ "label": "fire vampire",
+ "name": "fire vampire",
+ "base": "vampire-rogue-m",
+ "torsoColor": 4,
+ "armColor": 4,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

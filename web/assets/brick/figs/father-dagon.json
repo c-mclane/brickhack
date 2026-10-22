@@ -1,0 +1,12 @@
+{
+ "label": "Father Dagon",
+ "name": "Father Dagon",
+ "base": "deep-one",
+ "torsoColor": 288,
+ "hat": "71015",
+ "hatColor": 334,
+ "longLegs": {
+  "color": 288
+ },
+ "longArms": true
+}

@@ -1,0 +1,13 @@
+{
+ "label": "deepest one",
+ "name": "deepest one",
+ "base": "deep-one",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 0,
+ "headColor": 0,
+ "longLegs": {
+  "color": 0
+ },
+ "longArms": true
+}

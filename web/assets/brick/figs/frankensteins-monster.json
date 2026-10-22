@@ -1,0 +1,17 @@
+{
+ "label": "Frankenstein's Monster",
+ "name": "Frankenstein's Monster",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 2,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0f",
+ "headColor": 2,
+ "hair": {
+  "part": "3901",
+  "color": 0
+ }
+}

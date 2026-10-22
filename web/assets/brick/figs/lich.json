@@ -1,0 +1,19 @@
+{
+ "label": "lich",
+ "name": "lich",
+ "skeleton": true,
+ "torso": "6260",
+ "torsoColor": 15,
+ "armColor": 15,
+ "legColor": 15,
+ "head": "3626bpc15",
+ "headColor": 15,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "hat": "6131",
+ "hatColor": 0
+}

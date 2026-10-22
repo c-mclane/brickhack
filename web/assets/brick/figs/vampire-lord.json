@@ -1,0 +1,11 @@
+{
+ "label": "vampire lord",
+ "name": "vampire lord",
+ "base": "vampire-rogue-m",
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 4
+  }
+ ]
+}

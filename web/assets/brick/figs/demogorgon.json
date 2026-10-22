@@ -1,0 +1,37 @@
+{
+ "label": "Demogorgon",
+ "name": "Demogorgon",
+ "torso": "973",
+ "torsoColor": 26,
+ "armColor": 26,
+ "handColor": 26,
+ "hips": "3815",
+ "hipColor": 26,
+ "legColor": 26,
+ "head": null,
+ "headColor": 26,
+ "extras": [
+  {
+   "part": "3626cpxa",
+   "color": 26,
+   "pos": [
+    -11,
+    -24,
+    0
+   ]
+  },
+  {
+   "part": "3626cpxa",
+   "color": 26,
+   "pos": [
+    11,
+    -24,
+    0
+   ]
+  }
+ ],
+ "longLegs": {
+  "color": 26
+ },
+ "longArms": true
+}

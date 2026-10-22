@@ -1,0 +1,25 @@
+{
+ "label": "Asmodeus",
+ "name": "Asmodeus",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 4,
+ "hips": "3815",
+ "hipColor": 4,
+ "legColor": 4,
+ "head": "3626cpxa",
+ "headColor": 4,
+ "hat": "71015",
+ "hatColor": 334,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "4496",
+  "color": 0
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "label": "Dispater",
+ "name": "Dispater",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 72,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "head": "3626cpxa",
+ "headColor": 72,
+ "hat": "71015",
+ "hatColor": 72,
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "right": {
+  "part": "4496",
+  "color": 0
+ }
+}

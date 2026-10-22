@@ -1,0 +1,18 @@
+{
+ "label": "Archon",
+ "name": "Archon",
+ "base": "angel-knight-m",
+ "hat": "71015",
+ "hatColor": 334,
+ "marble": {
+  "color": 15,
+  "detail": 71,
+  "keep": [
+   "11264p01",
+   "33322",
+   "18395",
+   "30385",
+   "71015"
+  ]
+ }
+}

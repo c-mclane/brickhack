@@ -1,0 +1,13 @@
+{
+ "label": "shade",
+ "name": "shade",
+ "base": "ghost",
+ "torsoColor": 40,
+ "armColor": 40,
+ "handColor": 40,
+ "headColor": 40,
+ "shortLegs": {
+  "part": "19859",
+  "color": 40
+ }
+}

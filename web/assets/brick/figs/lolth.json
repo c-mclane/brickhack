@@ -1,0 +1,25 @@
+{
+ "label": "Lolth",
+ "name": "Lolth",
+ "base": "drow-priestess",
+ "aura": {
+  "color": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "strength": 0.6,
+  "scale": 0.7
+ },
+ "extras": [
+  {
+   "part": "30238",
+   "color": 0,
+   "pos": [
+    0,
+    -30,
+    0
+   ]
+  }
+ ]
+}
