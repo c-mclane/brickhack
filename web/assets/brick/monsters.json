@@ -1357,5 +1357,23 @@
  },
  "orc-captain": {
   "fig": "orc-captain"
+ },
+ "lemure": {
+  "fig": "lemure"
+ },
+ "Keystone Kop": {
+  "fig": "keystone-kop"
+ },
+ "Kop Sergeant": {
+  "fig": "kop-sergeant"
+ },
+ "Kop Lieutenant": {
+  "fig": "kop-lieutenant"
+ },
+ "Kop Kaptain": {
+  "fig": "kop-kaptain"
+ },
+ "shopkeeper": {
+  "fig": "shopkeeper"
  }
 }

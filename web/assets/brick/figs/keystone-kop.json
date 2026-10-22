@@ -1,0 +1,19 @@
+{
+ "torso": "973p1f",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 14,
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "right": {
+  "part": "13790",
+  "color": 70
+ },
+ "label": "Keystone Kop",
+ "name": "keystone-kop",
+ "head": "3626bp0c",
+ "hat": "13789p01",
+ "hatColor": 0
+}

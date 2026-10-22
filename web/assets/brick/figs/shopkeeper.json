@@ -1,0 +1,19 @@
+{
+ "label": "shopkeeper",
+ "name": "shopkeeper",
+ "torso": "973p9h",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "head": "3626bpap",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 0
+ },
+ "hips": "3815bp89",
+ "legR": "3816cp89",
+ "legL": "3817cp89",
+ "hipColor": 0,
+ "legColor": 0
+}

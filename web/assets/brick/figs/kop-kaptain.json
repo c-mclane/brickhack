@@ -1,0 +1,19 @@
+{
+ "torso": "973p76",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 14,
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "right": {
+  "part": "13790",
+  "color": 297
+ },
+ "label": "Kop Kaptain",
+ "name": "kop-kaptain",
+ "head": "3626bp7f",
+ "hat": "12895p05",
+ "hatColor": 272
+}

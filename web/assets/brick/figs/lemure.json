@@ -1,0 +1,33 @@
+{
+ "label": "lemure",
+ "name": "lemure",
+ "static": true,
+ "fx": "smoke",
+ "torso": "973",
+ "torsoColor": 71,
+ "armColor": 71,
+ "handColor": 71,
+ "head": "3626bpa8",
+ "headColor": 71,
+ "hips": "3815",
+ "hipColor": 71,
+ "legColor": 71,
+ "dress": {
+  "part": "3678b",
+  "color": 71
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 71
+  }
+ ],
+ "hair": {
+  "part": "11264p01",
+  "color": 71
+ },
+ "right": {
+  "part": "10053",
+  "color": 72
+ }
+}

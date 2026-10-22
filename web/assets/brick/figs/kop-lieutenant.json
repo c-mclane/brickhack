@@ -1,0 +1,19 @@
+{
+ "torso": "973p1f",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 14,
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 272,
+ "legColor": 272,
+ "right": {
+  "part": "13790",
+  "color": 70
+ },
+ "label": "Kop Lieutenant",
+ "name": "kop-lieutenant",
+ "head": "3626bp0k",
+ "hat": "3624",
+ "hatColor": 0
+}
