@@ -1582,6 +1582,8 @@ export async function runTestbed(data) {
 async function menagerie(level, brick, cam, ctl, canvas) {
   const mons = await (await fetch('assets/brick/monsters.built.json', { cache: 'no-store' })).json();
   const items = await (await fetch('assets/brick/items.built.json', { cache: 'no-store' })).json(); // (what each holds, as the game gives it)
+  ctl.screenSpacePanning = true; ctl.zoomSpeed = 0.6; // (a big menagerie, looked over: the wheel zooms in on the middle of the view, right-drag slides it along)
+  ctl.minDistance = 1.2; ctl.maxDistance = 60; ctl.maxPolarAngle = Math.PI * 0.47; // (never through the floor, nor under it; never lost)
   const beasts = level.monsters.filter((m) => mons[m.monster]).map((m, i) => ({ ...m, ...mons[m.monster], phase: (i * 0.53) % 7 }));
   for (const b of beasts) if (!b.creature) brick.model(b.url).then((m) => { // (a minifig monster: alive as the hero is)
     let rig = null;
@@ -1591,7 +1593,7 @@ async function menagerie(level, brick, cam, ctl, canvas) {
   });
   const missing = level.monsters.filter((m) => !mons[m.monster]).map((m) => m.monster);
   const el = document.getElementById('status');
-  if (el) el.textContent = `${level.title ? level.title + ' · ' : ''}menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom`;
+  if (el) el.textContent = `${level.title ? level.title + ' · ' : ''}menagerie · ${beasts.length} in brick${missing.length ? ' · not yet: ' + missing.join(', ') : ''} · drag to look, wheel to zoom, right-drag to slide`;
   // their names, kept over them on screen
   const tags = beasts.map((b) => {
     const t = document.createElement('div');
