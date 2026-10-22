@@ -15160,6 +15160,7 @@
    }
   ],
   "scale": 1,
-  "creature": "beast"
+  "creature": "beast",
+  "fx": "fire+smoke"
  }
 }

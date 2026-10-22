@@ -343,16 +343,18 @@ const FX = {
 };
 export function addEffects(THREE, root) {
   let host = null;
-  root.traverse((o) => { if (!host && o.userData && FX[o.userData.fx]) host = o; });
+  const names = (o) => String(o.userData.fx || '').split('+').filter((n) => FX[n]); // (several at once: "fire+smoke", a balrog's)
+  root.traverse((o) => { if (!host && o.userData && names(o).length) host = o; });
   if (!host) return;
-  if (host.userData.fx === 'fountain') return addStudFountain(THREE, root, host);
-  if (host.userData.fx === 'dust') return addStudVortex(THREE, root, host);
-  const fx = FX[host.userData.fx];
   root.updateMatrixWorld(true);
-  // (fxJoint: only that part burns: a statue's torch flame, not the statue; a list of them, each its own fire, sized
-  // to it: an altar's two candle flames)
-  const joints = [].concat(host.userData.fxJoint || []), srcs = joints.map((j) => root.getObjectByName(j)).filter(Boolean);
-  for (const src of srcs.length ? srcs : [root]) addFxOn(THREE, root, fx, src);
+  for (const name of names(host)) {
+    if (name === 'fountain') { addStudFountain(THREE, root, host); continue; }
+    if (name === 'dust') { addStudVortex(THREE, root, host); continue; }
+    // (fxJoint: only that part burns: a statue's torch flame, not the statue; a list of them, each its own fire, sized
+    // to it: an altar's two candle flames)
+    const joints = [].concat(host.userData.fxJoint || []), srcs = joints.map((j) => root.getObjectByName(j)).filter(Boolean);
+    for (const src of srcs.length ? srcs : [root]) addFxOn(THREE, root, FX[name], src);
+  }
   startTicking();
 }
 function addFxOn(THREE, root, fx, src) {
