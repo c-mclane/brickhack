@@ -1,0 +1,18 @@
+{
+ "label": "giant",
+ "name": "giant",
+ "torso": "973",
+ "torsoColor": 308,
+ "armColor": 308,
+ "handColor": 78,
+ "longLegs": {
+  "color": 70
+ },
+ "longArms": true,
+ "head": "3626cpxa",
+ "headColor": 78,
+ "hair": {
+  "part": "40233",
+  "color": 70
+ }
+}

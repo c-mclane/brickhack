@@ -1,0 +1,18 @@
+{
+ "label": "nupperibo",
+ "name": "nupperibo",
+ "torso": "973",
+ "torsoColor": 29,
+ "armColor": 29,
+ "handColor": 29,
+ "shortLegs": {
+  "part": "16709",
+  "color": 29
+ },
+ "head": "3626cpxa",
+ "headColor": 29,
+ "right": {
+  "part": "4496",
+  "color": 0
+ }
+}

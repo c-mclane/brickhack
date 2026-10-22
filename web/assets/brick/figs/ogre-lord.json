@@ -1,0 +1,19 @@
+{
+ "label": "ogre lord",
+ "name": "ogre lord",
+ "torso": "973",
+ "torsoColor": 320,
+ "armColor": 330,
+ "handColor": 330,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626cpxa",
+ "headColor": 330,
+ "hair": {
+  "part": "40233",
+  "color": 308
+ },
+ "hat": "71015",
+ "hatColor": 334
+}

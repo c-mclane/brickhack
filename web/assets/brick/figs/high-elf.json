@@ -1,0 +1,23 @@
+{
+ "label": "high elf",
+ "name": "high elf",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 78,
+ "hips": "3815",
+ "hipColor": 19,
+ "legColor": 19,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "10055p01",
+  "color": 14
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 334
+  }
+ ]
+}

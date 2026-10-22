@@ -1,0 +1,17 @@
+{
+ "label": "unarmored watchman",
+ "name": "unarmored watchman",
+ "torso": "973",
+ "torsoColor": 288,
+ "armColor": 288,
+ "handColor": 14,
+ "head": "3626bp01",
+ "headColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "hair": {
+  "part": "3901",
+  "color": 70
+ }
+}

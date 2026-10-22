@@ -1,0 +1,20 @@
+{
+ "label": "djinni",
+ "name": "djinni",
+ "torso": "973",
+ "torsoColor": 73,
+ "armColor": 73,
+ "handColor": 73,
+ "dress": {
+  "part": "98376",
+  "color": 73
+ },
+ "head": "3626bp0f",
+ "headColor": 73,
+ "hat": "40235",
+ "hatColor": 15,
+ "right": {
+  "part": "98383",
+  "color": 297
+ }
+}

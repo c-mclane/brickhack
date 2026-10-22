@@ -1,0 +1,29 @@
+{
+ "label": "drow",
+ "name": "drow",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 72,
+ "hips": "3815",
+ "hipColor": 85,
+ "legColor": 85,
+ "head": "3626bp0f",
+ "headColor": 72,
+ "hair": {
+  "part": "10055p01",
+  "color": 15,
+  "recolor": {
+   "78": "72"
+  }
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 0
+  }
+ ],
+ "headRecolor": {
+  "0": "4"
+ }
+}

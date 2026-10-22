@@ -1,0 +1,25 @@
+{
+ "label": "war orc",
+ "name": "war orc",
+ "torso": "973pm0",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 28,
+ "head": "3626bpma",
+ "headColor": 28,
+ "hair": {
+  "part": "10066p01",
+  "color": 0
+ },
+ "hips": "3815bpm0",
+ "legR": "3816cpm0",
+ "legL": "3817cpm0",
+ "hipColor": 308,
+ "legColor": 308,
+ "right": {
+  "part": "10053",
+  "color": 72
+ },
+ "hat": "3896",
+ "hatColor": 72
+}

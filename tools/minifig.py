@@ -128,6 +128,9 @@ HELD = {
     '92290': {'center': (0, -20, 0), 'up': (0, -1, 0)},                     # trident: low on the shaft, prongs up
     '93231': {'center': (0, 0, 0), 'up': (0, -1, 0)},                      # long bow with arrow: likewise
     '95051': {'center': (0, 0, 0), 'up': (0, -1, 0)},                      # small bow with arrow: likewise
+    '43887': {'center': (0, 18, 0), 'up': (0, -1, 0)},                     # scimitar: by its grip, below the guard, the blade up
+    '4496': {'center': (0, 20, 0), 'up': (0, -1, 0)},                      # pitchfork: low on the shaft, the tines up
+    '98383': {'center': (0, -9, 22), 'up': (0, -1, 0)},                    # oil lamp (a genie's): by its handle, the spout ahead
     '18041': {'center': (0, -12, 0), 'up': (0, -1, 0)},                     # harpoon (an arrow): by the shaft, point up
     '57467': {'center': (0, -12, 0), 'up': (0, -1, 0)},                     # harpoon (a crossbow bolt): likewise
     '24482': {'center': (0, 0, 0), 'up': (0, -1, 0)},                       # finned spike (a dart): point up

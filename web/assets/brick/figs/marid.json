@@ -1,0 +1,16 @@
+{
+ "label": "marid",
+ "name": "marid",
+ "torso": "973",
+ "torsoColor": 272,
+ "armColor": 272,
+ "handColor": 272,
+ "dress": {
+  "part": "98376",
+  "color": 272
+ },
+ "head": "3626bp0f",
+ "headColor": 272,
+ "hat": "40235",
+ "hatColor": 43
+}

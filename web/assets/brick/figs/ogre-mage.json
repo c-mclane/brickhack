@@ -1,0 +1,23 @@
+{
+ "label": "ogre mage",
+ "name": "ogre mage",
+ "torso": "973",
+ "torsoColor": 1,
+ "armColor": 272,
+ "handColor": 272,
+ "hips": "3815",
+ "hipColor": 308,
+ "legColor": 308,
+ "head": "3626cpxa",
+ "headColor": 272,
+ "hair": {
+  "part": "40233",
+  "color": 308
+ },
+ "dress": {
+  "part": "3678b",
+  "color": 1
+ },
+ "hat": "2338",
+ "hatColor": 1
+}

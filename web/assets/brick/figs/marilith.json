@@ -1,0 +1,61 @@
+{
+ "label": "marilith",
+ "name": "marilith",
+ "torso": "973",
+ "torsoColor": 34,
+ "armColor": 34,
+ "handColor": 34,
+ "head": "3626bp09",
+ "headColor": 34,
+ "hair": {
+  "part": "13766p01",
+  "color": 0,
+  "recolor": {
+   "78": "34"
+  }
+ },
+ "shortLegs": {
+  "part": "98140",
+  "color": 288
+ },
+ "extras": [
+  {
+   "part": "3818",
+   "color": 34,
+   "pos": [
+    -16,
+    17,
+    0
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "deg": -30
+    }
+   ]
+  },
+  {
+   "part": "3819",
+   "color": 34,
+   "pos": [
+    16,
+    17,
+    0
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "deg": 30
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "label": "quantum mechanic",
+ "name": "quantum mechanic",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0i",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 70
+ },
+ "quantum": true
+}

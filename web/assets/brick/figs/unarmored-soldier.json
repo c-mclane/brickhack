@@ -1,0 +1,17 @@
+{
+ "label": "unarmored soldier",
+ "name": "unarmored soldier",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 288,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 288,
+ "legColor": 288,
+ "head": "3626bp01",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 0
+ }
+}
