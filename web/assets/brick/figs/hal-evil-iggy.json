@@ -1,0 +1,20 @@
+{
+ "label": "Evil Iggy",
+ "name": "Evil Iggy",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0f",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 0
+ },
+ "headRecolor": {
+  "0": "4"
+ }
+}

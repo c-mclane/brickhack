@@ -1,0 +1,25 @@
+{
+ "label": "Raphael",
+ "name": "teenage mutant ninja turtle",
+ "torso": "973pta",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 2,
+ "head": "12607p01",
+ "headColor": 2,
+ "headY": 0,
+ "hips": "3815bpx3",
+ "hipColor": 2,
+ "legR": "3816cpx3",
+ "legL": "3817cpx3",
+ "legColor": 2,
+ "neck": [
+  {
+   "part": "12609p01",
+   "color": 2
+  }
+ ],
+ "headRecolor": {
+  "1": "4"
+ }
+}

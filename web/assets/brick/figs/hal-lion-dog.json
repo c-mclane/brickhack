@@ -1,0 +1,17 @@
+{
+ "label": "lion-dog",
+ "name": "lion-dog",
+ "torso": "973",
+ "torsoColor": 14,
+ "armColor": 14,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 14,
+ "legColor": 14,
+ "head": "3626cpxa",
+ "headColor": 14,
+ "hair": {
+  "part": "40233",
+  "color": 25
+ }
+}

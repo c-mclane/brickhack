@@ -246,7 +246,8 @@ def main():
             return url, {'url': figure(m['rider'], character=False)[1], 'at': at.round(4).tolist(), 'scale': s}
         return url
 
-    for mon, m in json.load(open(os.path.join(ASSETS, 'monsters.json'))).items():
+    monsters = json.load(open(os.path.join(ASSETS, 'monsters.json')))
+    for mon, m in monsters.items():
         if m.get('creature'):
             url = creature(mon, m)
             if m.get('rider'):
@@ -259,6 +260,9 @@ def main():
         mons[mon] = {'url': figure(m['fig'], character=False)[1], 'hold': m.get('hold'), **({'archer': True} if m.get('archer') else {}),   # (archer: shoots with a bow: drawn and loosed in the stance, FOUNT.loose)
                      # a serpent's tail for legs (a naga): it slithers (web/js/creature.js slitherLocal), lifted so its coils rest on the floor
                      **({'slither': True} if m.get('slither') else {}), **({'lift': m['lift']} if m.get('lift') else {})}
+    for mon, m in monsters.items():   # (a hallucination's: drawn for a monster going by that made-up name, not its own; several can share one name ("bogus"), one of them picked for each monster)
+        if m.get('bogus') and mon in mons:
+            mons[mon]['bogus'] = m['bogus'] if isinstance(m['bogus'], str) else mon
     json.dump(mons, open(os.path.join(ASSETS, 'monsters.built.json'), 'w'), indent=1)
     print(f'monsters in brick: {len(mons)}')
     os.makedirs(PARTS, exist_ok=True)

@@ -1,0 +1,18 @@
+{
+ "label": "mother-in-law",
+ "name": "mother-in-law",
+ "torso": "973",
+ "torsoColor": 13,
+ "armColor": 13,
+ "handColor": 14,
+ "dress": {
+  "part": "3678b",
+  "color": 13
+ },
+ "head": "3626bp0f",
+ "headColor": 14,
+ "hair": {
+  "part": "98119",
+  "color": 72
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "label": "youma",
+ "name": "youma",
+ "torso": "973",
+ "torsoColor": 22,
+ "armColor": 22,
+ "handColor": 22,
+ "hips": "3815",
+ "hipColor": 22,
+ "legColor": 22,
+ "head": "3626bp0f",
+ "headColor": 22,
+ "hair": {
+  "part": "13766p01",
+  "color": 4
+ },
+ "extras": [
+  {
+   "part": "15082",
+   "color": 22,
+   "pos": [
+    -8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": -60
+    }
+   ]
+  },
+  {
+   "part": "15082",
+   "color": 22,
+   "pos": [
+    8,
+    8,
+    12
+   ],
+   "rot": [
+    {
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "deg": 60
+    }
+   ]
+  }
+ ]
+}

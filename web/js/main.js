@@ -2086,7 +2086,14 @@ const shotAt = new Map(); // x,y -> when a monster there last loosed an arrow (a
 const archeryUrls = { bow: null, arrow: null }; // (a monster shooting: a bow in its hand for it, if it holds none; the arrow on its string)
 const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, creature, slither, lift} (each monster's own state: monStateOf)
 const brickMonGods = new Map(); // `${tile}|${god}` -> the same, a priest of that god (monsters.json "aligned priest|lawful": his own figure)
-const brickMonOf = (s) => (s.mob && s.mob.god && brickMonGods.get(`${s.tile}|${s.mob.god}`)) || brickMons.get(s.tile);
+const brickBogus = new Map(); // a hallucination's made-up name ("teenage mutant ninja turtle") -> its figures (one picked for each monster, by its id)
+function bogusOf(mob) { // (going by a made-up name: that, drawn, not what its tile would be; "peaceful ..." and the like: by how it ends)
+  if (!mob || !mob.name || !brickBogus.size) return null;
+  const n = mob.name.toLowerCase();
+  for (const [k, list] of brickBogus) if (n === k || n.endsWith(' ' + k)) return list[Math.abs(Math.round(mob.id)) % list.length];
+  return null;
+}
+const brickMonOf = (s) => bogusOf(s.mob) || (s.mob && s.mob.god && brickMonGods.get(`${s.tile}|${s.mob.god}`)) || brickMons.get(s.tile);
 async function loadBrickMonsters() {
   const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   const [mons, tiles, items] = await Promise.all([get('assets/brick/monsters.built.json'), get('assets/slashem/tiles.json'), get('assets/brick/items.built.json')]);
@@ -2097,6 +2104,14 @@ async function loadBrickMonsters() {
     if (!god || !tileOf.has(base)) continue;
     const e = { url: m.url, hold: undefined, prims: null, creature: null, slither: false, lift: 0, saddled: null, seat: 1, saddledPrims: null };
     brickMonGods.set(`${tileOf.get(base)}|${god}`, e);
+    renderer.figRender.model(m.url).then((p) => { e.prims = p; }).catch((err) => console.warn('brick monster:', k, err));
+  }
+  for (const [k, m] of Object.entries(mons)) { // (the hallucinations' made-up monsters)
+    if (!m.bogus) continue;
+    const e = { url: m.url, hold: m.hold && items[m.hold] ? items[m.hold].url : undefined, prims: null, archer: false,
+      creature: m.creature, slither: m.slither, lift: m.lift || 0, saddled: null, seat: 1, saddledPrims: null, rider: null };
+    const name = m.bogus.toLowerCase();
+    brickBogus.set(name, [...(brickBogus.get(name) || []), e]);
     renderer.figRender.model(m.url).then((p) => { e.prims = p; }).catch((err) => console.warn('brick monster:', k, err));
   }
   (tiles.names || []).forEach((n, i) => {

@@ -1,0 +1,17 @@
+{
+ "label": "Klingon",
+ "name": "Klingon",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 70,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0f",
+ "headColor": 70,
+ "hair": {
+  "part": "36806",
+  "color": 0
+ }
+}

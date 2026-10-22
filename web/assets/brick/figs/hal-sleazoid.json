@@ -1,0 +1,17 @@
+{
+ "label": "sleazoid",
+ "name": "sleazoid",
+ "torso": "973",
+ "torsoColor": 320,
+ "armColor": 320,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 0,
+ "legColor": 0,
+ "head": "3626bp0f",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 0
+ }
+}

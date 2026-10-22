@@ -1,0 +1,27 @@
+{
+ "label": "Jedi knight",
+ "name": "Jedi knight",
+ "torso": "973",
+ "torsoColor": 19,
+ "armColor": 19,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "head": "3626bp0f",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 70
+ },
+ "neck": [
+  {
+   "part": "50231c01",
+   "color": 70
+  }
+ ],
+ "right": {
+  "part": "30374",
+  "color": 42
+ }
+}

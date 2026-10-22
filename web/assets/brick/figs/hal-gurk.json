@@ -1,0 +1,17 @@
+{
+ "label": "Gurk",
+ "name": "Gurk",
+ "torso": "973",
+ "torsoColor": 2,
+ "armColor": 2,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 70,
+ "legColor": 70,
+ "head": "3626bp0f",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 0
+ }
+}

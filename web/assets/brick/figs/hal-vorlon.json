@@ -1,0 +1,16 @@
+{
+ "label": "Vorlon",
+ "name": "Vorlon",
+ "torso": "973",
+ "torsoColor": 72,
+ "armColor": 72,
+ "handColor": 72,
+ "dress": {
+  "part": "3678b",
+  "color": 72
+ },
+ "head": null,
+ "headColor": 72,
+ "hat": "2338",
+ "hatColor": 72
+}

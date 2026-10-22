@@ -1,0 +1,16 @@
+{
+ "label": "Emperor",
+ "name": "Emperor",
+ "torso": "973",
+ "torsoColor": 0,
+ "armColor": 0,
+ "handColor": 78,
+ "dress": {
+  "part": "3678b",
+  "color": 0
+ },
+ "head": "3626bp0f",
+ "headColor": 71,
+ "hat": "30381",
+ "hatColor": 0
+}

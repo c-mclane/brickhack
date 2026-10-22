@@ -1,0 +1,9 @@
+{
+ "label": "invisible Wizard of Yendor",
+ "name": "invisible Wizard of Yendor",
+ "base": "wizard-of-yendor",
+ "marble": {
+  "color": 47,
+  "detail": 47
+ }
+}

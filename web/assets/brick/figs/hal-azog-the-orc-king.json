@@ -1,0 +1,9 @@
+{
+ "label": "Azog the Orc King",
+ "name": "Azog the Orc King",
+ "base": "orc-captain",
+ "torsoColor": 15,
+ "armColor": 15,
+ "hat": "71015",
+ "hatColor": 334
+}

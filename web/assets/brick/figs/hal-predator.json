@@ -1,0 +1,17 @@
+{
+ "label": "Predator",
+ "name": "Predator",
+ "torso": "973",
+ "torsoColor": 28,
+ "armColor": 28,
+ "handColor": 28,
+ "hips": "3815",
+ "hipColor": 28,
+ "legColor": 28,
+ "head": "3626bpc25",
+ "headColor": 28,
+ "hair": {
+  "part": "40233",
+  "color": 0
+ }
+}

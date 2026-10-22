@@ -1,0 +1,17 @@
+{
+ "label": "Yuval",
+ "name": "Yuval",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 1,
+ "legColor": 1,
+ "head": "3626bp05",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 308
+ }
+}

@@ -26,6 +26,11 @@ SCALE = 1.0 / 20.0
 FINISH = {}
 
 
+def ldraw_color(tok):
+    """A colour code: a number, or a direct colour, 0x2RRGGBB (to_glb takes its colour from the code itself)."""
+    return int(tok, 16) if tok.lower().startswith('0x') else int(tok)
+
+
 def load_colors(root):
     colors = {}
     for line in open(os.path.join(root, 'LDConfig.ldr'), encoding='utf-8', errors='replace'):
@@ -374,7 +379,7 @@ class Library:
             tm = tex_next or tex_block
             tex_next = None
             if kind == '1' and len(t) >= 15:
-                color = int(t[1])
+                color = ldraw_color(t[1])
                 x, y, z, a, b, c, d, e, f, g, h, i = map(float, t[2:14])
                 m = np.array([[a, b, c], [d, e, f], [g, h, i]])
                 off = np.array([x, y, z])
@@ -404,7 +409,7 @@ class Library:
                 continue
             invert_next = False
             if kind in ('3', '4'):
-                color = int(t[1])
+                color = ldraw_color(t[1])
                 n = 3 if kind == '3' else 4
                 p = np.array(list(map(float, t[2:2 + 3 * n]))).reshape(n, 3)
                 faces = [p[[0, 1, 2]]] if n == 3 else [p[[0, 1, 2]], p[[0, 2, 3]]]
@@ -500,6 +505,8 @@ def to_glb(geom, colors, base_color, out_path, extras=None):
             n += len(tri)
             attrs = {'POSITION': accessor(tri.reshape(-1, 3).astype(np.float32), 'VEC3', True),
                      'NORMAL': accessor(np.repeat(nrm, 3, axis=0).astype(np.float32), 'VEC3')}
+            if code not in colors and code >= 0x2000000:   # (a direct colour: 0x2RRGGBB)
+                colors[code] = ([((code >> 16) & 255) / 255, ((code >> 8) & 255) / 255, (code & 255) / 255], 1.0, f'Direct_{code & 0xFFFFFF:06X}')
             rgb, alpha, cname = colors.get(code, ([1, 0, 1], 1.0, f'unknown{code}'))
             # LDConfig colours are sRGB; glTF's baseColorFactor is linear (textures stay sRGB)
             pbr = {'baseColorFactor': [srgb_to_linear(c) for c in rgb] + [alpha], 'metallicFactor': 0.0, 'roughnessFactor': 0.35}

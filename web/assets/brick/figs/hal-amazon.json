@@ -1,0 +1,17 @@
+{
+ "label": "amazon",
+ "name": "amazon",
+ "torso": "973",
+ "torsoColor": 4,
+ "armColor": 4,
+ "handColor": 78,
+ "hips": "3815",
+ "hipColor": 334,
+ "legColor": 334,
+ "head": "3626bp0f",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 0
+ }
+}

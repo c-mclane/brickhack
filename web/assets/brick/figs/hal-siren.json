@@ -1,0 +1,18 @@
+{
+ "label": "siren",
+ "name": "siren",
+ "torso": "973",
+ "torsoColor": 78,
+ "armColor": 78,
+ "handColor": 78,
+ "head": "3626bp09",
+ "headColor": 78,
+ "hair": {
+  "part": "13766p01",
+  "color": 14
+ },
+ "shortLegs": {
+  "part": "98140",
+  "color": 43
+ }
+}

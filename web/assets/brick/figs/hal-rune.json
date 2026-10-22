@@ -1,0 +1,17 @@
+{
+ "label": "Rune",
+ "name": "Rune",
+ "torso": "973",
+ "torsoColor": 1,
+ "armColor": 1,
+ "handColor": 14,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "head": "3626bp01",
+ "headColor": 14,
+ "hair": {
+  "part": "3901",
+  "color": 70
+ }
+}
