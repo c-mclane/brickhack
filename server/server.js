@@ -78,9 +78,9 @@ function startGame(sid, opts) {
     const v = k === 'align' && opts.god ? 'law' : cleanOpt(opts[k]); // (a follower of the figure's own deity, Jesus, is lawful)
     if (v && v !== 'random') o.push(`${k}:${v}`);
   }
-  // your pet: a kitten or a little dog, where your role's isn't fixed (pettype); its name, under every name a first
-  // pet can go by (whichever it turns out to be: dog.c makedog)
-  if (/^[cd]$/.test(opts.pettype || '')) o.push(`pettype:${opts.pettype === 'c' ? 'cat' : 'dog'}`);
+  // your pet: a kitten or a little dog, where your role's isn't fixed, or none at all (pettype); its name, under every
+  // name a first pet can go by (whichever it turns out to be: dog.c makedog)
+  if (/^[cdn]$/.test(opts.pettype || '')) o.push(`pettype:${{ c: 'cat', d: 'dog', n: 'none' }[opts.pettype]}`);
   const petname = String(opts.petname || '').replace(/[^a-z0-9 '-]/gi, '').trim().slice(0, 30);
   if (petname) for (const k of ['dogname', 'catname', 'horsename', 'wolfname', 'ghoulname']) o.push(`${k}:${petname}`);
   // (the intro story: every new game opens with it, NetHack's legacy option, on by default)

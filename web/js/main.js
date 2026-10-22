@@ -1143,27 +1143,36 @@ function buildScreens() {
     swear(fig);
   });
   loadRoster().then((r) => r.forEach((f) => figNames.add(f.label)));
-  // your pet: the one your role starts with (role.c petnum), turning in its window, a kitten or a little dog (a click
-  // swaps them) where the role's isn't fixed; and its name, yours to give (a dog's default, its role's: dog.c makedog)
+  // your pet: the one your role starts with (role.c petnum), turning in its window, a kitten or a little dog where the
+  // role's isn't fixed, or none at all (pettype:none: dog.c makedog), a click going round them; and its name, yours to
+  // give (a dog's default, its role's)
   const petView = figureView($('#petpick canvas'), () => !$('#create').classList.contains('hidden'), { near: 3.2 });
   const petIn = $('#petname');
   let petType = localGet('bh.pettype') || (Math.random() < 0.5 ? 'c' : 'd'), petDefault = '', petMons = null;
   fetch('assets/brick/monsters.built.json', { cache: 'no-store' }).then((r) => r.json()).then((m) => { petMons = m; petSync(); }).catch(() => {});
   const petRole = () => CYCLES.role[1][choice.role].toLowerCase();
-  const petKind = () => PET_OF[petRole()] || (petType === 'c' ? 'kitten' : 'little dog');
+  const petKind = () => (petType === 'n' ? null : PET_OF[petRole()] || (petType === 'c' ? 'kitten' : 'little dog'));
+  const PET_ROUND = (role) => (PET_OF[role] ? ['r', 'n'] : ['c', 'd', 'n']); // (r: the role's own)
   let petShown = null;
   const petSync = () => {
-    const role = petRole(), kind = petKind(), swap = !PET_OF[role];
-    $('#petpick .pet-kind').textContent = role === 'random' ? `${kind}?` : kind;
-    $('#petpick canvas').classList.toggle('swap', swap);
-    $('#petpick canvas').title = swap ? 'Your pet (click: a kitten or a little dog)' : 'Your pet';
+    const role = petRole();
+    if (petType === 'r' && !PET_OF[role]) petType = Math.random() < 0.5 ? 'c' : 'd'; // (the role's own: this one has none fixed)
+    const kind = petKind();
+    $('#petpick .pet-kind').textContent = !kind ? 'No pet' : role === 'random' ? `${kind}?` : kind;
+    $('#petpick canvas').classList.add('swap');
+    $('#petpick canvas').title = PET_OF[role] ? `Your pet (click: a ${PET_OF[role]}, or none)` : 'Your pet (click: a kitten, a little dog, or none)';
+    petIn.disabled = !kind;
     const def = kind === 'little dog' ? PET_NAMES[role] || '' : '';
     if (!petIn.value || petIn.value === petDefault) petIn.value = def; // (a name you gave it kept)
     petDefault = def;
-    const url = petMons && petMons[kind] && petMons[kind].url;
-    if (url && url !== petShown) { petShown = url; petView && petView.show(url); }
+    const url = kind ? petMons && petMons[kind] && petMons[kind].url : null;
+    if (kind ? url && url !== petShown : petShown !== null) { petShown = url; petView && petView.show(url); } // (none: an empty stage)
   };
-  $('#petpick canvas').onclick = () => { if (PET_OF[petRole()]) return; petType = petType === 'c' ? 'd' : 'c'; petSync(); };
+  $('#petpick canvas').onclick = () => {
+    const round = PET_ROUND(petRole()), at = round.indexOf(PET_OF[petRole()] && petType !== 'n' ? 'r' : petType);
+    petType = round[(at + 1) % round.length];
+    petSync();
+  };
   syncPicker = () => { figPicker.filter(CYCLES.role[1][choice.role], CYCLES.gender[1][choice.gender], CYCLES.race[1][choice.race]); swear(figPicker.current()); petSync(); };
   syncPicker();
   $('#create [data-act=go]').onclick = () => {
@@ -1184,8 +1193,9 @@ function buildScreens() {
     if (fig) for (const k of ['kit', 'god', 'perks']) if (fig[k]) o[k] = fig[k]; // (what its design starts it with besides, its deity, its gifts)
     o.dreamland = !!game.createDream;
     o.variant = game.variant;
-    o.petname = petIn.value.trim(); // (your pet's name, and which it is where your role leaves it to you)
-    if (!PET_OF[petRole()]) { o.pettype = petType; localSet('bh.pettype', petType); }
+    o.petname = petType === 'n' ? '' : petIn.value.trim(); // (your pet's name, and which it is where your role leaves it to you, or none)
+    if (petType === 'n' || !PET_OF[petRole()]) o.pettype = petType;
+    localSet('bh.pettype', petType);
     startGame(o);
   };
 
