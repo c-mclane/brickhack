@@ -1,0 +1,31 @@
+{
+ "label": "Saruman",
+ "name": "Saruman",
+ "role": "wizard",
+ "gender": "male",
+ "race": "human",
+ "torso": "973",
+ "torsoColor": 15,
+ "armColor": 15,
+ "handColor": 78,
+ "head": "3626bp0f",
+ "headColor": 78,
+ "hair": {
+  "part": "36806",
+  "color": 15
+ },
+ "dress": {
+  "part": "3678b",
+  "color": 15
+ },
+ "neck": [
+  {
+   "part": "93069",
+   "color": 15
+  }
+ ],
+ "right": {
+  "part": "93252",
+  "color": 0
+ }
+}

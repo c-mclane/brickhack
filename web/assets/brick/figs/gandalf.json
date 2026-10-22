@@ -1,0 +1,32 @@
+{
+ "label": "Gandalf",
+ "name": "Gandalf",
+ "role": "wizard",
+ "gender": "male",
+ "race": "human",
+ "torso": "973pm1",
+ "torsoColor": 71,
+ "armColor": 71,
+ "handColor": 78,
+ "head": "3626cpm1",
+ "headColor": 78,
+ "hair": {
+  "part": "36806",
+  "color": 71
+ },
+ "hat": "6131",
+ "hatColor": 71,
+ "hips": "3815",
+ "hipColor": 72,
+ "legColor": 72,
+ "neck": [
+  {
+   "part": "10052",
+   "color": 71
+  }
+ ],
+ "right": {
+  "part": "95049",
+  "color": 70
+ }
+}
