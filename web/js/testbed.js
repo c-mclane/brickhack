@@ -1584,7 +1584,7 @@ export async function runTestbed(data) {
         figs.push({ url: r.url, matrix: mul(cm, new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r.at[0], r.at[1], r.at[2], 1])), pose,
           hold: { R: c.hold ? url(c.hold) : loosing ? url('bow') : null, L: null, nock: loosing && lt > NOCKED[0] && lt < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(lt) } });
       }
-      else { // (a naga: leaning in to spit, on coils that weave and lunge)
+      else if (!c.kind) { // (a minifig monster; a naga: leaning in to spit, on coils that weave and lunge. A creature's drawn already, above)
         const spitting = clock - c.lungeAt < LUNGE_TIME;
         const wt = c.warnAt != null ? clock - c.warnAt : 9, sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u)), warn = wt < 1.8 ? sm(wt / 0.3) * sm((1.8 - wt) / 0.4) : 0;
         const pose = c.anim ? c.anim.update(dt, { moving: !!rp, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0, raise: warn }) : null;
