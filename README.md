@@ -4,8 +4,7 @@
 
 ### SLASH'EM, the whole of it, built in toy bricks.
 
-Every monster, every item, every trap, every corner of the dungeon: a brick build you can walk around,<br>
-with the real game engine running underneath.
+Every monster, every item, every trap, every corner of the dungeon: a brick build you can walk around, with the real game engine running underneath.
 
 <br>
 
@@ -18,7 +17,7 @@ with the real game engine running underneath.
 [![Commits](https://img.shields.io/github/commit-activity/t/c-mclane/brickhack?style=flat-square&label=commits)](https://github.com/c-mclane/brickhack/commits/main)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/c-mclane/brickhack?style=flat-square)](https://github.com/c-mclane/brickhack/pulse)
 [![Repo size](https://img.shields.io/github/repo-size/c-mclane/brickhack?style=flat-square)](https://github.com/c-mclane/brickhack)
-[![Top language](https://img.shields.io/github/languages/top/c-mclane/brickhack?style=flat-square)](https://github.com/c-mclane/brickhack)
+[![Languages](https://img.shields.io/badge/made%20with-JavaScript%20%C2%B7%20Python%20%C2%B7%20C-f7df1e?style=flat-square)](https://github.com/c-mclane/brickhack)
 [![Issues](https://img.shields.io/github/issues/c-mclane/brickhack?style=flat-square)](https://github.com/c-mclane/brickhack/issues)
 
 [![Engine](https://img.shields.io/badge/engine-SLASH'EM%200.0.8E0F2-8a2be2?style=flat-square)](https://github.com/k21971/SlashEM)
