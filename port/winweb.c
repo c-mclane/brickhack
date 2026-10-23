@@ -1943,10 +1943,17 @@ void
 web_dreamland_intro(void)
 {
     static const char *story[] = {
-        "You find yourself standing on a wide grey baseplate, under an",
-        "endless blue sky.",
+        "The old king has sent you out on a quest: to become the greatest",
+        "warrior the land has ever known.",
         "",
-        "Nothing has been built here yet.",
+        "Before you stands his castle, golden in the sun, its drawbridge down,",
+        "its gate open to you. All about it the meadow runs green to the woods.",
+        "",
+        "But his enemies are gathering in the woods, and out across the meadow",
+        "they come: orcs and goblins, kobolds and wolves. However many you",
+        "strike down, more will come.",
+        "",
+        "Take up your weapon. Prove yourself.",
     };
     winid w;
     int i;
@@ -1958,6 +1965,45 @@ web_dreamland_intro(void)
     }
     display_nhwindow(w, TRUE);
     destroy_nhwindow(w);
+}
+
+/* Ascend: the king's enemies keep coming. Every so often, while fewer than DREAM_FOES of them are about, one more comes
+   out of the woods (onto the meadow, beside the trees, out of your sight if it can, never in the castle): orcs,
+   goblins, kobolds, jackals and wolves mostly, now and then an orc-captain, an ogre, a hill giant (allmain.c, in place
+   of the dungeon's own random monsters: WEB_HOOK_DREAMSPAWN) */
+#define DREAM_FOES 10
+#define DREAM_EVERY 25
+void
+web_dream_tick(void)
+{
+    static const char *foes[] = {
+        "goblin", "goblin", "hobgoblin", "hobgoblin", "hill orc", "hill orc", "hill orc", "Mordor orc", "Mordor orc",
+        "Uruk-hai", "orc shaman", "kobold", "large kobold", "kobold lord", "jackal", "jackal", "coyote", "wolf",
+        "giant rat", "gnome lord", "bugbear", "orc-captain", "ogre", "hill giant",
+    };
+    struct monst *mtmp;
+    int n = 0, tries, x, y, dx, dy, pm, woods;
+    if (moves % DREAM_EVERY) return;
+    for (mtmp = fmon; mtmp; mtmp = mtmp->nmon)
+        if (!DEADMONSTER(mtmp) && !mtmp->mpeaceful && !mtmp->mtame) n++;
+    if (n >= DREAM_FOES) return;
+    pm = name_to_mon(foes[rn2(SIZE(foes))]);
+    if (pm < LOW_PM) return;
+    for (tries = 0; tries < 400; tries++) {
+        x = rn1(COLNO - 3, 2);
+        y = rn2(ROWNO);
+        if (levl[x][y].typ != ROOM || MON_AT(x, y) || (x == u.ux && y == u.uy)) continue;
+        if (x >= DREAM_CASTLE_X - 1 && x <= DREAM_CASTLE_X + DREAM_CASTLE_N && y >= DREAM_CASTLE_Y - 1 && y <= DREAM_CASTLE_Y + DREAM_CASTLE_N + 2) continue;
+        if (distu(x, y) < 64 || (tries < 300 && cansee(x, y))) continue;
+        woods = 0; /* (out of the woods: a tree within two squares) */
+        for (dx = -2; dx <= 2 && !woods; dx++)
+            for (dy = -2; dy <= 2; dy++)
+                if (isok(x + dx, y + dy) && levl[x + dx][y + dy].typ == TREE) { woods = 1; break; }
+        if (!woods || !goodpos(x, y, (struct monst *) 0, 0)) continue;
+        mtmp = makemon(&mons[pm], x, y, NO_MM_FLAGS);
+        if (mtmp) { mtmp->mpeaceful = 0; set_malign(mtmp); }
+        return;
+    }
 }
 
 /* ------------------------------------------------------------------ */

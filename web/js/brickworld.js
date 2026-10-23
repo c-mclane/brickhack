@@ -92,8 +92,10 @@ export const AREA = {
   sea: { wall: [0.4, 0.76, 0.82], floor: [0.62, 0.82, 0.86] }, // (the Sunless Sea: teal)
   moloch: { wall: [0.62, 0.15, 0.18], floor: [0.5, 0.3, 0.3] }, // (the Temple of Moloch: red)
   lab: { wall: [0.6, 0.7, 0.62], floor: [0.7, 0.76, 0.72] }, // (Frankenstein's Lab: grey-green)
+  meadow: { wall: [1, 1, 1], floor: [0.2, 0.62, 0.3] }, // (Ascend's meadow: baseplate green)
 };
 export function areaStyle(dname = '', lv = '') {
+  if (dname === 'the Baseplate') return 'meadow'; // (Ascend's)
   if (/Gnomish Mines|Wyrm Caves|Giant Caverns|Spider Caves/i.test(dname)) return 'mines';
   if (/^(astral|water|fire|air|earth)$/.test(lv)) return lv;
   if (/^(wizard|fakewiz)/.test(lv)) return 'wizard';
@@ -257,6 +259,11 @@ export class BrickWorld {
           o.material.flatShading = true;
           o.castShadow = o.receiveShadow = true;
           if (o.material.metalness > 0.5) { o.material.envMap = this.env; o.material.envMapIntensity = 1.2; } // chrome: reflects (envmap.js)
+          if (o.material.metalness > 0.5 && o.material.color.r > o.material.color.b * 1.6 && !o.material.userData.gilt) { // (chrome gold: a deep, bright gold, aglow in it, not pale tan with a dim sky's reflection)
+            o.material = o.material.clone(); o.material.userData.gilt = true;
+            o.material.color.setRGB(0.9, 0.5, 0.04); o.material.emissive = new THREE.Color(0.2, 0.11, 0.0);
+            o.material.roughness = 0.24; o.material.envMapIntensity = 1.5;
+          }
           // a doppelganger's other half is shimmering mist
           if (isMist(o.material)) { mistify(o); return; }
           if (isStatic(o.material)) { staticify(o); return; } // (a shade of the dead: the manes)
@@ -722,7 +729,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || ['throne', 'grave', 'tree', 'iron bars', 'ladder_up', 'ladder_down', 'ice', 'cloud'].includes(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || ['throne', 'grave', 'tree', 'iron bars', 'ladder_up', 'ladder_down', 'ice', 'cloud', 'castle', '_castle375'].includes(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;

@@ -331,16 +331,20 @@ fx.onKill = (x, z) => { // (a monster slain: its figure blown apart, white studs
 
 // ---- Ascend (the engine's "dreamland" option): a blank baseplate, drawn as
 // any brick level is (render.js): its floor, grey plates, and nothing on it
-const NIGHT = 0x0b0d14; // the sky: black (as the test dungeon's), Descend and Ascend alike
+const NIGHT = 0x0b0d14; // the sky: black (as the test dungeon's), down in the dungeon
 const NIGHT_FOG = [0x0b / 255, 0x0d / 255, 0x14 / 255]; // (what the distance hazes into: the same)
+const DAY = 0x74b6ef; // ...and Ascend's meadow, under a clear blue sky
+const DAY_FOG = [0x74 / 255, 0xb6 / 255, 0xef / 255];
+let ascendMap = null; // where Ascend's castle stands ({castle: [x0, y0, x1, y1], item}: tools/dreamland_gen.py)
+fetch('assets/brick/ascend.json').then((r) => r.json()).then((j) => { ascendMap = j; }).catch(() => {});
 const ASCEND_FAR = 50; // how far Ascend's baseplate is drawn (squares): a quarter of the dungeon's
 // BrickHack's dungeon is a brick maze out in the open, under a black sky
-function setSky() {
+function setSky(day = false) {
   renderer.daySky = false;
   renderer.showSky = false; // (a block level: no stars either, just black)
   renderer.spaceBelow = false;
-  renderer.fog = NIGHT_FOG;
-  if (renderer.brick) renderer.brick.setSky(NIGHT);
+  renderer.fog = day ? DAY_FOG : NIGHT_FOG;
+  if (renderer.brick) renderer.brick.setSky(day ? DAY : NIGHT);
 }
 const nameTags = new NameTags($('#nametags'));
 let figPicker = null; // the character select's minifig picker (figpick.js)
@@ -615,6 +619,9 @@ function handle(m) {
     case 'level':
       world.castle = m.castle || null; // the Castle: [x0, y0, x1, y1], where its stone walls stand (render.js raises them)
       world.style = areaStyle(m.dname, m.lv); // (its area's walls and floors: the Mines' rock, Sokoban's blue, Gehennom's red... brickworld AREA)
+      { const meadow = m.dname === 'the Baseplate'; // (Ascend's meadow: a blue sky over it, its castle standing in it)
+        setSky(meadow);
+        world.ascendCastle = meadow && ascendMap ? { rect: ascendMap.castle, item: ascendMap.item } : null; }
       ui.showTitle(`Level ${m.depth}`, m.dname);
       cam.snap = true;
       break;

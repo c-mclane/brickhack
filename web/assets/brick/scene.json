@@ -1,1 +1,1 @@
-{"objects": [{"fig": "knight", "hero": true, "label": "hero"}], "level": {"w": 14, "h": 9, "start": [5, 4], "items": [], "monsters": [], "camera": {"pos": [7, 8, 13.5], "target": [7, 0.5, 4.5]}, "lava": [], "title": "floors", "part": "floors"}}
+{"objects": [{"fig": "knight", "hero": true, "label": "hero"}], "level": {"w": 14, "h": 14, "start": [1, 12], "items": [{"item": "_castle375", "at": [5.5, 5.5], "turn": 0}], "monsters": [], "camera": {"pos": [6, 7, 16], "target": [6, 0.8, 6]}, "lava": [], "title": "castle", "part": "castle"}}

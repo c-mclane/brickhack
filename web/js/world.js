@@ -128,6 +128,10 @@ export class World {
     this.bridges = []; // the drawbridges: [{gx, gz (its gate, in the wall), sx, sz (its span, over the moat), down (lowered)}] (brickworld setBridges)
     const bob = (x, y) => Math.sin(now / 400 + x * 1.7 + y * 2.3) * 0.06;
     const drawn = new Set(); // (monsters drawn: each once, the map and the monsters' list out of step or not)
+    if (this.ascendCastle) { // (Ascend's castle (items.json, by its own origin, its base's middle): in the middle of its eight squares, its gate south)
+      const [x0, y0, x1, y1] = this.ascendCastle.rect, b = brickBuilt(this.ascendCastle.item);
+      if (b) this.brickDrops.push({ x: (x0 + x1) / 2, z: (y0 + y1) / 2, url: b.url, level: 0, upright: true, anchored: true, name: this.ascendCastle.item, item: this.ascendCastle.item, turn: 0 });
+    }
     for (let y = 0; y < this.h; y++)
       for (let x = 0; x < this.w; x++) {
         const c = this.cells[y * this.w + x];

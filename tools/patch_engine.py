@@ -115,6 +115,13 @@ edit("src/allmain.c", [("	if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1
                         "	if (flags.dreamland) { /* WEB_HOOK_DREAM */\n		extern void NDECL(web_dreamland_intro);\n"
                         "		flush_screen(1);\n		web_dreamland_intro();\n	} else if (flags.legacy) {\n		flush_screen(1);\n		com_pager(1);\n	}")],
      "WEB_HOOK_DREAM")
+# Ascend: in place of the dungeon's random monsters, the king's enemies keep coming out of the woods (winweb.c
+# web_dream_tick)
+edit("src/allmain.c", [("		    if(!rn2(u.uevent.udemigod ? 25 :\n",
+                        "		    if (flags.dreamland && u.uz.dnum == 0 && u.uz.dlevel == 1) { /* WEB_HOOK_DREAMSPAWN */\n"
+                        "			extern void NDECL(web_dream_tick);\n			web_dream_tick();\n		    } else\n"
+                        "		    if(!rn2(u.uevent.udemigod ? 25 :\n")],
+     "WEB_HOOK_DREAMSPAWN")
 # BrickHack: a character's figure can start it with more than its role's kit
 # (the server's BRICKHACK_KIT, from the design: a Catholic priest's hosts;
 # winweb.c web_kit_item), unless it already has some

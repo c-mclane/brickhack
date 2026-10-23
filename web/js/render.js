@@ -666,6 +666,8 @@ export class Renderer {
     for (let y = 0; y < H; y++)
       for (let x = 0; x < W; x++) {
         const c = cls[y * W + x];
+        const keep = world.ascendCastle && world.ascendCastle.rect; // (Ascend's castle: its own walls and its own base stand there, not the engine's)
+        if (keep && x >= keep[0] && x <= keep[2] && y >= keep[1] && y <= keep[3]) continue;
         if (brickLevel && (!c || (c.type === 'none' && c.cmap !== CM.air))) { fogAt(x, y); continue; }
         if (brickLevel && c && c.cmap === CM.air) { const k = c.seen ? 1 : 0.7; bricks.floors.push({ x, z: y, shade: [0.72 * k, 0.86 * k, 1.0 * k], studs: true }); continue; } // (the Plane of Air: open sky, pale blue underfoot)
         if (!c || c.type === 'none') continue;

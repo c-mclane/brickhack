@@ -37,8 +37,8 @@ python3 "$ROOT/tools/add_monsters.py" "$SE" "$ROOT/mods/monsters"
 # monsters shift every tile after them)
 python3 "$ROOT/tools/tiles2png.py" "$SE" "$ROOT/web/assets/slashem/tiles.png" "$ROOT/web/assets/slashem/tiles.json"
 python3 "$ROOT/tools/monster_list.py" "$ROOT/web/assets/slashem/tiles.json" "$ROOT/art/monsters/MONSTERS.txt"
-# Ascend's level: a blank baseplate
-python3 "$ROOT/tools/dreamland_gen.py" "$SE/dat/dreamland.des" "$SE/include/dreamlnd.h"
+# Ascend's level: the meadow before the golden castle (and where the castle stands, for the client)
+python3 "$ROOT/tools/dreamland_gen.py" "$SE/dat/dreamland.des" "$SE/include/dreamlnd.h" "$ROOT/web/assets/brick/ascend.json"
 
 # 2. register the port in src/windows.c and util/makedefs.c (idempotent)
 python3 - "$SE" <<'EOF'
