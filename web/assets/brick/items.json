@@ -36758,7 +36758,7 @@
   ]
  },
  "grave": {
-  "brick": "A grave: a mound of reddish brown plates, a light grey headstone of 1x2 bricks topped with a tile at its head, a little bush beside it",
+  "brick": "A grave: a mound of reddish brown plates, a light grey headstone of 1x2 bricks topped with a tile at its head",
   "upright": true,
   "parts": [
    {
@@ -36805,15 +36805,6 @@
      0,
      -56,
      -30
-    ]
-   },
-   {
-    "part": "4740p02",
-    "color": 2,
-    "pos": [
-     20,
-     -8,
-     20
     ]
    }
   ]
