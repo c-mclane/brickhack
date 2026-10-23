@@ -651,6 +651,15 @@ export class Renderer {
         }
       return 0;
     };
+    // dark: a dark room's floor (world.litAt 'd'); a wall, door or rock beside one, and beside no lit floor
+    const darkAt = (x, y, c) => {
+      const l = world.litAt(x, y);
+      if (l === 'd') return true;
+      if (l === 'l' || !(c.type === 'wall' || c.type === 'rock' || c.type === 'door' || c.type === 'odoor' || c.cmap === CM.ndoor)) return false;
+      let dark = false;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const n = world.litAt(x + dx, y + dy); if (n === 'l') return false; if (n === 'd') dark = true; }
+      return dark;
+    };
     // plain floors get a studded plate; any other floor tile (stairs, an altar's square...) a smooth one, printed
     const plainFloor = new Set([CM.room, CM.darkroom, CM.corr, CM.litcorr, CM.ndoor].map(cmapTile));
 
@@ -662,6 +671,9 @@ export class Renderer {
         const d = Math.hypot(x - hx, y - hy);
         let shade = c.seen ? 1.0 : brickLevel ? 0.62 : 0.42;
         shade *= Math.max(brickLevel ? 0.75 : 0.55, Math.min(1, 1.25 - d / 16));
+        // a dark room (the engine's: not lit): dark, but for the light about you (what you see of it, by your own light or a
+        // lamp's), falling off with the distance; a wall dark with it, where it's beside dark floor and none lit
+        if (brickLevel && darkAt(x, y, c)) shade = c.seen ? Math.max(0.3, Math.min(1, 1.15 - d * 0.3)) : 0.13;
         const blockTile = opts.wallStyle === 'exact' && c.type === 'wall' ? c.tile : WALL_TILE;
         const cull = (lvl) => ({
           n: solidAt(x, y - 1, lvl), s: solidAt(x, y + 1, lvl),

@@ -1302,6 +1302,7 @@ static int mapglyph_buf[ROWNO][COLNO], mapbk_buf[ROWNO][COLNO];
 static boolean map_dirty[ROWNO][COLNO];
 static boolean map_cleared;
 static char last_vis[ROWNO * COLNO + 1];
+static char last_lit[ROWNO * COLNO + 1]; /* (flush_vis: which room squares are lit) */
 static unsigned long last_pile[ROWNO][COLNO]; /* what was last sent of each square's pile */
 static int cur_x = -1, cur_y = -1;
 static int last_level_key = -1;
@@ -1376,6 +1377,7 @@ reset_map(void)
         }
     map_cleared = TRUE;
     last_vis[0] = '\0';
+    last_lit[0] = '\0';
 }
 
 static void
@@ -1419,19 +1421,24 @@ flush_map(void)
 static void
 flush_vis(void)
 {
-    char vis[ROWNO * COLNO + 1];
+    char vis[ROWNO * COLNO + 1], lit[ROWNO * COLNO + 1];
     int x, y;
 
     if (!program_state.in_moveloop)
         return;
+    /* (and which squares are a room's floor, lit ('l') or dark ('d'): a dark room drawn dark, but for your light; a wand of
+       light, or a spell, lights it: litroom) */
     for (y = 0; y < ROWNO; y++)
-        for (x = 0; x < COLNO; x++)
+        for (x = 0; x < COLNO; x++) {
             vis[y * COLNO + x] = (x > 0 && cansee(x, y)) ? '1' : '0';
-    vis[ROWNO * COLNO] = '\0';
-    if (strcmp(vis, last_vis)) {
+            lit[y * COLNO + x] = x > 0 && IS_ROOM(levl[x][y].typ) ? (levl[x][y].lit ? 'l' : 'd') : '0';
+        }
+    vis[ROWNO * COLNO] = lit[ROWNO * COLNO] = '\0';
+    if (strcmp(vis, last_vis) || strcmp(lit, last_lit)) {
         Strcpy(last_vis, vis);
-        fprintf(out, "{\"t\":\"vis\",\"w\":%d,\"h\":%d,\"v\":\"%s\"", COLNO,
-                ROWNO, vis);
+        Strcpy(last_lit, lit);
+        fprintf(out, "{\"t\":\"vis\",\"w\":%d,\"h\":%d,\"v\":\"%s\",\"l\":\"%s\"", COLNO,
+                ROWNO, vis, lit);
         endmsg();
     }
 }
@@ -1772,6 +1779,10 @@ sync_all(void)
             fprintf(out, "{\"t\":\"level\",\"depth\":%d,\"dname\":",
                     depth(&u.uz));
             jstr(web_dname());
+            { /* (a special level: its own name, "medusa", "castle", "wizard1", "earth", "astral"...: its walls' colours, the client's) */
+                s_level *sp = Is_special(&u.uz);
+                if (sp) { fprintf(out, ",\"lv\":"); jstr(sp->proto); }
+            }
             if (Is_stronghold(&u.uz)) { /* the Castle: where its walls stand, so the client can raise them into a real castle */
                 /* (dat/castle.des: its map is 63x17, the drawbridge's span at (5,8), its walls from (1,1) to (61,15)) */
                 int x, y;

@@ -66,6 +66,52 @@ import { gradientEnvironment } from './envmap.js';
 
 export const SKY = 0x8fb8de; // the viewer's background
 
+// The dungeon's areas, each in its own colours (as the tiles draw their walls): which it is, by the branch (its name) and
+// the special level (its own name: winweb.c, "lv"), and each one's tint for its walls and its floors (multiplying the grey
+// bricks'). The Mines, and the caves like them, are walls of rock instead (minesWalls)
+export const AREA = {
+  sokoban: { wall: [0.45, 0.62, 1.0], floor: [0.86, 0.9, 1.0] }, // (blue)
+  gehennom: { wall: [0.8, 0.3, 0.24], floor: [0.62, 0.46, 0.43] }, // (blood red, the floors scorched)
+  valley: { wall: [0.46, 0.5, 0.42], floor: [0.56, 0.56, 0.5] }, // (the Valley of the Dead: grave-grey)
+  sanctum: { wall: [0.42, 0.1, 0.12], floor: [0.38, 0.18, 0.18] }, // (Moloch's Sanctum: near black, red)
+  wizard: { wall: [0.58, 0.38, 0.92], floor: [0.7, 0.62, 0.86] }, // (the Wizard's Tower: purple)
+  juiblex: { wall: [0.45, 0.62, 0.3], floor: [0.5, 0.6, 0.38] }, // (Juiblex's swamp: slime green)
+  vlad: { wall: [0.42, 0.36, 0.5], floor: [0.55, 0.5, 0.56] }, // (Vlad's Tower: bruised dark grey)
+  ludios: { wall: [1.0, 0.84, 0.42], floor: [0.96, 0.9, 0.74] }, // (Fort Ludios: gold)
+  quest: { wall: [0.92, 0.8, 0.62], floor: [0.92, 0.86, 0.76] }, // (the Quest: sandstone)
+  medusa: { wall: [0.45, 0.82, 0.72], floor: [0.8, 0.93, 0.9] }, // (Medusa's island: sea-green stone)
+  oracle: { wall: [0.95, 0.95, 1.0], floor: [0.82, 0.88, 1.0] }, // (Delphi: marble)
+  earth: { wall: [0.72, 0.5, 0.3], floor: [0.7, 0.55, 0.4] },
+  air: { wall: [0.92, 0.97, 1.0], floor: [0.96, 0.98, 1.0] },
+  fire: { wall: [1.0, 0.48, 0.28], floor: [0.86, 0.5, 0.36] },
+  water: { wall: [0.38, 0.58, 1.0], floor: [0.6, 0.76, 1.0] },
+  astral: { wall: [1.0, 0.96, 0.8], floor: [1.0, 0.98, 0.9] }, // (the Astral Plane: white gold)
+  grund: { wall: [0.55, 0.6, 0.38], floor: [0.62, 0.62, 0.5] }, // (Grund's Stronghold: orc-green)
+  market: { wall: [0.52, 0.36, 0.62], floor: [0.62, 0.55, 0.68] }, // (One-eyed Sam's Market: shady purple)
+  tomb: { wall: [0.96, 0.86, 0.58], floor: [0.95, 0.88, 0.7] }, // (the Lost Tomb: sand)
+  sea: { wall: [0.4, 0.76, 0.82], floor: [0.62, 0.82, 0.86] }, // (the Sunless Sea: teal)
+  moloch: { wall: [0.62, 0.15, 0.18], floor: [0.5, 0.3, 0.3] }, // (the Temple of Moloch: red)
+  lab: { wall: [0.6, 0.7, 0.62], floor: [0.7, 0.76, 0.72] }, // (Frankenstein's Lab: grey-green)
+};
+export function areaStyle(dname = '', lv = '') {
+  if (/Gnomish Mines|Wyrm Caves|Giant Caverns|Spider Caves/i.test(dname)) return 'mines';
+  if (/^(astral|water|fire|air|earth)$/.test(lv)) return lv;
+  if (/^(wizard|fakewiz)/.test(lv)) return 'wizard';
+  if (/^(valley|sanctum|juiblex|medusa|oracle)/.test(lv)) return lv.replace(/\d.*$/, '').replace(/-.*/, '');
+  if (/Sokoban/i.test(dname)) return 'sokoban';
+  if (/Gehennom/i.test(dname)) return 'gehennom';
+  if (/Vlad/i.test(dname)) return 'vlad';
+  if (/Ludios/i.test(dname)) return 'ludios';
+  if (/Quest/i.test(dname)) return 'quest';
+  if (/Grund/i.test(dname)) return 'grund';
+  if (/Market/i.test(dname)) return 'market';
+  if (/Lost Tomb/i.test(dname)) return 'tomb';
+  if (/Sunless Sea/i.test(dname)) return 'sea';
+  if (/Moloch/i.test(dname)) return 'moloch';
+  if (/Frankenstein/i.test(dname)) return 'lab';
+  return null;
+}
+
 const PIECES = {
   plate: 'assets/brick/parts/plate4x4.glb', // a floor square: a grey 4x4 plate, origin at its top middle
   brick: 'assets/brick/parts/brick2x4.glb', // a wall's top course: grey 2x4 bricks, origin at the top middle
@@ -260,7 +306,7 @@ export class BrickWorld {
     const c = new THREE.Color();
     for (const [key, es] of chunks) {
       let sig = es.length;
-      for (const [m, shade] of es) { const el = m.elements; sig = (sig * 31 + el[12] * 977 + el[13] * 131 + el[14] * 7919 + el[0] * 17 + el[2] * 23 + shade * 101) % 1e12; }
+      for (const [m, shade] of es) { const el = m.elements, sh = typeof shade === 'number' ? shade : shade[0] * 3.1 + shade[1] * 5.7 + shade[2] * 7.3; sig = (sig * 31 + el[12] * 977 + el[13] * 131 + el[14] * 7919 + el[0] * 17 + el[2] * 23 + sh * 101) % 1e12; }
       let ch = had.get(key);
       had.delete(key);
       if (ch && ch.sig === sig) { now.set(key, ch); continue; }
@@ -279,7 +325,7 @@ export class BrickWorld {
       }
       ch.sig = sig;
       for (const im of ch.meshes) {
-        es.forEach(([m, shade], i) => { im.setMatrixAt(i, m); im.setColorAt(i, c.setScalar(shade)); });
+        es.forEach(([m, shade], i) => { im.setMatrixAt(i, m); im.setColorAt(i, typeof shade === 'number' ? c.setScalar(shade) : c.setRGB(shade[0], shade[1], shade[2])); }); // (a shade: or tinted, an area's colours)
         im.count = es.length;
         im.instanceMatrix.needsUpdate = true;
         if (im.instanceColor) im.instanceColor.needsUpdate = true;
@@ -306,22 +352,27 @@ export class BrickWorld {
       else smooth.push([M().makeTranslation(f.x, -PLATE_H, f.z).scale(new THREE.Vector3(1, PLATE_H, 1)), f.shade]); // a printed tile goes on top
     }
     const mines = data.style === 'mines'; // (the Gnomish Mines: brown floors, walls of rock: minesWalls)
+    const area = AREA[data.style]; // (an area's own colours: its walls and floors tinted)
+    const tint = (sh, t) => (t ? [sh * t[0], sh * t[1], sh * t[2]] : sh);
+    if (area) for (const e of plates) e[1] = tint(e[1], area.floor);
+    if (area) for (const e of smooth) e[1] = tint(e[1], area.floor);
     for (const w of mines ? [] : data.walls) {
       // under the wall, the floor's plate; then WALL_COURSES courses of two 2x4 bricks, crossing each course
       // (the Castle's: its outer walls RISE_COURSES[1] more, its towers [2], every other
       // square a course higher again: the battlements)
       const n = WALL_COURSES + (w.rise ? RISE_COURSES[w.rise] + ((w.x + w.z) % 2 === 0 ? 1 : 0) : 0);
       const TOP = (n + 1) * BRICK_H;
-      courses.push([M().makeTranslation(w.x, -PLATE_H, w.z).scale(new THREE.Vector3(1, PLATE_H, 1)), w.shade]);
+      const wsh = tint(w.shade, area && area.wall);
+      courses.push([M().makeTranslation(w.x, -PLATE_H, w.z).scale(new THREE.Vector3(1, PLATE_H, 1)), wsh]);
       for (let l = 0; l < n; l++)
         for (const half of [0, 0.5])
           courses.push([l % 2 === 0
             ? M().makeTranslation(w.x, l * BRICK_H, w.z + half).scale(new THREE.Vector3(1, BRICK_H, 0.5))
-            : M().makeTranslation(w.x + half, l * BRICK_H, w.z).scale(new THREE.Vector3(0.5, BRICK_H, 1)), w.shade]);
+            : M().makeTranslation(w.x + half, l * BRICK_H, w.z).scale(new THREE.Vector3(0.5, BRICK_H, 1)), wsh]);
       // the top course: real bricks, studs and all (course 5 runs north-south)
       for (const half of [0.25, 0.75]) {
         const m = M().makeTranslation(w.x + half, TOP, w.z + 0.5).multiply(M().makeRotationY(Math.PI / 2)).scale(new THREE.Vector3(S, S, S));
-        bricks.push([m, w.shade]);
+        bricks.push([m, wsh]);
       }
     }
     // water: the floor's plate gone, and its hole heaped with nothing but 1x1 round plates (on a bed of more of

@@ -60,11 +60,13 @@ export class World {
     }
   }
 
-  setVis(v, w, h) {
+  setVis(v, w, h, lit) {
     if (w && h) this.resize(w, h);
     this.vis = v;
+    this.lit = lit || null; // (each square: a room's floor, lit 'l' or dark 'd'; '0' not a room's: render.js, a dark room dark)
     this.dirty = true;
   }
+  litAt(x, y) { return this.lit ? this.lit[y * this.w + x] || '0' : '0'; }
 
   setHero(x, y) {
     if (x !== this.hero.x || y !== this.hero.y) this.dirty = true;

@@ -14,7 +14,7 @@ import { Drops } from './drops.js';
 import { buildPlayerModel } from './playermodel.js';
 import { Music, Ambience } from './music.js';
 import { swimPose, SWIM_SPLASH, WATER_Y, DEEP } from './swim.js';
-import { DRY_GREY, DRY_SIT, LADY_T, PRAY_OUTCOME, PRAY_AFTER, prayAfter } from './brickworld.js';
+import { DRY_GREY, DRY_SIT, LADY_T, PRAY_OUTCOME, PRAY_AFTER, prayAfter, areaStyle } from './brickworld.js';
 import { figureMatrix, partMatrix, FIG_HEIGHT, STUD_H, MODEL_SCALE } from './brick.js';
 import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, perchOf, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
@@ -609,11 +609,11 @@ function handle(m) {
       break;
     }
     case 'map': world.applyMap(m.c); break;
-    case 'vis': world.setVis(m.v, m.w, m.h); break;
+    case 'vis': world.setVis(m.v, m.w, m.h, m.l); break;
     case 'piles': world.applyPiles(m.p); break;
     case 'level':
       world.castle = m.castle || null; // the Castle: [x0, y0, x1, y1], where its stone walls stand (render.js raises them)
-      world.style = /Gnomish Mines/i.test(m.dname || '') ? 'mines' : null; // (the Mines: brown floors, rock walls: brickworld minesWalls)
+      world.style = areaStyle(m.dname, m.lv); // (its area's walls and floors: the Mines' rock, Sokoban's blue, Gehennom's red... brickworld AREA)
       ui.showTitle(`Level ${m.depth}`, m.dname);
       cam.snap = true;
       break;

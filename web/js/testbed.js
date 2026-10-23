@@ -79,15 +79,17 @@ export async function runTestbed(data) {
 
   // the room: a floor of plates, walls all round; water where scene.json has "pools" (and where more's been
   // let in: a fountain gushing, extra)
+  let roomStyle = level.style || null, roomShade = null; // (the area's walls and floors, brickworld AREA; a dark room's shading: (x, z) -> shade)
   const room = (extra = [], filled = []) => { // (filled: water a boulder's been pushed into, floor now)
     const floors = [], walls = [], pools = [], wet = (level.pools || []).concat(extra).filter(([x, z]) => !filled.some(([a, b]) => a === x && b === z));
     for (let z = 0; z < H; z++)
       for (let x = 0; x < W; x++) {
-        if (x === 0 || z === 0 || x === W - 1 || z === H - 1) walls.push({ x, z, shade: 1 });
+        const sh = roomShade ? roomShade(x, z) : 1;
+        if (x === 0 || z === 0 || x === W - 1 || z === H - 1) walls.push({ x, z, shade: sh });
         else if (wet.some(([px, pz]) => px === x && pz === z)) pools.push({ x, z, shade: 1 });
         else if ((level.lava || []).some(([px, pz]) => px === x && pz === z)) pools.push({ x, z, shade: 1, lava: true }); // (scene.json "lava")
         else if (!(level.stairs || []).some((st) => !st.up && st.at[0] === x && st.at[1] === z)
-          && !(level.items || []).some((it) => it.at[0] === x && it.at[1] === z && (items[it.item] || {}).sunk)) floors.push({ x, z, studs: true, shade: 1 }); // (stairs down: a hole; a pit, a hole: its own shaft)
+          && !(level.items || []).some((it) => it.at[0] === x && it.at[1] === z && (items[it.item] || {}).sunk)) floors.push({ x, z, studs: true, shade: sh }); // (stairs down: a hole; a pit, a hole: its own shaft)
       }
     // stairs (scene.json "stairs": [{at, up}]), run toward the wall nearest, as the game's (world.js backToWall)
     const wallBy = (x, z) => x === 0 || z === 0 || x === W - 1 || z === H - 1;
@@ -95,7 +97,7 @@ export async function runTestbed(data) {
       const [x, z] = st.at, d = [[0, -1], [1, 0], [0, 1], [-1, 0]].find(([dx, dz]) => wallBy(x + dx, z + dz));
       return { x, z, up: !!st.up, turn: d ? Math.atan2(-d[0], -d[1]) : 0, shade: 1 };
     });
-    brick.setTerrain({ floors, walls, pools, doors: [], fog: [], stairs, w: W, h: H, style: level.style || null }); // (scene.json "style": "mines")
+    brick.setTerrain({ floors, walls, pools, doors: [], fog: [], stairs, w: W, h: H, style: roomStyle }); // (scene.json "style": "mines"; the areas demo's)
   };
   await brick.ready;
   room();
@@ -912,6 +914,42 @@ export async function runTestbed(data) {
         await wait(1);
         for (const c of bombs) c.gone = false;
         say('');
+      }
+      // a dark room, and the dungeon's areas (?part=areas, asked for alone): the room dark (as the game draws a dark room:
+      // render.js), but for the squares beside you, the light going with you as you walk about it; a wand of light zapped,
+      // and it's lit. Then each area in its own colours (brickworld AREA), a walk about each: Gehennom and its levels, Vlad's
+      // Tower, Fort Ludios, Sokoban, the Quest, Medusa's island, Delphi, the Planes, the other branches, the Mines' rock
+      if (part && part.split(',').includes('areas')) {
+        const sp = brick.spell;
+        const darkShade = () => (x, z) => { const d = Math.hypot(x - hero.sq.x, z - hero.sq.y); return d <= 1.5 ? Math.max(0.3, Math.min(1, 1.15 - d * 0.3)) : 0.13; };
+        const loop = [[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [-1, 0], [-1, 0], [-1, 0], [0, -1], [0, -1]];
+        const walkLit = async (path) => { for (const [dx, dy] of path) { await step(dx, dy); if (roomShade) room(); } };
+        roomStyle = null; roomShade = darkShade(); room();
+        say('A dark room. You can see only what\'s beside you.');
+        await wait(1.5);
+        await walkLit(loop);
+        say('You zap a wand of light.');
+        hero.hold = { R: url('wand of light') };
+        hero.fount = { act: 'zap', t0: clock, fired: 0, url: url('wand of light') };
+        sp.hold(ZAP_AT);
+        const d = sp.self('wand:light', hero.sq.x, hero.sq.y);
+        await wait(ZAP_AT + 0.05);
+        roomShade = null; room(); // (lit)
+        say('A lit field surrounds you!');
+        await wait(Math.max(FOUNT.zap.T - ZAP_AT, d) + 1.2);
+        hero.hold = { R: null };
+        const AREAS = [['gehennom', 'Gehennom'], ['valley', 'the Valley of the Dead'], ['sanctum', "Moloch's Sanctum"], ['wizard', "the Wizard's Tower"],
+          ['juiblex', "Juiblex's swamp"], ['vlad', "Vlad's Tower"], ['ludios', 'Fort Ludios'], ['sokoban', 'Sokoban'], ['quest', 'the Quest'],
+          ['medusa', "Medusa's island"], ['oracle', 'Delphi'], ['earth', 'the Plane of Earth'], ['air', 'the Plane of Air'], ['fire', 'the Plane of Fire'],
+          ['water', 'the Plane of Water'], ['astral', 'the Astral Plane'], ['grund', "Grund's Stronghold"], ['market', "One-eyed Sam's Market"],
+          ['tomb', 'the Lost Tomb'], ['sea', 'the Sunless Sea'], ['moloch', 'the Temple of Moloch'], ['lab', "Frankenstein's Lab"], ['mines', 'the Gnomish Mines']];
+        for (const [st, name] of AREAS) {
+          roomStyle = st; room();
+          say(name);
+          await walkLit([[1, 0], [0, 1], [-1, 0], [0, -1]]);
+          await wait(0.6);
+        }
+        roomStyle = level.style || null; room(); say('');
       }
       // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the
       // floor where it comes down, left lying there; each archer (you, the centaur's man half) into the stance, aimed, drawn,
