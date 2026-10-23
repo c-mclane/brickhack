@@ -36601,5 +36601,350 @@
     ]
    }
   ]
+ },
+ "tree": {
+  "brick": "The round tree of the old town sets (the lollipop tree) on a reddish brown round trunk (an overland tree)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3470",
+    "color": 2,
+    "pos": [
+     0,
+     -24,
+     0
+    ]
+   },
+   {
+    "part": "3941",
+    "color": 70,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "tree_pine": {
+  "brick": "The pine of the old town sets, pyramidal, in dark green, on a reddish brown round trunk (an overland tree)",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3471",
+    "color": 288,
+    "pos": [
+     0,
+     -24,
+     0
+    ]
+   },
+   {
+    "part": "3941",
+    "color": 70,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "throne": {
+  "brick": "A throne: a dark red seat on a dark red 4x4 plate, a red cushion, a tall gold back of 1x4 bricks with a gold crown atop it, gold arms",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3031",
+    "color": 320,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3001",
+    "color": 320,
+    "pos": [
+     0,
+     -24,
+     -20
+    ]
+   },
+   {
+    "part": "3001",
+    "color": 320,
+    "pos": [
+     0,
+     -24,
+     20
+    ]
+   },
+   {
+    "part": "3031",
+    "color": 4,
+    "pos": [
+     0,
+     -32,
+     0
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 334,
+    "pos": [
+     0,
+     -56,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 334,
+    "pos": [
+     0,
+     -80,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 334,
+    "pos": [
+     0,
+     -104,
+     30
+    ]
+   },
+   {
+    "part": "3010",
+    "color": 334,
+    "pos": [
+     0,
+     -128,
+     30
+    ]
+   },
+   {
+    "part": "71015",
+    "color": 334,
+    "pos": [
+     0,
+     -151,
+     30
+    ]
+   },
+   {
+    "part": "3004",
+    "color": 334,
+    "pos": [
+     -30,
+     -56,
+     -10
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3004",
+    "color": 334,
+    "pos": [
+     30,
+     -56,
+     -10
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ]
+ },
+ "grave": {
+  "brick": "A grave: a mound of reddish brown plates, a light grey headstone of 1x2 bricks topped with a tile at its head, a little bush beside it",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3020",
+    "color": 70,
+    "pos": [
+     0,
+     0,
+     10
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   },
+   {
+    "part": "3004",
+    "color": 71,
+    "pos": [
+     0,
+     -24,
+     -30
+    ]
+   },
+   {
+    "part": "3004",
+    "color": 71,
+    "pos": [
+     0,
+     -48,
+     -30
+    ]
+   },
+   {
+    "part": "3069b",
+    "color": 71,
+    "pos": [
+     0,
+     -56,
+     -30
+    ]
+   },
+   {
+    "part": "4740p02",
+    "color": 2,
+    "pos": [
+     20,
+     -8,
+     20
+    ]
+   }
+  ]
+ },
+ "iron bars": {
+  "brick": "Iron bars: three dark grey spindled 1x4x2 fences stacked a wall's height",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30055",
+    "color": 72,
+    "pos": [
+     0,
+     -48,
+     0
+    ]
+   },
+   {
+    "part": "30055",
+    "color": 72,
+    "pos": [
+     0,
+     -96,
+     0
+    ]
+   },
+   {
+    "part": "30055",
+    "color": 72,
+    "pos": [
+     0,
+     -144,
+     0
+    ]
+   },
+   {
+    "part": "3710",
+    "color": 72,
+    "pos": [
+     0,
+     -152,
+     0
+    ]
+   }
+  ]
+ },
+ "_drawbridge": {
+  "brick": "A drawbridge: a deck of reddish brown 2x4 tiles, four across, on dark grey plates, iron bands across it",
+  "upright": true,
+  "parts": [
+   {
+    "part": "87079",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     -30
+    ]
+   },
+   {
+    "part": "87079",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     -10
+    ]
+   },
+   {
+    "part": "87079",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "87079",
+    "color": 70,
+    "pos": [
+     0,
+     -8,
+     30
+    ]
+   },
+   {
+    "part": "3031",
+    "color": 72,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "part": "3710",
+    "color": 0,
+    "pos": [
+     0,
+     -16,
+     -38
+    ]
+   },
+   {
+    "part": "3710",
+    "color": 0,
+    "pos": [
+     0,
+     -16,
+     38
+    ]
+   }
+  ]
  }
 }

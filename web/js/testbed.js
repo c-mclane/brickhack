@@ -62,6 +62,7 @@ export async function runTestbed(data) {
   const gl = canvas.getContext('webgl2', { antialias: true });
   const brick = new BrickWorld(canvas, gl);
   brick.coinUrl = url('_coin'); // (gold in a fountain: coins strewn in its basin)
+  brick.drawbridgeUrl = url('_drawbridge'); // (the drawbridges' decks)
   const cam = new THREE.PerspectiveCamera(45, 1, 0.05, 200);
   const ctl = new OrbitControls(cam, canvas);
   const W = level.w, H = level.h;
@@ -111,7 +112,7 @@ export async function runTestbed(data) {
   const lay = (list) => {
     const n = new Map(); // (things on one square: stacked, one on another, as world.js has them)
     drops = list.filter(Boolean).map((i) => { const k = i.at.join(','), level = n.get(k) || 0; n.set(k, level + 1);
-      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, sunk: !!(items[i.item] || {}).sunk, offer: (items[i.item] || {}).offer, spots: (items[i.item] || {}).spots, name: i.item }; });
+      return { x: i.at[0], z: i.at[1], url: url(i.item), level, upright: !!(items[i.item] || {}).upright, anchored: !!(items[i.item] || {}).anchored, sunk: !!(items[i.item] || {}).sunk, offer: (items[i.item] || {}).offer, spots: (items[i.item] || {}).spots, name: i.name || i.item, turn: i.turn }; }); // (name: what it counts as, a pine a tree; turn: square to its square, its back that way)
     // (as the game watches its list: a statue broken comes apart; up on it, you jump down)
     for (const [x, z] of brick.watchStatues(drops, 'test', (n) => (items[n] ? { name: n, ...items[n] } : null)))
       if (hero.sq.x === x && hero.sq.y === z && hero.from.perch) hero.leap = { t0: clock, side: { wx: hero.from.perch.wx, wz: hero.from.perch.wz } };
@@ -950,6 +951,29 @@ export async function runTestbed(data) {
           await wait(0.6);
         }
         roomStyle = level.style || null; room(); say('');
+      }
+      // the dungeon's furniture (?part=furniture, asked for alone): a throne, graves, a grove of trees (the round one and the
+      // pine, each square its own), a run of iron bars, and a drawbridge over the moat, raised and lowered, swinging on its hinge
+      if (part && part.split(',').includes('furniture')) {
+        const grove = [[9, 1], [10, 1], [11, 1], [12, 1], [10, 2], [11, 2], [12, 2], [12, 3]].map(([x, z], i) => ({ item: (x * 7 + z * 3) % 2 ? 'tree' : 'tree_pine', name: 'tree', at: [x, z], turn: ((x * 13 + z * 7) % 10) * 0.6 }));
+        const things = [{ item: 'throne', at: [2, 1], turn: 0 }, { item: 'grave', at: [4, 1], turn: 0 }, { item: 'grave', at: [5, 1], turn: 0 }, { item: 'grave', at: [6, 1], turn: 0 },
+          ...grove, ...[3, 4, 5].map((z) => ({ item: 'iron bars', at: [7, z], turn: Math.PI / 2 }))];
+        lay(things);
+        const bridge = (down) => brick.setBridges([{ gx: 4, gz: 7, sx: 4, sz: 6, down }]);
+        bridge(true);
+        say('A throne, graves, trees, iron bars, and a drawbridge over the moat.');
+        await wait(2);
+        await walk([[1, 0], [1, 0], [0, 1]]);
+        say('The drawbridge is raised!');
+        bridge(false);
+        await wait(3.2);
+        say('The drawbridge is lowered!');
+        bridge(true);
+        await wait(3.2);
+        await walk([[0, -1], [-1, 0], [-1, 0], [0, -1]]);
+        say('Here lies...');
+        await wait(2);
+        brick.setBridges([]); lay([]); say('');
       }
       // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the
       // floor where it comes down, left lying there; each archer (you, the centaur's man half) into the stance, aimed, drawn,

@@ -573,6 +573,49 @@ export class BrickWorld {
     this.flowMesh.geometry = fg;
   }
 
+  // The drawbridges ([{gx, gz, sx, sz, down}]: world.js): each a deck of planks (items.json _drawbridge), hinged on the edge
+  // between its gate and its span: lowered, lying over the moat; raised, stood up in the gate. When it changes it swings
+  // there, slowly (stepBridges); first seen, it's just there
+  setBridges(list) {
+    this.bridgeGroups = this.bridgeGroups || new Map();
+    const keep = new Set();
+    for (const b of list) {
+      const key = `${b.gx},${b.gz}`;
+      keep.add(key);
+      let g = this.bridgeGroups.get(key);
+      if (!g) {
+        const url = this.drawbridgeUrl;
+        if (!url) continue;
+        const hinge = new THREE.Group(), lift = new THREE.Group();
+        hinge.position.set((b.gx + b.sx) / 2 + 0.5, STUD_H - 0.02, (b.gz + b.sz) / 2 + 0.5);
+        hinge.rotation.y = Math.atan2(b.sx - b.gx, b.sz - b.gz); // (its +Z out over the span)
+        hinge.add(lift);
+        this.world.add(hinge);
+        g = { hinge, lift, angle: b.down ? 0 : Math.PI / 2, want: b.down ? 0 : Math.PI / 2 };
+        this.model(url).then((m) => {
+          const deck = m.clone();
+          deck.scale.setScalar(MODEL_SCALE);
+          deck.updateMatrixWorld(true);
+          const box = new THREE.Box3().setFromObject(deck), c = box.getCenter(new THREE.Vector3());
+          deck.position.set(-c.x, -box.min.y, 0.5 - c.z); // (its near edge on the hinge, lying out over the span)
+          lift.add(deck);
+        });
+        this.bridgeGroups.set(key, g);
+      }
+      g.want = b.down ? 0 : Math.PI / 2;
+    }
+    for (const [key, g] of this.bridgeGroups) if (!keep.has(key)) { this.world.remove(g.hinge); this.bridgeGroups.delete(key); }
+  }
+  stepBridges(dt) {
+    for (const g of (this.bridgeGroups || new Map()).values()) {
+      if (g.angle !== g.want) { // (swinging: a quarter turn in about two seconds, slowing at each end)
+        const d = g.want - g.angle, v = Math.max(0.25, Math.min(1, Math.abs(Math.sin(g.angle * 2)) + 0.25)) * 1.05 * dt;
+        g.angle = Math.abs(d) <= v ? g.want : g.angle + Math.sign(d) * v;
+      }
+      g.lift.rotation.x = -g.angle; // (raised: the deck up, about the hinge, its far end high)
+    }
+  }
+
   // Items lying on the floor as brick models ([{x, z, url, level, upright}], world.js):
   // each laid flat on its side (its length along the floor, the flat of a
   // blade up) across its square at a diagonal; one made to stand (upright:
@@ -591,7 +634,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || ['throne', 'grave', 'tree', 'iron bars'].includes(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
@@ -2076,6 +2119,7 @@ export class BrickWorld {
     }
     this.fx.step(); // thrown things in flight
     this.spell.step(); // zaps and spells playing out
+    { const t = performance.now() / 1000; this.stepBridges(Math.min(0.05, t - (this.bridgeT || t))); this.bridgeT = t; } // (the drawbridges swinging)
     this.stepCorpses(); // (the slain's corpses: the brick of each that's left)
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
     this.stepDry(performance.now() / 1000); // ...or drying up

@@ -550,7 +550,7 @@ async function init() {
   // the items made in brick (brickitems.js): their models for the floor, their pictures for the slots
   // (the items' pictures are drawn as the page loads, what's on screen first: redraw as they come)
   onIcons(() => { if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
-  loadBrickItems().then(() => { const c = brickItemByName('_coin'); if (c && renderer.brick) renderer.brick.coinUrl = c.url; /* (gold in a fountain: coins strewn in its basin) */ if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
+  loadBrickItems().then(() => { const c = brickItemByName('_coin'); if (c && renderer.brick) renderer.brick.coinUrl = c.url; const db = brickItemByName('_drawbridge'); if (db && renderer.brick) renderer.brick.drawbridgeUrl = db.url; /* (the drawbridges' decks) */ /* (gold in a fountain: coins strewn in its basin) */ if (game.playing) { ui.renderHotbar(); if (ui.renderInventory) ui.renderInventory(); } });
   loadBrickMonsters();
   $('#actions-btn').onclick = (e) => { e.stopPropagation(); if (game.playing) { releaseLock(); ui.openInventory(null, 'actions'); } };
   requestAnimationFrame(frame);
@@ -3207,6 +3207,7 @@ function frame(t) {
     const ballItem = brickItemByName('heavy iron ball');
     if (renderer.brick) renderer.brick.setPunished(pun && ballItem ? { ball: pun.ball ? [pun.ball.x, pun.ball.z] : null, ballUrl: ballItem.url, linkUrl: brickChainLink() } : null);
     renderer.brickItems = pun ? (world.brickDrops || []).filter((d) => d !== pun.chain && d !== pun.ball) : world.brickDrops || [];
+    renderer.bridges = world.bridges || [];
     if (renderer.brick) { // (the hero's body, for things falling onto it: brickworld.colliders)
       const [hx, hz] = motion.heroPos(t), pp = statuePerch(t), lift = (world.heroLift ?? phys.y) + (pp ? pp.lift : 0);
       renderer.brick.heroBody = game.playing ? { x: hx + 0.5 + (pp ? pp.dx : 0), z: hz + 0.5 + (pp ? pp.dz : 0), y0: lift, top: lift + motion.heroHeight() } : null;

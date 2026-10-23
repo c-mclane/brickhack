@@ -687,6 +687,7 @@ export class Renderer {
         };
         switch (c.type) {
           case 'wall':
+            if (brickLevel && (c.cmap === CM.vcdbridge || c.cmap === CM.hcdbridge)) { bricks.floors.push({ x, z: y, shade, studs: true }); break; } // (a raised drawbridge's gate: open, the deck standing in it: brickworld setBridges)
             if (brickLevel) bricks.walls.push({ x, z: y, shade, rise: castleRise(x, y) });
             else column(0, null, shade, (l) => wallLayer(l, blockTile));
             break;
@@ -703,6 +704,7 @@ export class Renderer {
             else this.floor(out, x, y, -0.12, c.tile, shade);
             break;
           default:
+            if (brickLevel && (c.cmap === CM.vodbridge || c.cmap === CM.hodbridge)) { bricks.pools.push({ x, z: y, shade }); break; } // (a lowered drawbridge: the moat under it, the deck over it)
             if (brickLevel) {
               // a studded plate in the floor's colour; a special floor (stairs, an
               // altar's square...) is a smooth plate with its tile printed on top
@@ -927,6 +929,7 @@ export class Renderer {
       this.brick.setDistance(this.far && this.far < 200 ? this.far : 0); // (drawn less far: hazing out at the end)
       this.brick.setFigures(this.brickFigures.filter((f) => f.url));
       this.brick.setItems(this.brickItems || []);
+      this.brick.setBridges(this.bridges || []); // (the drawbridges: lowered, raised, swinging)
       this.brick.render(this.proj, this.view, w, h, this.focus);
       gl.viewport(0, 0, w, h);
     } else {

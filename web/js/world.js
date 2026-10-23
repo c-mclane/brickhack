@@ -9,6 +9,9 @@ import { brickItemForTile, gameTile, brickBuilt } from './brickitems.js';
 // a trap's brick model (terrain.js TRAP_ITEMS: items.built.json), if it's been made: for the class of a square
 const trapBuilt = (cl) => (cl && cl.trap != null && TRAP_ITEMS[cl.trap] && brickBuilt(TRAP_ITEMS[cl.trap])) || null;
 
+// a square's own random number, 0..1, the same every time (a tree's kind, its turn)
+const sqHash = (x, y) => { const h = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453; return h - Math.floor(h); };
+
 export class World {
   constructor() {
     // SLASH'EM's map is COLNO x ROWNO (BrickHack: 120 x 64);
@@ -68,6 +71,12 @@ export class World {
   }
   litAt(x, y) { return this.lit ? this.lit[y * this.w + x] || '0' : '0'; }
 
+  // which way iron bars at (x, y) run: along x (0) if there's wall or more bars east or west of them, else along z
+  barsTurn(x, y) {
+    const along = (dx) => { const n = this.classes[y * this.w + x + dx]; return n && (n.type === 'wall' || n.type === 'rock' || n.cmap === CM.bars); };
+    return along(-1) || along(1) ? 0 : Math.PI / 2;
+  }
+
   setHero(x, y) {
     if (x !== this.hero.x || y !== this.hero.y) this.dirty = true;
     this.hero = { x, y };
@@ -116,6 +125,7 @@ export class World {
   sprites(includeHero, motion, now, fx = null) {
     const out = [];
     this.brickDrops = []; // items lying on the floor as brick models (the brick dungeon): [{x, z, url}]
+    this.bridges = []; // the drawbridges: [{gx, gz (its gate, in the wall), sx, sz (its span, over the moat), down (lowered)}] (brickworld setBridges)
     const bob = (x, y) => Math.sin(now / 400 + x * 1.7 + y * 2.3) * 0.06;
     const drawn = new Set(); // (monsters drawn: each once, the map and the monsters' list out of step or not)
     for (let y = 0; y < this.h; y++)
@@ -128,19 +138,30 @@ export class World {
         // (a fountain, a sink, a toilet stands in brick (items.json), first on its square, all else on it; else its
         // sprite. A sink, a toilet: its back to a wall beside it, if there's one: turn)
         const furn = !cl ? null : cl.cmap === CM.fountain ? 'fountain' : cl.cmap === CM.sink ? 'sink' : cl.cmap === CM.toilet && CM.toilet >= 0 ? 'toilet'
-          : cl.cmap === CM.altar ? 'altar' : null;
+          : cl.cmap === CM.altar ? 'altar' : cl.cmap === CM.throne ? 'throne' : cl.cmap === CM.grave ? 'grave' : cl.cmap === CM.bars ? 'iron bars'
+          : cl.cmap === CM.tree ? 'tree' : null;
         // (an altar: the one of its alignment, its stone and trim: lawful white and gold, neutral grey, chaotic black and
         // dark red, Moloch's black and red; a lawful one, to a follower of Jesus: his, the cross on it)
         // (a high altar, the Astral Plane's or the Sanctum's: its kind's, grander; his, though, is his)
         const model = furn === 'altar' ? 'altar_' + (c.a === 1 && this.faith ? 'jesus'
-            : (c.h ? 'high_' : '') + ({ 1: 'lawful', 0: 'neutral', [-1]: 'chaotic' }[c.a] || (c.a === -128 ? 'unaligned' : 'neutral'))) : furn;
+            : (c.h ? 'high_' : '') + ({ 1: 'lawful', 0: 'neutral', [-1]: 'chaotic' }[c.a] || (c.a === -128 ? 'unaligned' : 'neutral')))
+          : furn === 'tree' ? (sqHash(x, y) < 0.5 ? 'tree' : 'tree_pine') : furn; // (a tree: the round one or the pine, each square its own)
         const fountain = model && brickBuilt(model);
         if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders, perch: fountain.perch, offer: fountain.offer, anchored: fountain.anchored, spots: fountain.spots, item: model,
-          turn: furn === 'fountain' ? 0 : this.backToWall(x, y) });
+          turn: furn === 'fountain' ? 0 : furn === 'tree' ? sqHash(y, x) * Math.PI * 2 : furn === 'iron bars' ? this.barsTurn(x, y) : this.backToWall(x, y) });
         else if (cl && cl.sprite && !trapBuilt(cl)) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade }); // (a web: in brick, if it's been made)
         // (a trap, in brick (terrain.js TRAP_ITEMS): square to its square; a pit, a hole, its shaft down where its floor isn't, render.js)
         const trapB = trapBuilt(cl);
         if (trapB) this.brickDrops.push({ x, z: y, url: trapB.url, level: 0, upright: true, name: TRAP_ITEMS[cl.trap], sunk: !!trapB.sunk, trap: cl.trap });
+        // (a drawbridge: lowered, its span over the moat shows it, the gate the wall square beside it; raised, the gate shows it,
+        // its span the water beside it)
+        if (cl && (cl.cmap === CM.vodbridge || cl.cmap === CM.hodbridge || cl.cmap === CM.vcdbridge || cl.cmap === CM.hcdbridge)) {
+          const down = cl.cmap === CM.vodbridge || cl.cmap === CM.hodbridge, ns = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+          const at = (dx, dz) => this.classes[(y + dz) * this.w + x + dx];
+          const pick = down ? ns.find(([dx, dz]) => { const n = at(dx, dz); return n && (n.type === 'wall' || n.type === 'door' || n.type === 'odoor' || n.cmap === CM.ndoor); })
+            : ns.find(([dx, dz]) => { const n = at(dx, dz); return n && n.type === 'liquid'; });
+          if (pick) this.bridges.push(down ? { gx: x + pick[0], gz: y + pick[1], sx: x, sz: y, down } : { gx: x, gz: y, sx: x + pick[0], sz: y + pick[1], down });
+        }
         const isHero = x === this.hero.x && y === this.hero.y;
         // the brick dungeon: everything lying here as brick models, the bottom one first, each
         // on the one below (brickworld.js stacks them), even under you or a monster
