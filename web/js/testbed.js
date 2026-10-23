@@ -35,6 +35,7 @@ import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { mul, mouthPoint } from './minifig-anim.js';
 import { NameTags } from './nametags.js';
 import { AltarRites } from './rites.js';
+import { ZAP_AT } from './spellfx.js';
 
 const STEP_TIME = 0.32; // s a square, walking
 
@@ -847,6 +848,55 @@ export async function runTestbed(data) {
           c.gone = false; say('');
         }
       }
+      // wands and spells (?part=spells, asked for alone: it's long): every wand zapped and every spell cast, one after another
+      // down the room at the far end of it: you into the wand pose (the wand in hand, a spell's hand empty), and what comes of
+      // it played out as the game plays it (spellfx.js): a ray, a bolt striking the first thing in its way, a fireball's
+      // explosion, a ray bounced back off the wall, a zap with nowhere to go about you; and every kind of explosion
+      if (part && part.split(',').includes('spells')) {
+        const sp = brick.spell;
+        place(level.start[0], level.start[1], Math.PI / 2);
+        await wait(0.8);
+        const hx = hero.sq.x, hy = hero.sq.y, tx = Math.min(level.w - 2, hx + 7);
+        const line = Array.from({ length: tx - hx }, (_, i) => [hx + 1 + i, hy]);
+        const box = (x, y) => [-1, 0, 1].flatMap((dy) => [-1, 0, 1].map((dx) => [x + dx, y + dy]));
+        const W = (n, how, k) => ({ n: 'wand:' + n, wand: 'wand of ' + n, how, k }), S = (n, how, k) => ({ n: 'spell:' + n, how, k });
+        const DEMO = [
+          W('magic missile', 'ray', 0), W('fire', 'ray', 1), W('cold', 'ray', 2), W('sleep', 'ray', 3), W('death', 'ray', 4), W('lightning', 'bounce', 5),
+          W('fireball', 'explode', 1), W('digging', 'ray', 8), W('striking', 'bolt'), W('make invisible', 'bolt'), W('slow monster', 'bolt'),
+          W('speed monster', 'bolt'), W('undead turning', 'bolt'), W('polymorph', 'bolt'), W('cancellation', 'bolt'), W('teleportation', 'bolt'),
+          W('opening', 'bolt'), W('locking', 'bolt'), W('probing', 'bolt'), W('nothing', 'bolt'), W('light', 'self'), W('secret door detection', 'self'),
+          W('enlightenment', 'self'), W('create monster', 'self'), W('wishing', 'self'),
+          S('force bolt', 'bolt'), S('magic missile', 'ray', 0), S('fireball', 'explode', 1), S('cone of cold', 'ray', 2), S('sleep', 'ray', 3),
+          S('finger of death', 'ray', 4), S('lightning', 'ray', 5), S('poison blast', 'ray', 6), S('acid stream', 'ray', 7), S('drain life', 'bolt'),
+          S('healing', 'self'), S('extra healing', 'bolt'), S('cure blindness', 'self'), S('cure sickness', 'self'), S('restore ability', 'self'),
+          S('stone to flesh', 'bolt'), S('haste self', 'self'), S('levitation', 'self'), S('invisibility', 'self'), S('protection', 'self'),
+          S('jumping', 'self'), S('detect monsters', 'self'), S('detect food', 'self'), S('detect treasure', 'self'), S('detect unseen', 'self'),
+          S('magic mapping', 'self'), S('clairvoyance', 'self'), S('identify', 'self'), S('enlighten', 'self'), S('light', 'self'),
+          S('remove curse', 'self'), S('enchant weapon', 'self'), S('enchant armor', 'self'), S('charging', 'self'), S('confuse monster', 'self'),
+          S('cause fear', 'self'), S('charm monster', 'self'), S('create monster', 'self'), S('summon undead', 'self'), S('create familiar', 'self'),
+          S('command undead', 'self'), S('turn undead', 'bolt'), S('polymorph', 'bolt'), S('teleport away', 'bolt'), S('cancellation', 'bolt'),
+          S('knock', 'bolt'), S('wizard lock', 'bolt'), S('dig', 'ray', 8), S('resist poison', 'self'), S('resist sleep', 'self'),
+          S('endure cold', 'self'), S('endure heat', 'self'), S('insulate', 'self'), S('flame sphere', 'self'), S('freeze sphere', 'self'),
+        ];
+        for (const z of DEMO) {
+          const name = z.n.split(':')[1];
+          say(z.wand ? `You zap a wand of ${name}.` : `You cast ${name}.`);
+          hero.hold = z.wand ? { R: url(z.wand) } : { R: null };
+          hero.fount = { act: 'zap', t0: clock, fired: 0, url: z.wand ? url(z.wand) : null }; // (a wand: in hand all through it; a spell: an empty hand)
+          sp.hold(ZAP_AT);
+          let d;
+          if (z.how === 'ray') d = sp.beam(z.k, line, [hx, hy]);
+          else if (z.how === 'bounce') { sp.beam(z.k, line, [hx, hy]); d = sp.beam(z.k, line.slice(0, -1).reverse().slice(0, 4), null); }
+          else if (z.how === 'explode') { sp.beam(z.k, line, [hx, hy]); d = sp.beam(15, box(tx - 1, hy)); }
+          else if (z.how === 'bolt') d = sp.beam(name, [[hx, hy], [tx, hy]], [hx, hy]);
+          else d = sp.self(z.n, hx, hy);
+          await wait(Math.max(FOUNT.zap.T, d + 0.15) + 0.35);
+        }
+        hero.hold = { R: null };
+        const BOOMS = ['dark', 'noxious', 'muddy', 'wet', 'magical', 'fiery', 'frosty'];
+        for (let i = 0; i < 7; i++) { say(`A ${BOOMS[i]} explosion!`); await wait(sp.beam(10 + i, box(tx - 1, hy)) + 0.4); }
+        say('');
+      }
       // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the
       // floor where it comes down, left lying there; each archer (you, the centaur's man half) into the stance, aimed, drawn,
       // let go, held, and back to how it stood (FOUNT.loose)
@@ -1491,7 +1541,7 @@ export async function runTestbed(data) {
       m.set(figureMatrix(S.x, S.y - drop, S.z, S.yaw));
     }
     hero.mouth = pose ? mouthPoint(m, pose) : null; // (bad breath: off your mouth, next frame)
-    const figs = [{ url: hero.polyUrl || heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo && fo.act === 'loose' ? { ...hero.hold, L: null, nock: fo.t > NOCKED[0] && fo.t < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(fo.t) } : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
+    const figs = [{ url: hero.polyUrl || heroFig.url, matrix: m, pose, fade: hero.fade, hold: hero.spot ? hero.hold : fo && fo.act === 'loose' ? { ...hero.hold, L: null, nock: fo.t > NOCKED[0] && fo.t < NOCKED[1] ? url('arrow') : undefined, nockK: nockAt(fo.t) } : fo && fo.act === 'zap' ? { R: hero.fount.url || null, L: null } : fo ? { R: fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero.fount.grab : hero.fount.url) : null, L: null }
       : raise > 0 || hero.exc ? { R: (hero.raise && hero.raise.url) || url('Excalibur'), L: null } : pp && !hero.digging ? { R: null, L: null } : hero.hold }]; // (climbing a statue: hands free)
     const tagList = []; // (each monster's name tag: over it, as drawn)
     for (const c of cobras) {

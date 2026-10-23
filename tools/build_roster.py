@@ -30,6 +30,13 @@ PARTS = os.path.join(ASSETS, 'parts')
 FRAME, DOOR = 308, 70   # wooden: a dark brown frame, a reddish brown door
 UI_GLYPHS = {'A': '3070bpta', 'B': '3070bptb', 'C': '3070bptc', 'D': '3070bptd', 'E': '3070bpte', 'F': '3070bptf', 'G': '3070bptg', 'H': '3070bpth', 'I': '3070bpti', 'J': '3070bptj', 'K': '3070bptk', 'L': '3070bptl', 'M': '3070bptm', 'N': '3070bptn', 'O': '3070bpto', 'P': '3070bptp', 'Q': '3070bptq', 'R': '3070bptr', 'S': '3070bpts', 'T': '3070bptt', 'U': '3070bptu', 'V': '3070bptv', 'W': '3070bptw', 'X': '3070bptx', 'Y': '3070bpty', 'Z': '3070bptz', '0': '3070bpv0', '1': '3070bpv1', '2': '3070bpv2', '3': '3070bpv3', '4': '3070bpv4', '5': '3070bpv5', '6': '3070bpv6', '7': '3070bpv7', '8': '3070bpv8', '-': '3070bpuh', '.': '3070bpuf', '@': '3070bpuj', '_': '3070bpug'}   # (the silver letter tiles: char -> part)
 DUNGEON_PARTS = {
+    # the pieces a zap's light is made of (web/js/spellfx.js): white, tinted there to each wand's and spell's colour
+    'fx_stud': "1 15 0 0 0 1 0 0 0 1 0 0 0 1 6141.dat\n",      # (a round 1x1 plate)
+    'fx_star': "1 15 0 0 0 1 0 0 0 1 0 0 0 1 11609.dat\n",     # (a round 1x1 plate with a star on top)
+    'fx_heart': "1 15 0 0 0 1 0 0 0 1 0 0 0 1 39739.dat\n",    # (a heart tile: healing)
+    'fx_flame': "1 15 0 0 0 1 0 0 0 1 0 0 0 1 6126b.dat\n",    # (a minifig flame: fire)
+    'fx_bolt': "1 15 0 0 0 1 0 0 0 1 0 0 0 1 59233.dat\n",     # (a minifig lightning bolt: lightning)
+    'fx_gem': "1 15 0 0 0 1 0 0 0 1 0 0 0 1 30153.dat\n",      # (a faceted gem: ice)
     'door_closed': f"""1 {FRAME} 0 0 0 1 0 0 0 1 0 0 0 1 60596.dat
 1 {DOOR} -32 0 5 1 0 0 0 1 0 0 0 1 60616a.dat
 """,

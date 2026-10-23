@@ -12,6 +12,7 @@ import { isMist, mistify, isStatic, staticify, quantumPart, strobify, addAura, a
 import { figureJoints, poseJoints, wristMatrix, setHinge } from './minifig-anim.js';
 import { PARTS, MODEL_SCALE, BRICK_H, PLATE_H, STUD_H } from './brick.js';
 import { ThrowFX } from './throwfx.js';
+import { SpellFX } from './spellfx.js';
 import { BoulderFX } from './boulderfx.js';
 import { BallChain, ankleAnchor } from './ballchain.js';
 import { brickPieces, corpsePiece, pieceOf, sizesOf } from './pieces.js';
@@ -172,6 +173,7 @@ export class BrickWorld {
     this.doors = new Map(); // where -> the door's group
     this.items = new Map(); // where + what -> a brick item lying on the floor
     this.fx = new ThrowFX(this); // thrown things, flying and tumbling (throwfx.js)
+    this.spell = new SpellFX(this); // wands zapped and spells cast: their bolts, rays, bursts (spellfx.js)
     this.boulders = null; // boulders rolling and bursting (boulderfx.js: made with the world)
     this.rolling = new Map(); // x,z,url -> a pushed boulder sliding into that square, or just come to rest there
     this.keptRocks = new Map(); // x,z,url -> rocks flung from a broken boulder, lying where they fell (while its rocks are there)
@@ -2022,6 +2024,7 @@ export class BrickWorld {
       this.sun.target.updateMatrixWorld();
     }
     this.fx.step(); // thrown things in flight
+    this.spell.step(); // zaps and spells playing out
     this.stepCorpses(); // (the slain's corpses: the brick of each that's left)
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing
     this.stepDry(performance.now() / 1000); // ...or drying up

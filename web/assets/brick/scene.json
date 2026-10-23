@@ -1,1 +1,1 @@
-{"objects": [{"fig": "knight", "hero": true, "label": "hero"}], "level": {"w": 9, "h": 9, "start": [4, 4], "items": [], "monsters": [], "camera": {"pos": [4.5, 7, 13], "target": [4.5, 0.4, 4.5]}, "pools": [], "lava": [], "title": "empty plate"}}
+{"objects": [{"fig": "knight", "hero": true, "label": "hero"}], "level": {"w": 14, "h": 7, "start": [2, 3], "items": [], "monsters": [], "camera": {"pos": [7, 6.5, 11], "target": [7, 0.6, 3.5]}, "pools": [], "lava": [], "title": "spells and wands", "part": "spells"}}

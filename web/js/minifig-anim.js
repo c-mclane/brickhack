@@ -272,6 +272,20 @@ export const FOUNT = {
     aim: [[0, 0], [1.15, 0], [1.5, 1], [1.8, 1], [1.87, 0], [2.95, 0]],
     head: [[0, 0], [0.55, -0.06], [1.8, -0.08], [1.87, -0.04], [2.35, -0.04], [2.95, 0]],
     legR: [[0, 0], [0.55, -16], [2.35, -16], [2.95, 0]], legL: [[0, 0], [0.55, 12], [2.35, 12], [2.95, 0]] },
+  // a wand zapped, a spell cast (spellfx.js ZAP_AT: the bolt away): a step in, side on, the wand arm swept up and back over
+  // the shoulder, then flicked out straight before you at the mark, the other hand flung back for balance; held there as
+  // the bolt flies, and back to how you were
+  zap: { T: 1.75,
+    lean: [[0, 0], [0.35, -0.06], [0.62, 0.1], [1.2, 0.06], [1.75, 0]],
+    twist: [[0, 0], [0.35, 0.3], [0.62, 0.18], [1.2, 0.18], [1.75, 0]],
+    yaw: [[0, 0], [0.35, -0.25], [0.62, -0.12], [1.2, -0.12], [1.75, 0]],
+    armR: [[0, null], [0.35, -165], [0.5, -150], [0.62, -88], [0.72, -84], [1.2, -86], [1.75, null]],
+    armL: [[0, null], [0.35, 24], [0.62, 38], [1.2, 34], [1.75, null]],
+    innR: [[0, 0], [0.35, 10], [0.62, -8], [1.2, -8], [1.75, 0]],
+    innL: [[0, 0], [0.62, -18], [1.2, -18], [1.75, 0]],
+    inn: [[0, 0], [1.75, 0]],
+    head: [[0, 0], [0.35, 0.12], [0.62, -0.04], [1.2, -0.04], [1.75, 0]],
+    legR: [[0, 0], [0.35, -22], [1.3, -22], [1.75, 0]], legL: [[0, 0], [0.35, 14], [1.3, 14], [1.75, 0]] },
   // carrying something up before you, held upright (the chalice, brought up to the altar)
   carry: { T: 60.0, armR: [[0, null], [0.4, -100], [60.0, -100]], armL: [[0, null], [60.0, null]], inn: [[0, 0], [60.0, 0]], lean: [[0, 0], [60.0, 0]], head: [[0, 0], [60.0, 0]] },
   // ...and the deacons' (the altar's two statues, come down): hands joined before them; down on their knees, heads

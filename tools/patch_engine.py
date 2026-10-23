@@ -1155,4 +1155,33 @@ int max;
 
 /*worm.c*/""")], "WEB_HOOK_WSEGS")
 
+# ---- wands zapped and spells cast, played out (winweb.c web_zap, web_beam_*: the client's spellfx.js): the hero's zap
+# (into the wand pose), every ray drawn square by square (gathered, the map not painted meanwhile: sent as one), the
+# line of a wand or spell that strikes the first thing in its way (no ray drawn for it), explosions
+edit("src/display.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\nextern void FDECL(web_beam_begin, (int)); /* WEB_HOOK_ZAPFX */\nextern void FDECL(web_beam_at, (int, int));\nextern void NDECL(web_beam_end);\n'),
+    ("\t    tglyph->cont = (struct tmp_glyph *)0;\n\t    flush_screen(0);\t/* flush buffered glyphs */\n\t    return;",
+     "\t    tglyph->cont = (struct tmp_glyph *)0;\n\t    web_beam_begin(y);\n\t    flush_screen(0);\t/* flush buffered glyphs */\n\t    return;"),
+    ("\tcase DISP_END:\n\t    if (tglyph->style == DISP_BEAM", "\tcase DISP_END:\n\t    web_beam_end();\n\t    if (tglyph->style == DISP_BEAM"),
+    ("\tdefault:\t/* do it */\n", "\tdefault:\t/* do it */\n\t    web_beam_at(x, y);\n"),
+], "WEB_HOOK_ZAPFX")
+edit("src/zap.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\nextern void FDECL(web_beam_src, (int, int)); /* WEB_HOOK_ZAPFX */\nextern void FDECL(web_zapline, (int, int, int));\nextern void FDECL(web_zap, (struct obj *, int));\n'),
+    ("    abstype = abs(type) % 10;\n", "    abstype = abs(type) % 10;\n    web_beam_src(sx, sy);\n"),
+    ("\t\t(void) bhit(u.dx,u.dy, rn1(8,6), ZAPPED_WAND,\n\t\t\t    bhitm, bhito, &obj);\n",
+     "\t\t(void) bhit(u.dx,u.dy, rn1(8,6), ZAPPED_WAND,\n\t\t\t    bhitm, bhito, &obj);\n\t\tweb_zapline(otyp, bhitpos.x, bhitpos.y);\n"),
+    ("\t    if ((damage = zapyourself(obj, TRUE)) != 0) {\n", "\t    web_zap(obj, 0);\n\t    if ((damage = zapyourself(obj, TRUE)) != 0) {\n"),
+    ("\t\tskilldmg = spell_damage_bonus(obj->otyp);\n\n", "\t\tskilldmg = spell_damage_bonus(obj->otyp);\n\n\tweb_zap(obj, obj->oclass == SPBOOK_CLASS); /* (its way chosen: the client's wand pose) */\n"),
+], "WEB_HOOK_ZAPFX")
+edit("src/spell.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\nextern void FDECL(web_zap, (struct obj *, int)); /* WEB_HOOK_ZAPFX */\n'),
+    ("\tswitch(pseudo->otyp)  {\n", "\tswitch (pseudo->otyp) { /* (cast: the client's wand pose; those that go the way of a wand's zap, once their way is chosen: weffects) */\n"
+     "\tcase SPE_MAGIC_MISSILE: case SPE_FIREBALL: case SPE_CONE_OF_COLD: case SPE_LIGHTNING: case SPE_ACID_STREAM: case SPE_POISON_BLAST:\n"
+     "\tcase SPE_FORCE_BOLT: case SPE_SLEEP: case SPE_KNOCK: case SPE_SLOW_MONSTER: case SPE_WIZARD_LOCK: case SPE_DIG: case SPE_TURN_UNDEAD:\n"
+     "\tcase SPE_POLYMORPH: case SPE_TELEPORT_AWAY: case SPE_CANCELLATION: case SPE_FINGER_OF_DEATH: case SPE_LIGHT: case SPE_DETECT_UNSEEN:\n"
+     "\tcase SPE_HEALING: case SPE_EXTRA_HEALING: case SPE_DRAIN_LIFE: case SPE_STONE_TO_FLESH: break;\n"
+     "\tdefault: web_zap(pseudo, 1);\n\t}\n\tswitch(pseudo->otyp)  {\n"),
+    ("\t\t\t    if ((damage = zapyourself(pseudo, TRUE)) != 0) {\n", "\t\t\t    web_zap(pseudo, 1);\n\t\t\t    if ((damage = zapyourself(pseudo, TRUE)) != 0) {\n"),
+], "WEB_HOOK_ZAPFX")
+
 print("engine hooks applied:", src)

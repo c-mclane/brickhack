@@ -430,6 +430,113 @@ web_trapfx(int ttyp, int x, int y, int mon)
     endmsg();
 }
 
+/* zap.c dozap, spell.c spelleffects: the hero zaps a wand or casts a spell (n: what it is, "wand:fire", "spell:healing";
+   tile: the wand's own; dx, dy, dz: which way, when it's known yet): the client into the wand pose, what comes of it
+   (its rays: web_beam_*) played out after; the engine's replies held till it's done */
+void
+web_zap(struct obj *obj, int spell)
+{
+    if (!out || !obj)
+        return;
+    fprintf(out, "{\"t\":\"zap\",\"n\":");
+    {
+        char nm[BUFSZ];
+        Sprintf(nm, "%s:%s", spell ? "spell" : "wand", OBJ_NAME(objects[obj->otyp]));
+        jstr(nm);
+    }
+    fprintf(out, ",\"tile\":%d,\"dx\":%d,\"dy\":%d,\"dz\":%d,\"x\":%d,\"y\":%d", spell ? -1 : web_obj_tile(obj, obj_to_glyph(obj)),
+            u.dx, u.dy, u.dz, u.ux, u.uy);
+    endmsg();
+}
+
+/* display.c tmp_at: a ray (a wand's, a spell's, a breath; bounced off walls), a digging beam, a camera's flash or an
+   explosion, drawn square by square: its squares (those seen) gathered, the map not painted meanwhile, and sent as one
+   ("beam": k the kind (0-7: magic missile, fire, cold, sleep, death, lightning, poison gas, acid; 8 a digging beam;
+   9 a camera's flash; 10+ an explosion: 10 + its type, dark, noxious, muddy, wet, magical, fiery, frosty), p the squares
+   in order, s where it came from if known (zap.c buzz)); the client plays it out (spellfx.js). Others (a thrown
+   thing's flight) not: dothrow.c sends those its own way */
+extern int web_freeze_map; /* (dothrow.c's: the map not painted while it's set) */
+static int web_bm_depth, web_bm_on, web_bm_kind, web_bm_n, web_bm_sx = -1, web_bm_sy = -1;
+static xchar web_bm_px[400], web_bm_py[400];
+
+void
+web_beam_src(int x, int y) /* zap.c buzz: whose ray it is, the square it starts from (the next beam's) */
+{
+    web_bm_sx = x, web_bm_sy = y;
+}
+
+void
+web_beam_begin(int glyph)
+{
+    int k = -1;
+
+    if (web_bm_depth++)
+        return; /* (only the outermost of nested effects) */
+    if (glyph >= GLYPH_ZAP_OFF && glyph < GLYPH_ZAP_OFF + (NUM_ZAP << 2))
+        k = (glyph - GLYPH_ZAP_OFF) >> 2;
+    else if (glyph == cmap_to_glyph(S_digbeam))
+        k = 8;
+    else if (glyph == cmap_to_glyph(S_flashbeam))
+        k = 9;
+    else if (glyph >= GLYPH_EXPLODE_OFF && glyph < GLYPH_EXPLODE_OFF + MAXEXPCHARS * EXPL_MAX)
+        k = 10 + (glyph - GLYPH_EXPLODE_OFF) / MAXEXPCHARS;
+    if (k < 0)
+        return;
+    web_bm_on = 1, web_bm_kind = k, web_bm_n = 0;
+    web_freeze_map++;
+}
+
+void
+web_beam_at(int x, int y)
+{
+    int i;
+
+    if (!web_bm_on || web_bm_depth != 1 || !isok(x, y) || !cansee(x, y))
+        return;
+    for (i = 0; i < web_bm_n; i++) /* (an explosion goes over its squares again, frame by frame: each once) */
+        if (web_bm_px[i] == x && web_bm_py[i] == y && (web_bm_kind >= 10 || i == web_bm_n - 1))
+            return;
+    if (web_bm_n < SIZE(web_bm_px))
+        web_bm_px[web_bm_n] = x, web_bm_py[web_bm_n] = y, web_bm_n++;
+}
+
+void
+web_beam_end(void)
+{
+    int i;
+
+    if (!web_bm_depth)
+        return;
+    if (--web_bm_depth || !web_bm_on)
+        return;
+    web_bm_on = 0;
+    web_freeze_map--;
+    if (out && web_bm_n) {
+        fprintf(out, "{\"t\":\"beam\",\"k\":%d,\"p\":[", web_bm_kind);
+        for (i = 0; i < web_bm_n; i++)
+            fprintf(out, "%s[%d,%d]", i ? "," : "", web_bm_px[i], web_bm_py[i]);
+        fprintf(out, "]");
+        if (web_bm_sx >= 0)
+            fprintf(out, ",\"s\":[%d,%d]", web_bm_sx, web_bm_sy);
+        endmsg();
+    }
+    if (web_bm_kind < 8)
+        web_bm_sx = web_bm_sy = -1; /* (a bounce restarts the ray: the next is its continuation, from where this ended) */
+}
+
+/* zap.c weffects: a wand or spell that strikes the first thing in its way (striking, teleportation, healing...), no ray
+   drawn by the engine: its line, from you to where it stopped ("beam", k its name) */
+void
+web_zapline(int otyp, int x, int y)
+{
+    if (!out || (x == u.ux && y == u.uy))
+        return;
+    fprintf(out, "{\"t\":\"beam\",\"k\":");
+    jstr(OBJ_NAME(objects[otyp]));
+    fprintf(out, ",\"p\":[[%d,%d],[%d,%d]],\"s\":[%d,%d]", u.ux, u.uy, x, y, u.ux, u.uy);
+    endmsg();
+}
+
 /* priest.c priest_talk: a contribution to a temple priest (#chat), played out (the client: gold tossed to him, and
    what comes of it): "donate" (n: 0 nothing given, his curse; 1 a little, thanked or not; 2 pious; 3 your
    devotion rewarded, his protection; 4 selfless generosity), "blessing" (a pious gift's clairvoyance); at him,

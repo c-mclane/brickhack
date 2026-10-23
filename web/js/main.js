@@ -20,6 +20,7 @@ import { creatureLocal, slitherLocal, LUNGE_TIME } from './creature.js';
 import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, perchOf, FOUNT_SPLASH, FOUNT_REACH, FOUNT_DOWN, bathPath, BATH_SPLASH, sitPath, risePath, RISE_T, againstFountain } from './perch.js';
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, FOUNT, LOOSE_AT, NOCKED, nockAt, fountKey, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
+import { ZAP_AT } from './spellfx.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { brickInterface } from './brickui.js';
@@ -569,6 +570,7 @@ function connect() {
     // (an amulet's class is a double quote, which an engine built before winweb.c escaped it sends
     // bare in the inventory; mended, or the whole inventory would be lost)
     try { m = JSON.parse(e.data); } catch { try { m = JSON.parse(e.data.replace(/"c":"""/g, '"c":"\\""')); } catch { return; } }
+    if (m.t === 'beam' && !heldReplies.some((h) => h.t === 'zap')) { handle(m); return; } // (a ray: played out at once, after the zap before it; it holds what comes after)
     if (heldReplies.length || performance.now() < holdUntil) { heldReplies.push(m); return; } // (an attack's outcome waits for the blade)
     handle(m);
   };
@@ -707,6 +709,26 @@ function handle(m) {
       if (m.by === 'monster' && m.shot) shotAt.set(`${m.fx},${m.fy}`, performance.now()); // (a minifig there draws and looses)
       if (m.by !== 'monster' && m.shot) fountNow('loose'); // (you shot it: into the stance, drawn, aimed, let go, and back)
       else if (m.by !== 'monster' && hero3d.anim) hero3d.anim.attack('L'); // (you threw it: a swing of your left arm)
+      break;
+    }
+    case 'zap': { // you zapped a wand or cast a spell: into the wand pose, the wand (if it's one) in hand; what comes of it (its rays: 'beam') after the flick
+      if (!(renderer.brickOn && renderer.brick)) break;
+      const l = m.tile >= 0 ? brickItemForTile(m.tile) : null, sp = renderer.brick.spell, now = performance.now();
+      fountNow('zap', { url: l ? l.url : null });
+      sp.hold(ZAP_AT);
+      const z = (lastZap = { n: m.n, x: m.x, y: m.y, t: now, beamed: false });
+      holdReplies(now + ZAP_AT * 1000 + 60);
+      // (a zap with nowhere to go (light, a healing spell on yourself, a wish): about you, once the wand's flicked; if no ray came of it)
+      setTimeout(() => { if (!z.beamed && lastZap === z) holdReplies(performance.now() + sp.self(m.n, m.x, m.y) * 1000); }, ZAP_AT * 1000 - 20);
+      break;
+    }
+    case 'beam': { // a ray (a wand's, a spell's, a breath), a bolt, a digging beam, an explosion: played out along its squares (spellfx.js)
+      if (!(renderer.brickOn && renderer.brick)) break;
+      const sp = renderer.brick.spell, now = performance.now();
+      if (lastZap && now - lastZap.t < 4000) lastZap.beamed = true;
+      const src = m.s, mine = src && world.hero && src[0] === world.hero.x && src[1] === world.hero.y;
+      if (src && !mine && typeof m.k === 'number' && m.k < 8 && !(lastZap && now - lastZap.t < 1500)) { zapAt.set(`${src[0]},${src[1]}`, now); sp.hold(ZAP_AT * 0.85); } // (a monster's wand or spell: it into the pose too)
+      holdReplies(now + sp.beam(m.k, m.p, src) * 1000 + 60);
       break;
     }
     case 'shatter': { // something broke there: shards
@@ -1470,7 +1492,8 @@ function heroHold() {
   if (statuePerch(performance.now()) && performance.now() - (game.lastApplyT || 0) > 8000) { hold.R = null; hold.L = null; hold.two = false; } // (climbing a statue: hands free; unless digging down from up there)
   if (hero3d.raise && hero3d.raise.url) { hold.R = hero3d.raise.url; hold.L = null; hold.two = false; } // (Excalibur: in hand from the blessing on, up there, jumping down, and held high)
   const fo = fountAct(performance.now());
-  if (fo && fo.act === 'loose') { hold.L = null; hold.two = false; hold.nock = fo.t > NOCKED[0] && fo.t < NOCKED[1] ? hero3d.nockUrl : undefined; hold.nockK = nockAt(fo.t); } // (shooting: the bow kept in hand, an arrow on its string)
+  if (fo && fo.act === 'zap') { hold.R = hero3d.fount.url || null; hold.L = null; hold.two = false; } // (zapping: the wand in hand; casting: the hand empty, open)
+  else if (fo && fo.act === 'loose') { hold.L = null; hold.two = false; hold.nock = fo.t > NOCKED[0] && fo.t < NOCKED[1] ? hero3d.nockUrl : undefined; hold.nockK = nockAt(fo.t); } // (shooting: the bow kept in hand, an arrow on its string)
   else if (fo) { // (at a fountain: what's dipped in hand; a gem pulled out, in hand as it comes up)
     hold.R = fo.act === 'dip' || fo.act === 'reach' || fo.act === 'toiletDip' ? (hero3d.fount.grab && fo.t > FOUNT[fo.act].cup + 0.35 ? hero3d.fount.grab : hero3d.fount.url || null) : null;
     hold.L = null; hold.two = false;
@@ -2083,6 +2106,8 @@ function statuePerch(now) {
 // they hold when they lunge at you), always facing you
 const spitAt = new Map(); // x,y -> when a monster there last threw or spat something (its creature lunges)
 const shotAt = new Map(); // x,y -> when a monster there last loosed an arrow (a minifig: drawn and let go, FOUNT.loose)
+const zapAt = new Map(); // x,y -> when a monster there last zapped a wand or cast a ray (a minifig: FOUNT.zap)
+let lastZap = null; // your last zap: {n, x, y, t, beamed (a ray came of it)}
 const archeryUrls = { bow: null, arrow: null }; // (a monster shooting: a bow in its hand for it, if it holds none; the arrow on its string)
 const brickMons = new Map(); // tile -> {url, hold (an item's url), prims, creature, slither, lift} (each monster's own state: monStateOf)
 const brickMonGods = new Map(); // `${tile}|${god}` -> the same, a priest of that god (monsters.json "aligned priest|lawful": his own figure)
@@ -2227,7 +2252,11 @@ function brickMonFigures(sprites, dt, now) {
     const shot = shotAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
     if (shot && shot > (st.shotT0 || 0)) { st.shotT0 = shot; st.looseAt = now / 1000; }
     const loosing = st.looseAt != null && now / 1000 - st.looseAt < FOUNT.loose.T;
+    const zapped = zapAt.get(`${Math.round(s.x)},${Math.round(s.z)}`);
+    if (zapped && zapped > (st.zapT0 || 0)) { st.zapT0 = zapped; st.zapAt = now / 1000; }
+    const zapping = !loosing && st.zapAt != null && now / 1000 - st.zapAt < FOUNT.zap.T; // (zapping a wand at you, casting: the wand pose)
     const pose = st.anim ? st.anim.update(dt, loosing ? { moving, holdsR: true, fount: { act: 'loose', t: now / 1000 - st.looseAt } }
+      : zapping ? { moving, holdsR: !!e.hold, fount: { act: 'zap', t: now / 1000 - st.zapAt } }
       : { moving, holdsR: !!e.hold, lean: spitting ? 0.35 : 0, reach: spitting ? 0.7 : 0, raise: warn }) : null; // (shooting: into the archer's stance, and back)
     if (e.slither) {
       const m = mul4(figureMatrix(sx + 0.5, slift + e.lift, sz + 0.5, yaw), slitherLocal(now / 1000, { moving, lungeT: st.spitAt ?? -1e9 }));
