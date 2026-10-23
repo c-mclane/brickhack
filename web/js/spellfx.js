@@ -45,7 +45,7 @@ const RAY = [
   { name: 'digging', c: 0xb07a3a, c2: 0x6b4423, piece: 'stud', piece2: 'stud', mode: 'spray', hit: 'dust' },
   { name: 'flash', c: 0xffffff, c2: 0xfff4c0, piece: 'star', piece2: 'stud', mode: 'flash', hit: 'flash' },
 ];
-const BOOM = [0x3a3550, 0x7fff3f, 0x8a5a2b, 0x4aa8ff, 0xff70ff, 0xff6a12, 0x9fe9ff]; // explosions: dark, noxious, muddy, wet, magical, fiery, frosty
+const BOOM = [0x3a3550, 0x7fff3f, 0x8a5a2b, 0x4aa8ff, 0xff70ff, 0xff6a12, 0x9fe9ff, 0xfff7b0, 0x9a40ff, 0xbfe6ff]; // explosions: dark, noxious, muddy, wet, magical, fiery, frosty; and monsters' own bursts: a blinding light (a yellow light), a black light's, a shock (a shocking sphere)
 const NAMED = { // (a bolt that strikes the first thing in its way; and a zap with nowhere to go)
   striking: { c: 0xffffff, c2: 0xcfe8ff, piece: 'stud', hit: 'blast' }, 'force bolt': { c: 0xffffff, c2: 0xbfe0ff, piece: 'star', hit: 'blast' },
   'make invisible': { c: 0xe8ffff, c2: 0xffffff, piece: 'gem', hit: 'fade' }, invisibility: { c: 0xe8ffff, c2: 0xffffff, piece: 'gem', hit: 'fade' },
@@ -84,7 +84,7 @@ const FALLBACK = { c: 0xc89cff, c2: 0xffffff, piece: 'star', hit: 'swirl' };
 const RAYS_BY_NAME = { 'magic missile': 0, fire: 1, fireball: 1, cold: 2, 'cone of cold': 2, sleep: 3, death: 4, 'finger of death': 4, lightning: 5,
   'poison blast': 6, 'acid stream': 7, digging: 8, dig: 8 };
 export function styleOf(k) {
-  if (typeof k === 'number') return k >= 10 ? { name: 'explosion', c: BOOM[k - 10] ?? 0xff6a12, c2: 0xffffff, piece: k - 10 === 5 ? 'flame' : k - 10 === 6 ? 'gem' : 'stud', piece2: 'stud', mode: 'explosion', hit: 'blast', smoke: k - 10 === 5, dark: k === 10 } : RAY[k] || FALLBACK;
+  if (typeof k === 'number') return k >= 10 ? { name: 'explosion', c: BOOM[k - 10] ?? 0xff6a12, c2: k === 18 ? 0xff60ff : 0xffffff, piece: { 15: 'flame', 16: 'gem', 17: 'star', 18: 'star', 19: 'bolt' }[k] || 'stud', piece2: 'stud', mode: 'explosion', hit: k === 19 ? 'flash' : 'blast', smoke: k === 15, dark: k === 10, gas: k === 11 } : RAY[k] || FALLBACK;
   const n = String(k).replace(/^(wand|spell):/, '');
   if (NAMED[n]) return { name: n, mode: 'bolt', piece2: 'stud', ...NAMED[n] };
   if (n in RAYS_BY_NAME) return RAY[RAYS_BY_NAME[n]];
@@ -368,6 +368,8 @@ export class SpellFX {
       }
       this.ring(c, st.c, r, 0.45);
     }
+    if (st.gas && t < 0.9) for (let i = 0; i < 3; i++) // (a gas spore's: a green cloud billowing out and hanging)
+      this.speck(c.clone().add(new THREE.Vector3(rnd(-r, r), rnd(-0.3, 0.4), rnd(-r, r))), new THREE.Vector3(rnd(-0.3, 0.3), rnd(0, 0.2), rnd(-0.3, 0.3)), new THREE.Color(0x7fff3f).lerp(new THREE.Color(0x2a6a10), Math.random()), rnd(0.3, 0.5), rnd(1, 1.6));
     if ((st.smoke || st.dark) && t < 0.6 && Math.random() < 0.7)
       this.speck(c.clone().add(new THREE.Vector3(rnd(-r, r) * 0.5, rnd(-0.2, 0.3), rnd(-r, r) * 0.5)), new THREE.Vector3(0, rnd(0.3, 0.6), 0), st.dark ? 0x101018 : 0x353535, rnd(0.25, 0.4), rnd(0.8, 1.2), 0, true);
   }

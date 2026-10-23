@@ -2,10 +2,13 @@
 // the browser's own synthesiser, no files: a magic missile's "pew" and the blast where it lands, fire's roar, frost's icy
 // shimmer and a crystal ping, lightning's crackle and thunder, sleep's soft falling glide, death's low drone, a gas's hiss,
 // acid's sizzle, a digging rumble, an explosion's boom, a healing spell's bells, light's and a wish's shimmering rise.
-// Quiet till the first click or key (browsers allow sound only after one: allow), as loud as the music (setVolume).
+// Quiet till the first click, key or touch (browsers allow sound only after one), at a volume of its own (setZapVolume).
 
 let ctx = null, master = null, noiseBuf = null;
-let volume = 0.6, allowed = false;
+let volume = 0.8, allowed = false;
+// (unlocked by the first click, key or touch anywhere, and woken again by any after, should the browser have put it to sleep)
+const unlock = () => { allowed = true; audio(); };
+for (const ev of ['pointerdown', 'keydown', 'touchstart', 'mousedown']) addEventListener(ev, unlock, { capture: true, passive: true });
 
 function audio() {
   if (!allowed) return null;

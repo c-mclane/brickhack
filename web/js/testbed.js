@@ -896,6 +896,21 @@ export async function runTestbed(data) {
         hero.hold = { R: null };
         const BOOMS = ['dark', 'noxious', 'muddy', 'wet', 'magical', 'fiery', 'frosty'];
         for (let i = 0; i < 7; i++) { say(`A ${BOOMS[i]} explosion!`); await wait(sp.beam(10 + i, box(tx - 1, hy)) + 0.4); }
+        // the monsters that explode (the scene's, along the far side): a gas spore's death, a ball of noxious gas (the
+        // engine's own explosion, about it); the lights' and the spheres' attacks, a burst where each was (winweb.c
+        // web_monexplode); each blown to bits as it goes, and back again for the next time round
+        const BURSTS = { 'gas spore': 11, 'yellow light': 17, 'black light': 18, 'flaming sphere': 15, 'freezing sphere': 16, 'shocking sphere': 19 };
+        const bombs = cobras.filter((c) => c.monster in BURSTS);
+        for (const c of bombs) {
+          say(c.monster === 'gas spore' ? 'You kill the gas spore! It explodes!' : `The ${c.monster} explodes!`);
+          await wait(0.5);
+          const d = sp.beam(BURSTS[c.monster], c.monster === 'gas spore' ? box(c.at[0], c.at[1]) : [c.at]);
+          brick.shatterFigureAt(c.at[0], c.at[1]);
+          c.gone = true;
+          await wait(d + 0.4);
+        }
+        await wait(1);
+        for (const c of bombs) c.gone = false;
         say('');
       }
       // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the

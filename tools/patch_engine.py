@@ -1184,4 +1184,15 @@ edit("src/spell.c", [
     ("\t\t\t    if ((damage = zapyourself(pseudo, TRUE)) != 0) {\n", "\t\t\t    web_zap(pseudo, 1);\n\t\t\t    if ((damage = zapyourself(pseudo, TRUE)) != 0) {\n"),
 ], "WEB_HOOK_ZAPFX")
 
+# ---- a monster exploding as its attack (a yellow light, a sphere): its burst played out (winweb.c web_monexplode)
+edit("src/mhitu.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\nextern void FDECL(web_monexplode, (struct monst *, int)); /* WEB_HOOK_MONEXPLODE */\n'),
+    ("    if (mtmp->mcan) return(0);\n\n    if (!ufound)\n", "    if (mtmp->mcan) return(0);\n    web_monexplode(mtmp, mattk->adtyp);\n\n    if (!ufound)\n"),
+], "WEB_HOOK_MONEXPLODE")
+edit("src/mhitm.c", [
+    ('#include "hack.h"\n', '#include "hack.h"\nextern void FDECL(web_monexplode, (struct monst *, int)); /* WEB_HOOK_MONEXPLODE */\n'),
+    ("\tif (magr->mcan)\n\t    return MM_MISS;\n\n\tif(cansee(magr->mx, magr->my))\n\t\tpline(\"%s explodes!\", Monnam(magr));",
+     "\tif (magr->mcan)\n\t    return MM_MISS;\n\tweb_monexplode(magr, mattk->adtyp);\n\n\tif(cansee(magr->mx, magr->my))\n\t\tpline(\"%s explodes!\", Monnam(magr));"),
+], "WEB_HOOK_MONEXPLODE")
+
 print("engine hooks applied:", src)

@@ -524,6 +524,22 @@ web_beam_end(void)
         web_bm_sx = web_bm_sy = -1; /* (a bounce restarts the ray: the next is its continuation, from where this ended) */
 }
 
+/* mhitu.c explmu, mhitm.c explmm: a monster that explodes as its attack (a yellow light, a black light, a flaming,
+   freezing or shocking sphere), at you or another monster: a burst where it was ("beam", an explosion's kind: 15 fiery,
+   16 frosty, 17 a blinding light, 18 a black light's, 19 a shock, 14 any other); seen, if you can see it. (A gas spore's is
+   the engine's own explosion: display.c tmp_at sends that) */
+void
+web_monexplode(struct monst *mon, int adtyp)
+{
+    int k;
+
+    if (!out || !mon || !cansee(mon->mx, mon->my))
+        return;
+    k = adtyp == AD_FIRE ? 15 : adtyp == AD_COLD ? 16 : adtyp == AD_BLND ? 17 : adtyp == AD_HALU ? 18 : adtyp == AD_ELEC ? 19 : 14;
+    fprintf(out, "{\"t\":\"beam\",\"k\":%d,\"p\":[[%d,%d]]", k, mon->mx, mon->my);
+    endmsg();
+}
+
 /* zap.c weffects: a wand or spell that strikes the first thing in its way (striking, teleportation, healing...), no ray
    drawn by the engine: its line, from you to where it stopped ("beam", k its name) */
 void
