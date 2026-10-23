@@ -611,6 +611,7 @@ function handle(m) {
     case 'map': world.applyMap(m.c); break;
     case 'vis': world.setVis(m.v, m.w, m.h, m.l); break;
     case 'piles': world.applyPiles(m.p); break;
+    case 'engr': if (renderer.brick) renderer.brick.setEngravings(m.e || []); break; // (what's written on the floor, in sight)
     case 'level':
       world.castle = m.castle || null; // the Castle: [x0, y0, x1, y1], where its stone walls stand (render.js raises them)
       world.style = areaStyle(m.dname, m.lv); // (its area's walls and floors: the Mines' rock, Sokoban's blue, Gehennom's red... brickworld AREA)
@@ -641,6 +642,7 @@ function handle(m) {
       ui.heroSkinURL = game.skinLoaded && !m.poly ? game.skinURL : null;
       if (ui.stat && ui.stat.poly === m.poly && ui.stat.depth === m.depth)
         fx.hpChange(ui.stat.hp, m.hp, m.hpmax, motion, world.hero, performance.now());
+      if (renderer.brick) renderer.brick.setEngulf(m.sw || null, m.ux, m.uy); // (swallowed: its insides closed round you)
       world.setHero(m.ux, m.uy);
       motion.moveHero(m.ux, m.uy, performance.now(), cam.snap);
       cam.snap = false;

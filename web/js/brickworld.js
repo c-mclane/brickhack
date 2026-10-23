@@ -353,7 +353,7 @@ export class BrickWorld {
     }
     const mines = data.style === 'mines'; // (the Gnomish Mines: brown floors, walls of rock: minesWalls)
     const area = AREA[data.style]; // (an area's own colours: its walls and floors tinted)
-    const tint = (sh, t) => (t ? [sh * t[0], sh * t[1], sh * t[2]] : sh);
+    const tint = (sh, t) => (!t ? sh : Array.isArray(sh) ? [sh[0] * t[0], sh[1] * t[1], sh[2] * t[2]] : [sh * t[0], sh * t[1], sh * t[2]]); // (a shade already a colour: the sky's, the Plane of Air's)
     if (area) for (const e of plates) e[1] = tint(e[1], area.floor);
     if (area) for (const e of smooth) e[1] = tint(e[1], area.floor);
     for (const w of mines ? [] : data.walls) {
@@ -573,6 +573,94 @@ export class BrickWorld {
     this.flowMesh.geometry = fg;
   }
 
+  // What's written on the floor ([[x, z, kind, text]]: winweb.c build_engravings; kind engrave.h): its own words, in its
+  // own hand, on its square: written in the dust, chalky white; engraved, a dark scratch; burnt, scorched black; scribbled in
+  // marker, red; in blood, dark red (a headstone's is on the grave). Redrawn as the text changes: dust scuffed as you walk
+  // and fight on it, its letters smudged to others and to ?s (the engine's wipe_engr_at)
+  setEngravings(list) {
+    this.engravings = this.engravings || new Map();
+    const keep = new Set();
+    const INK = { 1: ['#f4f1e8', 0.82], 2: ['#2e2e33', 0.85], 3: ['#0c0a08', 0.9], 4: ['#e8202f', 0.9], 5: ['#7a0010', 0.88] };
+    for (const [x, z, kind, text] of list) {
+      if (kind === 6 || !INK[kind]) continue; // (a headstone's: the grave's)
+      const key = `${x},${z}`, sig = `${kind}|${text}`;
+      keep.add(key);
+      const had = this.engravings.get(key);
+      if (had && had.sig === sig) continue;
+      if (had) { this.world.remove(had.mesh); had.mesh.material.map.dispose(); had.mesh.material.dispose(); }
+      const c = document.createElement('canvas'); c.width = c.height = 256;
+      const g = c.getContext('2d'), [ink, a] = INK[kind];
+      // (fitted to the square: wrapped in lines, as big as it'll go)
+      const words = String(text).split(/\s+/);
+      let size = 72, lines;
+      const font = (n) => (kind === 2 ? `bold ${n}px serif` : kind === 1 ? `${n}px "Comic Sans MS", cursive, sans-serif` : `bold ${n}px sans-serif`);
+      for (;; size -= 4) {
+        g.font = font(size); lines = [''];
+        for (const w of words) { const t = lines[lines.length - 1] ? lines[lines.length - 1] + ' ' + w : w; if (g.measureText(t).width > 236 && lines[lines.length - 1]) lines.push(w); else lines[lines.length - 1] = t; }
+        if ((lines.length * size * 1.1 <= 236 && lines.every((l) => g.measureText(l).width <= 240)) || size <= 14) break;
+      }
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      if (kind === 3) { g.shadowColor = 'rgba(255,120,30,0.55)'; g.shadowBlur = 10; } // (burnt: an ember's glow about it)
+      if (kind === 2) { g.fillStyle = 'rgba(255,255,255,0.35)'; lines.forEach((l, i) => g.fillText(l, 129, 128 + (i - (lines.length - 1) / 2) * size * 1.1 + 2)); } // (carved: its edge catching the light)
+      g.fillStyle = ink; g.globalAlpha = a;
+      lines.forEach((l, i) => g.fillText(l, 128, 128 + (i - (lines.length - 1) / 2) * size * 1.1));
+      const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 0.92), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.set(x + 0.5, STUD_H + 0.013, z + 0.5);
+      mesh.renderOrder = 2;
+      this.world.add(mesh);
+      this.engravings.set(key, { mesh, sig });
+    }
+    for (const [key, e] of this.engravings) if (!keep.has(key)) { this.world.remove(e.mesh); e.mesh.material.map.dispose(); e.mesh.material.dispose(); this.engravings.delete(key); }
+  }
+
+  // Swallowed (winweb.c "sw": by what): its insides closed round you, a churning, heaving ball of studs in its colours (a
+  // purple worm's flesh, an air elemental's whirling white, a fire vortex's flame...), motes drifting in it; gone when
+  // you're out (null)
+  setEngulf(name, x, z) {
+    const S = this.engulf;
+    if (!name) { if (S) { this.world.remove(S.group); this.engulf = null; } return; }
+    if (S && S.name === name) { S.at.set(x + 0.5, STUD_H + 0.55, z + 0.5); return; }
+    if (S) this.world.remove(S.group);
+    const COL = [[/purple worm/, [0xb04aa0, 0x7a2a6a]], [/air elemental|vortex.*(energy|ice)|ice vortex/, [0xeef6ff, 0xbfe0ff]], [/fire|flaming/, [0xff6a12, 0xffd23a]],
+      [/dust vortex/, [0x9a7a50, 0x6b5030]], [/steam vortex|fog cloud/, [0xdadde2, 0xa8acb2]], [/energy vortex/, [0x8fdcff, 0xffffff]], [/ochre jelly/, [0xc8962a, 0x8a6418]],
+      [/juiblex|slime|ooze/, [0x6ac040, 0x3a7020]], [/trapper|lurker/, [0x6a6a6a, 0x3a3a3a]], [/water/, [0x3a7aff, 0x9fc8ff]]];
+    const [c1, c2] = (COL.find(([re]) => re.test(name)) || [null, [0xb84a4a, 0x7a2424]])[1];
+    const group = new THREE.Group(), at = new THREE.Vector3(x + 0.5, STUD_H + 0.55, z + 0.5);
+    group.position.copy(at);
+    this.world.add(group);
+    this.engulf = { name, group, at, c1, c2, t0: performance.now() / 1000 };
+    this.partsOf('assets/brick/parts/fx_stud.glb').then((parts) => {
+      if (this.engulf !== null && this.engulf.group !== group) return;
+      const N = 260, R = 0.72, m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), col = new THREE.Color();
+      for (const { geometry, material } of parts) {
+        const mat = material.clone(); mat.color = new THREE.Color(0xffffff); mat.side = THREE.DoubleSide;
+        const im = new THREE.InstancedMesh(geometry, mat, N);
+        for (let i = 0; i < N; i++) { // (a ball of them, spread evenly (a Fibonacci sphere), each stud facing in)
+          const yy = 1 - (2 * (i + 0.5)) / N, r = Math.sqrt(1 - yy * yy), a = i * 2.39996;
+          const d = new THREE.Vector3(Math.cos(a) * r, yy, Math.sin(a) * r);
+          q.setFromUnitVectors(up, d.clone().negate());
+          m4.compose(d.multiplyScalar(R), q, new THREE.Vector3(MODEL_SCALE * 1.6, MODEL_SCALE * 1.6, MODEL_SCALE * 1.6));
+          im.setMatrixAt(i, m4); im.setColorAt(i, col.set(i % 3 ? c1 : c2));
+        }
+        group.add(im);
+      }
+    });
+  }
+  stepEngulf(t) {
+    const S = this.engulf;
+    if (!S) return;
+    const u = t - S.t0;
+    S.group.position.copy(S.at);
+    S.group.rotation.y = u * 0.6; S.group.rotation.x = Math.sin(u * 0.7) * 0.3; // (churning)
+    const k = 1 + Math.sin(u * 3.1) * 0.06; S.group.scale.set(k, 1 / k, k); // (heaving)
+    if (this.spell && Math.random() < 0.6) { // (motes drifting in it)
+      const a = Math.random() * Math.PI * 2, r = Math.random() * 0.5;
+      this.spell.speck(S.at.clone().add(new THREE.Vector3(Math.cos(a) * r, (Math.random() - 0.5) * 0.8, Math.sin(a) * r)), new THREE.Vector3(0, 0.15, 0), Math.random() < 0.5 ? S.c1 : S.c2, 0.05, 0.8);
+    }
+  }
+
   // The drawbridges ([{gx, gz, sx, sz, down}]: world.js): each a deck of planks (items.json _drawbridge), hinged on the edge
   // between its gate and its span: lowered, lying over the moat; raised, stood up in the gate. When it changes it swings
   // there, slowly (stepBridges); first seen, it's just there
@@ -634,7 +722,7 @@ export class BrickWorld {
         g = new THREE.Group();
         // a slant of its own: diagonal, crossing the one below, and a little off true
         const h = Math.sin(it.x * 12.9898 + it.z * 78.233 + level * 37.719) * 43758.5453;
-        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || ['throne', 'grave', 'tree', 'iron bars'].includes(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
+        const turn = it.name === 'statue' || it.name === 'boulder' || it.name === 'fountain' || it.name === 'sink' || it.name === 'toilet' || /^altar/.test(it.name) || ['throne', 'grave', 'tree', 'iron bars', 'ladder_up', 'ladder_down', 'ice', 'cloud'].includes(it.name) || /^_trap /.test(it.name) ? it.turn || 0 // (a statue, a boulder, a fountain, a sink, a trap: square to its square, filling it, its edges its square's; a sink's back to its wall: turn)
           : (level % 2 ? -1 : 1) * Math.PI / 4 + (h - Math.floor(h) - 0.5) * 0.35;
         g.position.set(it.x + 0.5, STUD_H, it.z + 0.5);
         g.rotation.y = turn;
@@ -2119,6 +2207,7 @@ export class BrickWorld {
     }
     this.fx.step(); // thrown things in flight
     this.spell.step(); // zaps and spells playing out
+    this.stepEngulf(performance.now() / 1000); // (swallowed: its insides churning round you)
     { const t = performance.now() / 1000; this.stepBridges(Math.min(0.05, t - (this.bridgeT || t))); this.bridgeT = t; } // (the drawbridges swinging)
     this.stepCorpses(); // (the slain's corpses: the brick of each that's left)
     this.stepFountainGlow(performance.now() / 1000); // fountains' water, glowing

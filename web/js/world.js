@@ -139,16 +139,16 @@ export class World {
         // sprite. A sink, a toilet: its back to a wall beside it, if there's one: turn)
         const furn = !cl ? null : cl.cmap === CM.fountain ? 'fountain' : cl.cmap === CM.sink ? 'sink' : cl.cmap === CM.toilet && CM.toilet >= 0 ? 'toilet'
           : cl.cmap === CM.altar ? 'altar' : cl.cmap === CM.throne ? 'throne' : cl.cmap === CM.grave ? 'grave' : cl.cmap === CM.bars ? 'iron bars'
-          : cl.cmap === CM.tree ? 'tree' : null;
+          : cl.cmap === CM.tree ? 'tree' : cl.cmap === CM.upladder ? 'ladder_up' : cl.cmap === CM.dnladder ? 'ladder_down' : cl.cmap === CM.ice ? 'ice' : cl.cmap === CM.cloud ? 'cloud' : null;
         // (an altar: the one of its alignment, its stone and trim: lawful white and gold, neutral grey, chaotic black and
         // dark red, Moloch's black and red; a lawful one, to a follower of Jesus: his, the cross on it)
         // (a high altar, the Astral Plane's or the Sanctum's: its kind's, grander; his, though, is his)
         const model = furn === 'altar' ? 'altar_' + (c.a === 1 && this.faith ? 'jesus'
             : (c.h ? 'high_' : '') + ({ 1: 'lawful', 0: 'neutral', [-1]: 'chaotic' }[c.a] || (c.a === -128 ? 'unaligned' : 'neutral')))
-          : furn === 'tree' ? (sqHash(x, y) < 0.5 ? 'tree' : 'tree_pine') : furn; // (a tree: the round one or the pine, each square its own)
+          : furn === 'tree' ? (sqHash(x, y) < 0.5 ? 'tree' : 'tree_pine') : furn === 'ice' ? '_ice' : furn === 'cloud' ? '_cloud' : furn; // (a tree: the round one or the pine, each square its own)
         const fountain = model && brickBuilt(model);
-        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, colliders: fountain.colliders, perch: fountain.perch, offer: fountain.offer, anchored: fountain.anchored, spots: fountain.spots, item: model,
-          turn: furn === 'fountain' ? 0 : furn === 'tree' ? sqHash(y, x) * Math.PI * 2 : furn === 'iron bars' ? this.barsTurn(x, y) : this.backToWall(x, y) });
+        if (fountain) this.brickDrops.push({ x, z: y, url: fountain.url, level: 0, upright: true, name: furn, sunk: !!fountain.sunk, colliders: fountain.colliders, perch: fountain.perch, offer: fountain.offer, anchored: fountain.anchored, spots: fountain.spots, item: model,
+          turn: furn === 'fountain' || furn === 'ice' ? 0 : furn === 'tree' || furn === 'cloud' ? sqHash(y, x) * Math.PI * 2 : furn === 'iron bars' ? this.barsTurn(x, y) : this.backToWall(x, y) });
         else if (cl && cl.sprite && !trapBuilt(cl)) out.push({ x, z: y, tile: cl.sprite.tile, size: cl.sprite.size, shade }); // (a web: in brick, if it's been made)
         // (a trap, in brick (terrain.js TRAP_ITEMS): square to its square; a pit, a hole, its shaft down where its floor isn't, render.js)
         const trapB = trapBuilt(cl);

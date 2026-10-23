@@ -975,6 +975,33 @@ export async function runTestbed(data) {
         await wait(2);
         brick.setBridges([]); lay([]); say('');
       }
+      // the rest of the floor (?part=floors, asked for alone): ladders up and down, ice, the Plane of Air's clouds; Elbereth
+      // written in the dust, scuffed letter by letter to ?s as you walk back and forth over it (as the engine's wipe_engr_at
+      // does), a burnt and an engraved one beside it; and swallowed, a purple worm's insides about you, an air elemental's
+      if (part && part.split(',').includes('floors')) {
+        const things = [{ item: 'ladder_up', name: 'ladder_up', at: [1, 1], turn: 0 }, { item: 'ladder_down', name: 'ladder_down', at: [3, 1], turn: 0 },
+          ...[[8, 1], [9, 1], [8, 2], [9, 2], [10, 2]].map((at) => ({ item: '_ice', name: 'ice', at, turn: 0 })),
+          ...[[11, 5], [12, 5], [12, 6], [11, 7]].map((at, i) => ({ item: '_cloud', name: 'cloud', at, turn: i * 1.3 }))];
+        lay(things);
+        const ex = hero.sq.x + 1, ez = hero.sq.y;
+        let words = 'Elbereth';
+        const scrawl = () => brick.setEngravings([[ex, ez, 1, words], [ex + 2, ez + 2, 3, 'ad aerarium'], [ex - 2, ez + 2, 2, 'X marks the spot']]);
+        scrawl();
+        say('Something is written here in the dust: Elbereth.');
+        await wait(2.5);
+        const rub = (t) => { const i = Math.floor(Math.random() * t.length); return t[i] === ' ' ? t : t.slice(0, i) + (Math.random() < 0.5 ? '?' : 'lI|:.'[Math.floor(Math.random() * 5)]) + t.slice(i + 1); };
+        for (let k = 0; k < 6; k++) { await step(k % 2 ? -1 : 1, 0); words = rub(rub(words)); scrawl(); say(`You read: "${words}".`); await wait(0.6); }
+        await wait(1.5);
+        say('You are engulfed by a purple worm!');
+        brick.setEngulf('purple worm', hero.sq.x, hero.sq.y);
+        await wait(3.5);
+        say('You are engulfed by an air elemental!');
+        brick.setEngulf('air elemental', hero.sq.x, hero.sq.y);
+        await wait(3.5);
+        brick.setEngulf(null); say('You get expelled!');
+        await wait(1.5);
+        brick.setEngravings([]); lay([]); say('');
+      }
       // archery (?part=archery: a centaur, and you with a bow): arrows loosed back and forth, flat and fast, each stuck in the
       // floor where it comes down, left lying there; each archer (you, the centaur's man half) into the stance, aimed, drawn,
       // let go, held, and back to how it stood (FOUNT.loose)

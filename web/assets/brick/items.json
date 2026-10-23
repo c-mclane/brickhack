@@ -36919,5 +36919,201 @@
     ]
    }
   ]
+ },
+ "ladder_up": {
+  "brick": "A ladder up: a long reddish brown ladder stood upright against the wall, climbing out of sight",
+  "upright": true,
+  "parts": [
+   {
+    "part": "4207a",
+    "color": 70,
+    "pos": [
+     0,
+     0,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       0,
+       1
+      ],
+      "deg": 90
+     },
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ]
+ },
+ "ladder_down": {
+  "brick": "A ladder down: the same ladder down a hole in the floor, its top rungs showing",
+  "upright": true,
+  "sunk": true,
+  "parts": [
+   {
+    "part": "4207a",
+    "color": 70,
+    "pos": [
+     0,
+     92,
+     0
+    ],
+    "rot": [
+     {
+      "axis": [
+       0,
+       0,
+       1
+      ],
+      "deg": 90
+     },
+     {
+      "axis": [
+       0,
+       1,
+       0
+      ],
+      "deg": 90
+     }
+    ]
+   }
+  ]
+ },
+ "_ice": {
+  "brick": "Ice: four clear light blue 2x2 tiles laid over the floor, glossy",
+  "upright": true,
+  "parts": [
+   {
+    "part": "3068b",
+    "color": 43,
+    "pos": [
+     -20,
+     0,
+     -20
+    ]
+   },
+   {
+    "part": "3068b",
+    "color": 43,
+    "pos": [
+     -20,
+     0,
+     20
+    ]
+   },
+   {
+    "part": "3068b",
+    "color": 43,
+    "pos": [
+     20,
+     0,
+     -20
+    ]
+   },
+   {
+    "part": "3068b",
+    "color": 43,
+    "pos": [
+     20,
+     0,
+     20
+    ]
+   }
+  ]
+ },
+ "_cloud": {
+  "brick": "A cloud (the Plane of Air): a bank of white domed round bricks and round plates, piled high and low",
+  "upright": true,
+  "parts": [
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     -20,
+     -24,
+     -20
+    ]
+   },
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     20,
+     -30,
+     10
+    ]
+   },
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     0,
+     -54,
+     0
+    ]
+   },
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     -18,
+     -40,
+     24
+    ]
+   },
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     24,
+     -20,
+     -24
+    ]
+   },
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     8,
+     -78,
+     -6
+    ]
+   },
+   {
+    "part": "4032a",
+    "color": 15,
+    "pos": [
+     -26,
+     -8,
+     10
+    ]
+   },
+   {
+    "part": "4032a",
+    "color": 15,
+    "pos": [
+     14,
+     -8,
+     -30
+    ]
+   },
+   {
+    "part": "30367a",
+    "color": 15,
+    "pos": [
+     -28,
+     -62,
+     -6
+    ]
+   }
+  ]
  }
 }

@@ -667,6 +667,7 @@ export class Renderer {
       for (let x = 0; x < W; x++) {
         const c = cls[y * W + x];
         if (brickLevel && (!c || (c.type === 'none' && c.cmap !== CM.air))) { fogAt(x, y); continue; }
+        if (brickLevel && c && c.cmap === CM.air) { const k = c.seen ? 1 : 0.7; bricks.floors.push({ x, z: y, shade: [0.72 * k, 0.86 * k, 1.0 * k], studs: true }); continue; } // (the Plane of Air: open sky, pale blue underfoot)
         if (!c || c.type === 'none') continue;
         const d = Math.hypot(x - hx, y - hy);
         let shade = c.seen ? 1.0 : brickLevel ? 0.62 : 0.42;
@@ -714,8 +715,10 @@ export class Renderer {
               if (stair) bricks.stairs.push({ x, z: y, up: stair === 'up', turn: world.backToWall ? world.backToWall(x, y) : 0, shade });
               // (a trap in brick (world.js): no picture of it on the floor; a pit, a hole, a trap door: no floor, its shaft down)
               const trapB = c.trap != null && TRAP_ITEMS[c.trap] && brickBuilt(TRAP_ITEMS[c.trap]);
-              if (stair !== 'down' && !(trapB && trapB.sunk)) bricks.floors.push({ x, z: y, shade, studs: plain || !!stair || c.cmap === CM.altar });
-              if (!plain && !stair && c.cmap !== CM.altar && !(trapB && trapB.sunk)) this.floor(out, x, y, 0.002, ft, shade); // (an altar: built in brick, world.js)
+              const built = [CM.upladder, CM.dnladder, CM.ice, CM.cloud, CM.throne, CM.grave].includes(c.cmap); // (stood in brick: world.js; no picture under it)
+              const sky = c.cmap === CM.cloud ? [0.72 * shade, 0.86 * shade, shade] : shade; // (a cloud: on the Plane of Air's sky)
+              if (stair !== 'down' && c.cmap !== CM.dnladder && !(trapB && trapB.sunk)) bricks.floors.push({ x, z: y, shade: sky, studs: plain || !!stair || built || c.cmap === CM.altar }); // (a ladder down: a hole, the ladder down it)
+              if (!plain && !stair && !built && c.cmap !== CM.altar && !(trapB && trapB.sunk)) this.floor(out, x, y, 0.002, ft, shade); // (an altar: built in brick, world.js)
               if (c.decal != null && !trapB) this.floor(out, x, y, STUD_H + 0.005, c.decal, shade, 1);
               // an open door swung back in its frame; a doorway (no door, or a broken one): the frame alone
               if (c.type === 'odoor') doorPiece(x, y, 'door_open', doorAlongZ(x, y, c), shade);
