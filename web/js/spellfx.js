@@ -13,6 +13,7 @@
 
 import * as THREE from 'three';
 import { MODEL_SCALE, STUD_H } from './brick.js';
+import { zapSound, hitSound, auraSound } from './zapsound.js';
 
 const PARTS = 'assets/brick/parts/';
 export const ZAP_AT = 0.62; // s into the wand pose (FOUNT.zap) the wand's flicked and the bolt is away
@@ -231,8 +232,9 @@ export class SpellFX {
     let hitDone = false;
     return this.queue(fly + hit + 0.25, (t, dt, e) => {
       const s = Math.min(L, t * speed), head = along(s);
+      if (!e.sounded) { e.sounded = true; zapSound(st, 0, fly); } // (heard as it leaves the wand)
       if (t < fly + 0.05) this.trail(st, head, t, dt, along, s, L);
-      if (t >= fly && !hitDone) { hitDone = true; this.impact(st, end, head.d); }
+      if (t >= fly && !hitDone) { hitDone = true; this.impact(st, end, head.d); hitSound(st); }
       if (t >= fly) this.lingering(st, end, t - fly, dt);
     });
   }
@@ -354,6 +356,7 @@ export class SpellFX {
   explosion(st, c, r, t, dt, e) {
     if (!e.boom) {
       e.boom = true;
+      hitSound(st);
       this.light(c, st.c, 2.6);
       for (let i = 0; i < 260; i++) {
         const v = new THREE.Vector3(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize().multiplyScalar(rnd(0.3, 1) * r * 2.6);
@@ -373,6 +376,7 @@ export class SpellFX {
     const mid = c.clone().add(new THREE.Vector3(0, 0.55, 0));
     if (!e.started) {
       e.started = true;
+      auraSound(st);
       if (!st.dark) this.light(mid, st.c, 1.6);
       switch (st.hit) {
         case 'hearts': this.hearts(mid, st, 14); break;

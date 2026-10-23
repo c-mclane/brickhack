@@ -21,6 +21,7 @@ import { hopOn, hopOff, perched, sideToward, offTime, HOP_ON, PERCHES, perchOf, 
 import { setupFigurePicker, figureView, loadRoster, figuresFor, customFigureUrl } from './figpick.js';
 import { FigureAnimator, FOUNT, LOOSE_AT, NOCKED, nockAt, fountKey, mouthPoint, firstPersonMatrix, firstPersonWrist, wristMatrix, mul as mul4, FP_TILT, FP_HOLD_TILT, ATTACK_TIME, SLASH_CUT } from './minifig-anim.js';
 import { ZAP_AT } from './spellfx.js';
+import { allowZapSound, setZapVolume } from './zapsound.js';
 import { loadBrickItems, brickItemForTile, brickItemByName, brickChainLink, brickBuilt, gameTile, setStartPieces, isStartTile, onIcons } from './brickitems.js';
 import { menuPlate } from './brandlogo.js';
 import { brickInterface } from './brickui.js';
@@ -287,6 +288,7 @@ const game = {
 // ------------------------------------------------------------------ setup
 const world = new World();
 let npTimer = 0;
+setZapVolume(opts.music / 100);
 const ambience = new Ambience(opts.music / 100); // (a fountain's water, lava's flow: looped under the music: roomNear)
 // the rites at the altar of a follower of Jesus (the engine's "rite": winweb.c web_ritefx), played out at it (rites.js):
 // its statues come alive, the wafer, the chalice, alms tossed into its plate...; the Agnus Dei chanted meanwhile
@@ -555,7 +557,7 @@ async function init() {
   requestAnimationFrame(frame);
   // music can only start after the first click or key press (browser autoplay rules)
   await music.load();
-  const kick = () => { music.start(); ambience.allow(); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); };
+  const kick = () => { music.start(); ambience.allow(); allowZapSound(); window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); };
   window.addEventListener('pointerdown', kick);
   window.addEventListener('keydown', kick);
 }
@@ -1291,6 +1293,7 @@ function drawOptions() {
   mv.nextElementSibling.textContent = opts.music ? `Music: ${opts.music}%` : 'Music: OFF';
   music.setVolume(opts.music / 100);
   ambience.setVolume(opts.music / 100);
+  setZapVolume(opts.music / 100); // (zaps' sounds as loud as the music)
 }
 function openOptions() { drawOptions(); show('options'); }
 

@@ -36,6 +36,7 @@ import { mul, mouthPoint } from './minifig-anim.js';
 import { NameTags } from './nametags.js';
 import { AltarRites } from './rites.js';
 import { ZAP_AT } from './spellfx.js';
+import { allowZapSound } from './zapsound.js';
 
 const STEP_TIME = 0.32; // s a square, walking
 
@@ -70,7 +71,7 @@ export async function runTestbed(data) {
   const amb = new Ambience(0.6); // (and the Agnus Dei, chanted through the Mass)
   if (hasWater) amb.set('water', true);
   if (hasLava) amb.set('lava', true);
-  const hear = () => { amb.allow(); removeEventListener('pointerdown', hear); removeEventListener('keydown', hear); };
+  const hear = () => { amb.allow(); allowZapSound(); removeEventListener('pointerdown', hear); removeEventListener('keydown', hear); };
   addEventListener('pointerdown', hear);
   addEventListener('keydown', hear);
   cam.position.set(...(level.camera ? level.camera.pos : [W / 2, 11, H + 3])); // (or where the level says to look from)
