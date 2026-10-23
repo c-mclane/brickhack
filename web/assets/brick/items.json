@@ -36603,21 +36603,12 @@
   ]
  },
  "tree": {
-  "brick": "The round tree of the old town sets (the lollipop tree) on a reddish brown round trunk (an overland tree)",
+  "brick": "The round tree of the old town sets (the lollipop tree), standing on the floor (an overland tree)",
   "upright": true,
   "parts": [
    {
     "part": "3470",
     "color": 2,
-    "pos": [
-     0,
-     -24,
-     0
-    ]
-   },
-   {
-    "part": "3941",
-    "color": 70,
     "pos": [
      0,
      0,
@@ -36627,21 +36618,12 @@
   ]
  },
  "tree_pine": {
-  "brick": "The pine of the old town sets, pyramidal, in dark green, on a reddish brown round trunk (an overland tree)",
+  "brick": "The pine of the old town sets, pyramidal, in dark green, standing on the floor (an overland tree)",
   "upright": true,
   "parts": [
    {
     "part": "3471",
     "color": 288,
-    "pos": [
-     0,
-     -24,
-     0
-    ]
-   },
-   {
-    "part": "3941",
-    "color": 70,
     "pos": [
      0,
      0,
